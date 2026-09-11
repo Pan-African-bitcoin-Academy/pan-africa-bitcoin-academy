@@ -161,7 +161,7 @@ export const BUILT_IN_ASSIGNMENTS: BuiltInAssignmentDefinition[] = [
   {
     id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
     chapter_slug: 'proof-of-work-and-block-rewards',
-    chapter_number: 14,
+    chapter_number: 13,
     title: '🧩 The Halving Timeline Puzzle',
     question: "Bitcoin's block reward does not decrease smoothly. It drops suddenly — like stairs, not a ramp. Timeline (Place tiles from left to right in chronological order).",
     description: "Interactive exercise ordering Bitcoin's halving block rewards from Genesis (50 BTC) down to 3.125 BTC.",

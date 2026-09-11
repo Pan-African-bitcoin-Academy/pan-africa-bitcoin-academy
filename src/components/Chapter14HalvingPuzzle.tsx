@@ -3,39 +3,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/hooks/useSession';
-import {
-  clientAutoGradedCanPractice,
-  clientSubmissionIsApproved,
-  phaseHintFromRow,
-  type ClientAssignmentPhaseHint,
-} from '@/lib/assignmentReview';
 
 interface Chapter14HalvingPuzzleProps {
   assignmentId: string;
 }
 
-interface SubmissionStatus {
-  id?: string;
-  status?: string;
-  is_correct?: boolean;
-  isCorrect?: boolean;
-  answer?: string;
-  feedback?: string;
-  graded_at?: string;
-  submitted_at?: string;
-}
-
 interface AssignmentItem {
   id?: string;
   chapterSlug?: string;
-  submission?: SubmissionStatus;
-  requiresInstructorReview?: boolean;
+  submission?: { id?: string; status?: string; answer?: string };
 }
 
-const CORRECT_ORDER = ['50 BTC', '25 BTC', '12.5 BTC', '6.25 BTC', '3.125 BTC'];
 const TILES = ['50 BTC', '25 BTC', '12.5 BTC', '6.25 BTC', '3.125 BTC'];
 
-// Shuffle array function
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -57,18 +37,8 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus | null>(null);
-  const [phaseHint, setPhaseHint] = useState<ClientAssignmentPhaseHint | undefined>();
   const [loading, setLoading] = useState(true);
-  const [practiceMode, setPracticeMode] = useState(false);
 
-  const checkCorrectness = (slots: (string | null)[]): boolean => {
-    const filledSlots = slots.filter((s) => s !== null) as string[];
-    if (filledSlots.length !== CORRECT_ORDER.length) return false;
-    return filledSlots.every((tile, index) => tile === CORRECT_ORDER[index]);
-  };
-
-  // Initialize tiles on mount
   useEffect(() => {
     setAvailableTiles(shuffleArray(TILES));
   }, []);
@@ -80,34 +50,14 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
       if (!email) return;
 
       const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`);
-      if (response.ok) {
-        const data = await response.json();
-        const thisAssignment = (data.assignments as AssignmentItem[])?.find(
-          (a) => a.id === assignmentId || a.chapterSlug === 'proof-of-work-and-block-rewards'
-        );
-        setPhaseHint(phaseHintFromRow(thisAssignment));
-        if (thisAssignment?.submission) {
-          setSubmissionStatus(thisAssignment.submission);
-          setSubmitted(true);
-          if (thisAssignment.submission.answer) {
-            try {
-              const answerData = JSON.parse(thisAssignment.submission.answer);
-              if (answerData.timeline) {
-                const slots = answerData.timeline as (string | null)[];
-                setTimelineSlots(slots);
-                checkCorrectness(slots);
-                const placed = slots.filter(Boolean) as string[];
-                setAvailableTiles(shuffleArray(TILES.filter((t) => !placed.includes(t))));
-              }
-            } catch {
-              // Legacy format, ignore
-            }
-          }
-        } else {
-          setSubmissionStatus(null);
-          setSubmitted(false);
-        }
-      }
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const thisAssignment = (data.assignments as AssignmentItem[])?.find(
+        (a) => a.id === assignmentId || a.chapterSlug === 'proof-of-work-and-block-rewards'
+      );
+
+      setSubmitted(!!thisAssignment?.submission);
     } catch (err) {
       console.error('Error checking submission status:', err);
     } finally {
@@ -129,66 +79,50 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
     slotIndex: number,
     currentSlots: (string | null)[]
   ): string | null => {
-    // Check if placing 25 BTC before 50 BTC
     if (tile === '25 BTC' && slotIndex === 0) {
       return 'Bitcoin started at its highest reward. Scarcity is enforced over time, not retroactively.';
     }
-
-    // Check if placing 12.5 BTC next to 50 BTC (skipping 25 BTC)
     if (tile === '12.5 BTC' && currentSlots[0] === '50 BTC' && slotIndex === 1) {
       return 'Bitcoin never reduces gradually. Every reduction is exactly half.';
     }
-
-    // Check if placing 3.125 BTC before 6.25 BTC
     if (tile === '3.125 BTC') {
       const sixPointTwoFiveIndex = currentSlots.findIndex((s) => s === '6.25 BTC');
       if (sixPointTwoFiveIndex !== -1 && sixPointTwoFiveIndex > slotIndex) {
         return 'Halvings happen in a fixed order. The future cannot arrive early.';
       }
     }
-
     return null;
   };
 
   const handleTileClick = (tileIndex: number) => {
-    if (submitted && submissionStatus) return;
+    if (submitted) return;
 
     const tile = availableTiles[tileIndex];
     if (!tile) return;
 
-    // Find first empty slot
     const emptySlotIndex = timelineSlots.findIndex((slot) => slot === null);
     if (emptySlotIndex === -1) {
       setError('All slots are filled. Remove a tile first or submit your answer.');
       return;
     }
 
-    // Get feedback for this placement
     const newSlots = [...timelineSlots];
     newSlots[emptySlotIndex] = tile;
     const placementFeedback = getFeedbackForPlacement(tile, emptySlotIndex, timelineSlots);
 
-    if (placementFeedback) {
-      setFeedback(placementFeedback);
-    } else {
-      setFeedback(null);
-    }
-    // Always show universal message when placing tiles
+    setFeedback(placementFeedback);
     setUniversalMessage('Bitcoin does not reduce gradually. It halves suddenly.');
-
-    // Update slots and remove tile from available
     setTimelineSlots(newSlots);
     setAvailableTiles(availableTiles.filter((_, idx) => idx !== tileIndex));
     setError(null);
   };
 
   const handleSlotClick = (slotIndex: number) => {
-    if (submitted && submissionStatus) return;
+    if (submitted) return;
 
     const tile = timelineSlots[slotIndex];
     if (!tile) return;
 
-    // Return tile to available tiles (shuffled)
     setAvailableTiles(shuffleArray([...availableTiles, tile]));
     const newSlots = [...timelineSlots];
     newSlots[slotIndex] = null;
@@ -205,31 +139,22 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
       return;
     }
 
-    // Check if all slots are filled
     if (timelineSlots.some((slot) => slot === null)) {
       setError('Please fill all slots before submitting.');
       return;
     }
 
-    const filledSlots = timelineSlots.filter((s) => s !== null) as string[];
-    const isCorrectAnswer = checkCorrectness(filledSlots);
-
     setSubmitting(true);
     setError(null);
 
     try {
-      const answerData = {
-        timeline: timelineSlots,
-        isCorrect: isCorrectAnswer,
-      };
-
       const response = await fetch('/api/assignments/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: email,
+          email,
           assignmentId,
-          answer: JSON.stringify(answerData),
+          answer: JSON.stringify({ timeline: timelineSlots }),
         }),
       });
 
@@ -239,9 +164,7 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
         throw new Error(data.error || 'Failed to submit assignment');
       }
 
-      setPracticeMode(false);
       setSubmitted(true);
-      setSubmissionStatus(data.submission || { status: 'pending_review' });
       setUniversalMessage(null);
       setFeedback(null);
     } catch (err: unknown) {
@@ -298,73 +221,23 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
         )}
       </div>
 
-      {submitted && submissionStatus && (
-        <div className="space-y-4">
-          <div className="p-4 border rounded-lg bg-green-950/40 border-green-500/40">
-            <p className="font-semibold text-base sm:text-lg mb-1 text-green-300">
-              {clientSubmissionIsApproved(submissionStatus, phaseHint)
-                ? '✓ Approved'
-                : '✓ Submitted'}
-            </p>
-            <p className="text-sm text-zinc-300">
-              {clientSubmissionIsApproved(submissionStatus, phaseHint)
-                ? 'Your timeline submission has been approved by your instructor.'
-                : 'You will be notified once reviewed by your instructor.'}
-            </p>
-          </div>
-
-          {clientSubmissionIsApproved(submissionStatus, phaseHint) && (
-            <div className="p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-              <p className="text-sm text-emerald-200 font-medium mb-2">Correct order:</p>
-              <div className="flex items-center gap-2 flex-wrap">
-                {CORRECT_ORDER.map((tile, index) => (
-                  <div
-                    key={index}
-                    className="px-3 py-2 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 border border-indigo-400/40 rounded text-sm font-mono"
-                  >
-                    <span className="bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 bg-clip-text text-transparent font-bold">
-                      {tile}
-                    </span>
-                    {index === 0 && <span className="ml-2 text-xs text-purple-300">→ Genesis</span>}
-                    {index === 4 && <span className="ml-2 text-xs text-pink-300">→ Today</span>}
-                  </div>
-                ))}
-              </div>
-              <p className="mt-4 text-sm text-zinc-300">
-                This teaches: Fixed starting issuance, exact halving sequence, no skipping, no smoothing.
-              </p>
-            </div>
-          )}
-          {clientAutoGradedCanPractice(submissionStatus, phaseHint) && (
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => setPracticeMode(true)}
-                className="rounded-lg border border-green-500/40 bg-green-500/10 px-3 py-1.5 text-sm font-medium text-green-200"
-              >
-                Practice again
-              </button>
-            </div>
-          )}
+      {submitted ? (
+        <div className="p-4 border rounded-lg bg-green-950/40 border-green-500/40">
+          <p className="font-semibold text-base sm:text-lg text-green-300">✓ Submitted</p>
         </div>
-      )}
-
-      {(!submitted || practiceMode) && (
+      ) : (
         <div className="space-y-6">
-          {/* Timeline */}
           <div className="space-y-3 sm:space-y-4">
             <h4 className="text-sm sm:text-base font-semibold text-zinc-200 leading-tight">
               Timeline (Place tiles from left to right in chronological order)
             </h4>
             <div className="relative">
-              {/* Timeline zones labels */}
               <div className="flex items-center justify-between mb-2 sm:mb-3">
                 <div className="text-xs sm:text-sm text-zinc-300 font-medium">[ Genesis ]</div>
                 <div className="flex-1"></div>
                 <div className="text-xs sm:text-sm text-zinc-300 font-medium">[ Today ]</div>
               </div>
 
-              {/* Slots - Mobile-first: Stack on very small screens, horizontal on larger */}
               <div className="flex items-center gap-1.5 sm:gap-2 border-2 border-zinc-700 rounded-lg p-2 sm:p-4 bg-zinc-900/50 overflow-x-auto scrollbar-hide">
                 {timelineSlots.map((tile, index) => (
                   <div
@@ -396,7 +269,6 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
             </div>
           </div>
 
-          {/* Available Tiles */}
           <div className="space-y-3 sm:space-y-4">
             <h4 className="text-sm sm:text-base font-semibold text-zinc-200">Available Tiles (Tap to Place)</h4>
             <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -415,7 +287,6 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
             )}
           </div>
 
-          {/* Feedback */}
           {feedback && (
             <div className="p-3 sm:p-4 bg-orange-900/20 border border-orange-800/50 rounded-lg">
               <p className="text-sm text-orange-200 leading-relaxed">{feedback}</p>
@@ -436,7 +307,6 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
             </div>
           )}
 
-          {/* Submit Button */}
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="submit"
