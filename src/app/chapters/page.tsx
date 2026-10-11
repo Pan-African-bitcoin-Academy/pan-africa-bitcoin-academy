@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { BitcoinIcon, WalletIcon, LightningIcon, BookIcon, ToolIcon, BlockchainIcon, KeysIcon, UTXOIcon, TransactionIcon, MiningIcon } from "@/components/BitcoinIcons";
 import { useAuth } from "@/hooks/useAuth";
 import { useSession } from "@/hooks/useSession";
-import { Download, FileText, BookOpen, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Download, FileText, BookOpen, ExternalLink, AlertTriangle, ChevronDown } from 'lucide-react';
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { AnimatedList } from "@/components/AnimatedList";
@@ -64,6 +64,119 @@ const comingSoon = [
   "Satoshi-level coding intro",
   "Formally verified assignments",
   "Lightning developer path",
+];
+
+const studyMaterials = [
+  {
+    id: 'bitcoin-whitepaper-en',
+    title: 'Bitcoin: A Peer-to-Peer Electronic Cash System (English)',
+    author: 'Satoshi Nakamoto (2008)',
+    label: 'PDF',
+    description: 'The original white paper that started it all. Essential reading for understanding Bitcoin\'s core design.',
+    href: 'https://bitcoin.org/bitcoin.pdf',
+    action: 'Download',
+  },
+  {
+    id: 'bitcoin-whitepaper-tigrigna',
+    title: 'ቢትኮይን፡ ስርዓት ናይ መዘና-ናብ-መዘና ኤሌክትሮኒካዊ ገንዘብ',
+    author: 'ትግርኛ ትርጉም (Pan-African Bitcoin Academy)',
+    label: 'PDF (Tigrigna)',
+    description: 'Tigrigna translation of the Bitcoin whitepaper for Eritrean learners and native Tigrigna readers.',
+    href: '/doc_files/Bitcoin%20white%20paper%20Tigrigna.pdf',
+    action: 'Open PDF',
+    pageHref: '/white_paper',
+    pageLabel: 'Read',
+  },
+  {
+    id: 'little-bitcoin-book',
+    title: 'The Little Bitcoin Book',
+    author: 'Bitcoin Collective (2019)',
+    label: 'Free',
+    description: 'A simple, beginner-friendly introduction to Bitcoin that explains why it matters for sovereignty and self-custody.',
+    href: 'https://www.littlebitcoinbook.com/',
+    action: 'Read Online',
+  },
+  {
+    id: 'mastering-bitcoin',
+    title: 'Mastering Bitcoin',
+    author: 'Andreas M. Antonopoulos',
+    label: 'Free (GitHub)',
+    description: 'Comprehensive technical guide to Bitcoin for developers, engineers, and technically-minded individuals.',
+    href: 'https://github.com/bitcoinbook/bitcoinbook',
+    action: 'Access',
+  },
+  {
+    id: 'bitcoin-standard',
+    title: 'The Bitcoin Standard',
+    author: 'Saifedean Ammous (2018)',
+    label: 'Book',
+    description: 'Economic analysis of Bitcoin\'s origins, monetary properties, and its potential impact on the global economy.',
+    href: 'https://saifedean.com/thebitcoinstandard/',
+    action: 'Learn More',
+  },
+  {
+    id: 'bitcoin-africa',
+    title: 'Bitcoin Africa: Guide to Freedom Money',
+    author: 'African Bitcoiners (2nd Edition)',
+    label: 'Free PDF',
+    description: 'A practical Africa-focused Bitcoin guide covering financial freedom, self-custody, and real-world use.',
+    href: 'https://bitcoiners.africa/wp-content/uploads/2026/03/BITCOIN_Africa-Guide-to-Freedom-Money_by-African-Bitcoiners-2ND-EDITION.pdf',
+    action: 'Download PDF',
+  },
+  {
+    id: 'programming-bitcoin',
+    title: 'Programming Bitcoin',
+    author: 'Jimmy Song (2019)',
+    label: 'Free (GitHub)',
+    description: 'Learn Bitcoin by programming it from scratch. Build Bitcoin libraries in Python step by step.',
+    href: 'https://github.com/jimmysong/programmingbitcoin',
+    action: 'Access',
+  },
+  {
+    id: 'layered-money',
+    title: 'Layered Money',
+    author: 'Nik Bhatia (2021)',
+    label: 'Book',
+    description: 'Explains the evolution of money through different layers and why Bitcoin represents a new monetary layer.',
+    href: 'https://www.layeredmoney.com/',
+    action: 'Learn More',
+  },
+  {
+    id: 'little-bitcoin-book-tigrigna',
+    title: 'The Little Book of Bitcoin in Tigrigna',
+    author: 'ትግርኛ ትርጉም',
+    label: 'PDF (Tigrigna)',
+    description: 'A simple, beginner-friendly introduction to Bitcoin translated into Tigrigna, explaining why it matters for sovereignty and self-custody.',
+    href: 'https://drive.google.com/file/d/1YcU6OIHZEsp4c6KOwAVDUGI2BfNtxx5T/view?usp=drive_link',
+    action: 'Download',
+  },
+  {
+    id: 'bitcoin-development-philosophy',
+    title: 'Bitcoin Development Philosophy',
+    author: 'Kalle Rosenbaum & Linnéa Rosenbaum',
+    label: 'Free (Online)',
+    description: 'A guide for Bitcoin developers covering decentralization, trustlessness, privacy, scaling, and the philosophy behind Bitcoin\'s design trade-offs.',
+    href: 'http://bitcoindevphilosophy.com/',
+    action: 'Read Online',
+  },
+  {
+    id: 'understanding-bitcoin-scams',
+    title: 'Understanding Bitcoin Scams',
+    author: 'Pan-Africa Bitcoin Academy',
+    label: 'Guide',
+    description: 'Learn to recognize and avoid investment scams, impersonation, phishing, and malware. Essential reading to protect yourself.',
+    href: '/scam',
+    action: 'Read',
+  },
+  {
+    id: 'exonumia-africa',
+    title: 'Exonumia Africa',
+    author: 'Localized African Bitcoin learning resources',
+    label: 'Free (Online)',
+    description: 'Explore Bitcoin education resources in multiple African languages and countries.',
+    href: 'https://exonumia.africa/',
+    action: 'Visit',
+  },
 ];
 
 export default function ChaptersPage() {
@@ -771,418 +884,84 @@ export default function ChaptersPage() {
               })}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {/* Bitcoin White Paper (English) */}
-              <AnimatedSection animation="slideUp" delay={0}>
-              <a
-                href="https://bitcoin.org/bitcoin.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-orange-400/30 bg-black/60 p-6 transition hover:border-orange-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(249,115,22,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-orange-500/20 p-3">
-                    <FileText className="h-6 w-6 text-orange-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-orange-300 transition group-hover:text-orange-200">
-                      Bitcoin: A Peer-to-Peer Electronic Cash System (English)
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Satoshi Nakamoto (2008)</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  The original white paper that started it all. Essential reading for understanding Bitcoin's core design.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-orange-500/20 px-3 py-1 text-xs font-medium text-orange-300">
-                    PDF
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-orange-400">
-                    <span>Download</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {studyMaterials.map((material, index) => {
+                const isOpen = expandedStudyMaterial === material.id;
+                const accentClasses = [
+                  'border-orange-400/30 text-orange-300 bg-orange-500/10',
+                  'border-cyan-400/30 text-cyan-300 bg-cyan-500/10',
+                  'border-purple-400/30 text-purple-300 bg-purple-500/10',
+                  'border-emerald-400/30 text-emerald-300 bg-emerald-500/10',
+                  'border-amber-400/30 text-amber-300 bg-amber-500/10',
+                  'border-indigo-400/30 text-indigo-300 bg-indigo-500/10',
+                  'border-rose-400/30 text-rose-300 bg-rose-500/10',
+                  'border-blue-400/30 text-blue-300 bg-blue-500/10',
+                  'border-teal-400/30 text-teal-300 bg-teal-500/10',
+                  'border-green-400/30 text-green-300 bg-green-500/10',
+                  'border-yellow-400/30 text-yellow-300 bg-yellow-500/10',
+                  'border-sky-400/30 text-sky-300 bg-sky-500/10',
+                ];
+                const accent = accentClasses[index % accentClasses.length];
+                const isInternalLink = material.href.startsWith('/');
 
-              {/* Bitcoin White Paper (Tigrigna) */}
-              <AnimatedSection animation="slideUp" delay={40}>
-              <div className="group relative flex cursor-pointer flex-col rounded-xl border border-cyan-400/30 bg-black/60 p-6 transition hover:border-cyan-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]">
-                <Link
-                  href="/white_paper"
-                  aria-label="Open Tigrigna whitepaper page"
-                  className="absolute inset-0 z-10 rounded-xl"
-                />
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-cyan-500/20 p-3">
-                    <FileText className="h-6 w-6 text-cyan-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-cyan-300 transition group-hover:text-cyan-200">
-                      ቢትኮይን፡ ስርዓት ናይ መዘና-ናብ-መዘና ኤሌክትሮኒካዊ ገንዘብ
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">ትግርኛ ትርጉም (Pan-African Bitcoin Academy)</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  Tigrigna translation of the Bitcoin whitepaper for Eritrean learners and native Tigrigna readers.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-medium text-cyan-300">
-                    PDF (Tigrigna)
-                  </span>
-                  <a
-                    href="/doc_files/Bitcoin%20white%20paper%20Tigrigna.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(event) => event.stopPropagation()}
-                    className="relative z-20 inline-flex cursor-pointer items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300"
-                  >
-                    <span>Open PDF</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </div>
-              </div>
-              </AnimatedSection>
+                return (
+                  <AnimatedSection animation="slideUp" delay={index * 25} key={material.id}>
+                    <div className="overflow-hidden rounded-xl border border-zinc-800/80 bg-black/60">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedStudyMaterial((prev) => (prev === material.id ? null : material.id))}
+                        className="flex w-full items-start justify-between gap-3 px-3 py-3 text-left transition hover:bg-zinc-900/70"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
+                            <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${accent}`}>
+                              {material.label}
+                            </span>
+                          </div>
+                          <p className="line-clamp-2 text-sm font-semibold text-zinc-100">{material.title}</p>
+                          <p className="mt-1 text-xs text-zinc-400">{material.author}</p>
+                        </div>
+                        <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                      </button>
 
-              {/* The Little Book of Bitcoin */}
-              <AnimatedSection animation="slideUp" delay={80}>
-              <a
-                href="https://www.littlebitcoinbook.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-cyan-400/30 bg-black/60 p-6 transition hover:border-cyan-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-cyan-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-cyan-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-cyan-300 transition group-hover:text-cyan-200">
-                      The Little Bitcoin Book
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Bitcoin Collective (2019)</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  A simple, beginner-friendly introduction to Bitcoin that explains why it matters for sovereignty and self-custody.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-medium text-cyan-300">
-                    Free
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-cyan-400">
-                    <span>Read Online</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* Mastering Bitcoin */}
-              <AnimatedSection animation="slideUp" delay={160}>
-              <a
-                href="https://github.com/bitcoinbook/bitcoinbook"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-purple-400/30 bg-black/60 p-6 transition hover:border-purple-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-purple-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-purple-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-purple-300 transition group-hover:text-purple-200">
-                      Mastering Bitcoin
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Andreas M. Antonopoulos</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  Comprehensive technical guide to Bitcoin for developers, engineers, and technically-minded individuals.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-purple-500/20 px-3 py-1 text-xs font-medium text-purple-300">
-                    Free (GitHub)
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-purple-400">
-                    <span>Access</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* The Bitcoin Standard */}
-              <AnimatedSection animation="slideUp" delay={240}>
-              <a
-                href="https://saifedean.com/thebitcoinstandard/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-yellow-400/30 bg-black/60 p-6 transition hover:border-yellow-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(234,179,8,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-yellow-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-yellow-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-yellow-300 transition group-hover:text-yellow-200">
-                      The Bitcoin Standard
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Saifedean Ammous (2018)</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  Economic analysis of Bitcoin's origins, monetary properties, and its potential impact on the global economy.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-yellow-500/20 px-3 py-1 text-xs font-medium text-yellow-300">
-                    Book
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-yellow-400">
-                    <span>Learn More</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* Bitcoin Africa Guide to Freedom Money */}
-              <AnimatedSection animation="slideUp" delay={280}>
-              <a
-                href="https://bitcoiners.africa/wp-content/uploads/2026/03/BITCOIN_Africa-Guide-to-Freedom-Money_by-African-Bitcoiners-2ND-EDITION.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-emerald-400/30 bg-black/60 p-6 transition hover:border-emerald-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(52,211,153,0.2)]"
-              >
-                <div className="mb-4 flex items-start gap-3">
-                  <div className="rounded-lg bg-emerald-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-emerald-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-emerald-300 transition group-hover:text-emerald-200">
-                      Bitcoin Africa: Guide to Freedom Money
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">African Bitcoiners (2nd Edition)</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  A practical Africa-focused Bitcoin guide covering financial freedom, self-custody, and real-world use.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-300">
-                    Free PDF
-                  </span>
-                  <div className="flex items-center gap-2 text-emerald-300 transition group-hover:text-emerald-200">
-                    <Download className="h-4 w-4" />
-                    <span className="text-sm font-medium">Download PDF</span>
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* Programming Bitcoin */}
-              <AnimatedSection animation="slideUp" delay={320}>
-              <a
-                href="https://github.com/jimmysong/programmingbitcoin"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-green-400/30 bg-black/60 p-6 transition hover:border-green-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-green-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-green-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-green-300 transition group-hover:text-green-200">
-                      Programming Bitcoin
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Jimmy Song (2019)</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  Learn Bitcoin by programming it from scratch. Build Bitcoin libraries in Python step by step.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-green-500/20 px-3 py-1 text-xs font-medium text-green-300">
-                    Free (GitHub)
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-green-400">
-                    <span>Access</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* Layered Money */}
-              <AnimatedSection animation="slideUp" delay={400}>
-              <a
-                href="https://www.layeredmoney.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-blue-400/30 bg-black/60 p-6 transition hover:border-blue-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-blue-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-blue-300 transition group-hover:text-blue-200">
-                      Layered Money
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Nik Bhatia (2021)</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  Explains the evolution of money through different layers and why Bitcoin represents a new monetary layer.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-blue-500/20 px-3 py-1 text-xs font-medium text-blue-300">
-                    Book
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-blue-400">
-                    <span>Learn More</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* The Little Book of Bitcoin in Tigrigna */}
-              <AnimatedSection animation="slideUp" delay={480}>
-              <a
-                href="https://drive.google.com/file/d/1YcU6OIHZEsp4c6KOwAVDUGI2BfNtxx5T/view?usp=drive_link"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-teal-400/30 bg-black/60 p-6 transition hover:border-teal-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(20,184,166,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-teal-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-teal-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-teal-300 transition group-hover:text-teal-200">
-                      The Little Book of Bitcoin in Tigrigna
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">ትግርኛ ትርጉም</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  A simple, beginner-friendly introduction to Bitcoin translated into Tigrigna, explaining why it matters for sovereignty and self-custody.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-teal-500/20 px-3 py-1 text-xs font-medium text-teal-300">
-                    PDF (Tigrigna)
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-teal-400">
-                    <span>Download</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* Bitcoin Development Philosophy */}
-              <AnimatedSection animation="slideUp" delay={560}>
-              <a
-                href="http://bitcoindevphilosophy.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-rose-400/30 bg-black/60 p-6 transition hover:border-rose-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-rose-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-rose-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-rose-300 transition group-hover:text-rose-200">
-                      Bitcoin Development Philosophy
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Kalle Rosenbaum & Linnéa Rosenbaum</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  A guide for Bitcoin developers covering decentralization, trustlessness, privacy, scaling, and the philosophy behind Bitcoin's design trade-offs.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-medium text-rose-300">
-                    Free (Online)
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-rose-400">
-                    <span>Read Online</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
-
-              {/* Understanding Bitcoin Scams */}
-              <AnimatedSection animation="slideUp" delay={640}>
-              <Link
-                href="/scam"
-                className="group flex flex-col rounded-xl border border-amber-400/30 bg-black/60 p-6 transition hover:border-amber-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-amber-500/20 p-3">
-                    <AlertTriangle className="h-6 w-6 text-amber-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-amber-300 transition group-hover:text-amber-200">
-                      Understanding Bitcoin Scams
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Pan-Africa Bitcoin Academy</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  Learn to recognize and avoid investment scams, impersonation, phishing, and malware. Essential reading to protect yourself.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-medium text-amber-300">
-                    Guide
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-amber-400">
-                    <span>Read</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </Link>
-              </AnimatedSection>
-
-              {/* Exonumia Africa */}
-              <AnimatedSection animation="slideUp" delay={720}>
-              <a
-                href="https://exonumia.africa/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl border border-indigo-400/30 bg-black/60 p-6 transition hover:border-indigo-400/50 hover:bg-black/80 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="rounded-lg bg-indigo-500/20 p-3">
-                    <BookOpen className="h-6 w-6 text-indigo-400" />
-                  </div>
-                  <div className="flex-1">
-                    <AnimatedHeading as="h3" className="text-lg font-semibold text-indigo-300 transition group-hover:text-indigo-200">
-                      Exonumia Africa
-                    </AnimatedHeading>
-                    <p className="text-sm text-zinc-400">Localized African Bitcoin learning resources</p>
-                  </div>
-                </div>
-                <p className="mb-4 flex-1 text-sm text-zinc-300">
-                  Explore Bitcoin education resources in multiple African languages and countries.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-medium text-indigo-300">
-                    Free (Online)
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-indigo-400">
-                    <span>Visit</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                </div>
-              </a>
-              </AnimatedSection>
+                      {isOpen && (
+                        <div className="border-t border-zinc-800/80 px-3 py-3">
+                          <p className="mb-3 text-sm leading-relaxed text-zinc-300">{material.description}</p>
+                          <div className="flex flex-wrap gap-2">
+                            {material.pageHref ? (
+                              <Link
+                                href={material.pageHref}
+                                className="inline-flex items-center gap-1 rounded-md border border-cyan-400/35 bg-cyan-500/10 px-2.5 py-1.5 text-xs font-medium text-cyan-200 transition hover:bg-cyan-500/20"
+                              >
+                                {material.pageLabel || 'Read'}
+                              </Link>
+                            ) : null}
+                            {isInternalLink ? (
+                              <Link
+                                href={material.href}
+                                className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-xs font-medium text-zinc-200 transition hover:border-zinc-500"
+                              >
+                                {material.action}
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Link>
+                            ) : (
+                              <a
+                                href={material.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-xs font-medium text-zinc-200 transition hover:border-zinc-500"
+                              >
+                                {material.action}
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </AnimatedSection>
+                );
+              })}
             </div>
           </div>
 
@@ -1300,10 +1079,10 @@ export default function ChaptersPage() {
                         }
                         className="mb-4 w-full rounded-lg border border-cyan-400/20 bg-cyan-400/5 px-3 py-2 text-xs font-medium text-cyan-300 transition hover:bg-cyan-400/10"
                       >
-                        {expandedChapter === chapter.id ? "Hide" : "Show"} What's Inside ↓
+                        {expandedChapter === chapter.id ? "Hide" : "Show"} What&apos;s Inside ↓
                       </button>
 
-                      {/* What's Inside Content */}
+                      {/* What&apos;s Inside Content */}
                       {expandedChapter === chapter.id && (
                         <div className="mb-4 space-y-3 rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-4 text-xs">
                           <div>
@@ -1389,7 +1168,7 @@ export default function ChaptersPage() {
             <div className="mb-16 rounded-xl border border-purple-500/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
             <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-purple-200">Coming Soon</AnimatedHeading>
             <p className="mb-4 text-sm text-zinc-300">
-              We're constantly expanding our curriculum. Here's what's coming next:
+              We&apos;re constantly expanding our curriculum. Here&apos;s what&apos;s coming next:
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {comingSoon.map((item, idx) => (
