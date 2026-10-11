@@ -5,12 +5,100 @@ import remarkGfm from 'remark-gfm';
 
 interface MarkdownContentProps {
   content: string;
+  highlightTerms?: readonly string[];
 }
 
-export function MarkdownContent({ content }: MarkdownContentProps) {
+type MarkdownNode = {
+  type: string;
+  value?: string;
+  children?: MarkdownNode[];
+  data?: {
+    hProperties?: {
+      className?: string | string[];
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+};
+
+function highlightArticleTerms(terms: readonly string[]) {
+  const sortedTerms = [...new Set(terms)].sort((left, right) => right.length - left.length);
+
+  return () => (tree: MarkdownNode) => {
+    const highlighted = new Set<string>();
+
+    const textContent = (node: MarkdownNode): string =>
+      node.type === 'text' ? node.value ?? '' : (node.children ?? []).map(textContent).join('');
+
+    const visit = (nodes: MarkdownNode[]): MarkdownNode[] =>
+      nodes.flatMap((node) => {
+        if (node.type === 'heading' || node.type === 'inlineCode' || node.type === 'code') {
+          return [node];
+        }
+
+        if (node.type === 'strong') {
+          const content = textContent(node);
+          const term = sortedTerms.find((candidate) => !highlighted.has(candidate) && content.includes(candidate));
+
+          if (term) {
+            highlighted.add(term);
+            return [{
+              ...node,
+              data: {
+                ...node.data,
+                hProperties: {
+                  ...node.data?.hProperties,
+                  className: 'article-highlight',
+                },
+              },
+            }];
+          }
+        }
+
+        if (node.type === 'text' && typeof node.value === 'string') {
+          const parts: MarkdownNode[] = [];
+          let cursor = 0;
+
+          while (cursor < node.value.length) {
+            let matchIndex = -1;
+            let matchTerm = '';
+
+            for (const term of sortedTerms) {
+              if (highlighted.has(term)) continue;
+              const index = node.value.indexOf(term, cursor);
+              if (index >= 0 && (matchIndex < 0 || index < matchIndex)) {
+                matchIndex = index;
+                matchTerm = term;
+              }
+            }
+
+            if (matchIndex < 0) break;
+            if (matchIndex > cursor) parts.push({ type: 'text', value: node.value.slice(cursor, matchIndex) });
+            parts.push({
+              type: 'strong',
+              data: { hProperties: { className: 'article-highlight' } },
+              children: [{ type: 'text', value: matchTerm }],
+            });
+            highlighted.add(matchTerm);
+            cursor = matchIndex + matchTerm.length;
+          }
+
+          if (parts.length === 0) return [node];
+          if (cursor < node.value.length) parts.push({ type: 'text', value: node.value.slice(cursor) });
+          return parts;
+        }
+
+        return node.children ? [{ ...node, children: visit(node.children) }] : [node];
+      });
+
+    tree.children = visit(tree.children ?? []);
+  };
+}
+
+export function MarkdownContent({ content, highlightTerms = [] }: MarkdownContentProps) {
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={highlightTerms.length ? [remarkGfm, highlightArticleTerms(highlightTerms)] : [remarkGfm]}
       components={{
         h1: ({ node, ...props }) => (
           <h1 className="mb-4 text-3xl font-bold text-zinc-50" {...props} />
@@ -33,8 +121,11 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         li: ({ node, ...props }) => (
           <li className="text-base leading-relaxed" {...props} />
         ),
-        strong: ({ node, ...props }) => (
-          <strong className="font-semibold text-zinc-100" {...props} />
+        strong: ({ node, className, ...props }) => (
+          <strong
+            className={className === 'article-highlight' ? 'font-medium text-[#F97602]' : 'font-semibold text-zinc-100'}
+            {...props}
+          />
         ),
         em: ({ node, ...props }) => (
           <em className="italic text-zinc-200" {...props} />
