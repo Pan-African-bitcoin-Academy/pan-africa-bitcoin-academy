@@ -918,20 +918,20 @@ export default function ChaptersPage() {
                               {material.label}
                             </span>
                           </div>
-                          <p className="line-clamp-2 text-sm font-semibold text-zinc-100">{material.title}</p>
-                          <p className="mt-1 text-xs text-zinc-400">{material.author}</p>
+                          <p className="line-clamp-2 text-lg font-semibold text-zinc-100 sm:text-[1.1rem]">{material.title}</p>
+                          <p className="mt-1 text-[11px] text-zinc-400 sm:text-[12px]">{material.author}</p>
                         </div>
                         <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                       </button>
 
                       {isOpen && (
                         <div className="border-t border-zinc-800/80 px-3 py-3">
-                          <p className="mb-3 text-sm leading-relaxed text-zinc-300">{material.description}</p>
+                          <p className="mb-3 text-sm leading-relaxed text-zinc-300 sm:text-[0.95rem]">{material.description}</p>
                           <div className="flex flex-wrap gap-2">
                             {material.pageHref ? (
                               <Link
                                 href={material.pageHref}
-                                className="inline-flex items-center gap-1 rounded-md border border-cyan-400/35 bg-cyan-500/10 px-2.5 py-1.5 text-xs font-medium text-cyan-200 transition hover:bg-cyan-500/20"
+                                className="inline-flex items-center gap-1 rounded-md border border-cyan-400/35 bg-cyan-500/10 px-2.5 py-1.5 text-[12px] font-medium text-cyan-200 transition hover:bg-cyan-500/20 sm:text-sm"
                               >
                                 {material.pageLabel || 'Read'}
                               </Link>
@@ -939,7 +939,7 @@ export default function ChaptersPage() {
                             {isInternalLink ? (
                               <Link
                                 href={material.href}
-                                className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-xs font-medium text-zinc-200 transition hover:border-zinc-500"
+                                className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-[12px] font-medium text-zinc-200 transition hover:border-zinc-500 sm:text-sm"
                               >
                                 {material.action}
                                 <ExternalLink className="h-3.5 w-3.5" />
@@ -949,7 +949,7 @@ export default function ChaptersPage() {
                                 href={material.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-xs font-medium text-zinc-200 transition hover:border-zinc-500"
+                                className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-[12px] font-medium text-zinc-200 transition hover:border-zinc-500 sm:text-sm"
                               >
                                 {material.action}
                                 <ExternalLink className="h-3.5 w-3.5" />
