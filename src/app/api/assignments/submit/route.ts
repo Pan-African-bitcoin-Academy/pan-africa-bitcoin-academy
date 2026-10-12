@@ -149,7 +149,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Resolve assignment row (built-ins always go through ensure + DB re-fetch)
-    let assignment: Record<string, unknown> | null = null;
+    interface AssignmentRow {
+      id: string;
+      title: string;
+      correct_answer: string;
+      points: number;
+      reward_sats: number;
+      chapter_number: number | null;
+      chapter_slug: string | null;
+      search_address?: string | null;
+      [key: string]: unknown;
+    }
+    let assignment: AssignmentRow | null = null;
 
     if (isBuiltInAssignmentId(assignmentId)) {
       const provisioned = await ensureSingleBuiltInAssignment(supabaseAdmin, assignmentId);
