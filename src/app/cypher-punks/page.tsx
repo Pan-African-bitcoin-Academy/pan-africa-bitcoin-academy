@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Noto_Sans_Ethiopic } from 'next/font/google';
 import { MarkdownContent } from '@/components/MarkdownContent';
+import { DownloadPdfButton } from '@/components/DownloadPdfButton';
 import { cypherpunkArticleSections } from '@/content/cypherpunksArticle';
 
 const notoEthiopic = Noto_Sans_Ethiopic({
@@ -191,31 +192,10 @@ export default function CypherpunksPage() {
               </div>
 
               <div className="mt-4">
-                <a
-                  href={CYPHER_PUNKS_PDF_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className="inline-flex items-center gap-2 rounded-lg border border-orange-500/40 bg-orange-500/10 px-4 py-2.5 text-sm font-semibold text-orange-300 transition hover:bg-orange-500/20 hover:text-orange-200"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Download PDF
-                </a>
+                <DownloadPdfButton
+                  pdfUrl={CYPHER_PUNKS_PDF_URL}
+                  fileName="Cypher Punks - Pan-African Bitcoin Academy.pdf"
+                />
               </div>
             </div>
 
