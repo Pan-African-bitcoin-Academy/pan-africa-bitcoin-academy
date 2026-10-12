@@ -917,7 +917,94 @@ export default async function Home() {
           </AnimatedSection>
           )}
 
-          {/* 10. Partners & Funders Section */}
+          {/* 10. Articles Section */}
+          <AnimatedSection animation="slideUp">
+            <section className="mb-32 space-y-8">
+              <div className="text-center">
+                <AnimatedHeading as="h2" className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">Articles &amp; Deep Dives</AnimatedHeading>
+                <p className="mx-auto mt-4 max-w-xl text-base text-zinc-400 sm:text-lg">
+                  In-depth explorations of Bitcoin history, cypherpunk philosophy, and the ideas shaping digital freedom.
+                </p>
+              </div>
+              <AnimatedList animation="slideUp" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  {
+                    title: "ሳይፈርፓንክስ፡ ብሕታዊነት፡ ክሪፕቶግራፊን ቃልሲ ንዲጂታላዊ ናጽነትን",
+                    subtitle: "Cypherpunks: Privacy, Cryptography & the Fight for Digital Freedom",
+                    description: "A comprehensive Tigrinya article exploring the cypherpunk movement — from its origins in cryptography and mailing lists, through the Crypto Wars, to its enduring influence on Bitcoin and digital privacy.",
+                    image: "/cypher-punk/The%20cypherpunk%20movement.jpg",
+                    href: "/cypher-punks",
+                    lang: "ትግርኛ",
+                    readTime: "10-12 min read",
+                    tags: ["Cypherpunks", "Privacy", "Cryptography"],
+                  },
+                ].map((article, index) => (
+                  <Link
+                    key={index}
+                    href={article.href}
+                    className="group flex flex-col overflow-hidden rounded-2xl border border-orange-500/20 bg-black/80 shadow-[0_0_20px_rgba(249,115,22,0.08)] transition-all duration-300 hover:border-orange-400/50 hover:shadow-[0_0_35px_rgba(249,115,22,0.15)] hover:-translate-y-1"
+                  >
+                    {/* Article Image */}
+                    <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-zinc-900 via-orange-900/20 to-zinc-900">
+                      <img
+                        src={article.image}
+                        alt={article.subtitle}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      {/* Language badge */}
+                      <div className="absolute left-3 top-3 flex items-center gap-2">
+                        <span className="rounded-full border border-cyan-500/40 bg-cyan-500/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-cyan-300 backdrop-blur-sm">
+                          {article.lang}
+                        </span>
+                      </div>
+                      {/* Read time badge */}
+                      <div className="absolute right-3 top-3">
+                        <span className="rounded-full border border-zinc-600/50 bg-black/60 px-2.5 py-1 text-[10px] font-medium text-zinc-300 backdrop-blur-sm">
+                          {article.readTime}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Article Content */}
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="mb-1 text-lg font-bold leading-snug text-orange-200 transition-colors group-hover:text-orange-100">
+                        {article.title}
+                      </h3>
+                      <p className="mb-3 text-sm font-medium text-zinc-400">
+                        {article.subtitle}
+                      </p>
+                      <p className="mb-4 text-sm leading-relaxed text-zinc-400 line-clamp-3">
+                        {article.description}
+                      </p>
+                      {/* Tags */}
+                      <div className="mt-auto flex flex-wrap gap-2">
+                        {article.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-orange-500/25 bg-orange-500/10 px-2.5 py-1 text-[10px] font-medium text-orange-300/80"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      {/* Read more */}
+                      <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-cyan-400 transition-colors group-hover:text-cyan-300">
+                        Read article
+                        <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </AnimatedList>
+            </section>
+          </AnimatedSection>
+
+          {/* 11. Partners & Funders Section */}
           <AnimatedSection animation="slideUp">
             <section className="mb-32 space-y-8">
               <div className="text-center">
