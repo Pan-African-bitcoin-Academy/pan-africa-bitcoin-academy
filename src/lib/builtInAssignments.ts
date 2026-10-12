@@ -223,6 +223,31 @@ export async function ensureBuiltInAssignments(supabaseAdmin: SupabaseClient): P
 /**
  * Find or auto-provision a specific built-in assignment by ID or Chapter Slug.
  */
+export function isBuiltInAssignmentId(assignmentId: string): boolean {
+  return BUILT_IN_ASSIGNMENTS.some((def) => def.id === assignmentId);
+}
+
+async function fetchActiveBuiltInRow(
+  supabaseAdmin: SupabaseClient,
+  match: BuiltInAssignmentDefinition
+): Promise<Record<string, unknown> | null> {
+  const { data: rows, error } = await supabaseAdmin
+    .from('assignments')
+    .select('*')
+    .or(`id.eq.${match.id},chapter_slug.eq.${match.chapter_slug}`)
+    .eq('status', 'active');
+
+  if (error) {
+    console.error('[builtInAssignments] Error fetching assignment rows:', error);
+    return null;
+  }
+
+  if (!rows?.length) return null;
+
+  const byId = rows.find((row) => row.id === match.id);
+  return (byId ?? rows[0]) as Record<string, unknown>;
+}
+
 export async function ensureSingleBuiltInAssignment(
   supabaseAdmin: SupabaseClient,
   idOrSlug: string
@@ -234,13 +259,7 @@ export async function ensureSingleBuiltInAssignment(
   if (!match) return null;
 
   try {
-    const { data: existing } = await supabaseAdmin
-      .from('assignments')
-      .select('*')
-      .or(`id.eq.${match.id},chapter_slug.eq.${match.chapter_slug}`)
-      .eq('status', 'active')
-      .maybeSingle();
-
+    const existing = await fetchActiveBuiltInRow(supabaseAdmin, match);
     if (existing) {
       return existing;
     }
@@ -253,12 +272,12 @@ export async function ensureSingleBuiltInAssignment(
 
     if (insertError) {
       console.error(`[builtInAssignments] Failed to insert built-in assignment ${match.id}:`, insertError);
-      return match as unknown as Record<string, unknown>;
+      return fetchActiveBuiltInRow(supabaseAdmin, match);
     }
 
-    return inserted;
+    return inserted as Record<string, unknown>;
   } catch (err) {
     console.error('[builtInAssignments] Error provisioning single assignment:', err);
-    return match as unknown as Record<string, unknown>;
+    return fetchActiveBuiltInRow(supabaseAdmin, match);
   }
 }

@@ -160,12 +160,17 @@ export async function GET(req: NextRequest) {
     }
 
     const dedupedAssignments: AssignmentRow[] = [];
+    const duplicateGroups = new Map<string, AssignmentRow[]>();
     for (const [, candidates] of byKey) {
       dedupedAssignments.push(pickBestAssignmentDuplicate(candidates, profile, submissionsMap));
+      duplicateGroups.set(dedupedAssignments[dedupedAssignments.length - 1]!.id, candidates);
     }
 
     const assignmentsWithStatus = dedupedAssignments.map((assignment) => {
-      const submission = submissionsMap.get(assignment.id);
+      const group = duplicateGroups.get(assignment.id) ?? [assignment];
+      const submission =
+        group.map((row) => submissionsMap.get(row.id)).find(Boolean) ??
+        submissionsMap.get(assignment.id);
 
       const isOverdue = assignment.due_date
         ? new Date(String(assignment.due_date)) < new Date()

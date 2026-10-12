@@ -49,15 +49,18 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
       const email = isAdminAuth && adminEmail ? adminEmail : studentEmail;
       if (!email) return;
 
-      const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`);
+      const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`, {
+        credentials: 'include',
+      });
       if (!response.ok) return;
 
       const data = await response.json();
-      const thisAssignment = (data.assignments as AssignmentItem[])?.find(
+      const related = (data.assignments as AssignmentItem[])?.filter(
         (a) => a.id === assignmentId || a.chapterSlug === 'proof-of-work-and-block-rewards'
       );
+      const hasSavedSubmission = related?.some((a) => !!a.submission) ?? false;
 
-      setSubmitted(!!thisAssignment?.submission);
+      setSubmitted(hasSavedSubmission);
     } catch (err) {
       console.error('Error checking submission status:', err);
     } finally {
@@ -151,6 +154,7 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
       const response = await fetch('/api/assignments/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           email,
           assignmentId,
@@ -160,8 +164,19 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
 
       const data = await response.json();
 
+      if (response.status === 409) {
+        setSubmitted(true);
+        setUniversalMessage(null);
+        setFeedback(null);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to submit assignment');
+      }
+
+      if (!data.success || !data.submission?.id) {
+        throw new Error('Submission was not saved. Please try again.');
       }
 
       setSubmitted(true);

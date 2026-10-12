@@ -12,7 +12,7 @@ import {
   assignmentRequiresInstructorReview,
   assignmentIsExplorerScavengerHunt,
 } from '@/lib/assignmentReview';
-import { ensureSingleBuiltInAssignment } from '@/lib/builtInAssignments';
+import { ensureSingleBuiltInAssignment, isBuiltInAssignmentId } from '@/lib/builtInAssignments';
 
 function submissionToClient(sub: Record<string, unknown>) {
   return {
@@ -148,19 +148,40 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Get assignment
-    let { data: assignment } = await supabaseAdmin
-      .from('assignments')
-      .select('*')
-      .eq('id', assignmentId)
-      .eq('status', 'active')
-      .maybeSingle();
+    // Resolve assignment row (built-ins always go through ensure + DB re-fetch)
+    let assignment: Record<string, unknown> | null = null;
 
-    if (!assignment) {
-      // Auto-provision if it's a built-in chapter assignment
+    if (isBuiltInAssignmentId(assignmentId)) {
       const provisioned = await ensureSingleBuiltInAssignment(supabaseAdmin, assignmentId);
-      if (provisioned) {
-        assignment = provisioned as typeof assignment;
+      if (provisioned?.id) {
+        const { data: row } = await supabaseAdmin
+          .from('assignments')
+          .select('*')
+          .eq('id', String(provisioned.id))
+          .eq('status', 'active')
+          .maybeSingle();
+        assignment = row;
+      }
+    } else {
+      const { data: row } = await supabaseAdmin
+        .from('assignments')
+        .select('*')
+        .eq('id', assignmentId)
+        .eq('status', 'active')
+        .maybeSingle();
+      assignment = row;
+
+      if (!assignment) {
+        const provisioned = await ensureSingleBuiltInAssignment(supabaseAdmin, assignmentId);
+        if (provisioned?.id) {
+          const { data: refetched } = await supabaseAdmin
+            .from('assignments')
+            .select('*')
+            .eq('id', String(provisioned.id))
+            .eq('status', 'active')
+            .maybeSingle();
+          assignment = refetched;
+        }
       }
     }
 
