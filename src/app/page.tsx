@@ -1,39 +1,49 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Twitter, Instagram, Music2 } from "lucide-react";
 import { StructuredData } from "@/components/StructuredData";
 import { AnimatedSection } from "@/components/AnimatedSection";
+import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { AnimatedList } from "@/components/AnimatedList";
+import { HeroHeadline } from "@/components/HeroHeadline";
+import { HeroCtaButtons } from "@/components/HeroCtaButtons";
+import { HomeSectionsClient } from "@/components/HomeSectionsClient";
+import { supabaseAdmin } from "@/lib/supabase";
+import { chaptersContent } from "@/content/chaptersContent";
+import { getChapterListByTitle } from "@/content/chaptersListContent";
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Learn Bitcoin - First Eritrea Based Bitcoin Academy",
-  description: "PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners community. Clear lessons, real security, and developer pathways.",
+  description: "PanAfrican Bitcoin Academy (ፓናፍሪካን ቢትኮይን ኣካዳሚ) - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners and the ኤርትራ ቢትኮይን community. Clear lessons, real security, and developer pathways.",
   keywords: [
     "Bitcoin education Africa",
     "Learn Bitcoin",
     "Bitcoin academy",
     "Bitcoin tutorials for beginners",
     "PanAfrican Bitcoin Academy",
+    "ፓናፍሪካን ቢትኮይን ኣካዳሚ",
+    "ኤርትራ ቢትኮይን",
     "Eritrea Bitcoin academy",
     "Eritrea Bitcoin",
     "Eritrean Bitcoiners",
     "first Eritrean Bitcoin education",
     "Asmara Bitcoin education",
     "Bitcoin education Asmara",
-    "Eritrea investment",
     "Bitcoin Nakfa",
     "convert Bitcoin to Nakfa",
     "Habesha Bitcoin",
-    "Uganda Bitcoin education",
+    "BTC to Nakfa",
+    "Bitcoin to nakfa",
     "Bitcoin in Eritrea",
-    "Eritrean cryptocurrency",
   ],
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: "Learn Bitcoin - First Eritrea Based Bitcoin Academy",
-    description: "PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education, convert Bitcoin to Nakfa, join Eritrean Bitcoiners. Clear lessons, real security, and developer pathways.",
+    description: "PanAfrican Bitcoin Academy (ፓናፍሪካን ቢትኮይን ኣካዳሚ) - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education, convert Bitcoin to Nakfa, and join Eritrean Bitcoiners and the ኤርትራ ቢትኮይን community. Clear lessons, real security, and developer pathways.",
   },
 };
 
@@ -56,65 +66,426 @@ const curriculumCards = [
 ];
 
 const howItWorksSteps = [
-  { step: "1", title: "Join a cohort", description: "Apply and get accepted into a structured learning program" },
-  { step: "2", title: "Attend live sessions", description: "Participate in interactive classes with mentors" },
-  { step: "3", title: "Complete practical tasks", description: "Hands-on Bitcoin exercises and assignments" },
-  { step: "4", title: "Earn sats + certificate", description: "Get rewarded with Bitcoin and earn your certificate" },
+  { step: "1", title: "Join a cohort", description: "Apply and get accepted into a structured, mentor-led learning program." },
+  { step: "2", title: "Attend live sessions", description: "Join interactive classes and learn directly from Bitcoin educators." },
+  { step: "3", title: "Complete practical tasks", description: "Build real skills with hands-on exercises and assignments." },
+  { step: "4", title: "Earn sats + certificate", description: "Get paid in Bitcoin for your progress and earn a verified certificate." },
 ];
 
-const mentors = [
+// Mentor type definition
+type Mentor = {
+  name: string;
+  role: string;
+  description: string;
+  image: string | null;
+  github: string | null;
+  twitter: string | null;
+  type: string | null;
+};
+
+// Fallback mentors (for initial display or if database fetch fails)
+const fallbackMentors: Mentor[] = [
   {
-    name: "Aisha",
-    role: "Lightning Mentor",
-    description: "Supports students during live sessions and helps review assignments.",
+    name: "Yohannes Amanuel",
+    role: "Bitcoin Educator & Development Mentor",
+    description: "Educates students on Bitcoin fundamentals and mentors Bitcoin development.",
+    image: "/images/mentors/yohannes-amanuel.jpg",
+    github: "https://github.com/Joie199",
+    twitter: "https://twitter.com/joieama",
+    type: null,
   },
   {
-    name: "Daniel",
-    role: "Community Volunteer",
-    description: "Helps onboard new students and provides guidance in the chat.",
+    name: "Semir Omer",
+    role: "Bitcoin Core Mentor & Developer",
+    description: "Mentors students in Bitcoin Core development and contributes to the Bitcoin protocol.",
+    image: "/images/mentors/semir-omer.jpg",
+    github: "https://github.com/samiromer2",
+    twitter: "https://twitter.com/samiromer",
+    type: null,
   },
   {
-    name: "Sarah",
-    role: "Bitcoin Educator",
-    description: "Teaches core concepts and guides students through practical exercises.",
+    name: "Ojok Emmanuel Nsubuga",
+    role: "Software Developer",
+    description: "Software developer contributing to Bitcoin wallet development and open-source projects.",
+    image: "/images/mentors/ojokne.jpg",
+    github: "https://github.com/ojokne",
+    twitter: "https://x.com/Ojokne",
+    type: null,
   },
 ];
 
-export default function Home() {
+async function getMentors(): Promise<Mentor[]> {
+  try {
+    const { data: mentors, error } = await supabaseAdmin
+      .from('mentors')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      // Only log meaningful errors (not empty objects)
+      const errorInfo = {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      };
+      // Only log if there's actual error information
+      if (errorInfo.message || errorInfo.code) {
+        console.error('Error fetching mentors:', errorInfo);
+      }
+      return fallbackMentors;
+    }
+
+    // Transform database mentors to match the expected format
+    const transformedMentors: Mentor[] = (mentors || []).map((mentor) => ({
+      name: mentor.name,
+      role: mentor.role,
+      description: mentor.description || '',
+      image: mentor.image_url || null,
+      github: mentor.github || null,
+      twitter: mentor.twitter || null,
+      type: mentor.type || null,
+    }));
+
+    // Merge with fallback mentors (for Yohannes and Semir who might not be in DB yet)
+    // Only add fallback if they're not already in the list
+    const mentorNames = new Set(transformedMentors.map(m => m.name.toLowerCase()));
+    const additionalMentors = fallbackMentors.filter(m => !mentorNames.has(m.name.toLowerCase()));
+    
+    return [...transformedMentors, ...additionalMentors];
+  } catch (error) {
+    console.error('Error fetching mentors:', error instanceof Error ? error.message : String(error));
+    return fallbackMentors;
+  }
+}
+
+interface ImpactStats {
+  studentsTrained: number;
+  satsRewarded: number;
+  countriesRepresented: number;
+}
+
+async function getImpactStats(): Promise<ImpactStats> {
+  try {
+    // Fetch total students (all enrolled students, not just graduated)
+    const { count: totalStudents, error: studentsError } = await supabaseAdmin
+      .from('students')
+      .select('*', { count: 'exact', head: true });
+
+    if (studentsError) {
+      // Only log meaningful errors (not empty objects)
+      const errorInfo = {
+        message: studentsError.message,
+        details: studentsError.details,
+        hint: studentsError.hint,
+        code: studentsError.code,
+      };
+      // Only log if there's actual error information
+      if (errorInfo.message || errorInfo.code) {
+        console.error('Error fetching students:', errorInfo);
+      }
+    }
+
+    // Fetch distinct countries from students
+    const { data: studentsData, error: countriesError } = await supabaseAdmin
+      .from('students')
+      .select('country');
+
+    if (countriesError) {
+      console.error('Error fetching student countries:', {
+        message: countriesError.message,
+        details: countriesError.details,
+        hint: countriesError.hint,
+        code: countriesError.code,
+      });
+    }
+
+    let countriesReached = 0;
+    if (!countriesError && studentsData) {
+      const distinctCountries = new Set(
+        studentsData
+          .map((s) => s.country)
+          .filter((c) => c && c.trim() !== '')
+      );
+      countriesReached = distinctCountries.size;
+    }
+
+    // Fetch sats rewards
+    const { data: rewards, error: satsError } = await supabaseAdmin
+      .from('sats_rewards')
+      .select('amount_paid, amount_pending');
+
+    if (satsError) {
+      console.error('Error fetching sats rewards:', {
+        message: satsError.message,
+        details: satsError.details,
+        hint: satsError.hint,
+        code: satsError.code,
+      });
+    }
+
+    let satsRewarded = 0;
+    if (!satsError && rewards) {
+      rewards.forEach((reward: any) => {
+        const paid = reward.amount_paid || 0;
+        const pending = reward.amount_pending || 0;
+        satsRewarded += paid + pending; // Total sats awarded
+      });
+    }
+
+    return {
+      studentsTrained: totalStudents || 103,
+      satsRewarded: satsRewarded || 56375,
+      countriesRepresented: countriesReached || 20,
+    };
+  } catch (error) {
+    console.error('Error fetching impact stats:', error instanceof Error ? error.message : String(error));
+    // Return fallback values
+    return {
+      studentsTrained: 103,
+      satsRewarded: 56375,
+      countriesRepresented: 20,
+    };
+  }
+}
+
+interface UpcomingEvent {
+  id: string;
+  title: string;
+  type: string;
+  date: Date;
+  dateString: string;
+  time: string;
+  description: string;
+  link: string | null;
+  image_url: string | null;
+  image_alt_text: string | null;
+  is_registration_enabled?: boolean;
+  cohort_id?: string | null;
+  /** When this event is a cohort session with a topic linked to a chapter (saved in DB as topic) */
+  chapter_slug?: string | null;
+  chapter_title?: string | null;
+  /** Short line about what the topic is about (from chapter hook) */
+  topic_detail?: string | null;
+  /** What you'll learn (from chapter, first few points) */
+  topic_learn?: string[] | null;
+  /** Chapter list layout: theory / practice / live session / quiz (from chapters list) */
+  topic_theory?: string[] | null;
+  topic_practice?: string[] | null;
+  topic_live_session?: string | null;
+  topic_quiz?: string | null;
+}
+
+async function getUpcomingEvents(): Promise<UpcomingEvent[]> {
+  try {
+    const now = new Date();
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+    const todayISO = today.toISOString();
+    // Use a 12-hour buffer so events that are "today" in timezones ahead of UTC still get fetched
+    const cutoff = new Date(today.getTime() - 12 * 60 * 60 * 1000);
+    const cutoffISO = cutoff.toISOString();
+
+    // Fetch all events (for everyone - cohort_id is null) and upcoming cohort sessions
+    // Important: Only events with cohort_id = null ("For Everyone" in admin) appear here.
+    const [eventsResult, sessionsResult] = await Promise.all([
+      supabaseAdmin
+        .from('events')
+        .select('*')
+        .is('cohort_id', null)
+        .gte('start_time', cutoffISO)
+        .order('start_time', { ascending: true })
+        .limit(100),
+      // Fetch upcoming cohort sessions
+      supabaseAdmin
+        .from('cohort_sessions')
+        .select('*, cohorts(name)')
+        .gte('session_date', today.toISOString().split('T')[0])
+        .order('session_date', { ascending: true })
+        .limit(10),
+    ]);
+
+    const upcomingEvents: UpcomingEvent[] = [];
+
+    // Transform events (only include those that haven't started yet)
+    if (eventsResult.data) {
+      eventsResult.data.forEach((event: any) => {
+        const startTime = event.start_time ? new Date(event.start_time) : new Date();
+        if (startTime < now) return; // skip past events
+        upcomingEvents.push({
+          id: event.id,
+          title: event.name || 'Untitled Event',
+          type: event.type || 'community',
+          date: startTime,
+          dateString: startTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          time: startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+          description: event.description || '',
+          link: event.link || null,
+          image_url: event.image_url || null,
+          image_alt_text: event.image_alt_text || null,
+          is_registration_enabled: event.is_registration_enabled || false,
+          cohort_id: event.cohort_id || null,
+        });
+      });
+    }
+
+    // Transform sessions (topic is stored in DB; match to chapter for link)
+    const chapterByTitle = new Map(chaptersContent.map((c) => [c.title, c]));
+    if (sessionsResult.data) {
+      sessionsResult.data.forEach((session: any) => {
+        const sessionDate = new Date(session.session_date);
+        const cohortName = session.cohorts?.name || 'Cohort';
+        const topic = session.topic || '';
+        const chapter = topic ? chapterByTitle.get(topic) ?? null : null;
+        const chapterList = topic ? getChapterListByTitle(topic) : null;
+        upcomingEvents.push({
+          id: `session-${session.id}`,
+          title: `${cohortName} - Session ${session.session_number}${topic ? `: ${topic}` : ''}`,
+          type: 'live-class',
+          date: sessionDate,
+          dateString: sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          time: session.duration_minutes ? `${session.duration_minutes} min` : '60 min',
+          description: topic || `Cohort session ${session.session_number}`,
+          link: session.link || null,
+          image_url: null,
+          image_alt_text: null,
+          chapter_slug: chapter?.slug ?? null,
+          chapter_title: chapter?.title ?? null,
+          topic_detail: chapter?.hook ?? null,
+          topic_learn: chapter?.learn?.slice(0, 5) ?? null,
+          topic_theory: chapterList?.theory ?? null,
+          topic_practice: chapterList?.practice ?? null,
+          topic_live_session: chapterList?.LiveSession ?? null,
+          topic_quiz: chapterList?.quiz ?? null,
+        });
+      });
+    }
+
+    // Sort by date and return top 12 (to show more events from admin)
+    const sortedEvents = upcomingEvents
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .slice(0, 12);
+
+    // Log for debugging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Homepage] Upcoming Events:', {
+        totalFetched: upcomingEvents.length,
+        totalDisplayed: sortedEvents.length,
+        eventsFromDB: eventsResult.data?.length || 0,
+        sessionsFromDB: sessionsResult.data?.length || 0,
+        todayISO: today.toISOString(),
+      });
+    }
+
+    return sortedEvents;
+  } catch (error) {
+    console.error('Error fetching upcoming events:', error);
+    return [];
+  }
+}
+
+interface Testimonial {
+  id: string;
+  name: string;
+  city: string;
+  quote: string;
+  rating: number;
+  photo: string | null;
+}
+
+async function getTestimonials(): Promise<Testimonial[]> {
+  try {
+    const { data: testimonials, error: testimonialsError } = await supabaseAdmin
+      .from('student_testimonials')
+      .select('id, testimonial, rating, display_order, is_featured, created_at, student_id')
+      .eq('is_approved', true)
+      .order('is_featured', { ascending: false })
+      .order('display_order', { ascending: true })
+      .order('created_at', { ascending: false })
+      .limit(6);
+
+    if (testimonialsError || !testimonials || testimonials.length === 0) {
+      return [];
+    }
+
+    const studentIds = testimonials.map((t: any) => t.student_id);
+    const { data: profiles } = await supabaseAdmin
+      .from('profiles')
+      .select('id, name, city, country, photo_url')
+      .in('id', studentIds);
+
+    const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
+
+    return testimonials.map((t: any) => {
+      const profile: any = profileMap.get(t.student_id) || {};
+      let location = '';
+      if (profile.city && profile.country) location = `${profile.city}, ${profile.country}`;
+      else if (profile.country) location = profile.country;
+      else if (profile.city) location = profile.city;
+
+      return {
+        id: t.id,
+        name: profile.name || 'Student',
+        city: location,
+        quote: t.testimonial,
+        rating: t.rating || 5,
+        photo: profile.photo_url || null,
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching testimonials:', error instanceof Error ? error.message : String(error));
+    return [];
+  }
+}
+
+const homeStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'EducationalOrganization',
+  name: 'Pan-African Bitcoin Academy',
+  description: 'Learn Bitcoin the right way with clear, technical guidance. Comprehensive Bitcoin education, developer resources, and community support across Africa.',
+  url: 'https://panafricanbitcoin.com',
+  logo: 'https://panafricanbitcoin.com/images/logo_3.png',
+  sameAs: [
+    'https://github.com/Joie199/pan-africa-bitcoin-academy',
+    'https://chat.whatsapp.com/KpjlC90BGIj1EChMHsW6Ji',
+    'https://jumble.social/users/npub1q659nzy6j3mn8nr8ljznzumplesd40276tefj6gjz72npmqqg5cqmh70vv',
+    'https://discord.gg/4G4TUAP7',
+    'https://www.facebook.com/profile.php?id=61586743276906',
+    'https://x.com/panafricanbtc',
+    'https://www.instagram.com/panafricanbitcoin/',
+    'https://www.tiktok.com/@panafricanbitcoin',
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'UG',
+  },
+  offers: {
+    '@type': 'Offer',
+    category: 'Education',
+    description: 'Bitcoin education courses and developer training',
+  },
+};
+
+export default async function Home() {
+  const mentors = await getMentors();
+  const impactStats = await getImpactStats();
+  const upcomingEvents = await getUpcomingEvents();
+  const testimonials = await getTestimonials();
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
-      {/* Full-page Hero Section */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center px-4 text-center">
-        {/* Background effects */}
-        <div className="absolute inset-0 bitcoin-network-lines" />
-        <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -right-40 top-32 h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
+      {/* Full-page Hero Section - Edge-to-edge on mobile, fade in on load */}
+      <AnimatedSection animation="fadeIn" duration={700} threshold={0.05}>
+        <section className="relative flex min-h-screen flex-col items-center justify-center w-full">
+          {/* Background effects */}
+          <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute left-0 top-32 h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
         
-        {/* Hero Content */}
-        <div className="relative z-10 mx-auto max-w-5xl space-y-8">
-          <h1 className="text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl lg:text-7xl">
-            Scaling Bitcoin adoption
-          </h1>
-          <p className="text-2xl font-semibold text-orange-400 sm:text-3xl lg:text-4xl">
-            Turning the world orange
-          </p>
-          <p className="mx-auto max-w-2xl text-base text-zinc-400 sm:text-lg">
-            Join our hands-on Bitcoin academy designed for Africa. Learn by doing, earn sats, and become part of a growing community of builders.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/apply"
-              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 via-orange-400 to-purple-500 px-8 py-4 text-base font-semibold text-black shadow-[0_0_40px_rgba(249,115,22,0.8)] transition hover:brightness-110"
-            >
-              👉 Join Cohort 1
-            </Link>
-            <Link
-              href="/chapters"
-              className="inline-flex items-center justify-center rounded-full border-2 border-orange-400/50 bg-orange-400/10 px-8 py-4 text-base font-semibold text-orange-300 backdrop-blur-sm transition hover:bg-orange-400/20"
-            >
-              👉 Explore Learning Paths
-            </Link>
-          </div>
+        {/* Hero Content - Full width on mobile, max-width only on larger screens */}
+        <div className="relative z-10 w-full px-4 space-y-6 sm:space-y-8 text-center sm:max-w-4xl ml-auto lg:px-6">
+          <HeroHeadline />
+          {/* Mobile-first: Full width buttons on mobile, side-by-side on larger screens */}
+          <HeroCtaButtons />
         </div>
 
         {/* World Map Visual - Pixelated style */}
@@ -166,454 +537,18 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
-      {/* Content Sections - Full Width */}
-      <div className="relative z-10 w-full bg-black/95">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          {/* 2. How It Started Section */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-orange-200 sm:text-4xl lg:text-5xl">
-                  How It Started: From Bailouts to Blockchain
-                </h2>
-                <p className="mt-4 text-base leading-relaxed text-zinc-300 sm:text-lg max-w-3xl mx-auto">
-                  In 2008, the global financial crisis exposed the fragility of traditional banking. While governments bailed out the banks, ordinary people lost homes, jobs, and savings. Bitcoin was born from this crisis — a decentralized alternative that doesn't require trust in banks or governments.
-                </p>
-              </div>
-              <div className="flex items-center justify-center">
-                <div className="relative w-full max-w-4xl rounded-xl overflow-hidden border border-orange-500/25 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-                  {/* Image container */}
-                  <div className="relative w-full bg-gradient-to-br from-zinc-900 via-orange-900/20 to-zinc-900 flex items-center justify-center">
-                    {/* Image showing Bitcoin's origin story */}
-                    <img 
-                      src="/images/bailouts-to-blockchain.jpg" 
-                      alt="From Bailouts to Blockchain - Bitcoin's origin story"
-                      className="w-full h-auto object-contain"
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 3. About Preview */}
-          <AnimatedSection animation="slideLeft">
-            <section className="mb-32 rounded-xl border border-orange-500/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(249,115,22,0.2)] sm:p-12">
-              <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-                <div className="space-y-6">
-                  <h2 className="text-3xl font-semibold text-orange-200 sm:text-4xl">Our Mission</h2>
-                  <p className="text-base leading-relaxed text-zinc-300 sm:text-lg">
-                    Bitcoin is a tool for financial freedom — especially in Africa.
-                  </p>
-                  <p className="text-base leading-relaxed text-zinc-300 sm:text-lg">
-                    Our academy helps people understand, use, and build with Bitcoin through hands-on learning and community support.
-                  </p>
-                  <Link
-                    href="/about"
-                    className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3 text-base font-semibold text-black transition hover:brightness-110"
-                  >
-                    👉 Read Our Mission
-                  </Link>
-                </div>
-                <div className="flex items-center justify-center">
-                  <div className="relative flex h-64 w-64 items-center justify-center">
-                    {/* Outer glow rings */}
-                    <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-2xl animate-pulse" />
-                    <div className="absolute inset-0 rounded-full bg-orange-400/10 blur-3xl" />
-                    
-                    {/* Geometric borders */}
-                    <div className="absolute inset-4 rounded-2xl border-4 border-orange-400/50 rotate-45" />
-                    <div className="absolute inset-6 rounded-2xl border-2 border-orange-300/30 -rotate-45" />
-                    
-                    {/* Main B container */}
-                    <div className="relative z-10 flex h-48 w-48 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 via-orange-400 to-orange-600 shadow-[0_0_60px_rgba(249,115,22,0.8)]">
-                      <span className="text-8xl font-black text-black tracking-tight">B</span>
-                    </div>
-                    
-                    {/* Corner accents */}
-                    <div className="absolute top-8 left-8 h-4 w-4 rounded-full bg-orange-400/60 blur-sm" />
-                    <div className="absolute bottom-8 right-8 h-4 w-4 rounded-full bg-orange-400/60 blur-sm" />
-                    <div className="absolute top-8 right-8 h-3 w-3 rounded-full bg-cyan-400/40 blur-sm" />
-                    <div className="absolute bottom-8 left-8 h-3 w-3 rounded-full bg-cyan-400/40 blur-sm" />
-                  </div>
-                </div>
-              </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 4. Curriculum Preview */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">What You Will Learn</h2>
-              </div>
-              <AnimatedList animation="slideUp" className="grid gap-6 sm:grid-cols-3">
-                {curriculumCards.map((card, index) => (
-                  <div
-                    key={index}
-                    className="rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
-                  >
-                    <div className="mb-6 text-5xl">{card.icon}</div>
-                    <h3 className="mb-3 text-xl font-semibold text-cyan-200">{card.title}</h3>
-                    <p className="text-base text-zinc-400">{card.description}</p>
-                  </div>
-                ))}
-              </AnimatedList>
-              <div className="text-center">
-                <Link
-                  href="/chapters"
-                  className="inline-flex items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-base font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
-                >
-                  👉 View Full Curriculum
-                </Link>
-              </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 5. How It Works Preview */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">How It Works</h2>
-                <p className="mt-4 text-base text-zinc-400 sm:text-lg">A simple roadmap to your Bitcoin learning journey</p>
-              </div>
-              <AnimatedList animation="slideLeft" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {howItWorksSteps.map((item, index) => (
-                  <div
-                    key={index}
-                    className="relative rounded-xl border border-purple-500/25 bg-black/80 p-8 shadow-[0_0_20px_rgba(168,85,247,0.1)]"
-                  >
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500/20 to-cyan-500/20 text-3xl font-bold text-purple-300">
-                      {item.step}
-                    </div>
-                    <h3 className="mb-3 text-lg font-semibold text-zinc-50">{item.title}</h3>
-                    <p className="text-sm text-zinc-400">{item.description}</p>
-                    {index < howItWorksSteps.length - 1 && (
-                      <div className="absolute -right-3 top-1/2 hidden -translate-y-1/2 translate-x-full text-2xl text-purple-400 lg:block">
-                        →
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </AnimatedList>
-              <div className="text-center">
-                <Link
-                  href="/chapters"
-                  className="inline-flex items-center justify-center rounded-lg border border-purple-400/30 bg-purple-400/10 px-6 py-3 text-base font-semibold text-purple-300 transition hover:bg-purple-400/20"
-                >
-                  👉 See How the Academy Works
-                </Link>
-              </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 6. Impact Preview */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 rounded-xl border border-orange-500/25 bg-black/80 p-12 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-              <div className="text-center">
-                <h2 className="mb-12 text-3xl font-semibold text-orange-200 sm:text-4xl">Our Impact</h2>
-                <AnimatedList animation="slideUp" className="grid gap-8 sm:grid-cols-3">
-                  <div>
-                    <div className="text-5xl font-bold text-orange-400 sm:text-6xl">12</div>
-                    <div className="mt-4 text-base text-zinc-400">Students trained</div>
-                  </div>
-                  <div>
-                    <div className="text-5xl font-bold text-orange-400 sm:text-6xl">80,000+</div>
-                    <div className="mt-4 text-base text-zinc-400">Sats rewarded</div>
-                  </div>
-                  <div>
-                    <div className="text-5xl font-bold text-orange-400 sm:text-6xl">3</div>
-                    <div className="mt-4 text-base text-zinc-400">Countries represented</div>
-                  </div>
-                </AnimatedList>
-                <div className="mt-10">
-                  <Link
-                    href="/impact"
-                    className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3 text-base font-semibold text-black transition hover:brightness-110"
-                  >
-                    👉 See Our Impact Dashboard
-                  </Link>
-                </div>
-              </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 7. Community Preview */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 space-y-8 text-center">
-              <div>
-                <h2 className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">Join Our Community</h2>
-                <p className="mt-4 text-base text-zinc-400 sm:text-lg">
-                  Join a growing network of learners, builders, and Bitcoin educators.
-                </p>
-              </div>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <a
-                href="https://chat.whatsapp.com/KpjlC90BGIj1EChMHsW6Ji"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-green-500 to-green-600 px-8 py-4 text-base font-semibold text-white transition hover:brightness-110"
-              >
-                👉 Join WhatsApp Community
-              </a>
-              <a
-                href="https://nostr.com"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-lg border border-purple-400/30 bg-purple-400/10 px-8 py-4 text-base font-semibold text-purple-300 transition hover:bg-purple-400/20"
-              >
-                👉 Follow on Nostr
-              </a>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mt-6">
-              <a
-                href="https://discord.gg/bitcoinacademy"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 px-8 py-4 text-base font-semibold text-white transition hover:brightness-110"
-              >
-                💬 Join Discord
-              </a>
-            </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 8. Mentors Preview */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">
-                  Guided by Mentors & Community Leaders
-                </h2>
-              </div>
-              <AnimatedList animation="slideLeft" className="grid gap-6 sm:grid-cols-3">
-                {mentors.map((mentor, index) => (
-                  <div
-                    key={index}
-                    className="rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
-                  >
-                    <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
-                      <span className="text-3xl">👤</span>
-                    </div>
-                    <h3 className="mb-2 text-xl font-semibold text-zinc-50">{mentor.name}</h3>
-                    <p className="mb-4 text-base font-medium text-cyan-300">{mentor.role}</p>
-                    <p className="text-sm text-zinc-400">"{mentor.description}"</p>
-                  </div>
-                ))}
-              </AnimatedList>
-              <div className="text-center">
-                <Link
-                  href="/mentorship"
-                  className="inline-flex items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-base font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
-                >
-                  👉 Meet All Mentors & Volunteers
-                </Link>
-              </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 9. Blog Preview */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">Student Stories</h2>
-                <p className="mt-4 text-base text-zinc-400 sm:text-lg">
-                  Read how our graduates are using Bitcoin, building the future, and contributing to the community.
-                </p>
-              </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {[
-                  {
-                    title: "How I'm Using Bitcoin to Build Financial Sovereignty",
-                    author: "Amina K.",
-                    category: "Use Cases",
-                    excerpt: "After completing the academy, I've started using Lightning Network for daily transactions...",
-                  },
-                  {
-                    title: "The Future of Bitcoin Development: What Africa Needs",
-                    author: "David M.",
-                    category: "Development",
-                    excerpt: "As a developer, I see huge potential for Bitcoin in Africa. Here's what we need to build...",
-                  },
-                  {
-                    title: "Building a Bitcoin Community in My City",
-                    author: "Fatima A.",
-                    category: "Community",
-                    excerpt: "Starting a local Bitcoin meetup has changed how I see community building...",
-                  },
-                ].map((post, index) => (
-                  <AnimatedSection key={index} animation="slideUp" delay={index * 100}>
-                    <Link
-                      href="/blog"
-                      className="group block rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
-                    >
-                      <div className="mb-3 flex items-center justify-between">
-                        <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
-                          {post.category}
-                        </span>
-                      </div>
-                      <h3 className="mb-2 text-lg font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
-                        {post.title}
-                      </h3>
-                      <p className="mb-4 text-sm text-zinc-400">{post.excerpt}</p>
-                      <div className="flex items-center gap-2 text-xs text-zinc-500">
-                        <span>By {post.author}</span>
-                        <span>•</span>
-                        <span className="text-cyan-300">Read more →</span>
-                      </div>
-                    </Link>
-                  </AnimatedSection>
-                ))}
-              </div>
-              <div className="text-center">
-                <Link
-                  href="/blog"
-                  className="inline-flex items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-base font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
-                >
-                  👉 View All Blog Posts
-                </Link>
-              </div>
-            </section>
-          </AnimatedSection>
-
-          {/* 10. Partners & Funders Section */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32">
-              <AnimatedList animation="fadeIn" className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
-                {[
-                  {
-                    name: "Partner 1",
-                    logo: "🏢",
-                  },
-                  {
-                    name: "Partner 2",
-                    logo: "🏢",
-                  },
-                  {
-                    name: "Partner 3",
-                    logo: "🏢",
-                  },
-                  {
-                    name: "Partner 4",
-                    logo: "🏢",
-                  },
-                ].map((partner, index) => (
-                  <div
-                    key={index}
-                    className="group flex h-32 w-full items-center justify-center rounded-lg border border-cyan-400/25 bg-black/60 p-6 transition hover:border-cyan-400/50 hover:bg-black/80 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)]"
-                  >
-                    <div className="w-full h-full flex items-center justify-center text-6xl opacity-70 transition group-hover:opacity-100">
-                      {partner.logo}
-                    </div>
-                  </div>
-                ))}
-              </AnimatedList>
-            </section>
-          </AnimatedSection>
-
-          {/* 11. Social Media Section */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-32 space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">Connect With Us</h2>
-                <p className="mt-4 text-base text-zinc-400 sm:text-lg">
-                  Follow us on social media to stay updated with the latest news, events, and Bitcoin education content.
-                </p>
-              </div>
-              <AnimatedList animation="slideLeft" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  name: "Facebook",
-                  icon: Facebook,
-                  url: "https://www.facebook.com/profile.php?id=61585070968194",
-                  color: "hover:bg-blue-500/20",
-                },
-                {
-                  name: "X (Twitter)",
-                  icon: Twitter,
-                  url: "https://x.com/panafricanbtc",
-                  color: "hover:bg-slate-500/20",
-                },
-                {
-                  name: "Instagram",
-                  icon: Instagram,
-                  url: "https://www.instagram.com/panafricanbitcoin/",
-                  color: "hover:bg-pink-500/20",
-                },
-                {
-                  name: "TikTok",
-                  icon: Music2,
-                  url: "https://www.tiktok.com/@panafricanbitcoin",
-                  color: "hover:bg-purple-500/20",
-                },
-              ].map((social, index) => {
-                const IconComponent = social.icon;
-
-                return (
-                  <a
-                    key={index}
-                    href={social.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`group flex flex-col items-center justify-center rounded-xl border border-cyan-400/25 bg-black/80 p-6 text-center transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] ${social.color}`}
-                  >
-                    {IconComponent && (
-                      <IconComponent className="mb-3 h-8 w-8 text-cyan-400 group-hover:text-cyan-300 transition" />
-                    )}
-                    <h3 className="text-sm font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
-                      {social.name}
-                    </h3>
-                  </a>
-                );
-              })}
-              </AnimatedList>
-            </section>
-          </AnimatedSection>
-
-          {/* 12. Donate Preview */}
-          <AnimatedSection animation="slideUp">
-            <section className="mb-20 rounded-xl border border-orange-500/25 bg-black/80 p-12 text-center shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-              <h2 className="mb-6 text-3xl font-semibold text-orange-200 sm:text-4xl">Support Our Mission</h2>
-              <p className="mb-8 text-base text-zinc-300 sm:text-lg">
-                Support our mission to expand Bitcoin education across Africa.
-              </p>
-              <Link
-                href="/donate"
-                className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-8 py-4 text-base font-semibold text-black transition hover:brightness-110"
-              >
-                👉 Support the Academy
-              </Link>
-            </section>
-          </AnimatedSection>
-        </div>
-      </div>
-      <StructuredData
-        data={{
-          '@context': 'https://schema.org',
-          '@type': 'EducationalOrganization',
-          name: 'Pan-African Bitcoin Academy',
-          description: 'Learn Bitcoin the right way with clear, technical guidance. Comprehensive Bitcoin education, developer resources, and community support across Africa.',
-          url: 'https://panafricanbitcoin.com',
-          logo: 'https://panafricanbitcoin.com/icon.svg',
-          sameAs: [
-            'https://github.com/Joie199/pan-africa-bitcoin-academy',
-            'https://chat.whatsapp.com/KpjlC90BGIj1EChMHsW6Ji',
-            'https://nostr.com',
-            'https://discord.gg/bitcoinacademy',
-          ],
-          address: {
-            '@type': 'PostalAddress',
-            addressCountry: 'UG',
-          },
-          offers: {
-            '@type': 'Offer',
-            category: 'Education',
-            description: 'Bitcoin education courses and developer training',
-          },
-        }}
+      {/* Content Sections - Full Width - Edge-to-edge on mobile */}
+      <HomeSectionsClient
+        mentors={mentors}
+        impactStats={impactStats}
+        upcomingEvents={upcomingEvents}
+        testimonials={testimonials}
       />
+      <StructuredData data={homeStructuredData} />
+      <Analytics />
     </div>
   );
 }

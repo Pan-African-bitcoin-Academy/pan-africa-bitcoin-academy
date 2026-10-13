@@ -1,0 +1,174 @@
+{
+  "hero": {
+    "heading": "Scaling Bitcoin adoption",
+    "subheading": "Turning the world orange",
+    "description": "Join our hands-on Bitcoin academy designed for Africa. Learn by doing, earn sats, and become part of a growing community of builders.",
+    "cta_primary": "👉 Join Cohort 1",
+    "cta_secondary": "👉 Explore Learning Paths"
+  },
+  "how_it_started": {
+    "heading": "How It Started: From Bailouts to Blockchain",
+    "description": "In 2008, the global financial crisis exposed the fragility of traditional banking. While governments bailed out the banks, ordinary people lost homes, jobs, and savings. Bitcoin was born from this crisis — a decentralized alternative that doesn't require trust in banks or governments.",
+    "image_alt": "From Bailouts to Blockchain - Bitcoin's origin story"
+  },
+  "mission": {
+    "heading": "Our Mission",
+    "paragraph_1": "Bitcoin is a tool for financial freedom — especially in Africa.",
+    "paragraph_2": "Our academy helps people understand, use, and build with Bitcoin through hands-on learning and community support.",
+    "cta": "👉 Read Our Mission"
+  },
+  "curriculum": {
+    "heading": "What You Will Learn",
+    "cards": [
+      {
+        "title": "Bitcoin Basics",
+        "description": "Understanding what Bitcoin is, how it works, and why it matters for financial sovereignty."
+      },
+      {
+        "title": "How Bitcoin Works",
+        "description": "Simple and visual explanations of keys, addresses, UTXOs, transactions, and blocks."
+      },
+      {
+        "title": "Lightning Skills",
+        "description": "Learn to use Lightning Network for fast, low-cost Bitcoin transactions."
+      }
+    ],
+    "cta": "👉 View Full Curriculum"
+  },
+  "how_it_works": {
+    "heading": "How It Works",
+    "subheading": "A simple roadmap to your Bitcoin learning journey",
+    "steps": [
+      {
+        "title": "Join a cohort",
+        "description": "Apply and get accepted into a structured learning program"
+      },
+      {
+        "title": "Attend live sessions",
+        "description": "Participate in interactive classes with mentors"
+      },
+      {
+        "title": "Complete practical tasks",
+        "description": "Hands-on Bitcoin exercises and assignments"
+      },
+      {
+        "title": "Earn sats + certificate",
+        "description": "Get rewarded with Bitcoin and earn your certificate"
+      }
+    ],
+    "cta": "👉 See How the Academy Works"
+  },
+  "impact": {
+    "heading": "Our Impact",
+    "stats": [
+      { "value": "12", "label": "Students trained" },
+      { "value": "80,000+", "label": "Sats rewarded" },
+      { "value": "3", "label": "Countries represented" }
+    ],
+    "cta": "👉 See Our Impact Dashboard"
+  },
+  "community": {
+    "heading": "Join Our Community",
+    "description": "Join a growing network of learners, builders, and Bitcoin educators.",
+    "cta_whatsapp": "👉 Join WhatsApp Community",
+    "cta_nostr": "👉 Follow on Nostr",
+    "cta_discord": "💬 Join Discord"
+  },
+  "mentors": {
+    "heading": "Guided by Mentors & Community Leaders",
+    "people": [
+      {
+        "name": "Aisha",
+        "role": "Lightning Mentor",
+        "description": "Supports students during live sessions and helps review assignments."
+      },
+      {
+        "name": "Daniel",
+        "role": "Community Volunteer",
+        "description": "Helps onboard new students and provides guidance in the chat."
+      },
+      {
+        "name": "Sarah",
+        "role": "Bitcoin Educator",
+        "description": "Teaches core concepts and guides students through practical exercises."
+      }
+    ],
+    "cta": "👉 Meet All Mentors & Volunteers"
+  },
+  "blog": {
+    "heading": "Student Stories",
+    "description": "Read how our graduates are using Bitcoin, building the future, and contributing to the community.",
+    "posts": [
+      {
+        "title": "How I'm Using Bitcoin to Build Financial Sovereignty",
+        "author": "Amina K.",
+        "category": "Use Cases",
+        "excerpt": "After completing the academy, I've started using Lightning Network for daily transactions..."
+      },
+      {
+        "title": "The Future of Bitcoin Development: What Africa Needs",
+        "author": "David M.",
+        "category": "Development",
+        "excerpt": "As a developer, I see huge potential for Bitcoin in Africa. Here's what we need to build..."
+      },
+      {
+        "title": "Building a Bitcoin Community in My City",
+        "author": "Fatima A.",
+        "category": "Community",
+        "excerpt": "Starting a local Bitcoin meetup has changed how I see community building..."
+      }
+    ],
+    "read_more": "Read more →",
+    "author_prefix": "By",
+    "cta": "👉 View All Blog Posts"
+  },
+  "social": {
+    "heading": "Connect With Us",
+    "description": "Follow us on social media to stay updated with the latest news, events, and Bitcoin education content.",
+    "platforms": {
+      "facebook": "Facebook",
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "tiktok": "TikTok"
+    }
+  },
+  "donate": {
+    "heading": "Support Our Mission",
+    "description": "Support our mission to expand Bitcoin education across Africa.",
+    "cta": "👉 Support the Academy"
+  },
+  "navbar": {
+    "brand_line_1": "Pan-African",
+    "brand_line_2": "Bitcoin Academy",
+    "home": "Home",
+    "chapters": "Chapters",
+    "blog": "Blog",
+    "developer_hub": "Developer Hub",
+    "developer_hub_short": "Dev Hub",
+    "apply": "Apply",
+    "mentorship": "Mentorship",
+    "impact": "Impact",
+    "about": "About",
+    "donate": "Donate",
+    "sign_in": "Sign In",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "change_password": "Change Password",
+    "logout": "Logout",
+    "user_fallback": "User",
+    "toggle_menu": "Toggle menu"
+  },
+  "footer": {
+    "built_by_prefix": "Built by",
+    "built_by_name": "Joie",
+    "built_by_suffix": "for curious minds exploring",
+    "bitcoin": "Bitcoin",
+    "disclaimer": "Educational only. Not financial advice. Practice on testnet/regtest, never with money you can't lose.",
+    "learn_bitcoin": "Learn Bitcoin",
+    "about": "About",
+    "blog": "Blog",
+    "developer_hub": "Developer Hub",
+    "faq": "FAQ",
+    "donate": "Donate"
+  }
+}

@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/faq', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/mentorship', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/impact', priority: 0.75, changeFrequency: 'monthly' as const },
+    { path: '/cypher-punks', priority: 0.85, changeFrequency: 'weekly' as const },
     { path: '/donate', priority: 0.7, changeFrequency: 'monthly' as const },
   ];
 

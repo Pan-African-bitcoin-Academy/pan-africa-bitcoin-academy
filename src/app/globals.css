@@ -3,6 +3,8 @@
 :root {
   --background: #020617; /* slate-950 */
   --foreground: #f9fafb; /* zinc-50 */
+  --font-geist-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 @theme inline {
@@ -16,13 +18,42 @@
   --color-bitcoin-purple: #a855f7;
 }
 
+html {
+  background-color: #020617;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* Mobile-first: Base font size for readability without zooming */
+  font-size: 16px;
+  /* Prevent text size adjustment on iOS */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Smooth vertical scroll on mobile; avoid horizontal rubber-band when x is clipped */
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
 body {
-  background: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
+  background: url('/images/bitcoin-bg.jpg') center center / cover no-repeat fixed;
+  background-color: #020617;
   color: var(--foreground);
   position: relative;
   overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* Mobile-first: Ensure readable base font size */
+  font-size: 1rem; /* 16px */
+  line-height: 1.5;
 }
 
+/* Fixed backgrounds often break or stutter page scroll on mobile Safari; scroll attachment restores reliable scrolling */
+@media (max-width: 767px) {
+  body {
+    background-attachment: scroll;
+  }
+}
+
+/* Gradient overlay: darker on left (text area), brighter on right (image area) */
 body::before {
   content: '';
   position: fixed;
@@ -30,137 +61,25 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(249, 115, 22, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+  background: linear-gradient(
+    to right,
+    rgba(2, 6, 23, 0.8) 0%,
+    rgba(2, 6, 23, 0.75) 20%,
+    rgba(2, 6, 23, 0.7) 40%,
+    rgba(0, 0, 0, 0.65) 60%,
+    rgba(0, 0, 0, 0.6) 80%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  /* Fade edges using inset box-shadow */
+  box-shadow: 
+    inset 0 100px 150px -80px rgba(2, 6, 23, 0.9),
+    inset 0 -100px 150px -80px rgba(0, 0, 0, 0.9),
+    inset 100px 0 150px -80px rgba(2, 6, 23, 0.9),
+    inset -100px 0 150px -80px rgba(0, 0, 0, 0.9);
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
-/* Bitcoin B Logo Background */
-body::after {
-  content: '';
-  position: fixed;
-  top: 10%;
-  right: 5%;
-  width: 400px;
-  height: 400px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f97602' fill-opacity='0.12' d='M23.638 14.794c-1.284 5.736-6.456 9.594-11.538 8.573-5.082-1.021-8.616-5.91-7.332-11.646 1.284-5.736 6.456-9.594 11.538-8.573 5.082 1.021 8.616 5.91 7.332 11.646zm-6.364-10.127c-.737-1.476-1.832-2.58-3.308-3.317-.737-1.476-1.832-2.58-3.308-3.317C8.781-1.386 6.5-.386 4.5.5c-2 .886-3.5 2.5-4.5 4.5-.5 1-.5 2.5 0 3.5.5 1 1.5 2 2.5 2.5 1 .5 2.5.5 3.5 0 1-.5 2-1.5 2.5-2.5.5-1 .5-2.5 0-3.5z'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.8;
-  animation: float 20s ease-in-out infinite;
-  filter: blur(1px);
-}
-
-/* Blockchain Background Pattern */
-.bitcoin-bg-pattern::before {
-  content: '';
-  position: fixed;
-  bottom: 10%;
-  left: 5%;
-  width: 600px;
-  height: 400px;
-  background-image: 
-    /* Blockchain blocks - connected chain */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Crect x='10' y='30' width='40' height='40' fill='none' stroke='%23f97602' stroke-width='1' stroke-opacity='0.15'/%3E%3Crect x='60' y='30' width='40' height='40' fill='none' stroke='%23f97602' stroke-width='1' stroke-opacity='0.15'/%3E%3Crect x='110' y='30' width='40' height='40' fill='none' stroke='%23f97602' stroke-width='1' stroke-opacity='0.15'/%3E%3Crect x='160' y='30' width='40' height='40' fill='none' stroke='%23f97602' stroke-width='1' stroke-opacity='0.15'/%3E%3Cline x1='50' y1='50' x2='60' y2='50' stroke='%23f97602' stroke-width='1' stroke-opacity='0.2'/%3E%3Cline x1='100' y1='50' x2='110' y2='50' stroke='%23f97602' stroke-width='1' stroke-opacity='0.2'/%3E%3Cline x1='150' y1='50' x2='160' y2='50' stroke='%23f97602' stroke-width='1' stroke-opacity='0.2'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.5;
-  animation: blockchainPulse 15s ease-in-out infinite;
-}
-
-@keyframes blockchainPulse {
-  0%, 100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-/* Public/Private Keys Background */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(5deg);
-  }
-}
-
-.bitcoin-keys-bg {
-  position: fixed;
-  top: 50%;
-  left: 3%;
-  width: 350px;
-  height: 250px;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.15;
-  background-image: 
-    /* Public Key */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M10 25 L30 10 L50 25 L30 40 Z' fill='none' stroke='%2322d3ee' stroke-width='1' stroke-opacity='0.3'/%3E%3Ctext x='50' y='28' font-family='monospace' font-size='6' fill='%2322d3ee' fill-opacity='0.2' text-anchor='middle'%3E04a1b2c3...%3C/text%3E%3C/svg%3E"),
-    /* Private Key */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Crect x='60' y='15' width='30' height='20' rx='2' fill='none' stroke='%23f97602' stroke-width='1' stroke-opacity='0.3'/%3E%3Ccircle cx='75' cy='25' r='3' fill='%23f97602' fill-opacity='0.2'/%3E%3Ctext x='75' y='40' font-family='monospace' font-size='5' fill='%23f97602' fill-opacity='0.2' text-anchor='middle'%3E***%3C/text%3E%3C/svg%3E");
-  background-size: 150px 80px, 120px 70px;
-  background-repeat: no-repeat;
-  background-position: top left, bottom right;
-  animation: keysFloat 12s ease-in-out infinite;
-}
-
-.bitcoin-keys-bg::before,
-.bitcoin-keys-bg::after {
-  content: '';
-  position: absolute;
-  width: 80%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.4), transparent);
-  animation: keyFlow 10s linear infinite;
-}
-
-.bitcoin-keys-bg::before {
-  top: 25%;
-  left: 10%;
-  animation-delay: 0s;
-}
-
-.bitcoin-keys-bg::after {
-  top: 65%;
-  left: 10%;
-  animation-delay: 5s;
-  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.4), transparent);
-}
-
-@keyframes keyFlow {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-@keyframes keysFloat {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-}
 
 a {
   text-decoration: none;
@@ -171,39 +90,47 @@ a {
   background-size: 32px 32px;
 }
 
-.bitcoin-bg-pattern {
-  position: relative;
-  overflow: hidden;
-}
-
-.bitcoin-bg-pattern::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.bitcoin-network-lines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    linear-gradient(90deg, transparent 0%, rgba(249, 115, 22, 0.03) 50%, transparent 100%),
-    linear-gradient(0deg, transparent 0%, rgba(34, 211, 238, 0.02) 50%, transparent 100%);
-  background-size: 100px 100px, 150px 150px;
-  pointer-events: none;
-  z-index: 0;
-}
 
 .grid-cols-40 {
   grid-template-columns: repeat(40, minmax(0, 1fr));
+}
+
+/* Ensure visible blinking caret for all input fields and textareas */
+/* The caret will automatically blink - we just need to make it visible */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+textarea,
+input:not([type]) {
+  caret-color: #22d3ee; /* Bright cyan color for visibility - matches theme */
+}
+
+/* Ensure caret is visible when focused (browsers automatically make it blink) */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+input[type="month"]:focus,
+input[type="week"]:focus,
+textarea:focus,
+input:not([type]):focus {
+  caret-color: #22d3ee !important; /* Bright cyan - ensures visibility on focus */
+  /* Browser will automatically handle blinking */
 }
 
 /* Override browser autofill styles */
@@ -219,6 +146,7 @@ select:-webkit-autofill:active {
   -webkit-text-fill-color: rgb(250 250 249) !important;
   background-color: rgb(3 7 18) !important;
   color: rgb(250 250 249) !important;
+  caret-color: #22d3ee !important; /* Ensure caret is visible even with autofill */
 }
 
 input:-webkit-autofill::first-line,
@@ -226,8 +154,11 @@ select:-webkit-autofill::first-line {
   color: rgb(250 250 249) !important;
 }
 
-/* Consistent dropdown styling */
+/* Consistent dropdown styling - hide native arrow so only custom arrow shows */
 select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2322d3ee' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
@@ -237,6 +168,168 @@ select {
 
 select:focus {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2322d3ee' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+}
+
+/* React DatePicker - dark theme */
+.react-datepicker-wrapper { width: 100%; }
+.datepicker-popper .react-datepicker {
+  font-family: inherit;
+  border: 1px solid rgb(63 63 70);
+  border-radius: 12px;
+  background: rgb(39 39 42);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+}
+.datepicker-popper .react-datepicker__header {
+  background: rgb(24 24 27);
+  border-bottom: 1px solid rgb(63 63 70);
+  padding-top: 12px;
+  border-radius: 12px 12px 0 0;
+}
+.datepicker-popper .react-datepicker__current-month,
+.datepicker-popper .react-datepicker-time__header {
+  color: rgb(228 228 231);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+/* Month/Year dropdowns - easy jump to any year (e.g. 1990) */
+.datepicker-popper .react-datepicker__month-dropdown-container,
+.datepicker-popper .react-datepicker__year-dropdown-container {
+  display: inline-block;
+  margin: 0 4px;
+}
+.datepicker-popper .react-datepicker__month-read-view,
+.datepicker-popper .react-datepicker__year-read-view {
+  color: rgb(228 228 231);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.datepicker-popper .react-datepicker__month-read-view:hover,
+.datepicker-popper .react-datepicker__year-read-view:hover {
+  background: rgb(63 63 70);
+  color: rgb(250 250 249);
+}
+.datepicker-popper .react-datepicker__month-dropdown,
+.datepicker-popper .react-datepicker__year-dropdown {
+  background: rgb(39 39 42);
+  border: 1px solid rgb(63 63 70);
+  border-radius: 8px;
+  padding: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.datepicker-popper .react-datepicker__month-option,
+.datepicker-popper .react-datepicker__year-option {
+  color: rgb(228 228 231);
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  border-radius: 4px;
+}
+.datepicker-popper .react-datepicker__month-option:hover,
+.datepicker-popper .react-datepicker__year-option:hover {
+  background: rgb(63 63 70);
+  color: rgb(250 250 249);
+}
+.datepicker-popper .react-datepicker__month-option--selected_month,
+.datepicker-popper .react-datepicker__year-option--selected_year {
+  background: rgb(34 211 238);
+  color: rgb(3 7 18);
+  font-weight: 600;
+}
+/* Native select dropdowns for month/year (dropdownMode="select") */
+.datepicker-popper .react-datepicker__month-select,
+.datepicker-popper .react-datepicker__year-select {
+  background: rgb(39 39 42);
+  border: 1px solid rgb(63 63 70);
+  border-radius: 6px;
+  color: rgb(228 228 231);
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  margin: 0 2px;
+  cursor: pointer;
+}
+.datepicker-popper .react-datepicker__month-select:focus,
+.datepicker-popper .react-datepicker__year-select:focus {
+  outline: none;
+  border-color: rgb(34 211 238);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+}
+.datepicker-popper .react-datepicker__day-names { margin-bottom: 4px; }
+.datepicker-popper .react-datepicker__day-name {
+  color: rgb(161 161 170);
+  font-size: 0.75rem;
+  font-weight: 500;
+  width: 2rem;
+  line-height: 2rem;
+  margin: 0.25rem;
+}
+.datepicker-popper .react-datepicker__month {
+  margin: 12px;
+  padding: 0;
+}
+.datepicker-popper .react-datepicker__day {
+  color: rgb(228 228 231);
+  width: 2rem;
+  line-height: 2rem;
+  margin: 0.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+.datepicker-popper .react-datepicker__day:hover {
+  background: rgb(82 82 91);
+  color: rgb(250 250 249);
+}
+.datepicker-popper .react-datepicker__day--selected,
+.datepicker-popper .react-datepicker__day--keyboard-selected {
+  background: rgb(34 211 238) !important;
+  color: rgb(3 7 18) !important;
+  font-weight: 600;
+}
+.datepicker-popper .react-datepicker__day--today {
+  font-weight: 600;
+  color: rgb(34 211 238);
+}
+.datepicker-popper .react-datepicker__day--outside-month {
+  color: rgb(82 82 91);
+}
+.datepicker-popper .react-datepicker__day--disabled {
+  color: rgb(63 63 70);
+  cursor: not-allowed;
+}
+.datepicker-popper .react-datepicker__navigation { top: 12px; }
+.datepicker-popper .react-datepicker__navigation-icon::before {
+  border-color: rgb(161 161 170);
+  border-width: 2px 2px 0 0;
+  height: 7px;
+  width: 7px;
+}
+.datepicker-popper .react-datepicker__navigation:hover *::before {
+  border-color: rgb(228 228 231);
+}
+.datepicker-popper .react-datepicker__time-container {
+  border-left: 1px solid rgb(63 63 70);
+  width: 85px;
+}
+.datepicker-popper .react-datepicker__time-box {
+  width: 85px !important;
+}
+.datepicker-popper .react-datepicker__time-list-item {
+  color: rgb(228 228 231);
+  height: 32px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}
+.datepicker-popper .react-datepicker__time-list-item:hover {
+  background: rgb(82 82 91);
+  color: rgb(250 250 249);
+}
+.datepicker-popper .react-datepicker__time-list-item--selected {
+  background: rgb(34 211 238) !important;
+  color: rgb(3 7 18) !important;
+  font-weight: 600;
+}
+.datepicker-popper .react-datepicker__time-list {
+  max-height: 200px;
 }
 
 /* Hide scrollbar for horizontal scrolling on mobile */
@@ -249,9 +342,538 @@ select:focus {
   display: none;  /* Chrome, Safari and Opera */
 }
 
+/* Global aesthetic scrollbar – orange-to-cyan, same look site-wide */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(249, 115, 22) rgba(39, 39, 42, 0.9);
+}
+
+/* WebKit: all visible scrollbars (main page, modals, overflow areas) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(24, 24, 27, 0.95) 0%, rgba(39, 39, 42, 0.9) 50%, rgba(24, 24, 27, 0.95) 100%);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(249, 115, 22, 0.9) 0%, rgba(34, 211, 238, 0.9) 100%);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(251, 146, 60, 0.95) 0%, rgba(56, 189, 248, 0.95) 100%);
+}
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, rgb(249, 115, 22) 0%, rgb(34, 211, 238) 100%);
+}
+/* Horizontal scrollbar track (same dark style) */
+::-webkit-scrollbar-track:horizontal {
+  background: linear-gradient(90deg, rgba(24, 24, 27, 0.95) 0%, rgba(39, 39, 42, 0.9) 50%, rgba(24, 24, 27, 0.95) 100%);
+}
+::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.9) 0%, rgba(34, 211, 238, 0.9) 100%);
+}
+::-webkit-scrollbar-thumb:horizontal:hover {
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.95) 0%, rgba(56, 189, 248, 0.95) 100%);
+}
+
+/* Modals/popups use same look (Firefox needs this on the element) */
+.scrollbar-modal {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(249, 115, 22) rgba(39, 39, 42, 0.9);
+}
+
+/* Mobile-First: Touch-friendly targets */
+/* Minimum touch target size: 44x44px (Apple HIG) / 48x48px (Material Design) */
+button,
+a[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  cursor: pointer;
+  /* Improve touch feedback */
+  -webkit-tap-highlight-color: rgba(249, 115, 22, 0.2);
+  tap-highlight-color: rgba(249, 115, 22, 0.2);
+}
+
+/* Disabled buttons should show not-allowed cursor */
+button:disabled,
+input[type="button"]:disabled,
+input[type="submit"]:disabled,
+input[type="reset"]:disabled {
+  cursor: not-allowed;
+}
+
+/* Mobile-First: Prevent text selection on interactive elements */
+button,
+a[role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Mobile-First: High contrast for readability */
+@media (prefers-contrast: high) {
+  body {
+    background-color: #000000;
+  }
+}
+
+/* Mobile-First: Reduce motion for performance and accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile-First: Optimize background image loading for low bandwidth */
+@media (max-width: 768px) {
+  body {
+    /* Use smaller/lighter background on mobile or disable if bandwidth is low */
+    background-attachment: scroll; /* Better performance than fixed */
+  }
+}
+
 /* Hide Student button if it appears (cached content) - using attribute selector */
 button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-user-round),
 .relative > button:has(svg.lucide-circle-user-round) {
   display: none !important;
+}
+
+/* Home page: section and text animations (keyframes so they always run when class is added) */
+@keyframes homeFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes homeFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes homeSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes homeSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.home-animate-fade-up {
+  opacity: 0;
+  animation: homeFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+.home-animate-fade-in {
+  opacity: 0;
+  animation: homeFadeIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+.home-animate-slide-left {
+  opacity: 0;
+  animation: homeSlideLeft 1s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+.home-animate-slide-right {
+  opacity: 0;
+  animation: homeSlideRight 1s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+/* Animated headings (h1, h2, h3) – reveal when in view */
+@keyframes headingReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-heading-initial {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.animate-heading-reveal {
+  animation: headingReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-heading-initial,
+  .animate-heading-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Chapter section animations – technological scroll-reveal, section to section */
+@keyframes chapter-section-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.12),
+      0 0 20px -4px rgba(34, 211, 238, 0.06),
+      0 4px 24px -4px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.2),
+      0 0 28px -4px rgba(249, 115, 22, 0.08),
+      0 4px 24px -4px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes chapter-tech-border {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.chapter-section-initial {
+  opacity: 0;
+  transform: translateY(40px) scale(0.97);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease;
+}
+
+.chapter-section-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease;
+}
+
+.chapter-section-visible .chapter-section-inner {
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.12),
+    0 0 20px -4px rgba(34, 211, 238, 0.06),
+    0 4px 24px -4px rgba(0, 0, 0, 0.4);
+  animation: chapter-section-glow 4s ease-in-out infinite;
+}
+
+.chapter-section-visible .chapter-section-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 211, 238, 0.25) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(249, 115, 22, 0.2) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: chapter-tech-border 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-section-visible .chapter-section-inner,
+  .chapter-section-visible .chapter-section-inner::before {
+    animation: none;
+  }
+}
+
+/* Infinite horizontal scroll for partners marquee */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 30s linear infinite;
+}
+
+.animate-scroll-left:hover {
+  animation-play-state: paused;
+}
+
+/* Upcoming Cohorts: staggered card entrance when list loads */
+@keyframes cohortCardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cohort-card-entrance {
+  opacity: 0;
+  animation: cohortCardEntrance 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cohort-card-entrance {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Footer: reveal when in view + heading style */
+@keyframes footerReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes footerHeadingLine {
+  from {
+    transform: scaleX(0);
+    opacity: 0.6;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.footer-animate-wrapper:not(.footer-inview) .footer-block {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.footer-animate-wrapper.footer-inview .footer-block {
+  animation: footerReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.footer-animate-wrapper.footer-inview .footer-block:nth-child(2) { animation-delay: 0.06s; }
+.footer-animate-wrapper.footer-inview .footer-block:nth-child(3) { animation-delay: 0.12s; }
+.footer-animate-wrapper.footer-inview .footer-block:nth-child(4) { animation-delay: 0.18s; }
+.footer-animate-wrapper.footer-inview .footer-block:nth-child(5) { animation-delay: 0.24s; }
+.footer-animate-wrapper.footer-inview .footer-block:nth-child(6) { animation-delay: 0.3s; }
+
+.footer-animate-wrapper.footer-inview .footer-heading .footer-heading-line {
+  animation: footerHeadingLine 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+  transform-origin: left;
+}
+
+.footer-heading .footer-heading-line {
+  transform: scaleX(0);
+  opacity: 0.6;
+}
+
+/* Footer heading hover: line grows, subtle glow */
+.footer-heading:hover .footer-heading-line {
+  width: 3rem;
+  opacity: 1;
+}
+
+.footer-heading:hover .footer-heading-text {
+  transform: scale(1.05);
+  letter-spacing: 0.28em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-heading:hover .footer-heading-text {
+    transform: none;
+  }
+  .footer-animate-wrapper:not(.footer-inview) .footer-block,
+  .footer-animate-wrapper.footer-inview .footer-block {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .footer-animate-wrapper.footer-inview .footer-heading .footer-heading-line,
+  .footer-heading .footer-heading-line {
+    animation: none;
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes text-type-cursor-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Final exam — submit success overlay */
+@keyframes exam-submit-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes exam-submit-card-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.02) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes exam-submit-check-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.exam-submit-backdrop-in {
+  animation: exam-submit-backdrop-in 0.28s ease-out forwards;
+}
+
+.exam-submit-card-in {
+  animation: exam-submit-card-in 0.42s ease-out forwards;
+}
+
+.exam-submit-check-pop {
+  animation: exam-submit-check-pop 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) 0.08s forwards;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exam-submit-backdrop-in,
+  .exam-submit-card-in,
+  .exam-submit-check-pop {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Final exam — curved “Good luck” (top-right), glow + gentle float */
+@keyframes exam-good-luck-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(251, 146, 60, 0.55)) drop-shadow(0 0 14px rgba(34, 211, 238, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(251, 146, 60, 0.95)) drop-shadow(0 0 26px rgba(34, 211, 238, 0.7));
+  }
+}
+
+@keyframes exam-good-luck-dance {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.5deg) scale(1);
+  }
+  33% {
+    transform: translateY(-4px) rotate(1deg) scale(1.03);
+  }
+  66% {
+    transform: translateY(2px) rotate(-0.5deg) scale(0.99);
+  }
+}
+
+@keyframes exam-good-luck-pulse-opacity {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.92;
+  }
+}
+
+.exam-good-luck-curved {
+  animation: exam-good-luck-glow 2.4s ease-in-out infinite, exam-good-luck-pulse-opacity 3s ease-in-out infinite;
+}
+
+.exam-good-luck-curved-inner {
+  animation: exam-good-luck-dance 3.6s ease-in-out infinite;
+  transform-origin: 120px 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exam-good-luck-curved,
+  .exam-good-luck-curved-inner {
+    animation: none;
+    filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.5)) drop-shadow(0 0 16px rgba(34, 211, 238, 0.4));
+    opacity: 1;
+  }
+
+  .exam-good-luck-curved-inner {
+    transform: none;
+  }
+}
+
+/* Bitcoin whitepaper interactive page — clean print */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .whitepaper-root {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .whitepaper-root .text-zinc-100,
+  .whitepaper-root .text-zinc-200,
+  .whitepaper-root .text-zinc-300 {
+    color: #1a1a1a !important;
+  }
+
+  .whitepaper-root pre {
+    border-color: #ccc !important;
+    background: #f8f8f8 !important;
+    color: #111 !important;
+  }
 }
 
