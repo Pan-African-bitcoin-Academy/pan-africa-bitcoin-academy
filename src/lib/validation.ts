@@ -52,12 +52,14 @@ export function sanitizeString(input: string): string {
 /**
  * Sanitize name input
  */
-export function sanitizeName(name: string): string {
+export function sanitizeName(name: string, maxLength?: number): string {
   if (typeof name !== 'string') {
     return '';
   }
-  return name.trim().replace(/[<>{}[\]\\]/g, '');
+  const sanitized = name.trim().replace(/[<>{}[\]\\]/g, '');
+  return maxLength ? sanitized.slice(0, maxLength) : sanitized;
 }
+
 
 
 /**
