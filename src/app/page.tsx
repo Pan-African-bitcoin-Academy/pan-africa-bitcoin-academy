@@ -12,7 +12,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { chaptersContent } from "@/content/chaptersContent";
 import { getChapterListByTitle } from "@/content/chaptersListContent";
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
+
 
 export const metadata: Metadata = {
   title: "Learn Bitcoin - First Eritrea Based Bitcoin Academy",
@@ -548,7 +548,6 @@ export default async function Home() {
         testimonials={testimonials}
       />
       <StructuredData data={homeStructuredData} />
-      <Analytics />
     </div>
   );
 }

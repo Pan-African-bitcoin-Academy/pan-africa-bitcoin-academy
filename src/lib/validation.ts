@@ -50,6 +50,17 @@ export function sanitizeString(input: string): string {
 }
 
 /**
+ * Sanitize name input
+ */
+export function sanitizeName(name: string): string {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  return name.trim().replace(/[<>{}[\]\\]/g, '');
+}
+
+
+/**
  * Validate email and return normalized version
  */
 export function validateAndNormalizeEmail(email: unknown): {
