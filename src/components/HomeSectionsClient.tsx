@@ -521,8 +521,8 @@ export function HomeSectionsClient({
               </AnimatedHeading>
               <p className="mx-auto mt-4 max-w-xl text-base text-zinc-400 sm:text-lg">
                 {isTigrinya
-                  ? "ብዛዕባ ታሪኽ ቢትኮይን፣ ፍልስፍና ሳይፈርፓንክን ዲጂታላዊ ናጽነትን ዝድህስሱ ዓሙቚ መጽናዕትታት።"
-                  : "In-depth explorations of Bitcoin history, cypherpunk philosophy, and the ideas shaping digital freedom."}
+                  ? "ብዛዕባ ታሪኽ ቢትኮይን፣ ፍልስፍና ቢትኮይን ዲጂታላዊ ናጽነትን ዝድህስሱ ዓሙቚ መጽናዕትታት።"
+                  : "In-depth explorations of Bitcoin history, BItcoin philosophy, and the ideas shaping digital freedom."}
               </p>
             </div>
             <AnimatedList animation="slideUp" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
