@@ -33,18 +33,23 @@ type LanguageContextValue = {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<SiteLanguage>(() =>
-    readStoredLanguage()
-  );
+  const [language, setLanguageState] = useState<SiteLanguage>("en");
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    setLanguageState(readStoredLanguage());
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
     document.documentElement.lang = language === "ti" ? "ti" : "en";
     try {
       localStorage.setItem(STORAGE_KEY, language);
     } catch {
       /* ignore */
     }
-  }, [language]);
+  }, [language, ready]);
 
   const setLanguage = useCallback((lang: SiteLanguage) => {
     setLanguageState(lang);

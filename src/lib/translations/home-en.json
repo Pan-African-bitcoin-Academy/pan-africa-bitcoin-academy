@@ -1,9 +1,9 @@
 {
   "hero": {
     "heading": "Scaling Bitcoin adoption",
-    "subheading": "Turning the world orange",
+    "subheading": "Turning Africa orange",
     "description": "Join our hands-on Bitcoin academy designed for Africa. Learn by doing, earn sats, and become part of a growing community of builders.",
-    "cta_primary": "👉 Join Cohort 1",
+    "cta_primary": "👉 Join Cohort",
     "cta_secondary": "👉 Explore Learning Paths"
   },
   "how_it_started": {
@@ -60,6 +60,7 @@
   },
   "impact": {
     "heading": "Our Impact",
+    "subheading": "Real numbers from our Bitcoin education programs across Africa.",
     "stats": [
       { "value": "12", "label": "Students trained" },
       { "value": "80,000+", "label": "Sats rewarded" },
@@ -156,7 +157,8 @@
     "change_password": "Change Password",
     "logout": "Logout",
     "user_fallback": "User",
-    "toggle_menu": "Toggle menu"
+    "toggle_menu": "Toggle menu",
+    "language": "Language"
   },
   "footer": {
     "built_by_prefix": "Built by",

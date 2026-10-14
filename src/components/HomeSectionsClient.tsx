@@ -10,6 +10,7 @@ import { TrueFocus } from '@/components/TrueFocus';
 import { ImpactStatsCountUp } from '@/components/ImpactStatsCountUp';
 import { UpcomingEventsWithModal } from '@/components/UpcomingEventsWithModal';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getHomeCopy } from '@/lib/translations/home';
 
 export interface Mentor {
   name: string;
@@ -48,62 +49,17 @@ export function HomeSectionsClient({
   testimonials: Testimonial[];
 }) {
   const { language } = useLanguage();
+  const t = getHomeCopy(language);
   const isTigrinya = language === 'ti';
-
-  const curriculumCards = [
-    {
-      title: isTigrinya ? "መሰረታት ቢትኮይን" : "Bitcoin Basics",
-      description: isTigrinya
-        ? "ቢትኮይን እንታይ ምዃኑ፣ ብኸመይ ከም ዝሰርሕን ንፋይናንሳዊ ርእሰ-ውሳነ ኣገዳሲ ስለምንታይ ምዃኑን ምርዳእ።"
-        : "Understanding what Bitcoin is, how it works, and why it matters for financial sovereignty.",
-      icon: "₿",
-    },
-    {
-      title: isTigrinya ? "ቢትኮይን ብኸመይ ይሰርሕ" : "How Bitcoin Works",
-      description: isTigrinya
-        ? "ብዛዕባ መፍትሕታት (keys)፣ ኣድራሻታት (addresses)፣ UTXOs፣ ልውውጣት ገንዘብ (transactions) እና ብሎካት (blocks) ቀለልቲን ብስእሊ ዝተደገፉን መብርሂታት።"
-        : "Simple and visual explanations of keys, addresses, UTXOs, transactions, and blocks.",
-      icon: "🔗",
-    },
-    {
-      title: isTigrinya ? "ክእለታት Lightning Network" : "Lightning Skills",
-      description: isTigrinya
-        ? "ብLightning Network ቅልጡፋትን ውሑድ ክፍሊት ዝሓትቱን ልውውጣት ቢትኮይን ከመይ ከም ዝፍጸሙ ተማሃሩ።"
-        : "Learn to use Lightning Network for fast, low-cost Bitcoin transactions.",
-      icon: "⚡",
-    },
-  ];
-
-  const howItWorksSteps = [
-    {
-      step: "1",
-      title: isTigrinya ? "ናብ ጉጅለ ትምህርቲ ተጸንበሩ" : "Join a cohort",
-      description: isTigrinya
-        ? "መመልከቲ ኣቕርቡ፣ ኣብ ብዝተወደበ መደብ ትምህርቲ ድማ ተቐባልነት ርኸቡ።"
-        : "Apply and get accepted into a structured, mentor-led learning program.",
-    },
-    {
-      step: "2",
-      title: isTigrinya ? "ቀጥታዊ ክፍለ-ግዜታት ተኸታተሉ" : "Attend live sessions",
-      description: isTigrinya
-        ? "ምስ መምህራንን መማኸርትን ኣብ ዝግበር ናይ ምይይጥ ክፍላትን ተሳተፉ"
-        : "Join interactive classes and learn directly from Bitcoin educators.",
-    },
-    {
-      step: "3",
-      title: isTigrinya ? "ተግባራዊ ዕዮታት ኣተግብሩ" : "Complete practical tasks",
-      description: isTigrinya
-        ? "ተግባራዊ ናይ ቢትኮይን ልምምዳትን ዕዮታትን ምስራሕ"
-        : "Build real skills with hands-on exercises and assignments.",
-    },
-    {
-      step: "4",
-      title: isTigrinya ? "ሳትስ (sats) + ምስክር ወረቐት ውሰዱ" : "Earn sats + certificate",
-      description: isTigrinya
-        ? "ብቢትኮይን ተሸለሙ ከምኡ’ውን ናይ ምስክር ወረቐትኩም ተቐበሉ"
-        : "Get paid in Bitcoin for your progress and earn a verified certificate.",
-    },
-  ];
+  const curriculumIcons = ["₿", "🔗", "⚡"];
+  const curriculumCards = t.curriculum.cards.map((card, index) => ({
+    ...card,
+    icon: curriculumIcons[index] ?? "₿",
+  }));
+  const howItWorksSteps = t.how_it_works.steps.map((step, index) => ({
+    step: String(index + 1),
+    ...step,
+  }));
 
   return (
     <div className="relative z-10 w-full bg-black/60 backdrop-blur-sm">
@@ -143,9 +99,7 @@ export function HomeSectionsClient({
                 )}
               </AnimatedHeading>
               <p className="mt-4 text-base leading-relaxed text-zinc-300 sm:text-lg w-full sm:max-w-3xl sm:mx-auto">
-                {isTigrinya
-                  ? "ኣብ 2008፣ ዓለምለኻዊ ቅልውላው ፋይናንስ ድኹምነት ናይቲ ባህላዊ ስርዓት ባንክታት ኣቃሊዑ። መንግስታት ንባንክታት ካብ ውድቀት ንምድሓን እናሓገዙ ከለዉ፣ ተራ ሰባት ገዛውቶም፣ ስራሕቶምን ዝዓቖርዎ ገንዘብን ሰኣኑ። ቢትኮይን ካብዚ ቅልውላው ተወሊዱ፤ ኣብ ባንክታት ወይ መንግስታት ክትኣምኑ ዘየድልዮ፣ ማእከላይ ተቖጻጻሪ ዘይብሉ ኣማራጺ እዩ።"
-                  : "In 2008, the global financial crisis exposed the fragility of traditional banking. While governments bailed out the banks, ordinary people lost homes, jobs, and savings. Bitcoin was born from this crisis — a decentralized alternative that doesn't require trust in banks or governments."}
+                {t.how_it_started.description}
               </p>
             </div>
             <div className="flex items-center justify-center w-full">
@@ -153,7 +107,7 @@ export function HomeSectionsClient({
                 <div className="relative w-full bg-gradient-to-br from-zinc-900 via-orange-900/20 to-zinc-900 flex items-center justify-center">
                   <img 
                     src="/images/bailouts-to-blockchain.jpg" 
-                    alt={isTigrinya ? "ካብ ምድሓን ባንክታት ናብ Blockchain — መበቆል ታሪኽ ቢትኮይን" : "From Bailouts to Blockchain - Bitcoin's origin story"}
+                    alt={t.how_it_started.image_alt}
                     className="w-full h-auto object-contain"
                   />
                 </div>
@@ -185,23 +139,19 @@ export function HomeSectionsClient({
           <section className="mb-32 rounded-xl border border-orange-500/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(249,115,22,0.2)] sm:p-12">
             <div className="flex flex-col items-center text-center">
               <AnimatedHeading as="h2" className="text-3xl font-semibold text-orange-200 sm:text-4xl">
-                {isTigrinya ? "ተልእኾና" : "Our Mission"}
+                {t.mission.heading}
               </AnimatedHeading>
               <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-                {isTigrinya
-                  ? "ቢትኮይን ናይ ፋይናንሳዊ ናጽነት መሳርሒ እዩ፤ ብፍላይ ኣብ ኣፍሪቃ።"
-                  : "Bitcoin is a tool for sovereignty and economic empowerment — especially in Africa."}
+                {t.mission.paragraph_1}
               </p>
               <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-                {isTigrinya
-                  ? "ትምህርቲና ብተግባራዊ ትምህርትን ደገፍ ማሕበረሰብን፣ ሰባት ቢትኮይን ክርድኡ፣ ክጥቀሙሉን ብቢትኮይን ክሃንጹን ትሕግዝ።"
-                  : "Our academy helps people understand, use, and build with Bitcoin through hands-on learning and community support."}
+                {t.mission.paragraph_2}
               </p>
               <Link
                 href="/about"
                 className="mt-6 inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3 text-base font-semibold text-black transition hover:brightness-110"
               >
-                {isTigrinya ? "ተልእኾና ኣንብቡ" : "Read Our Mission"}
+                {t.mission.cta}
               </Link>
               <div className="relative mt-10 flex h-64 w-64 items-center justify-center">
                 <Image
@@ -227,7 +177,7 @@ export function HomeSectionsClient({
           <section className="mb-32 space-y-8">
             <div className="text-center">
               <AnimatedHeading as="h2" className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">
-                {isTigrinya ? "እንታይ ክትመሃሩ ኢኹም" : "What You Will Learn"}
+                {t.curriculum.heading}
               </AnimatedHeading>
             </div>
             <AnimatedList animation="slideUp" className="grid gap-6 sm:grid-cols-3">
@@ -247,7 +197,7 @@ export function HomeSectionsClient({
                 href="/chapters"
                 className="inline-flex items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-base font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
               >
-                {isTigrinya ? "ምሉእ መደብ ትምህርቲ ርአዩ" : "View Full Curriculum"}
+                {t.curriculum.cta}
               </Link>
             </div>
           </section>
@@ -258,10 +208,10 @@ export function HomeSectionsClient({
           <section className="mb-32 space-y-12">
             <div className="text-center">
               <AnimatedHeading as="h2" className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">
-                {isTigrinya ? "ብኸመይ ይሰርሕ" : "How It Works"}
+                {t.how_it_works.heading}
               </AnimatedHeading>
               <p className="mx-auto mt-4 max-w-xl text-base text-zinc-400 sm:text-lg">
-                {isTigrinya ? "ናይ ቢትኮይን ትምህርትኹም ዝመርሕ ቀሊል መንገዲ" : "A clear path from sign-up to your first sats and certificate."}
+                {t.how_it_works.subheading}
               </p>
             </div>
             <AnimatedList animation="slideLeft" className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -288,7 +238,7 @@ export function HomeSectionsClient({
                 href="/chapters"
                 className="inline-flex items-center justify-center rounded-xl border border-orange-400/40 bg-orange-500/10 px-6 py-3.5 text-base font-semibold text-orange-300 transition hover:bg-orange-500/20 hover:border-orange-400/60"
               >
-                {isTigrinya ? "እቲ ኣካዳሚ ከመይ ከም ዝሰርሕ ርኣዩ" : "See how the academy works"}
+                {t.how_it_works.cta}
               </Link>
             </div>
           </section>
@@ -308,12 +258,10 @@ export function HomeSectionsClient({
           <section className="mb-32 space-y-10">
             <div className="text-center">
               <AnimatedHeading as="h2" className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">
-                {isTigrinya ? "ኣብ ግሩፓትና ተጸንበሩ" : "Join Our Community"}
+                {t.community.heading}
               </AnimatedHeading>
               <p className="mx-auto mt-4 max-w-xl text-base text-zinc-400 sm:text-lg">
-                {isTigrinya
-                  ? "ኣብቲ እናዓበየ ዝኸይድ ዘሎ መርበብ ተመሃሮ፣ ሃነጽትን መምህራን ቢትኮይንን ተጸንበሩ።"
-                  : "Connect with learners, builders, and Bitcoin educators across the continent."}
+                {t.community.description}
               </p>
             </div>
 
@@ -392,7 +340,7 @@ export function HomeSectionsClient({
           <section className="mb-32 space-y-8">
             <div className="text-center">
               <AnimatedHeading as="h2" className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">
-                {isTigrinya ? "ብመምህራንን መራሕቲ ማሕበረሰብን ዝምራሕ" : "Guided by Mentors & Community Leaders"}
+                {t.mentors.heading}
               </AnimatedHeading>
             </div>
             <AnimatedList animation="slideLeft" className="flex flex-wrap justify-center items-center gap-6 max-w-7xl mx-auto">
@@ -458,7 +406,7 @@ export function HomeSectionsClient({
                 href="/mentorship"
                 className="inline-flex items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-base font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
               >
-                {isTigrinya ? "ምስ መማኸርቲ ተጸንበሩ" : "Join us on mentoring"}
+                {t.mentors.cta}
               </Link>
             </div>
           </section>
@@ -654,12 +602,10 @@ export function HomeSectionsClient({
           <section className="mb-32 space-y-8">
             <div className="text-center">
               <AnimatedHeading as="h2" className="text-3xl font-semibold text-zinc-50 sm:text-4xl lg:text-5xl">
-                {isTigrinya ? "ምሳና ተራኸቡ" : "Connect With Us"}
+                {t.social.heading}
               </AnimatedHeading>
               <p className="mt-4 text-base text-zinc-400 sm:text-lg">
-                {isTigrinya
-                  ? "ናይ መወዳእታ ዜናታት፣ ፍጻሜታትን ናይ ቢትኮይን ትምህርታዊ ትሕዝቶታትን ንክትከታተሉ ኣብ ማሕበራዊ መራኸቢታት ተኸታተሉና።"
-                  : "Follow us on social media to stay updated with the latest news, events, and Bitcoin education content."}
+                {t.social.description}
               </p>
             </div>
             <AnimatedList animation="slideLeft" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -715,18 +661,16 @@ export function HomeSectionsClient({
         <AnimatedSection animation="slideUp">
           <section className="mb-20 rounded-xl border border-orange-500/25 bg-black/80 p-12 text-center shadow-[0_0_40px_rgba(249,115,22,0.2)]">
             <AnimatedHeading as="h2" className="mb-6 text-3xl font-semibold text-orange-200 sm:text-4xl">
-              {isTigrinya ? "ተልእኾና ደግፉ" : "Support Our Mission"}
+              {t.donate.heading}
             </AnimatedHeading>
             <p className="mb-8 text-base text-zinc-300 sm:text-lg">
-              {isTigrinya
-                ? "ትምህርቲ ቢትኮይን ኣብ መላእ ኣፍሪቃ ንምስፍሕፋሕ ንዘሎና ዕላማ ደግፉ።"
-                : "Support our mission to expand Bitcoin education across Africa."}
+              {t.donate.description}
             </p>
             <Link
               href="/donate"
               className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-8 py-4 text-base font-semibold text-black transition hover:brightness-110"
             >
-              {isTigrinya ? "ወፈያ ግበር" : "Support the Academy"}
+              {t.donate.cta}
             </Link>
           </section>
         </AnimatedSection>

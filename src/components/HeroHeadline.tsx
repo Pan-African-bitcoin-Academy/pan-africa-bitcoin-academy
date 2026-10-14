@@ -1,6 +1,8 @@
 'use client';
 
 import { BlurText } from '@/components/BlurText';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getHomeCopy } from '@/lib/translations/home';
 
 const handleAnimationComplete = () => {
   console.log('Animation completed!');
@@ -11,11 +13,15 @@ export function HeroHeadline({
 }: {
   onAnimationComplete?: () => void;
 }) {
+  const { language } = useLanguage();
+  const t = getHomeCopy(language);
+
   return (
     <>
       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-zinc-50 leading-tight">
         <BlurText
-          text="Scaling Bitcoin adoption"
+          key={`${language}-heading`}
+          text={t.hero.heading}
           delay={300}
           animateBy="words"
           direction="top"
@@ -25,7 +31,8 @@ export function HeroHeadline({
       </h1>
       <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-orange-400 leading-tight">
         <BlurText
-          text="Turning Africa orange"
+          key={`${language}-subheading`}
+          text={t.hero.subheading}
           delay={600}
           animateBy="words"
           direction="bottom"

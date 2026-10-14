@@ -64,6 +64,7 @@
   },
   "impact": {
     "heading": "ዝተገብረ ምዕባለ",
+    "subheading": "ኣብ መላእ ኣፍሪቃ ካብ ትምህርቲ ቢትኮይንና ዝመጹ ሓቀኛ ቁጽርታት።",
     "stats": [
       { "value": "12", "label": "ዝሰልጠኑ ተመሃሮ" },
       { "value": "80,000+", "label": "ዝተዓደለ ሳትስ (Sats)" },
@@ -160,14 +161,15 @@
     "change_password": "መሕለፊ ቃል ቀይር",
     "logout": "ውጻእ",
     "user_fallback": "ተጠቃሚ",
-    "toggle_menu": "ዝርዝር ምርጫታት ክፈት ወይ ዕጸው"
+    "toggle_menu": "ዝርዝር ምርጫታት ክፈት ወይ ዕጸው",
+    "language": "ቋንቋ"
   },
   "footer": {
     "built_by_prefix": "ብ",
     "built_by_name": "Joie",
     "built_by_suffix": "ንቢትኮይን ዝምርምሩ ኣእምሮታት ንምሕጋዝ ዝተሃንጸ",
     "bitcoin": "ቢትኮይን",
-    "disclaimer": "ንትምህርታዊ ዕላማ ጥራይ። ምኽሪ ፋይናንስ ኣይኮነን። ኣብ testnet/regtest ተለማመዱ፤ ክትስእንዎ ዘይትኽእሉ ገንዘብ ፈጺምኩም ኣይትጠቐሙ።",
+    "disclaimer": "ንትምህርታዊ ዕላማ ጥራይ። ፋይናንስያዊ ምኽሪ ኣይኮነን። ኣብ testnet/regtest ተለማመዱ፤ ክትረኽብዎ ዘይትኽእሉ ገንዘብ ፈጺምኩም ኣይትጠቐሙ።",
     "learn_bitcoin": "ቢትኮይን ተማሃር",
     "about": "ብዛዕባና",
     "blog": "ብሎግ",

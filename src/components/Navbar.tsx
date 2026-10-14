@@ -503,7 +503,7 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:bg-orange-400/10 touch-target flex items-center"
             >
-              {isTi ? "ኣመልክቱ" : "Apply"}
+              {isTi ? "ተመዝገቡ" : "Apply"}
             </Link>
             )}
             <Link
