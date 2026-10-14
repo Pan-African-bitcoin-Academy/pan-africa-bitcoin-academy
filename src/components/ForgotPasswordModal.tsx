@@ -1,19 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Mail, CheckCircle } from 'lucide-react';
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialEmail?: string;
+  onSignUp?: () => void;
 }
 
-export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProps) {
-  const [email, setEmail] = useState('');
+export function ForgotPasswordModal({
+  isOpen,
+  onClose,
+  initialEmail = '',
+  onSignUp,
+}: ForgotPasswordModalProps) {
+  const [email, setEmail] = useState(initialEmail);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialEmail) {
+      setEmail(initialEmail);
+    }
+  }, [initialEmail]);
 
   if (!isOpen) return null;
 

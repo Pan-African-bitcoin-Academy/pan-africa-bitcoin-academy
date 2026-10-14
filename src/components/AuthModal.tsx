@@ -10,9 +10,17 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'signin' | 'signup';
+  redirectAfterLogin?: string | null;
+  onForgotPassword?: (email: string) => void;
 }
 
-export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
+export function AuthModal({
+  isOpen,
+  onClose,
+  mode,
+  redirectAfterLogin,
+  onForgotPassword,
+}: AuthModalProps) {
   const [isSignIn, setIsSignIn] = useState(mode === 'signin');
   const [formData, setFormData] = useState({
     firstName: '',
@@ -107,8 +115,10 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
               // ignore
             }
             onClose();
-            // Redirect to dashboard after successful sign-in
-            window.location.href = '/dashboard';
+            // Redirect after successful sign-in if not suppressed
+            if (redirectAfterLogin !== null) {
+              window.location.href = redirectAfterLogin || '/dashboard';
+            }
           } else {
             setServerError(data.error || 'Invalid credentials. Please try again.');
           }
@@ -433,7 +443,11 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
-                  setForgotPasswordOpen(true);
+                  if (onForgotPassword) {
+                    onForgotPassword(formData.email);
+                  } else {
+                    setForgotPasswordOpen(true);
+                  }
                 }}
                 className="text-sm text-orange-400 hover:text-orange-300"
               >
