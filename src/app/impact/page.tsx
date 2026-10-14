@@ -1,7 +1,27 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import {
+  Users,
+  Globe2,
+  FileText,
+  Clock,
+  GraduationCap,
+  Check,
+  User,
+  TrendingUp,
+  ArrowDownRight,
+  RefreshCw,
+  CalendarCheck,
+  Zap,
+  HeartHandshake,
+  UserPlus,
+} from 'lucide-react';
 import { AnimatedSection } from '@/components/AnimatedSection';
+import { AnimatedHeading } from '@/components/AnimatedHeading';
+import SplitText from '@/components/SplitText';
 
 interface ImpactMetrics {
   totalStudentsTrained: number;
@@ -9,6 +29,13 @@ interface ImpactMetrics {
   countriesReached: number;
   assignmentsSubmitted: number;
   teachingHours: number;
+  eventsCompleted: number;
+}
+
+interface SatsStats {
+  satsEarned: number;
+  satsSpent: number;
+  satsCirculated: number;
 }
 
 interface CohortData {
@@ -28,32 +55,19 @@ interface ProgressMetrics {
   avgAssignmentScore: number;
 }
 
+interface Testimonial {
+  id: string;
+  name: string;
+  city: string;
+  quote: string;
+  photo: string | null;
+}
+
 const outcomes = [
   "50% now using Bitcoin daily",
-  "4 students supporting local communities",
-  "3 students teaching Bitcoin in their schools",
+  "students supporting local communities",
+  "students teaching Bitcoin in their schools",
   "Lightning payments used in real life: 120+ transactions",
-];
-
-const testimonials = [
-  {
-    name: "Amina K.",
-    city: "Lagos, Nigeria",
-    quote: "This academy changed my understanding of Bitcoin. I now run a Lightning node and help others in my community.",
-    photo: "👤",
-  },
-  {
-    name: "David M.",
-    city: "Nairobi, Kenya",
-    quote: "The hands-on approach and sats rewards made learning engaging. I've completed all assignments and earned 5,000 sats!",
-    photo: "👤",
-  },
-  {
-    name: "Fatima A.",
-    city: "Accra, Ghana",
-    quote: "Best Bitcoin education I've received. The mentors are knowledgeable and the community is supportive.",
-    photo: "👤",
-  },
 ];
 
 // Custom hook for animated counter
@@ -105,11 +119,20 @@ export default function ImpactPage() {
   const [metrics, setMetrics] = useState<ImpactMetrics | null>(null);
   const [cohorts, setCohorts] = useState<CohortData[]>([]);
   const [progressMetrics, setProgressMetrics] = useState<ProgressMetrics | null>(null);
+  const [satsStats, setSatsStats] = useState<SatsStats | null>(null);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  // Completion: show 10% when computed rate is 0 (empty / early cohorts)
+  const completionRateTarget =
+    progressMetrics != null && progressMetrics.completionRate === 0
+      ? 10
+      : progressMetrics?.completionRate ?? 0;
 
   // Animated values for progress metrics
   const animatedCompletionRate = useAnimatedCounter(
-    progressMetrics?.completionRate || 0,
+    completionRateTarget,
     1500,
     shouldAnimate
   );
@@ -128,10 +151,12 @@ export default function ImpactPage() {
     const fetchData = async () => {
       try {
         // Fetch all data in parallel
-        const [metricsResponse, cohortsResponse, progressResponse] = await Promise.all([
+        const [metricsResponse, cohortsResponse, progressResponse, satsResponse, testimonialsResponse] = await Promise.all([
           fetch('/api/impact/metrics'),
           fetch('/api/impact/cohorts'),
           fetch('/api/impact/progress'),
+          fetch('/api/impact/sats-stats'),
+          fetch('/api/impact/testimonials'),
         ]);
 
         if (metricsResponse.ok) {
@@ -148,10 +173,20 @@ export default function ImpactPage() {
           const progressData = await progressResponse.json();
           setProgressMetrics(progressData);
         }
+
+        if (satsResponse.ok) {
+          const satsData = await satsResponse.json();
+          setSatsStats(satsData);
+        }
+
+        if (testimonialsResponse.ok) {
+          const testimonialsData = await testimonialsResponse.json();
+          setTestimonials(testimonialsData.testimonials || []);
+        }
       } catch (error) {
         console.error('Error fetching impact data:', error);
       } finally {
-        // Start animation after data is loaded
+        setDataLoaded(true);
         setTimeout(() => setShouldAnimate(true), 100);
       }
     };
@@ -159,18 +194,22 @@ export default function ImpactPage() {
     fetchData();
   }, []);
 
-  // Format metrics for display
-  const displayMetrics = metrics
-    ? [
-        { label: "Total Students Trained", value: metrics.totalStudentsTrained.toString(), icon: "👥" },
-        { label: "Cohorts Completed", value: metrics.cohortsCompleted.toString(), icon: "📚" },
-        { label: "Countries Reached", value: metrics.countriesReached.toString(), icon: "🌍" },
-        // Lightning Transactions - paused
-        { label: "Assignments Submitted", value: metrics.assignmentsSubmitted.toString(), icon: "📝" },
-        // Sats Distributed - paused
-        { label: "Teaching Hours", value: metrics.teachingHours.toString(), icon: "⏰" },
-      ]
-    : [];
+  type MetricIcon = typeof Users;
+  const keyMetricDefs: { label: string; Icon: MetricIcon; getValue: (m: ImpactMetrics) => number | string }[] = [
+    { label: 'Total Students Trained', Icon: Users, getValue: (m) => m.totalStudentsTrained },
+    { label: 'Cohorts Completed', Icon: GraduationCap, getValue: (m) => m.cohortsCompleted },
+    { label: 'Countries Reached', Icon: Globe2, getValue: (m) => m.countriesReached },
+    { label: 'Assignments Submitted', Icon: FileText, getValue: (m) => m.assignmentsSubmitted },
+    {
+      label: 'Teaching Hours',
+      Icon: Clock,
+      getValue: (m) => {
+        const v = m.teachingHours ?? 0;
+        return Number.isInteger(v) ? v : v.toFixed(1);
+      },
+    },
+    { label: 'Events Completed', Icon: CalendarCheck, getValue: (m) => m.eventsCompleted ?? 0 },
+  ];
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
@@ -179,11 +218,25 @@ export default function ImpactPage() {
           {/* Hero Section */}
           <AnimatedSection animation="slideUp">
             <div className="mb-16 text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
-                Our Impact in Building Bitcoin Education & Sovereignty in Africa
-              </h1>
-              <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
-                Tracking our progress openly. Updated after every cohort.
+              <AnimatedHeading as="h1" className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+                <SplitText
+                  text="Our Impact"
+                  tag="span"
+                  className="inline-block"
+                  delay={50}
+                  duration={1.25}
+                  ease="bounce.out"
+                  splitType="chars"
+                  from={{ opacity: 0, y: 40 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.1}
+                  rootMargin="-100px"
+                  textAlign="center"
+                />
+              </AnimatedHeading>
+              <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-orange-400 to-cyan-400" aria-hidden />
+              <p className="mx-auto mt-5 max-w-md text-sm text-zinc-500 sm:text-base">
+                Cohort stats and outcomes we publish here.
               </p>
             </div>
           </AnimatedSection>
@@ -192,38 +245,26 @@ export default function ImpactPage() {
         {/* Key Metrics */}
         <AnimatedSection animation="slideLeft">
           <section className="space-y-6">
-          <h2 className="text-xl font-semibold text-zinc-50">Key Metrics</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {displayMetrics.length > 0 ? (
-              displayMetrics.map((metric, index) => (
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-zinc-50">Key Metrics</AnimatedHeading>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            {keyMetricDefs.map((def, index) => {
+              const Icon = def.Icon;
+              const value = metrics ? def.getValue(metrics).toString() : '0';
+              return (
                 <div
-                  key={index}
-                  className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 text-center shadow-[0_0_20px_rgba(34,211,238,0.1)]"
+                  key={def.label}
+                  className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 text-center shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/40"
                 >
-                  <div className="mb-3 text-4xl">{metric.icon}</div>
-                  <div className="text-3xl font-bold text-cyan-300">{metric.value}</div>
-                  <div className="mt-2 text-xs text-zinc-400 sm:text-sm">{metric.label}</div>
+                  <div className="mb-3 flex justify-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-500/25 bg-cyan-500/10">
+                      <Icon className="h-6 w-6 text-cyan-300" aria-hidden />
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold tabular-nums text-cyan-300">{value}</div>
+                  <div className="mt-2 text-xs text-zinc-400 sm:text-sm">{def.label}</div>
                 </div>
-              ))
-            ) : (
-              // Show placeholder with 0 values while loading
-              [
-                { label: "Total Students Trained", icon: "👥", value: "0" },
-                { label: "Cohorts Completed", icon: "📚", value: "0" },
-                { label: "Countries Reached", icon: "🌍", value: "0" },
-                { label: "Assignments Submitted", icon: "📝", value: "0" },
-                { label: "Teaching Hours", icon: "⏰", value: "0" },
-              ].map((metric, index) => (
-                <div
-                  key={index}
-                  className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 text-center shadow-[0_0_20px_rgba(34,211,238,0.1)]"
-                >
-                  <div className="mb-3 text-4xl">{metric.icon}</div>
-                  <div className="text-3xl font-bold text-cyan-300">{metric.value}</div>
-                  <div className="mt-2 text-xs text-zinc-400 sm:text-sm">{metric.label}</div>
-                </div>
-              ))
-            )}
+              );
+            })}
           </div>
           </section>
         </AnimatedSection>
@@ -231,11 +272,11 @@ export default function ImpactPage() {
         {/* Student Progress Charts */}
         <AnimatedSection animation="slideRight">
           <section className="space-y-6">
-          <h2 className="text-xl font-semibold text-zinc-50">Student Progress</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-zinc-50">Student Progress</AnimatedHeading>
           {progressMetrics ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
-                <h3 className="mb-2 text-sm font-medium text-zinc-400">Completion Rate</h3>
+                <AnimatedHeading as="h3" className="mb-2 text-sm font-medium text-zinc-400">Completion Rate</AnimatedHeading>
                 <div className="text-3xl font-bold text-orange-400">{animatedCompletionRate}%</div>
                 <div className="mt-2 h-2 w-full rounded-full bg-zinc-900 overflow-hidden">
                   <div 
@@ -245,7 +286,7 @@ export default function ImpactPage() {
                 </div>
               </div>
               <div className="rounded-xl border border-cyan-500/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]">
-                <h3 className="mb-2 text-sm font-medium text-zinc-400">Attendance Rate</h3>
+                <AnimatedHeading as="h3" className="mb-2 text-sm font-medium text-zinc-400">Attendance Rate</AnimatedHeading>
                 <div className="text-3xl font-bold text-cyan-400">{animatedAttendanceRate}%</div>
                 <div className="mt-2 h-2 w-full rounded-full bg-zinc-900 overflow-hidden">
                   <div 
@@ -255,7 +296,7 @@ export default function ImpactPage() {
                 </div>
               </div>
               <div className="rounded-xl border border-purple-500/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(168,85,247,0.1)]">
-                <h3 className="mb-2 text-sm font-medium text-zinc-400">Avg Assignment Score</h3>
+                <AnimatedHeading as="h3" className="mb-2 text-sm font-medium text-zinc-400">Avg Assignment Score</AnimatedHeading>
                 <div className="text-3xl font-bold text-purple-400">{animatedAssignmentScore}%</div>
                 <div className="mt-2 h-2 w-full rounded-full bg-zinc-900 overflow-hidden">
                   <div 
@@ -266,24 +307,24 @@ export default function ImpactPage() {
               </div>
             </div>
           ) : (
-            // Show placeholder with 0 values while loading
+            // Placeholder while loading (completion uses 10% so the bar is not empty)
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
-                <h3 className="mb-2 text-sm font-medium text-zinc-400">Completion Rate</h3>
-                <div className="text-3xl font-bold text-orange-400">0%</div>
+                <AnimatedHeading as="h3" className="mb-2 text-sm font-medium text-zinc-400">Completion Rate</AnimatedHeading>
+                <div className="text-3xl font-bold text-orange-400">10%</div>
                 <div className="mt-2 h-2 w-full rounded-full bg-zinc-900">
-                  <div className="h-2 rounded-full bg-orange-400" style={{ width: '0%' }}></div>
+                  <div className="h-2 rounded-full bg-orange-400" style={{ width: '10%' }}></div>
                 </div>
               </div>
               <div className="rounded-xl border border-cyan-500/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]">
-                <h3 className="mb-2 text-sm font-medium text-zinc-400">Attendance Rate</h3>
+                <AnimatedHeading as="h3" className="mb-2 text-sm font-medium text-zinc-400">Attendance Rate</AnimatedHeading>
                 <div className="text-3xl font-bold text-cyan-400">0%</div>
                 <div className="mt-2 h-2 w-full rounded-full bg-zinc-900">
                   <div className="h-2 rounded-full bg-cyan-400" style={{ width: '0%' }}></div>
                 </div>
               </div>
               <div className="rounded-xl border border-purple-500/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(168,85,247,0.1)]">
-                <h3 className="mb-2 text-sm font-medium text-zinc-400">Avg Assignment Score</h3>
+                <AnimatedHeading as="h3" className="mb-2 text-sm font-medium text-zinc-400">Avg Assignment Score</AnimatedHeading>
                 <div className="text-3xl font-bold text-purple-400">0%</div>
                 <div className="mt-2 h-2 w-full rounded-full bg-zinc-900">
                   <div className="h-2 rounded-full bg-purple-400" style={{ width: '0%' }}></div>
@@ -295,7 +336,7 @@ export default function ImpactPage() {
 
         {/* Cohort History */}
         <section className="space-y-6">
-          <h2 className="text-xl font-semibold text-zinc-50">Cohort History</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-zinc-50">Cohort History</AnimatedHeading>
           {cohorts.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2">
               {cohorts.map((cohort) => (
@@ -303,7 +344,23 @@ export default function ImpactPage() {
                   key={cohort.id}
                   className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
                 >
-                  <h3 className="mb-4 text-lg font-semibold text-cyan-200">{cohort.name}</h3>
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <AnimatedHeading as="h3" className="text-lg font-semibold text-cyan-200">
+                      {cohort.name}
+                    </AnimatedHeading>
+                    {(() => {
+                      const ended =
+                        !!cohort.endDate && !Number.isNaN(new Date(cohort.endDate).getTime())
+                          ? new Date(cohort.endDate).getTime() < Date.now()
+                          : false;
+                      const isCompleted = (cohort.completionRate ?? 0) >= 100 || ended;
+                      return isCompleted ? (
+                        <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-300 ring-1 ring-green-500/25">
+                          Completed
+                        </span>
+                      ) : null;
+                    })()}
+                  </div>
                   <div className="space-y-2 text-sm text-zinc-300">
                     <p><span className="font-medium text-zinc-400">Students:</span> {cohort.students}</p>
                     <p><span className="font-medium text-zinc-400">Completion Rate:</span> {cohort.completionRate}%</p>
@@ -329,12 +386,12 @@ export default function ImpactPage() {
         {/* Graduate Outcomes */}
         <AnimatedSection animation="slideRight">
           <section className="space-y-4 rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-          <h2 className="text-xl font-semibold text-orange-200">Graduate Outcomes</h2>
-          <p className="text-sm text-zinc-300 sm:text-base">What our students have achieved:</p>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-orange-200">Graduate Outcomes</AnimatedHeading>
+          <p className="text-sm text-zinc-300 sm:text-base">What our students are expected to achieve:</p>
           <ul className="mt-4 space-y-2">
             {outcomes.map((outcome, index) => (
-              <li key={index} className="flex items-start gap-2 text-sm text-zinc-300 sm:text-base">
-                <span className="text-orange-400">✓</span>
+              <li key={index} className="flex items-start gap-3 text-sm text-zinc-300 sm:text-base">
+                <Check className="mt-0.5 h-5 w-5 shrink-0 text-orange-400" aria-hidden />
                 <span>{outcome}</span>
               </li>
             ))}
@@ -345,18 +402,39 @@ export default function ImpactPage() {
         {/* Sats Reward Economy */}
         <AnimatedSection animation="slideLeft">
           <section className="space-y-4 rounded-xl border border-purple-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
-          <h2 className="text-xl font-semibold text-purple-200">Sats Reward Economy</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-purple-200">Sats Reward Economy</AnimatedHeading>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">150,000+</div>
+              <div className="mb-2 flex justify-center">
+                <TrendingUp className="h-6 w-6 text-purple-400" aria-hidden />
+              </div>
+              <div className="text-2xl font-bold tabular-nums text-purple-400">
+                {satsStats
+                  ? `${(satsStats.satsEarned / 1000).toFixed(0)}K+`
+                  : '0+'}
+              </div>
               <div className="mt-1 text-xs text-zinc-400">Sats Earned</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">120,000+</div>
+              <div className="mb-2 flex justify-center">
+                <ArrowDownRight className="h-6 w-6 text-purple-400" aria-hidden />
+              </div>
+              <div className="text-2xl font-bold tabular-nums text-purple-400">
+                {satsStats
+                  ? `${(satsStats.satsSpent / 1000).toFixed(0)}K+`
+                  : '0+'}
+              </div>
               <div className="mt-1 text-xs text-zinc-400">Sats Spent</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">270,000+</div>
+              <div className="mb-2 flex justify-center">
+                <RefreshCw className="h-6 w-6 text-purple-400" aria-hidden />
+              </div>
+              <div className="text-2xl font-bold tabular-nums text-purple-400">
+                {satsStats
+                  ? `${(satsStats.satsCirculated / 1000).toFixed(0)}K+`
+                  : '0+'}
+              </div>
               <div className="mt-1 text-xs text-zinc-400">Sats Circulated</div>
             </div>
           </div>
@@ -369,40 +447,60 @@ export default function ImpactPage() {
         {/* Testimonials */}
         <AnimatedSection animation="slideRight">
           <section className="space-y-6">
-          <h2 className="text-xl font-semibold text-zinc-50">Student Testimonials</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
-                    <span className="text-xl">{testimonial.photo}</span>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-zinc-50">Student Testimonials</AnimatedHeading>
+          {testimonials.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-3">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
+                >
+                  <div className="mb-4 flex items-center gap-3">
+                    {testimonial.photo ? (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20 overflow-hidden">
+                        <Image 
+                          src={testimonial.photo} 
+                          alt={testimonial.name}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
+                        <User className="h-6 w-6 text-cyan-300/90" aria-hidden />
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-semibold text-zinc-50">{testimonial.name}</div>
+                      {testimonial.city && (
+                        <div className="text-xs text-zinc-400">{testimonial.city}</div>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold text-zinc-50">{testimonial.name}</div>
-                    <div className="text-xs text-zinc-400">{testimonial.city}</div>
-                  </div>
+                  <p className="text-sm italic text-zinc-300">"{testimonial.quote}"</p>
                 </div>
-                <p className="text-sm italic text-zinc-300">"{testimonial.quote}"</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-8 text-center shadow-[0_0_20px_rgba(34,211,238,0.1)]">
+              <p className="text-zinc-400">No testimonials available at this time.</p>
+            </div>
+          )}
           </section>
         </AnimatedSection>
 
         {/* Download Report */}
         <AnimatedSection animation="slideUp">
           <section className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 text-center shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-          <h2 className="text-xl font-semibold text-cyan-200">Download Impact Report</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-cyan-200">Download Impact Report</AnimatedHeading>
           <p className="mt-2 text-sm text-zinc-300 sm:text-base">
             Get our comprehensive 1–2 page PDF report with mission, results, charts, stats, photos, and quotes.
           </p>
-          <p className="mt-2 text-xs text-zinc-400">
-            Essential when applying for grants and partnerships.
-          </p>
-          <button className="mt-6 rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110">
+          <button 
+            disabled
+            className="mt-6 rounded-lg bg-gradient-to-r from-zinc-600 to-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-400 cursor-not-allowed opacity-60"
+          >
             Download PDF Report
           </button>
           </section>
@@ -410,28 +508,80 @@ export default function ImpactPage() {
 
         {/* Support Section */}
         <AnimatedSection animation="slideLeft">
-          <section className="rounded-xl border border-orange-500/25 bg-black/80 p-8 text-center shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-          <h2 className="text-xl font-semibold text-orange-200">Want to help us expand our impact?</h2>
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <a
-              href="/donate"
-              className="rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
-            >
-              Lightning Donate
-            </a>
-            <a
-              href="/apply"
-              className="rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
-            >
-              Sponsor a Student
-            </a>
-            <a
-              href="/mentorship"
-              className="rounded-lg border border-purple-400/30 bg-purple-400/10 px-6 py-3 text-sm font-semibold text-purple-300 transition hover:bg-purple-400/20"
-            >
-              Apply to Mentor
-            </a>
-          </div>
+          <section className="overflow-hidden rounded-xl border border-orange-500/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
+            <div className="mx-auto max-w-3xl text-center">
+              <AnimatedHeading as="h2" className="text-xl font-semibold text-orange-200">
+                Want to help us expand our impact?
+              </AnimatedHeading>
+              <p className="mt-2 text-sm text-zinc-300 sm:text-base">
+                Support the next cohort of builders, educators, and community leaders across Africa.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <a
+                href="/donate"
+                className="group rounded-xl border border-orange-400/25 bg-gradient-to-b from-orange-400/10 to-transparent p-5 text-left transition hover:border-orange-400/40 hover:bg-orange-400/15 focus:outline-none focus:ring-2 focus:ring-orange-400/40"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-orange-400/25 bg-orange-400/10">
+                    <Zap className="h-5 w-5 text-orange-300" aria-hidden />
+                  </div>
+                  <span className="rounded-full bg-orange-400/10 px-2.5 py-1 text-[11px] font-semibold text-orange-200 ring-1 ring-orange-400/20">
+                    Fast
+                  </span>
+                </div>
+                <div className="mt-4 text-sm font-semibold text-zinc-50">Lightning Donate</div>
+                <div className="mt-1 text-xs text-zinc-400">
+                  Contribute instantly via Lightning to keep classes, meetups, and workshops running.
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-orange-200">
+                  Donate now <span className="transition group-hover:translate-x-0.5">→</span>
+                </div>
+              </a>
+
+              <a
+                href="/sponsor"
+                className="group rounded-xl border border-cyan-400/25 bg-gradient-to-b from-cyan-400/10 to-transparent p-5 text-left transition hover:border-cyan-400/40 hover:bg-cyan-400/15 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-400/25 bg-cyan-400/10">
+                    <HeartHandshake className="h-5 w-5 text-cyan-300" aria-hidden />
+                  </div>
+                  <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-[11px] font-semibold text-cyan-200 ring-1 ring-cyan-400/20">
+                    Direct
+                  </span>
+                </div>
+                <div className="mt-4 text-sm font-semibold text-zinc-50">Sponsor a Student</div>
+                <div className="mt-1 text-xs text-zinc-400">
+                  Help cover learning resources and mentorship for students who need it most.
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-cyan-200">
+                  Sponsor <span className="transition group-hover:translate-x-0.5">→</span>
+                </div>
+              </a>
+
+              <a
+                href="/mentorship"
+                className="group rounded-xl border border-purple-400/25 bg-gradient-to-b from-purple-400/10 to-transparent p-5 text-left transition hover:border-purple-400/40 hover:bg-purple-400/15 focus:outline-none focus:ring-2 focus:ring-purple-400/40"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-purple-400/25 bg-purple-400/10">
+                    <UserPlus className="h-5 w-5 text-purple-300" aria-hidden />
+                  </div>
+                  <span className="rounded-full bg-purple-400/10 px-2.5 py-1 text-[11px] font-semibold text-purple-200 ring-1 ring-purple-400/20">
+                    Mentoring
+                  </span>
+                </div>
+                <div className="mt-4 text-sm font-semibold text-zinc-50">Join us on mentoring</div>
+                <div className="mt-1 text-xs text-zinc-400">
+                  Volunteer your time to guide students and strengthen local Bitcoin communities.
+                </div>
+                <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-purple-200">
+                  Join us <span className="transition group-hover:translate-x-0.5">→</span>
+                </div>
+              </a>
+            </div>
           </section>
         </AnimatedSection>
       </div>

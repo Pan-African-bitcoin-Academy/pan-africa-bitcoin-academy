@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
+import { sessionTimeouts } from '@/lib/sessionConfig';
 
-// Unified session configuration
-const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes idle timeout (no max age)
+// Optional env overrides (server only) — e.g. SESSION_IDLE_MINUTES=45
+function envNum(key: string): number | null {
+  const v = process.env[key];
+  if (v == null || v === '') return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+const idleMin = envNum('SESSION_IDLE_MINUTES');
+const IDLE_TIMEOUT_MS = idleMin != null ? idleMin * 60 * 1000 : sessionTimeouts.studentIdleMs;
+const absHours = envNum('SESSION_ABSOLUTE_HOURS');
+const ABSOLUTE_TIMEOUT_MS = absHours != null ? absHours * 60 * 60 * 1000 : sessionTimeouts.studentAbsoluteMs;
+const rmIdleDays = envNum('REMEMBER_ME_IDLE_DAYS');
+const REMEMBER_ME_IDLE_TIMEOUT_MS = rmIdleDays != null ? rmIdleDays * 24 * 60 * 60 * 1000 : sessionTimeouts.rememberMeIdleMs;
+const rmAbsDays = envNum('REMEMBER_ME_ABSOLUTE_DAYS');
+const REMEMBER_ME_ABSOLUTE_TIMEOUT_MS = rmAbsDays != null ? rmAbsDays * 24 * 60 * 60 * 1000 : sessionTimeouts.rememberMeAbsoluteMs;
+const adminIdleMin = envNum('ADMIN_SESSION_IDLE_MINUTES');
+const ADMIN_IDLE_TIMEOUT_MS = adminIdleMin != null ? adminIdleMin * 60 * 1000 : sessionTimeouts.adminIdleMs;
+const adminAbsHours = envNum('ADMIN_SESSION_ABSOLUTE_HOURS');
+const ADMIN_ABSOLUTE_TIMEOUT_MS = adminAbsHours != null ? adminAbsHours * 60 * 60 * 1000 : sessionTimeouts.adminAbsoluteMs;
+
 const ADMIN_COOKIE_NAME = 'admin_session';
 const STUDENT_COOKIE_NAME = 'student_session';
 
@@ -15,6 +35,7 @@ interface SessionPayload {
   userType: UserType;
   issuedAt: number;
   lastActive: number;
+  rememberMe?: boolean; // Whether "remember me" was checked
 }
 
 function getSecret(): string {
@@ -56,8 +77,23 @@ export function verifySession(token: string | undefined): SessionPayload | null 
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString()) as SessionPayload;
     const now = Date.now();
 
-    // Only check inactivity timeout (15 minutes), no max age
-    if (now - payload.lastActive > IDLE_TIMEOUT_MS) return null;
+    // Use different timeouts based on user type and rememberMe flag
+    let idleTimeout: number;
+    let absoluteTimeout: number;
+    
+    if (payload.userType === 'admin') {
+      // Admin gets longer timeouts (more than 3 hours)
+      idleTimeout = ADMIN_IDLE_TIMEOUT_MS;
+      absoluteTimeout = ADMIN_ABSOLUTE_TIMEOUT_MS;
+    } else {
+      // Student uses rememberMe-based timeouts
+      idleTimeout = payload.rememberMe ? REMEMBER_ME_IDLE_TIMEOUT_MS : IDLE_TIMEOUT_MS;
+      absoluteTimeout = payload.rememberMe ? REMEMBER_ME_ABSOLUTE_TIMEOUT_MS : ABSOLUTE_TIMEOUT_MS;
+    }
+
+    // Enforce idle timeout and absolute lifetime
+    if (now - payload.lastActive > idleTimeout) return null;
+    if (now - payload.issuedAt > absoluteTimeout) return null;
 
     return payload;
   } catch (e) {
@@ -72,18 +108,36 @@ function getCookieName(userType: UserType): string {
 export function setSessionCookie(res: NextResponse, payload: SessionPayload) {
   const token = signSession(payload);
   const cookieName = getCookieName(payload.userType);
+  // Use different maxAge based on user type and rememberMe flag
+  let maxAge: number;
+  if (payload.userType === 'admin') {
+    maxAge = Math.floor(ADMIN_ABSOLUTE_TIMEOUT_MS / 1000);
+  } else {
+    maxAge = payload.rememberMe 
+      ? Math.floor(REMEMBER_ME_ABSOLUTE_TIMEOUT_MS / 1000)
+      : Math.floor(ABSOLUTE_TIMEOUT_MS / 1000);
+  }
+  // Set secure session cookie with best security practices
   res.cookies.set(cookieName, token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: Math.floor(IDLE_TIMEOUT_MS / 1000), // 15 minutes
-    path: '/',
+    httpOnly: true, // Prevents JavaScript access (XSS protection)
+    sameSite: 'lax', // CSRF protection - allows same-site and safe cross-site requests
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    maxAge: maxAge, // Session expiration based on rememberMe preference
+    path: '/', // Available site-wide
+    // Note: domain is not set to allow subdomain flexibility if needed
   });
 }
 
 export function clearSessionCookie(res: NextResponse, userType: UserType) {
   const cookieName = getCookieName(userType);
-  res.cookies.set(cookieName, '', { httpOnly: true, maxAge: 0, path: '/' });
+  // Clear cookie with same security settings
+  res.cookies.set(cookieName, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 0, // Expire immediately
+    path: '/',
+  });
 }
 
 export function getSession(req: NextRequest, userType: UserType): SessionPayload | null {
@@ -147,13 +201,14 @@ export function requireStudent(req: NextRequest) {
   };
 }
 
-export function setStudentCookie(res: NextResponse, payload: { userId: string; email: string; issuedAt: number; lastActive: number }) {
+export function setStudentCookie(res: NextResponse, payload: { userId: string; email: string; issuedAt: number; lastActive: number; rememberMe?: boolean }) {
   setSessionCookie(res, {
     userId: payload.userId,
     email: payload.email,
     userType: 'student',
     issuedAt: payload.issuedAt,
     lastActive: payload.lastActive,
+    rememberMe: payload.rememberMe || false,
   });
 }
 

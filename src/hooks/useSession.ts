@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { markActivity, hasExpired, clearActivity, setupCrossTabActivityListener, INACTIVITY_LIMIT_MS, ACTIVITY_KEY, UserType } from '@/lib/sessionClient';
+import { markActivity, hasExpired, clearActivity, setupCrossTabActivityListener, ACTIVITY_KEY, UserType } from '@/lib/sessionClient';
 
 interface UseSessionOptions {
   checkInterval?: number; // How often to check for expiration (default: 1 minute)
@@ -65,7 +65,17 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
     try {
       setLoading(true);
       const endpoint = userType === 'admin' ? '/api/admin/me' : '/api/profile/me';
-      const res = await fetch(endpoint);
+      
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
+      const res = await fetch(endpoint, {
+        signal: controller.signal,
+        cache: 'no-store', // Prevent caching
+      });
+      
+      clearTimeout(timeoutId);
       
       if (res.ok) {
         const data = await res.json();
@@ -81,6 +91,7 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
           // Initialize activity tracking
           markActivity(userType);
           
+          setLoading(false);
           return true;
         }
       } else if (res.status === 401) {
@@ -101,22 +112,64 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
         setRole(null);
       }
       
+      setLoading(false);
       return false;
     } catch (err: any) {
+      // Don't log timeout errors as they're expected
+      if (err.name !== 'AbortError') {
       console.error('Session check error:', err);
+      }
       setIsAuthenticated(false);
       setEmail(null);
       setRole(null);
-      return false;
-    } finally {
       setLoading(false);
+      return false;
     }
   }, [userType]);
 
-  // Initial session check
+  // Initial session check - run immediately
   useEffect(() => {
     checkSession();
   }, [checkSession]);
+
+  // Listen for storage events (e.g., when user logs in via AuthModal)
+  useEffect(() => {
+    const handleStorageEvent = (e: Event) => {
+      // Check if this is a StorageEvent (from other tabs) or custom event (from AuthModal)
+      const isStorageEvent = 'key' in e && 'newValue' in e;
+      
+      if (userType === 'student' && !isAuthenticated) {
+        let shouldCheck = false;
+        
+        if (isStorageEvent) {
+          // Actual StorageEvent from another tab
+          const storageEvent = e as StorageEvent;
+          if (storageEvent.key === 'profileEmail' && storageEvent.newValue) {
+            shouldCheck = true;
+          }
+        } else {
+          // Custom event from AuthModal in same tab - check localStorage directly
+          const profileEmail = localStorage.getItem('profileEmail');
+          if (profileEmail) {
+            shouldCheck = true;
+          }
+        }
+        
+        if (shouldCheck) {
+          // Small delay to ensure session cookie is set
+          setTimeout(() => {
+            checkSession();
+          }, 200);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, [checkSession, userType, isAuthenticated]);
 
   // Activity listeners and inactivity checking
   useEffect(() => {

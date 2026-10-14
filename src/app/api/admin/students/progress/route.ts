@@ -35,39 +35,85 @@ export async function GET(_req: NextRequest) {
     }
 
     try {
-      const result = await supabaseAdmin
-        .from('profiles')
-        .select(`
-          id,
-          name,
-          email,
-          status,
-          cohort_id,
-          students:students(id, cohort_id, created_at),
-          chapter_progress:chapter_progress(is_completed, is_unlocked, chapter_number),
-          attendance:attendance(event_id, join_time, duration_minutes),
-          cohort_enrollment:cohort_enrollment(cohort_id, cohorts(name))
-        `)
+      // Start from students table - only show approved students (those with records in students table)
+      const { data: studentsData, error: studentsError } = await supabaseAdmin
+        .from('students')
+        .select('id, profile_id, cohort_id, created_at')
         .limit(200);
 
-      if (result.error) {
-        // If error is about missing table/column, try without relationships
-        if (result.error.message?.includes('relation') || result.error.message?.includes('column')) {
-          console.warn('Some relationships may not exist, fetching profiles only:', result.error.message);
-          const simpleResult = await supabaseAdmin
-            .from('profiles')
-            .select('id, name, email, status, cohort_id')
-            .limit(200);
-          
-          if (simpleResult.error) {
-            throw simpleResult.error;
-          }
-          profiles = simpleResult.data || [];
-        } else {
-          throw result.error;
-        }
+      if (studentsError) {
+        throw studentsError;
+      }
+
+      if (!studentsData || studentsData.length === 0) {
+        // No students found, return empty progress
+        profiles = [];
       } else {
-        profiles = result.data || [];
+        // Get profile IDs from students
+        const profileIds = studentsData.map((s: any) => s.profile_id).filter(Boolean);
+
+        // Fetch profiles for these students
+        const { data: profilesData, error: profilesError } = await supabaseAdmin
+          .from('profiles')
+          .select('id, name, email, phone, status')
+          .in('id', profileIds);
+
+        if (profilesError) {
+          throw profilesError;
+        }
+
+        profiles = profilesData || [];
+
+        // Fetch chapter progress data - this is critical for tracking completion
+        const { data: chapterProgressData, error: chapterProgressError } = await supabaseAdmin
+          .from('chapter_progress')
+          .select('student_id, is_completed, is_unlocked, chapter_number')
+          .in('student_id', profileIds);
+
+        if (chapterProgressError) {
+          console.error('[admin/students/progress] Error fetching chapter progress:', chapterProgressError);
+          // Continue with empty chapter progress data
+        } else {
+          console.log(`[admin/students/progress] Fetched ${chapterProgressData?.length || 0} chapter progress records for ${profileIds.length} profiles`);
+          // Debug: Log sample data
+          if (chapterProgressData && chapterProgressData.length > 0) {
+            const completedCount = chapterProgressData.filter((cp: any) => cp.is_completed === true).length;
+            console.log(`[admin/students/progress] Found ${completedCount} completed chapters out of ${chapterProgressData.length} total records`);
+          }
+        }
+
+        // Fetch attendance data
+        const { data: attendanceData } = await supabaseAdmin
+          .from('attendance')
+          .select('student_id, event_id, join_time, duration_minutes')
+          .in('student_id', profileIds);
+
+        // Fetch cohort enrollment data
+        const { data: enrollmentData } = await supabaseAdmin
+          .from('cohort_enrollment')
+          .select('student_id, cohort_id, enrolled_at')
+          .in('student_id', profileIds);
+
+        // Attach related data to profiles
+        profiles = profiles.map((profile: any) => {
+          const profileId = profile.id;
+          const studentProgress = chapterProgressData?.filter((cp: any) => cp.student_id === profileId) || [];
+          
+          // Debug: Log if we're not finding progress for a student who should have it
+          const hasStudentRecord = studentsData?.some((s: any) => s.profile_id === profileId);
+          if (studentProgress.length === 0 && hasStudentRecord) {
+            // Only log for students (to avoid spam for non-students)
+            console.log(`[admin/students/progress] No chapter progress found for student ${profile.email} (profile_id: ${profileId})`);
+          }
+          
+          return {
+            ...profile,
+            students: studentsData?.filter((s: any) => s.profile_id === profileId) || [],
+            chapter_progress: studentProgress,
+            attendance: attendanceData?.filter((a: any) => a.student_id === profileId) || [],
+            cohort_enrollment: enrollmentData?.filter((e: any) => e.student_id === profileId) || [],
+          };
+        });
       }
     } catch (fetchError: any) {
       console.error('Error fetching profiles:', fetchError);
@@ -89,22 +135,48 @@ export async function GET(_req: NextRequest) {
       );
     }
 
-    // Get total live-class events count for attendance calculation
-    let totalLiveLectures = 0;
-    try {
-      const { data: liveEvents, error: eventsError } = await supabaseAdmin
-        .from('events')
-        .select('id')
-        .eq('type', 'live-class');
-      
-      if (eventsError) {
-        console.error('Error fetching live events (non-critical):', eventsError);
-      } else {
-        totalLiveLectures = liveEvents?.length || 0;
+    const cohortIdForProfile = (p: any): string | null => {
+      const enrollments = p.cohort_enrollment || [];
+      if (enrollments.length > 0) {
+        const latest = [...enrollments].sort(
+          (a: any, b: any) => new Date(b.enrolled_at).getTime() - new Date(a.enrolled_at).getTime()
+        )[0];
+        return latest.cohort_id || null;
       }
-    } catch (eventsError) {
-      console.error('Error fetching live events (non-critical):', eventsError);
-      // Continue without attendance data
+      const student = p.students?.[0];
+      return student?.cohort_id || null;
+    };
+
+    const cohortIdsForAttendance = [
+      ...new Set(profiles.map(cohortIdForProfile).filter(Boolean)),
+    ] as string[];
+
+    const sessionIdsByCohort = new Map<string, Set<string>>();
+    const eventIdsByCohort = new Map<string, Set<string>>();
+    if (cohortIdsForAttendance.length > 0) {
+      try {
+        const [{ data: sessionRows }, { data: liveEventRows }] = await Promise.all([
+          supabaseAdmin
+            .from('cohort_sessions')
+            .select('id, cohort_id')
+            .in('cohort_id', cohortIdsForAttendance),
+          supabaseAdmin
+            .from('events')
+            .select('id, cohort_id')
+            .in('cohort_id', cohortIdsForAttendance)
+            .eq('type', 'live-class'),
+        ]);
+        (sessionRows || []).forEach((s: any) => {
+          if (!sessionIdsByCohort.has(s.cohort_id)) sessionIdsByCohort.set(s.cohort_id, new Set());
+          sessionIdsByCohort.get(s.cohort_id)!.add(s.id);
+        });
+        (liveEventRows || []).forEach((e: any) => {
+          if (!eventIdsByCohort.has(e.cohort_id)) eventIdsByCohort.set(e.cohort_id, new Set());
+          eventIdsByCohort.get(e.cohort_id)!.add(e.id);
+        });
+      } catch (e) {
+        console.error('Error fetching cohort sessions/events for attendance (non-critical):', e);
+      }
     }
 
     // If we don't have cohort_enrollment data in the query, fetch it separately for profiles that need it
@@ -137,75 +209,52 @@ export async function GET(_req: NextRequest) {
     // Map profiles to progress data
     const progress = profiles.map((p: any) => {
       const chapterData = p.chapter_progress || [];
-      const completed = chapterData.filter((c: any) => c.is_completed).length;
+      // Filter for completed chapters - check explicitly for true (handles null/undefined/false)
+      const completed = chapterData.filter((c: any) => c.is_completed === true).length;
       const unlocked = chapterData.length;
       
-      // Calculate attendance
+      // Debug logging for first few students
+      if (profiles.indexOf(p) < 3) {
+        console.log(`[admin/students/progress] Student ${p.email}: ${chapterData.length} progress records, ${completed} completed`);
+      }
+      
+      const student = p.students?.[0];
+      let cohortId = cohortIdForProfile(p);
+      let cohortName = null;
+
+      const sessionIds = (cohortId && sessionIdsByCohort.get(cohortId)) || new Set<string>();
+      const liveCohortEventIds = (cohortId && eventIdsByCohort.get(cohortId)) || new Set<string>();
+      const eligibleAttendanceIds = new Set<string>([...sessionIds, ...liveCohortEventIds]);
+      const attendanceDenom =
+        cohortId && sessionIds.size > 0 ? sessionIds.size : liveCohortEventIds.size;
       const attendanceRecords = p.attendance || [];
-      const lecturesAttended = attendanceRecords.length;
-      const attendancePercent = totalLiveLectures > 0 
-        ? Math.round((lecturesAttended / totalLiveLectures) * 100)
-        : 0;
+      const marked = new Set(attendanceRecords.map((a: any) => a.event_id));
+      let lecturesAttended = 0;
+      if (attendanceDenom > 0) {
+        eligibleAttendanceIds.forEach((eid) => {
+          if (marked.has(eid)) lecturesAttended++;
+        });
+      }
+      const attendancePercent =
+        attendanceDenom > 0 ? Math.round((lecturesAttended / attendanceDenom) * 100) : 0;
+      const totalLiveLectures = attendanceDenom;
 
       // Overall progress: 50% chapters + 50% attendance
       const overallProgress = Math.round((completed / 20) * 50 + attendancePercent * 0.5);
-
-      const student = p.students?.[0];
-      
-      // Get cohort from multiple sources (priority order):
-      // 1. From profile.cohort_id (direct assignment)
-      // 2. From students.cohort_id (if exists)
-      // 3. From cohort_enrollment (many-to-many relationship - from query)
-      // 4. From cohort_enrollment (many-to-many relationship - from fallback query)
-      let cohortId: string | null = null;
-      let cohortName: string | null = null;
-      
-      // First, check profile.cohort_id
-      if (p.cohort_id) {
-        cohortId = p.cohort_id;
-        cohortName = cohortsMap.get(p.cohort_id) || null;
-      }
-      
-      // If not found, check students.cohort_id
-      if (!cohortId && student?.cohort_id) {
-        cohortId = student.cohort_id;
-        cohortName = cohortsMap.get(student.cohort_id) || null;
-      }
-      
-      // If still not found, check cohort_enrollment from query
-      if (!cohortId && p.cohort_enrollment && Array.isArray(p.cohort_enrollment) && p.cohort_enrollment.length > 0) {
-        const enrollment = p.cohort_enrollment[0];
-        if (enrollment.cohort_id) {
-          cohortId = enrollment.cohort_id;
-          // Try to get name from the nested cohort data first
-          if (enrollment.cohorts && enrollment.cohorts.name) {
-            cohortName = enrollment.cohorts.name;
-          } else {
-            cohortName = cohortsMap.get(enrollment.cohort_id) || null;
-          }
-        }
-      }
-      
-      // Final fallback: check enrollmentMap from separate query
-      if (!cohortId) {
-        const fallbackCohortId = enrollmentMap.get(p.id);
-        if (fallbackCohortId) {
-          cohortId = fallbackCohortId;
-          cohortName = cohortsMap.get(fallbackCohortId) || null;
-        }
-      }
+      cohortName = cohortId ? cohortsMap.get(cohortId) || null : null;
 
       return {
         id: p.id,
         name: p.name || 'Unnamed',
         email: p.email,
+        phone: p.phone || null,
         status: p.status,
         cohortId: cohortId,
         cohortName: cohortName,
         studentId: student?.id || null,
         completedChapters: completed,
         unlockedChapters: unlocked,
-        totalChapters: 20, // Assuming 20 chapters total
+        totalChapters: 21,
         lecturesAttended,
         totalLiveLectures,
         attendancePercent,

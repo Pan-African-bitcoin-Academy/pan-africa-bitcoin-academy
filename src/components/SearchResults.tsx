@@ -1,49 +1,56 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Search } from 'lucide-react';
 
-interface SearchResultItem {
-  id?: string | number;
-  title: string;
+interface SearchResult {
   type: string;
+  icon: string;
+  title: string;
+  excerpt: string;
   url: string;
-  description?: string;
-  excerpt?: string;
+  chapterNumber?: number;
 }
 
 export function SearchResults({ query }: { query: string }) {
-  const [results, setResults] = useState<SearchResultItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!query || query.trim().length < 2) {
+    if (!query || query.length < 2) {
       setResults([]);
+      setLoading(false);
       return;
     }
 
-    let isMounted = true;
-    setLoading(true);
-
-    fetch(`/api/search?q=${encodeURIComponent(query)}`)
-      .then((res) => (res.ok ? res.json() : { results: [] }))
-      .then((data) => {
-        if (isMounted) {
+    const performSearch = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (response.ok) {
+          const data = await response.json();
           setResults(data.results || []);
         }
-      })
-      .catch((err) => {
-        console.error('Search fetch error:', err);
-        if (isMounted) setResults([]);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
+      } catch (error) {
+        console.error('Search error:', error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
     };
+
+    performSearch();
   }, [query]);
+
+  if (!query || query.length < 2) {
+    return (
+      <div className="text-center py-12">
+        <Search className="mx-auto h-12 w-12 text-zinc-600 mb-4" />
+        <p className="text-zinc-400">Enter a search query to find chapters and blog posts</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -53,45 +60,138 @@ export function SearchResults({ query }: { query: string }) {
     );
   }
 
-  if (!query) {
-    return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-8 text-center text-zinc-400">
-        Enter a keyword above to search through chapters and articles.
-      </div>
-    );
-  }
-
   if (results.length === 0) {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-8 text-center text-zinc-400">
-        No results found for &ldquo;{query}&rdquo;.
+      <div className="text-center py-12">
+        <Search className="mx-auto h-12 w-12 text-zinc-600 mb-4" />
+        <p className="text-zinc-400 mb-2">No results found for "{query}"</p>
+        <p className="text-sm text-zinc-500">Try different keywords or check your spelling</p>
       </div>
     );
   }
 
+  // Group results by type
+  const chapters = results.filter(r => r.type === 'Chapter');
+  const pages = results.filter(r => r.type === 'Page');
+  const blogPosts = results.filter(r => r.type === 'Blog');
+
   return (
-    <div className="space-y-4">
-      {results.map((result, idx) => (
-        <Link
-          key={result.id || idx}
-          href={result.url}
-          className="block rounded-xl border border-zinc-800 bg-zinc-950/60 p-5 transition hover:border-cyan-400/50 hover:bg-zinc-900/50"
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <span className="rounded bg-cyan-500/10 px-2 py-0.5 text-xs font-semibold text-cyan-300">
-              {result.type}
-            </span>
+    <div className="space-y-8">
+      {/* Chapters */}
+      {chapters.length > 0 && (
+        <div>
+          <h2 className="mb-4 text-lg font-semibold text-zinc-200">
+            Chapters ({chapters.length})
+          </h2>
+          <div className="space-y-3">
+            {chapters.map((result, index) => (
+              <Link
+                key={index}
+                href={result.url}
+                className="block rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 transition hover:border-cyan-400/30 hover:bg-zinc-900"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">{result.icon}</span>
+                  <div className="flex-1">
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-xs font-medium text-cyan-400 uppercase">
+                        {result.type}
+                      </span>
+                      {result.chapterNumber && (
+                        <span className="text-xs text-zinc-500">
+                          Chapter {result.chapterNumber}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-zinc-100">
+                      {result.title}
+                    </h3>
+                    {result.excerpt && (
+                      <p className="text-sm text-zinc-400 line-clamp-2">
+                        {result.excerpt}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
-          <h3 className="text-lg font-semibold text-zinc-100">{result.title}</h3>
-          {(result.description || result.excerpt) && (
-            <p className="mt-1 text-sm text-zinc-400 line-clamp-2">
-              {result.description || result.excerpt}
-            </p>
-          )}
-        </Link>
-      ))}
+        </div>
+      )}
+
+      {/* Pages */}
+      {pages.length > 0 && (
+        <div>
+          <h2 className="mb-4 text-lg font-semibold text-zinc-200">
+            Pages ({pages.length})
+          </h2>
+          <div className="space-y-3">
+            {pages.map((result, index) => (
+              <Link
+                key={index}
+                href={result.url}
+                className="block rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 transition hover:border-cyan-400/30 hover:bg-zinc-900"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">{result.icon}</span>
+                  <div className="flex-1">
+                    <div className="mb-2">
+                      <span className="text-xs font-medium text-green-400 uppercase">
+                        {result.type}
+                      </span>
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-zinc-100">
+                      {result.title}
+                    </h3>
+                    {result.excerpt && (
+                      <p className="text-sm text-zinc-400 line-clamp-2">
+                        {result.excerpt}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Blog Posts */}
+      {blogPosts.length > 0 && (
+        <div>
+          <h2 className="mb-4 text-lg font-semibold text-zinc-200">
+            Blog Posts ({blogPosts.length})
+          </h2>
+          <div className="space-y-3">
+            {blogPosts.map((result, index) => (
+              <Link
+                key={index}
+                href={result.url}
+                className="block rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 transition hover:border-cyan-400/30 hover:bg-zinc-900"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">{result.icon}</span>
+                  <div className="flex-1">
+                    <div className="mb-2">
+                      <span className="text-xs font-medium text-purple-400 uppercase">
+                        {result.type}
+                      </span>
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-zinc-100">
+                      {result.title}
+                    </h3>
+                    {result.excerpt && (
+                      <p className="text-sm text-zinc-400 line-clamp-2">
+                        {result.excerpt}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default SearchResults;

@@ -1,0 +1,405 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { PageContainer } from '@/components/PageContainer';
+import Link from 'next/link';
+import { Clock } from 'lucide-react';
+import {
+  inferPhaseFromPartial,
+  clientAwaitingInstructorReview,
+  clientNeedsResubmit,
+  clientSubmissionIsApproved,
+  phaseHintFromRow,
+} from '@/lib/assignmentReview';
+
+export default function AssignmentPage() {
+  const params = useParams();
+  const router = useRouter();
+  const { isAuthenticated, profile, loading: authLoading, sessionEmail } = useAuth();
+  const assignmentId = params.id as string;
+
+  const [assignment, setAssignment] = useState<any>(null);
+  const [submission, setSubmission] = useState<any>(null);
+  const [answer, setAnswer] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [returnUrl, setReturnUrl] = useState<string>('/dashboard');
+  /** Auto-graded pass: show form again for practice without revoking sats (API enforces one-time credit). */
+  const [practiceMode, setPracticeMode] = useState(false);
+
+  const email =
+    profile?.email?.trim() ||
+    sessionEmail?.trim() ||
+    (typeof window !== 'undefined' ? localStorage.getItem('profileEmail') : null);
+
+  // Track where user came from
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const referrer = document.referrer;
+      // Check if referrer is from dashboard or chapter page
+      if (referrer.includes('/dashboard')) {
+        setReturnUrl('/dashboard');
+      } else if (referrer.includes('/chapters/')) {
+        // Extract chapter slug from referrer
+        const chapterMatch = referrer.match(/\/chapters\/([^\/\?]+)/);
+        if (chapterMatch) {
+          setReturnUrl(`/chapters/${chapterMatch[1]}`);
+        }
+      } else if (assignment?.chapterSlug) {
+        // Fallback: use assignment's chapter slug if no referrer
+        setReturnUrl(`/chapters/${assignment.chapterSlug}`);
+      }
+    }
+  }, [assignment]);
+
+  const fetchAssignment = useCallback(async () => {
+    if (!email) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        const found = data.assignments.find((a: any) => a.id === assignmentId);
+
+        if (found) {
+          setAssignment(found);
+          setSubmission(found.submission);
+          if (found.submission) {
+            setAnswer(found.submission.answer);
+          }
+        } else {
+          setMessage({ type: 'error', text: 'Assignment not found' });
+        }
+      } else {
+        setMessage({ type: 'error', text: 'Could not load assignments for your account' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Failed to load assignment' });
+    } finally {
+      setLoading(false);
+    }
+  }, [email, assignmentId]);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!isAuthenticated) {
+      router.replace('/');
+      return;
+    }
+
+    if (!email) {
+      setLoading(false);
+      setMessage({
+        type: 'error',
+        text: 'We could not read your email from this session. Try refreshing the page or signing in again.',
+      });
+      return;
+    }
+
+    fetchAssignment();
+  }, [authLoading, isAuthenticated, email, fetchAssignment, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setMessage({ type: 'error', text: 'Please sign in to submit assignments' });
+      return;
+    }
+    
+    if (!answer.trim()) {
+      setMessage({ type: 'error', text: 'Please enter an answer' });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setMessage(null);
+
+      const response = await fetch('/api/assignments/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          assignmentId,
+          answer: answer.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setPracticeMode(false);
+        const sub = data.submission;
+        const hint = phaseHintFromRow(assignment);
+        const p = sub?.phase ?? inferPhaseFromPartial(sub, hint);
+        const ok =
+          p === 'approved' ||
+          p === 'pending_review' ||
+          (p === 'none' && sub?.isCorrect === true);
+        setMessage({
+          type: ok ? 'success' : 'error',
+          text: sub?.message || (ok ? 'Saved.' : 'Something went wrong.'),
+        });
+
+        await fetchAssignment();
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to submit assignment' });
+      }
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Failed to submit assignment' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (authLoading || loading) {
+    return (
+      <PageContainer title="Assignment" subtitle="Loading...">
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <PageContainer title="Access Denied" subtitle="Please sign in to view assignments">
+        <div className="text-center py-12">
+          <p className="text-zinc-400 mb-4">You must be signed in to view assignments</p>
+          <Link href="/" className="text-cyan-400 hover:text-cyan-300">
+            Go to Home
+          </Link>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!assignment) {
+    return (
+      <PageContainer title="Assignment Not Found" subtitle="The assignment you're looking for doesn't exist">
+        <div className="text-center py-12">
+          <p className="text-zinc-400 mb-4">Assignment not found</p>
+          <Link href="/dashboard" className="text-cyan-400 hover:text-cyan-300">
+            Return to Dashboard
+          </Link>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  const assignHint = phaseHintFromRow(assignment);
+  const phase =
+    submission?.phase ??
+    assignment.phase ??
+    inferPhaseFromPartial(submission, assignHint);
+  const isApproved =
+    assignment.status === 'completed' ||
+    clientSubmissionIsApproved(submission, assignHint) ||
+    phase === 'approved';
+  const awaitingReview =
+    assignment.status === 'pending_review' ||
+    clientAwaitingInstructorReview(submission, assignHint) ||
+    phase === 'pending_review';
+  const needsRedo =
+    assignment.status === 'needs_revision' ||
+    clientNeedsResubmit(submission, assignHint) ||
+    phase === 'rejected' ||
+    phase === 'returned';
+  const isInstructorReview = assignment.requiresInstructorReview === true;
+  const showForm =
+    !awaitingReview && (needsRedo || !isApproved || (isApproved && !isInstructorReview && practiceMode));
+  const formLockedByApproval = isApproved && isInstructorReview;
+
+  return (
+    <PageContainer
+      title={assignment.title}
+      subtitle={assignment.description || 'Complete this assignment to earn points'}
+    >
+      <div className="mx-auto max-w-3xl space-y-6">
+        {/* Assignment Info */}
+        <div className="rounded-xl border border-orange-400/25 bg-black/80 p-6">
+          <div className="mb-4 space-y-2">
+            <h2 className="text-xl font-semibold text-orange-200">{assignment.title}</h2>
+            {assignment.description && (
+              <p className="text-zinc-300">{assignment.description}</p>
+            )}
+          </div>
+
+          {assignment.question && (
+            <div className="mb-4 rounded-lg border border-cyan-400/20 bg-cyan-500/10 p-4">
+              <h3 className="mb-2 text-sm font-semibold text-cyan-200">Question:</h3>
+              <p className="text-zinc-100 whitespace-pre-line">{assignment.question}</p>
+            </div>
+          )}
+
+          {assignment.searchAddress && (
+            <div className="mb-4 rounded-lg border border-purple-400/20 bg-purple-500/10 p-4">
+              <h3 className="mb-2 text-sm font-semibold text-purple-200">Search for:</h3>
+              <p className="font-mono text-sm text-purple-100 break-all">{assignment.searchAddress}</p>
+            </div>
+          )}
+
+          <div className="flex items-center gap-4 text-sm text-zinc-400">
+            <span>Points: <span className="text-orange-300 font-semibold">{assignment.points}</span></span>
+            {assignment.dueDate && (
+              <span>
+                Due: <span className="text-orange-300">{new Date(assignment.dueDate).toLocaleDateString()}</span>
+              </span>
+            )}
+            {assignment.chapterSlug && (
+              <Link
+                href={`/chapters/${assignment.chapterSlug}`}
+                className="text-cyan-400 hover:text-cyan-300"
+              >
+                View Chapter →
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Approved */}
+        {isApproved && submission && (
+          <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-6">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">✓</span>
+              <div className="flex-1">
+                <h3 className="mb-2 text-lg font-semibold text-green-200">Assignment completed</h3>
+                <p className="mb-2 text-zinc-300">Your answer: <span className="font-semibold">{submission.answer}</span></p>
+                <p className="text-green-300">Points earned: <span className="font-semibold">{submission.pointsEarned}</span></p>
+                {submission.feedback && (
+                  <p className="mt-2 text-sm text-zinc-300">{submission.feedback}</p>
+                )}
+                {!isInstructorReview && (
+                  <p className="mt-3 text-xs text-zinc-500">
+                    You can practice again below. Your sats reward is counted once — wrong practice answers do not remove it.
+                  </p>
+                )}
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => router.push(returnUrl)}
+                    className="rounded-lg bg-gradient-to-r from-cyan-500 to-orange-500 px-4 py-2 font-semibold text-black transition hover:brightness-110"
+                  >
+                    Return to {returnUrl === '/dashboard' ? 'Dashboard' : 'Chapter'}
+                  </button>
+                  {!isInstructorReview && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPracticeMode(true);
+                        setMessage(null);
+                      }}
+                      className="rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-2 text-sm font-medium text-green-200 transition hover:bg-green-500/20"
+                    >
+                      Practice again
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Awaiting instructor review — same rules as chapter assignments */}
+        {awaitingReview && submission && (
+          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-6">
+            <div className="flex items-start gap-3">
+              <Clock className="h-8 w-8 shrink-0 text-cyan-300" />
+              <div className="flex-1">
+                <h3 className="mb-2 text-lg font-semibold text-cyan-200">Submitted — awaiting review</h3>
+                <p className="text-sm text-zinc-300">
+                  Your instructor has not approved or returned this yet. You cannot submit another answer until then.
+                </p>
+                <p className="mt-3 text-zinc-300">
+                  Your answer: <span className="font-semibold">{submission.answer}</span>
+                </p>
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => router.push(returnUrl)}
+                    className="rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-200 transition hover:bg-cyan-500/20"
+                  >
+                    Back
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Submission Form */}
+        {showForm && (
+          <form onSubmit={handleSubmit} className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 space-y-4">
+            {needsRedo && submission && (
+              <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4">
+                <h3 className="mb-1 text-sm font-semibold text-yellow-200">Revision needed</h3>
+                <p className="text-sm text-zinc-300">Please submit a new answer.</p>
+                {submission.feedback && (
+                  <p className="mt-2 text-sm text-zinc-200">Instructor feedback: {submission.feedback}</p>
+                )}
+              </div>
+            )}
+            <div>
+              <label htmlFor="answer" className="mb-2 block text-sm font-medium text-zinc-300">
+                Your Answer <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="answer"
+                name="answer"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                disabled={submitting || awaitingReview || formLockedByApproval}
+                className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-4 py-3 text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 disabled:opacity-50"
+                placeholder="Enter your answer here..."
+                autoComplete="off"
+              />
+              {assignment.searchAddress && (
+                <p className="mt-2 text-xs text-zinc-400">
+                  Use a block explorer to search for the address above and find the answer.
+                </p>
+              )}
+            </div>
+
+            {message && (
+              <div
+                className={`rounded-lg border p-4 ${
+                  message.type === 'success'
+                    ? 'border-green-500/30 bg-green-500/10 text-green-200'
+                    : 'border-red-500/30 bg-red-500/10 text-red-200'
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Link
+                href="/dashboard"
+                className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-center font-medium text-zinc-300 transition hover:bg-zinc-800"
+              >
+                Cancel
+              </Link>
+              <button
+                type="submit"
+                disabled={submitting || !answer.trim()}
+                className="flex-1 rounded-lg bg-gradient-to-r from-cyan-500 to-orange-500 px-4 py-3 font-semibold text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {submitting ? 'Submitting...' : 'Submit Answer'}
+              </button>
+            </div>
+          </form>
+        )}
+
+      </div>
+    </PageContainer>
+  );
+}

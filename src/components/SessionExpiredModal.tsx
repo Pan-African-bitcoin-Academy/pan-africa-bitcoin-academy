@@ -34,10 +34,10 @@ export function SessionExpiredModal({ isOpen, onClose, userType = 'student' }: S
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex min-h-screen items-center justify-center bg-black/80 backdrop-blur-sm p-4"
       // Block backdrop clicks - modal can only be closed via OK button
     >
-      <div className="relative mx-4 w-full max-w-md rounded-xl border border-orange-500/30 bg-zinc-900 p-6 shadow-2xl">
+      <div className="relative mx-auto w-full max-w-md rounded-xl border border-orange-500/30 bg-zinc-900 p-6 shadow-2xl">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/20">
             <AlertCircle className="h-6 w-6 text-orange-400" />
@@ -60,8 +60,9 @@ export function SessionExpiredModal({ isOpen, onClose, userType = 'student' }: S
 
         <div className="flex justify-end">
           <button
+            type="button"
             onClick={handleOK}
-            className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600"
+            className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600 cursor-pointer"
           >
             OK
           </button>

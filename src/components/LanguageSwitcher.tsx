@@ -83,6 +83,10 @@ export function LanguageSwitcher({
               aria-selected={language === opt.value}
               onClick={() => {
                 setOpen(false);
+                if (opt.value === "ti") {
+                  setShowComingSoon(true);
+                  return;
+                }
                 setLanguage(opt.value);
               }}
               className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition hover:bg-cyan-400/10 ${

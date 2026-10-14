@@ -7,7 +7,6 @@ import { Menu, X, User, LogOut, LayoutDashboard, Key, ChevronDown } from "lucide
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useSession } from "@/hooks/useSession";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { SearchBar } from "./SearchBar";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -38,8 +37,6 @@ export function Navbar() {
   const tabletDropdownRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, profile, isRegistered, loading, logout, showSessionExpired, setShowSessionExpired } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, logout: adminLogout, loading: adminLoading } = useSession('admin');
-  const { language } = useLanguage();
-  const isTi = language === 'ti';
   const [logoutLoading, setLogoutLoading] = useState(false);
   
   const handleLogout = async () => {
@@ -142,11 +139,9 @@ export function Navbar() {
           </div>
           <div className="hidden flex-col leading-tight sm:flex">
             <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
-              {isTi ? "ፓን ኣፍሪቃ" : "Pan-African"}
+              Pan-African
             </span>
-            <span className="text-xs sm:text-sm font-medium text-zinc-100">
-              {isTi ? "ትምህርቲ ቢትኮይን" : "Bitcoin Academy"}
-            </span>
+            <span className="text-xs sm:text-sm font-medium text-zinc-100">Bitcoin Academy</span>
           </div>
         </Link>
 
@@ -157,51 +152,51 @@ export function Navbar() {
               href="/chapters"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              {isTi ? "ምዕራፋት" : "Chapters"}
+              Chapters
             </Link>
             <Link
               href="/blog"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              {isTi ? "ብሎግ" : "Blog"}
+              Blog
             </Link>
             <Link
               href="/developer-hub"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              {isTi ? "ማእከል ዲቨሎፐር" : "Developer Hub"}
+              Developer Hub
             </Link>
             {!isRegistered && (
               <Link
                 href="/apply"
                 className="rounded-full px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
               >
-                {isTi ? "ኣመልክቱ" : "Apply"}
+                Apply
               </Link>
             )}
             <Link
               href="/mentorship"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              {isTi ? "ስልጠናን ምኽርን" : "Mentoring"}
+              Mentoring
             </Link>
             <Link
               href="/impact"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              {isTi ? "ጽልዋ" : "Impact"}
+              Impact
             </Link>
             <Link
               href="/about"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              {isTi ? "ብዛዕባና" : "About"}
+              About
             </Link>
             <Link
               href="/donate"
               className="rounded-full bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:from-orange-400/30 hover:to-cyan-400/30"
             >
-              {isTi ? "ሓገዝ ወፍዩ" : "Donate"}
+              Donate
             </Link>
           </nav>
           <div className="flex shrink-0 items-center gap-1.5 border-l border-cyan-400/25 pl-2 sm:gap-2 sm:pl-3">
@@ -513,7 +508,7 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              {isTi ? "ስልጠናን ምኽርን" : "Mentoring"}
+              Mentoring
             </Link>
             <Link
               href="/impact"

@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     // Get chapter progress data
     let chapterProgress = {
       completedChapters: 0,
-      totalChapters: 20,
+      totalChapters: 21,
       completedChapterNumbers: [] as number[],
       chapters: [] as any[],
     };
@@ -161,6 +161,98 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Get achievements
+    let achievements: any[] = [];
+    if (student) {
+      const { data: unlockedAchievements } = await supabaseAdmin
+        .from('achievements')
+        .select('badge_name, earned_at')
+        .eq('student_id', profile.id)
+        .order('earned_at', { ascending: false });
+
+      // Import achievements definitions
+      const { ACHIEVEMENTS } = await import('@/lib/achievements');
+      const unlockedBadgeNames = new Set(
+        (unlockedAchievements || []).map((a: any) => a.badge_name)
+      );
+
+      achievements = ACHIEVEMENTS.map((achievement) => {
+        const unlocked = unlockedBadgeNames.has(achievement.badgeName);
+        const unlockedData = unlockedAchievements?.find(
+          (a: any) => a.badge_name === achievement.badgeName
+        );
+
+        return {
+          id: achievement.id,
+          title: achievement.title,
+          icon: achievement.icon,
+          unlocked,
+          satsReward: achievement.satsReward,
+          earnedAt: unlockedData?.earned_at || null,
+        };
+      });
+    }
+
+    // Attendance % vs this student's cohort: cohort_sessions (and live-class events for that cohort)
+    let attendancePercent = 0;
+    if (student && cohort?.id) {
+      try {
+        const cohortId = cohort.id as string;
+        const [{ data: cohortSessionRows }, { data: cohortLiveEvents }] = await Promise.all([
+          supabaseAdmin.from('cohort_sessions').select('id').eq('cohort_id', cohortId),
+          supabaseAdmin
+            .from('events')
+            .select('id')
+            .eq('cohort_id', cohortId)
+            .eq('type', 'live-class'),
+        ]);
+        const sessionIds = new Set((cohortSessionRows || []).map((s: { id: string }) => s.id));
+        const eventIds = new Set((cohortLiveEvents || []).map((e: { id: string }) => e.id));
+        const eligible = new Set<string>([...sessionIds, ...eventIds]);
+        const denom = sessionIds.size > 0 ? sessionIds.size : eventIds.size;
+        if (denom > 0) {
+          const { data: attendanceRecords } = await supabaseAdmin
+            .from('attendance')
+            .select('event_id')
+            .eq('student_id', profile.id);
+          const marked = new Set((attendanceRecords || []).map((a: { event_id: string }) => a.event_id));
+          let attended = 0;
+          eligible.forEach((eid) => {
+            if (marked.has(eid)) attended++;
+          });
+          attendancePercent = Math.round((attended / denom) * 100);
+        }
+      } catch (err) {
+        console.error('Error calculating attendance:', err);
+      }
+    }
+
+    // Calculate sats totals for this student
+    let satsPaid = 0;
+    let satsPending = 0;
+    if (student) {
+      try {
+        const { data: satsRewards } = await supabaseAdmin
+          .from('sats_rewards')
+          .select('amount_paid, amount_pending')
+          .eq('student_id', profile.id);
+
+        if (satsRewards && satsRewards.length > 0) {
+          satsPaid = satsRewards.reduce(
+            (sum: number, reward: any) => sum + (reward.amount_paid || 0),
+            0
+          );
+          satsPending = satsRewards.reduce(
+            (sum: number, reward: any) => sum + (reward.amount_pending || 0),
+            0
+          );
+        }
+      } catch (err) {
+        console.error('Error calculating sats:', err);
+        // Keep defaults (0) if calculation fails
+      }
+    }
+
     // Get student progress data if student exists
     const studentData = student ? {
       progressPercent: chapterProgress.completedChapters > 0 
@@ -169,11 +261,15 @@ export async function POST(req: NextRequest) {
       assignmentsCompleted: student.assignments_completed || 0,
       projectsCompleted: student.projects_completed || 0,
       liveSessionsAttended: student.live_sessions_attended || 0,
+      attendancePercent: attendancePercent,
       chaptersCompleted: chapterProgress.completedChapters,
       totalChapters: chapterProgress.totalChapters,
       completedChapterNumbers: chapterProgress.completedChapterNumbers,
       chapters: chapterProgress.chapters,
       certificateImageUrl: (student as any).certificate_image_url || null,
+      satsPaid: satsPaid,
+      satsPending: satsPending,
+      achievements: achievements,
     } : null;
 
     return NextResponse.json(
@@ -201,6 +297,7 @@ export async function POST(req: NextRequest) {
           sessions: cohort.sessions,
         } : null,
         cohortEnrollments,
+        learningPace: student?.learning_pace ?? null,
       },
       { status: 200 }
     );

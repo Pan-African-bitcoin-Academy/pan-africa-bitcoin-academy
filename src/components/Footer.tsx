@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FooterAnimated } from "@/components/FooterAnimated";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Footer() {
   const { language } = useLanguage();
@@ -53,17 +52,13 @@ export function Footer() {
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
-                  {isTi ? "ፓን ኣፍሪቃ" : "Pan-African"}
+                  Pan-African
                 </span>
-                <span className="text-sm font-medium text-zinc-100">
-                  {isTi ? "ትምህርቲ ቢትኮይን" : "₿itcoin Academy"}
-                </span>
+                <span className="text-sm font-medium text-zinc-100">₿itcoin Academy</span>
               </div>
             </Link>
             <p className="max-w-xs text-xs leading-relaxed text-zinc-500">
-              {isTi
-                ? "ንቢትኮይን ዝምርምሩ ኣእምሮታት ንምሕጋዝ ዝተሃንጸ"
-                : "Empowering learners across Africa with sound Bitcoin education, one cohort at a time."}
+              Empowering learners across Africa with sound Bitcoin education, one cohort at a time.
             </p>
 
             {/* Social icons */}
@@ -94,49 +89,49 @@ export function Footer() {
 
           {/* Learn column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>{isTi ? "ትምህርቲ" : "Learn"}</FooterHeading>
+            <FooterHeading>Learn</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/chapters">{isTi ? "ምዕራፋት" : "Chapters"}</FooterLink>
-              <FooterLink href="/white_paper">{isTi ? "ናይ ቢትኮይን ዋይትፐይፐር" : "Bitcoin Whitepaper"}</FooterLink>
-              <FooterLink href="/bitcoin-in-eritrea">{isTi ? "ቢትኮይን ኣብ ኤርትራ" : "Bitcoin in Eritrea"}</FooterLink>
-              <FooterLink href="/scam">{isTi ? "ግንዛበ ምትላል" : "Scam Awareness"}</FooterLink>
-              <FooterLink href="/developer-hub">{isTi ? "ማእከል ዲቨሎፐር" : "Developer Hub"}</FooterLink>
-              <FooterLink href="/faq">{isTi ? "ሕቶታትን መልስታትን" : "FAQ"}</FooterLink>
+              <FooterLink href="/chapters">Chapters</FooterLink>
+              <FooterLink href="/white_paper">Bitcoin Whitepaper</FooterLink>
+              <FooterLink href="/bitcoin-in-eritrea">Bitcoin in Eritrea</FooterLink>
+              <FooterLink href="/scam">Scam Awareness</FooterLink>
+              <FooterLink href="/developer-hub">Developer Hub</FooterLink>
+              <FooterLink href="/faq">FAQ</FooterLink>
             </ul>
           </div>
 
           {/* Academy column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>{isTi ? "ኣካዳሚ" : "Academy"}</FooterHeading>
+            <FooterHeading>Academy</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/about">{isTi ? "ብዛዕባና" : "About Us"}</FooterLink>
-              <FooterLink href="/impact">{isTi ? "ጽልዋ" : "Impact"}</FooterLink>
-              <FooterLink href="/mentorship">{isTi ? "ስልጠናን ምኽርን" : "Join us on mentoring"}</FooterLink>
-              <FooterLink href="/events">{isTi ? "ፍጻሜታት" : "Events"}</FooterLink>
-              <FooterLink href="/flfl">{isTi ? "FLFL ኤክስፖ 2026" : "FLFL Expo 2026"}</FooterLink>
-              <FooterLink href="/blog">{isTi ? "ብሎግ" : "Blog"}</FooterLink>
+              <FooterLink href="/about">About Us</FooterLink>
+              <FooterLink href="/impact">Impact</FooterLink>
+              <FooterLink href="/mentorship">Join us on mentoring</FooterLink>
+              <FooterLink href="/events">Events</FooterLink>
+              <FooterLink href="/flfl">FLFL Expo 2026</FooterLink>
+              <FooterLink href="/blog">Blog</FooterLink>
             </ul>
           </div>
 
           {/* Get Involved column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>{isTi ? "ተሳተፉ" : "Get Involved"}</FooterHeading>
+            <FooterHeading>Get Involved</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/apply">{isTi ? "ሕጂ ኣመልክቱ" : "Apply Now"}</FooterLink>
-              <FooterLink href="/donate">{isTi ? "ሓገዝ ወፍዩ" : "Donate"}</FooterLink>
-              <FooterLink href="/sponsor">{isTi ? "ስፖንሰር ግበሩ" : "Sponsor"}</FooterLink>
-              <FooterLink href="/contact">{isTi ? "ርኸቡና" : "Contact"}</FooterLink>
-              <FooterLink href="/search">{isTi ? "ድለዩ" : "Search"}</FooterLink>
+              <FooterLink href="/apply">Apply Now</FooterLink>
+              <FooterLink href="/donate">Donate</FooterLink>
+              <FooterLink href="/sponsor">Sponsor</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
+              <FooterLink href="/search">Search</FooterLink>
             </ul>
           </div>
 
           {/* Students column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>{isTi ? "ተመሃሮ" : "Students"}</FooterHeading>
+            <FooterHeading>Students</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/dashboard">{isTi ? "ዳሽቦርድ" : "Dashboard"}</FooterLink>
-              <FooterLink href="/blog/submit">{isTi ? "ጽሑፍ ኣበርክቱ" : "Write a Post"}</FooterLink>
-              <FooterLink href="/chapters">{isTi ? "ትምህርቲ ጀምሩ" : "Start Learning"}</FooterLink>
+              <FooterLink href="/dashboard">Dashboard</FooterLink>
+              <FooterLink href="/blog/submit">Write a Post</FooterLink>
+              <FooterLink href="/chapters">Start Learning</FooterLink>
             </ul>
           </div>
         </div>
@@ -159,11 +154,7 @@ export function Footer() {
             </a>
           </p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span>
-              {isTi
-                ? "ንትምህርታዊ ዕላማ ጥራይ። ምኽሪ ፋይናንስ ኣይኮነን። ኣብ testnet/regtest ተለማመዱ፤ ክትስእንዎ ዘይትኽእሉ ገንዘብ ፈጺምኩም ኣይትጠቐሙ።"
-                : "Educational only · Not financial advice"}
-            </span>
+            <span>Educational only &middot; Not financial advice</span>
             <span className="hidden sm:inline">&middot;</span>
             <a
               href="https://www.gnu.org/licenses/gpl-3.0.html"

@@ -12,12 +12,19 @@ export type ChapterImage = {
   caption?: string;
 };
 
+export type ChapterSectionVideo = {
+  src: string;
+  caption?: string;
+};
+
 export type ChapterSection = {
   heading: string;
   paragraphs?: string[];
   bullets?: string[];
   callouts?: ChapterCallout[];
   images?: ChapterImage[];
+  video?: ChapterSectionVideo;
+  seedPhrase?: string[];
 };
 
 export type ChapterContent = {
@@ -59,19 +66,31 @@ export const chaptersContent: ChapterContent[] = [
           "Now you're stuck. To get bread, you must first find a shoemaker who wants bananas, trade with him, and then go back to the baker with shoes. This back-and-forth feels exhausting and uncertain. This problem has a name: the 'double coincidence of wants.' Both sides must want exactly what the other has, at the same time, in the correct quantity.",
           "This is why humans invented money. Not because they admired shiny coins or pretty paper, but because cash solved the headache of trade. Money became the bridge — a universal tool that allowed people to exchange value without endless searching or awkward swaps.",
         ],
-      },
-      {
-        heading: "1.1 Why Humans Created Money",
-        paragraphs: [
-          "In the earliest communities, people survived through barter trade. They exchanged cattle for salt, beads for grain, or iron tools for cloth. But barter was clumsy. Imagine trying to pay your rent with cassava or buying a motorbike with goats!",
-          "As villages grew and trade stretched across regions, people needed something that everyone would accept. Societies turned to special items: shells, salt, beads, and eventually precious metals like gold and silver. These worked because they were widely trusted, didn't rot easily, and could be carried in your pocket.",
-          "In Africa, cowrie shells became a common currency. In other places, silver and gold coins took center stage. Later, banks issued paper notes backed by those metals. Over centuries, money kept evolving — but its purpose stayed the same: to make trade easier, faster, and more reliable.",
-          "Without money, economies would remain tiny and local. With money, people could build markets, cities, and eventually global trade. Money was the invisible thread that tied human progress together.",
-        ],
-        callouts: [
+        images: [
           {
-            type: "example",
-            content: "In Africa, cowrie shells became a common currency. In other places, silver and gold coins took center stage.",
+            src: "/images/book_images/bannana-bread.png",
+            alt: "Man exchanging bananas for shoes with baker",
+            caption: "but the baker want shoes not banana",
+          },
+          {
+            src: "/images/book_images/banana-shoes.png",
+            alt: "Man with bananas desiring shoes, facing baker with bread",
+            caption: "You have bananas but the baker wants shoes",
+          },
+          {
+            src: "/images/book_images/bannana.png",
+            alt: "Man holding only bananas",
+            caption: "You have bananas but need bread",
+          },
+          {
+            src: "/images/book_images/barter_system.png",
+            alt: "Circular diagram showing bananas, bread, and shoes in barter system",
+            caption: "The barter system requires a double coincidence of wants",
+          },
+          {
+            src: "/images/book_images/shoes-bread.png",
+            alt: "Man with shoes, facing baker with bread",
+            caption: "Finally, you can trade shoes for bread",
           },
         ],
       },
@@ -79,22 +98,22 @@ export const chaptersContent: ChapterContent[] = [
         heading: "1.2 Functions of Money — Medium of Exchange, Store of Value, Unit of Account",
         paragraphs: [
           "Money isn't just paper or numbers on a screen. It has three powerful functions that make it unique:",
+          "1. Medium of Exchange\n\nMoney removes the need for awkward bartering. Instead of finding someone who both wants your maize and has what you need, you can sell maize for money, then later buy anything else.",
+          "Example: In Uganda today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for shillings and use the shillings to buy airtime.",
+          "2. Store of Value\n\nGood money allows you to save for the future. If you work hard today, you want your earnings to keep their value tomorrow. But when money loses value, savings can vanish overnight.",
+          "3. Unit of Account\n\nMoney provides a standard measure for prices. Instead of saying, \"one goat equals five chickens or three baskets of millet,\" you simply say, \"one goat is 150,000 shillings.\" This makes trade clear, simple, and consistent.",
           "Together, these functions explain why money is far more than paper. It is the organizer of trade, savings, and planning in every society.",
-        ],
-        bullets: [
-          "Medium of Exchange: Money removes the need for awkward bartering. Instead of finding someone who both wants your maize and has what you need, you can sell maize for money, then later buy anything else.",
-          "Store of Value: Good money allows you to save for the future. If you work hard today, you want your earnings to keep their value tomorrow. But when money loses value, savings can vanish overnight.",
-          "Unit of Account: Money provides a standard measure for prices. Instead of saying, 'one goat equals five chickens or three baskets of millet,' you simply say, 'one goat is 150,000 shillings.' This makes trade clear, simple, and consistent.",
         ],
         callouts: [
           {
             type: "example",
             content: "In Uganda today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for shillings and use the shillings to buy airtime.",
           },
-          {
-            type: "warning",
-            content: "Zimbabwe once experienced such extreme inflation that a loaf of bread cost billions of Zimbabwean dollars. People who saved in cash lost everything. Even in Uganda, the shilling has weakened against the US dollar, making imported goods more expensive year after year.",
-          },
+        ],
+        images: [
+          { src: "/images/book_images/1st.png", alt: "1st", caption: "1st image here" },
+          { src: "/images/book_images/2nd.png", alt: "2nd", caption: "2nd image here" },
+          { src: "/images/book_images/unit.png", alt: "Unit of Account", caption: "Unit of Account" },
         ],
       },
       {
@@ -117,9 +136,24 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/money-properties-diagram.png",
-            alt: "Diagram showing the five properties of sound money: Durable, Portable, Divisible, Recognizable, Scarce",
-            caption: "The five essential properties of sound money",
+            src: "/images/book_images/durable_money.png",
+            alt: "Illustration showing durable money - money that lasts over time",
+            caption: "Durable:<br>Money should last. Gold and silver survive centuries",
+          },
+          {
+            src: "/images/book_images/portable.png",
+            alt: "Illustration showing portable money - easy to carry",
+            caption: "Portable: Easy to carry and move around",
+          },
+          {
+            src: "/images/book_images/divsible.png",
+            alt: "Illustration showing divisible money - can be split into smaller parts",
+            caption: "Divisible: <br>Split into smaller parts without losing value",
+          },
+          {
+            src: "/images/book_images/recognazable.png",
+            alt: "Illustration showing recognizable money - people know it's real",
+            caption: "Recognizable:<br> Easy to identify as genuine",
           },
         ],
       },
@@ -176,6 +210,21 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
+        heading: "1.1 Why Humans Created Money",
+        paragraphs: [
+          "In the earliest communities, people survived through barter trade. They exchanged cattle for salt, beads for grain, or iron tools for cloth. But barter was clumsy. Imagine trying to pay your rent with cassava or buying a motorbike with goats!",
+          "As villages grew and trade stretched across regions, people needed something that everyone would accept. Societies turned to special items: shells, salt, beads, and eventually precious metals like gold and silver. These worked because they were widely trusted, didn't rot easily, and could be carried in your pocket.",
+          "In Africa, cowrie shells became a common currency. In other places, silver and gold coins took center stage. Later, banks issued paper notes backed by those metals. Over centuries, money kept evolving — but its purpose stayed the same: to make trade easier, faster, and more reliable.",
+          "Without money, economies would remain tiny and local. With money, people could build markets, cities, and eventually global trade. Money was the invisible thread that tied human progress together.",
+        ],
+        callouts: [
+          {
+            type: "example",
+            content: "In Africa, cowrie shells became a common currency. In other places, silver and gold coins took center stage.",
+          },
+        ],
+      },
+      {
         heading: "2.1 From Barter to Commodity Exchange",
         paragraphs: [
           "Long before banks or cash, life depended on barter trade. A farmer might trade maize for fish, or a potter might swap clay pots for salt. This worked — but only when luck was on your side. Both parties had to want what the other had, at the same time, and in the right quantity.",
@@ -185,9 +234,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/barter-to-commodity.png",
-            alt: "Illustration showing the transition from barter trade to commodity money like cowrie shells",
-            caption: "From barter to commodity exchange",
+            src: "/images/book_images/salt_bartering.jpg",
+            alt: "Illustration showing salt bartering - an early form of commodity exchange",
+            caption: "Salt was used as an early form of commodity money",
+          },
+          {
+            src: "/images/book_images/massie_market.jpg",
+            alt: "Illustration showing a marketplace where commodity exchange took place",
+            caption: "Marketplaces facilitated commodity exchange",
           },
         ],
       },
@@ -201,9 +255,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/aksum-coins.png",
+            src: "/images/book_images/aksum_coins.jpg",
             alt: "Ancient Aksum coins from Ethiopia and Eritrea",
             caption: "Aksum coins enabled trade across regions",
+          },
+          {
+            src: "/images/book_images/aksum_coins_2.jpg",
+            alt: "Close-up of Aksum coinage showing detailed minting",
+            caption: "A closer look at Aksum coinage",
           },
         ],
       },
@@ -217,7 +276,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/jiaozi-first-fiat.png",
+            src: "/images/book_images/chinese_first_fiat_money.jpg",
             alt: "Jiaozi (交子) - the first fiat currency from ancient China",
             caption: "Jiaozi (交子) - the first fiat currency",
           },
@@ -242,23 +301,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/zimbabwe-inflation.png",
-            alt: "Zimbabwean dollar hyperinflation - wheelbarrows of cash for groceries",
-            caption: "Zimbabwe hyperinflation: wheelbarrows of cash for basic goods",
+            src: "/images/book_images/american_dollar.png",
+            alt: "American dollar - a modern fiat currency",
+            caption: "The US dollar became a fiat currency after 1971",
           },
-        ],
-      },
-      {
-        heading: "2.5 Precursors to Bitcoin — Haber & Stornetta Time-Stamping (1991–92)",
-        paragraphs: [
-          "Long before Bitcoin, a quiet breakthrough took place. In 1991–92, two researchers, Stuart Haber and W. Scott Stornetta, invented a system to time-stamp digital documents. Their idea was simple but powerful: once a document was recorded, no one could change it without leaving evidence.",
-          "They used cryptography to make records permanent and tamper-proof — a kind of digital 'seal of authenticity.' Though their invention wasn't money, it planted a seed. It demonstrated that technology can create trust without the need for central authorities.",
-          "Years later, Satoshi Nakamoto built on these ideas to launch Bitcoin in 2009. However, the roots of Bitcoin can be traced back to Haber and Stornetta's time-stamping system.",
-        ],
-        callouts: [
           {
-            type: "note",
-            content: "This early cryptographic work showed that trust could be created through mathematics and code, rather than relying solely on institutions.",
+            src: "/images/book_images/american_note.png",
+            alt: "American banknote showing fiat currency design",
+            caption: "American banknotes represent fiat money backed by government decree",
           },
         ],
       },
@@ -277,16 +327,13 @@ export const chaptersContent: ChapterContent[] = [
       "Coins standardized value and enabled long-distance trade across regions.",
       "Paper money lightened trade but required gold backing for trust.",
       "Fiat money (post-1971) relies on government decree, creating inflation risks when trust weakens.",
-      "Early cryptographic work (Haber & Stornetta) showed technology could create trust without central authorities, paving the way for Bitcoin.",
     ],
     keyTerms: [
       "Commodity money",
       "Fiat money",
       "Inflation",
-      "Time-stamping",
       "Gold standard",
       "Central bank",
-      "Cryptography",
     ],
     nextSlug: "problems-with-traditional-fiat-money",
   },
@@ -335,11 +382,35 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/uganda-inflation-comparison.png",
-            alt: "Comparison showing 40,000 UGX 20 years ago vs 4,000,000 UGX now for the same goods",
-            caption: "20 Years ago: 40,000 UGX → Now: 4,000,000 UGX",
+            src: "/images/book_images/animals.png",
+            alt: "Animals used in barter trade",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/arrow.png",
+            alt: "Arrow indicating progression",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/animals.png",
+            alt: "Animals used in barter trade",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/zimbabwe_inflation.png",
+            alt: "Zimbabwe hyperinflation showing wheelbarrows of money",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/zimbabwe_money.png",
+            alt: "Zimbabwean currency during hyperinflation",
+            caption: "",
           },
         ],
+        video: {
+          src: "/images/videos/somalia.mp4",
+          caption: "Inflation and its impact",
+        },
       },
       {
         heading: "3.2 Centralized Control — Governments and Banks",
@@ -355,9 +426,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/centralized-control-diagram.png",
-            alt: "Diagram showing how governments and central banks control money supply and access",
-            caption: "Centralized control over money",
+            src: "/images/book_images/printed_money.jpg",
+            alt: "Printed money showing government control over currency",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/printing_money.jpg",
+            alt: "Money printing process showing centralized control",
+            caption: "",
           },
         ],
       },
@@ -366,7 +442,7 @@ export const chaptersContent: ChapterContent[] = [
         paragraphs: [
           "Fiat systems also leave many people out. In some countries, millions don't have access to a bank account. Without one, it's hard to save safely, receive payments, or access loans.",
           "Even for those who do, the system often favors the wealthy. Big corporations and elites get easier access to credit, lower interest rates, and rescue packages when they fail. Meanwhile, ordinary people struggle with high fees, loan rejections, and poor service.",
-          "This deepens inequality. The rich have tools to protect themselves — investing in real estate, stocks, or foreign currency. The poor often watch their money lose value year after year.",
+          "This deepens inequality. The rich have tools to protect themselves — diversifying into real estate, stocks, or foreign currency. The poor often watch their money lose value year after year.",
         ],
       },
       {
@@ -383,6 +459,28 @@ export const chaptersContent: ChapterContent[] = [
           },
         ],
       },
+      {
+        heading: "3.5 The 2008 Financial Crisis Context",
+        paragraphs: [
+          "In 2008, the world was struck by one of the biggest financial disasters in modern history. At the center of it were banks. For years, banks in the United States had been lending recklessly, giving out mortgages (home loans) to people who could not realistically repay them. These risky loans were packaged and sold around the world as if they were safe investments.",
+          "When borrowers began defaulting, the house of cards collapsed. Huge banks that were considered 'too big to fail' were suddenly on the brink of bankruptcy. Panic spread across the globe.",
+          "Governments rushed in to save the financial system, but their solution was to print trillions of new dollars and bail out the very banks that had caused the crisis. Ordinary people, however, received no lifeline. Families lost homes, jobs vanished overnight, and pensions and savings were wiped out.",
+          "Imagine working hard for years, saving for your children's education — only to see that value evaporate because of mistakes made by bankers in distant boardrooms. This wasn't just a financial crisis. It was a trust crisis. People realized that the money system itself could be manipulated, and when it failed, ordinary citizens bore the heaviest burden.",
+          "From this broken trust, a new idea was born.",
+        ],
+        images: [
+          {
+            src: "/images/book_images/US-Median-Home-Prices.jpg",
+            alt: "US median home prices showing the impact of the 2008 financial crisis",
+            caption: "US median home prices during the 2008 financial crisis",
+          },
+          {
+            src: "/images/book_images/2008.jpg",
+            alt: "2008 financial crisis - banks collapsing, people losing homes",
+            caption: "The 2008 financial crisis exposed the fragility of the banking system",
+          },
+        ],
+      },
     ],
     activities: [
       "Class Discussion: 'Do We Trust Our Money?' (Open discussion – no wrong answers):",
@@ -396,6 +494,7 @@ export const chaptersContent: ChapterContent[] = [
       "Centralized control by governments and banks means ordinary citizens have little say in monetary policy.",
       "Financial exclusion leaves millions without access to banking, while the system favors the wealthy.",
       "Fiat systems are fragile and can collapse in crises, as seen in 2008 and various currency crises.",
+      "The 2008 financial crisis exposed a deep trust crisis: private gains were protected while ordinary families absorbed losses.",
       "These problems create the need for alternatives like Bitcoin that offer decentralization and fixed supply.",
     ],
     keyTerms: [
@@ -450,6 +549,39 @@ export const chaptersContent: ChapterContent[] = [
             content: "The cypherpunk movement combined cryptography, privacy advocacy, and libertarian ideals to create tools that would protect individual freedom from state control.",
           },
         ],
+        images: [
+          {
+            src: "/images/book_images/cypher_punks.jpeg",
+            alt: "The Cypherpunks and early digital currency pioneers",
+            caption: "The Cypherpunks & early digital currencies",
+          },
+        ],
+      },
+      {
+        heading: "4.2 Precursors to Bitcoin — Haber & Stornetta Time-Stamping (1991–92)",
+        paragraphs: [
+          "Long before Bitcoin, a quiet breakthrough took place. In 1991–92, two researchers, Stuart Haber and W. Scott Stornetta, invented a system to time-stamp digital documents. Their idea was simple but powerful: once a document was recorded, no one could change it without leaving evidence.",
+          "They used cryptography to make records permanent and tamper-proof — a kind of digital 'seal of authenticity.' Though their invention wasn't money, it planted a seed. It demonstrated that technology can create trust without the need for central authorities.",
+          "Years later, Satoshi Nakamoto built on these ideas to launch Bitcoin in 2009. However, the roots of Bitcoin can be traced back to Haber and Stornetta's time-stamping system.",
+        ],
+        callouts: [
+          {
+            type: "note",
+            content: "This early cryptographic work showed that trust could be created through mathematics and code, rather than relying solely on institutions.",
+          },
+        ],
+        images: [
+          {
+            src: "/images/book_images/time.jpeg",
+            alt: "Haber & Stornetta time-stamping and precursors to Bitcoin",
+            caption: "Time-stamping and digital trust",
+          },
+          {
+            src: "/images/book_images/timesta.jpeg",
+            alt: "Time-stamping system (1991–92) — roots of blockchain",
+            caption: "Haber & Stornetta time-stamping",
+          },
+        ],
       },
     ],
     activities: [
@@ -459,6 +591,7 @@ export const chaptersContent: ChapterContent[] = [
     summary: [
       "The old financial system's failures — inflation, debt, inequality — created the conditions for Bitcoin's emergence.",
       "Cypherpunks in the 1990s experimented with digital cash but early attempts were either centralized or shut down.",
+      "Haber & Stornetta's time-stamping work (1991–92) showed that technology could create trust without central authorities, paving the way for Bitcoin.",
       "The 2008 financial crisis exposed the fragility of the traditional system and created the perfect moment for Bitcoin.",
       "Satoshi Nakamoto's breakthrough solved the problem of creating decentralized, trustless digital money.",
     ],
@@ -470,6 +603,8 @@ export const chaptersContent: ChapterContent[] = [
       "Proof of work",
       "Financial crisis",
       "Decentralization",
+      "Time-stamping",
+      "Cryptography",
     ],
     nextSlug: "the-birth-of-bitcoin",
   },
@@ -482,7 +617,7 @@ export const chaptersContent: ChapterContent[] = [
     type: "Theory",
     hook: "In 2008’s chaos, Bitcoin introduced money no one can unilaterally control.",
     learn: [
-      "2008 financial crisis context",
+      "Why trust in legacy finance broke",
       "Satoshi’s whitepaper and anonymity",
       "Peer-to-peer electronic cash pillars",
     ],
@@ -495,24 +630,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
-        heading: "5.1 The 2008 Financial Crisis Context",
-        paragraphs: [
-          "In 2008, the world was struck by one of the biggest financial disasters in modern history. At the center of it were banks. For years, banks in the United States had been lending recklessly, giving out mortgages (home loans) to people who could not realistically repay them. These risky loans were packaged and sold around the world as if they were safe investments.",
-          "When borrowers began defaulting, the house of cards collapsed. Huge banks that were considered 'too big to fail' were suddenly on the brink of bankruptcy. Panic spread across the globe.",
-          "Governments rushed in to save the financial system, but their solution was to print trillions of new dollars and bail out the very banks that had caused the crisis. Ordinary people, however, received no lifeline. Families lost homes, jobs vanished overnight, and pensions and savings were wiped out.",
-          "Imagine working hard for years, saving for your children's education — only to see that value evaporate because of mistakes made by bankers in distant boardrooms. This wasn't just a financial crisis. It was a trust crisis. People realized that the money system itself could be manipulated, and when it failed, ordinary citizens bore the heaviest burden.",
-          "From this broken trust, a new idea was born.",
-        ],
-        images: [
-          {
-            src: "/images/2008-financial-crisis.png",
-            alt: "2008 financial crisis - banks collapsing, people losing homes",
-            caption: "The 2008 financial crisis exposed the fragility of the banking system",
-          },
-        ],
-      },
-      {
-        heading: "5.2 Satoshi Nakamoto and the Whitepaper",
+        heading: "5.1 Satoshi Nakamoto and the Whitepaper",
         paragraphs: [
           "On October 31, 2008 — right in the middle of the chaos — a mysterious figure (or group) named Satoshi Nakamoto sent an email to a small community of cryptographers. Attached was a 9-page document titled:",
           "'Bitcoin: A Peer-to-Peer Electronic Cash System.'",
@@ -524,12 +642,12 @@ export const chaptersContent: ChapterContent[] = [
         callouts: [
           {
             type: "note",
-            content: "Satoshi's anonymity was likely intentional — to prevent governments from targeting the creator and to let the technology speak for itself.",
+            content: "Satoshi's anonymity was likely intentional — to prevent governments from targeting the creator and to let the technology speak for itself. [Download the Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf) to read the original 9-page document.",
           },
         ],
       },
       {
-        heading: "5.3 Bitcoin as Peer-to-Peer Electronic Cash",
+        heading: "5.2 Bitcoin as Peer-to-Peer Electronic Cash",
         paragraphs: [
           "So, how does Bitcoin work?",
           "Instead of a bank keeping the ledger (a record of who owns what), Bitcoin uses a public ledger called the blockchain. This ledger is stored and updated by thousands of computers all over the world. Anyone can see it, but no one can secretly change it.",
@@ -537,11 +655,37 @@ export const chaptersContent: ChapterContent[] = [
           "This makes Bitcoin truly peer-to-peer electronic cash — just like handing over cash in person, but now possible over the internet, instantly, across borders, without middlemen.",
           "But Bitcoin was not just another type of money. It introduced three revolutionary features:",
           "For the first time in history, humanity had a tool to store and transfer value without relying on trust in powerful institutions.",
+          "Decentralization Explained",
+          "In a centralized system, one organization or authority has the final say. For example, a bank controls your account balance and decides whether a transaction is allowed. If that authority fails, is corrupted, or changes its rules, users must accept the outcome.",
+          "Bitcoin is decentralized, meaning no single entity is in charge. Thousands of independent computers around the world run the Bitcoin software and keep identical copies of the system's records. These participants voluntarily follow the same rules. If someone tries to cheat or change the rules, the rest of the network simply rejects it.",
+          "Decentralization matters because it removes single points of failure. There is no central switch to turn Bitcoin off, no single company to pressure, and no individual who can rewrite the rules. Power is distributed across the network rather than concentrated in a single location.",
+          "Transparency Without Identity",
+          "Bitcoin is built on transparency. Every transaction that has ever occurred is recorded on a public ledger called the blockchain. Anyone, anywhere in the world, can inspect this ledger and verify that the rules are being followed. This openness creates trust without requiring a central authority.",
+          "However, transparency does not mean personal identity is exposed. Bitcoin transactions are linked to addresses, not names. You can see that the value moved from one address to another, but you cannot automatically know who owns those addresses. This is called pseudonymity.",
+          "This balance is important: the system is open enough to be trusted, yet private enough to avoid revealing personal identity by default.",
+          "Scarcity",
+          "Scarcity is one of Bitcoin's most important properties. Bitcoin has a fixed maximum supply of 21 million coins. This limit is enforced by code and shared by every participant in the network. No one has the authority to change it.",
+          "In traditional systems, money can be created endlessly, which often leads to inflation and loss of purchasing power. Bitcoin's scarcity is predictable and transparent. New bitcoins are released at a decreasing rate, making the supply increasingly hard to obtain over time.",
+          "Because of this enforced scarcity, Bitcoin is often compared to digital gold. Its value is not based on promises, but on mathematical certainty. Scarcity encourages long-term thinking and protects the system from arbitrary expansion.",
         ],
-        bullets: [
-          "Decentralization — no central bank or company controls it.",
-          "Transparency — every transaction is recorded publicly.",
-          "Scarcity — only 21 million bitcoins will ever exist, making it immune to the endless money-printing that causes inflation.",
+        images: [
+          {
+            src: "/images/book_images/dec.jpeg",
+            alt: "Decentralization explained - no single point of control, power distributed across the network",
+            caption: "Decentralization Explained",
+          },
+        ],
+      },
+      {
+        heading: "What Are Sats?",
+        paragraphs: [
+          "A sat, short for satoshi, is the smallest unit of Bitcoin. Just like a dollar can be divided into cents, one bitcoin can be divided into smaller pieces. The smallest possible piece is called a satoshi.",
+          "One bitcoin equals 100,000,000 sats.",
+          "This means Bitcoin is highly divisible. Even though one whole bitcoin may seem expensive, people do not need to buy or use an entire bitcoin. They can own and spend very small amounts instead.",
+          "The idea of sats helps people understand that Bitcoin is practical for everyday use. You don't buy \"a Bitcoin\" the way you buy a bar of gold. You use Bitcoin the way you use money — in small units.",
+          "Sats make Bitcoin usable for everyone, not just wealthy people. As Bitcoin becomes more valuable, using whole bitcoins would become impractical. Sats solve this problem by allowing Bitcoin to function as everyday money, even at very high prices.",
+          "Sats also change how people think psychologically. Saying \"I own 0.002 Bitcoin\" feels abstract, but saying \"I own 200,000 sats\" feels concrete and understandable.",
+          "In the long term, most people are expected to think in sats, not in whole bitcoins.",
         ],
       },
     ],
@@ -596,6 +740,32 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
+        heading: "Seed Phrase Example",
+        paragraphs: [
+          "A seed phrase is the most important part of your Bitcoin wallet. It is a list of 12 or 24 simple words that create and control your bitcoin. These words are not a password and they are not stored on the internet. Whoever has the seed phrase can fully access and spend the bitcoin in that wallet. This is why a seed phrase must be written down offline, kept private, and never shared with anyone.",
+          "You should never take a screenshot of your seed phrase, store it in your phone, send it on WhatsApp, email, or cloud storage. Legitimate wallet apps, teachers, or support teams will never ask for your seed phrase. If you lose your phone but still have your seed phrase, you can recover your wallet on a new device. If someone else gets your seed phrase, they can take your bitcoin and there is no way to reverse it.",
+          "In Bitcoin, there is no \"forgot password\" button and no customer support that can help you recover lost funds. Your seed phrase is your money, and protecting it is your responsibility. Treat it like physical cash or gold—once it's gone, it's gone.",
+          "Example of a 24-word seed phrase:",
+        ],
+        callouts: [
+          {
+            type: "warning",
+            content: "If someone gets your seed phrase, they can take your coins without asking. Never share it, photograph it, or store it digitally.",
+          },
+          {
+            type: "tip",
+            content: "Write your seed phrase on paper, check spelling twice, and store it in a safe place where fire, water, and curious eyes can't reach.",
+          },
+        ],
+        images: [],
+        seedPhrase: [
+          "adult", "ahead", "alarm", "agent", "aisle", "alien",
+          "absorb", "alert", "absurd", "achieve", "action", "age",
+          "adapt", "airport", "acquire", "ability", "about", "absent",
+          "address", "account", "accuse", "acid", "acoustic", "across"
+        ],
+      },
+      {
         heading: "6.1 Public/Private Keys Explained Simply",
         paragraphs: [
           "Think of your Bitcoin wallet as a mailbox:",
@@ -616,13 +786,7 @@ export const chaptersContent: ChapterContent[] = [
             content: "If you lose your private key, you lose access to your Bitcoin forever. There is no recovery. This is why backing up your seed phrase is critical.",
           },
         ],
-        images: [
-          {
-            src: "/images/public-private-keys.png",
-            alt: "Diagram showing public key (mailbox address) vs private key (mailbox key)",
-            caption: "Public key = mailbox address, Private key = mailbox key",
-          },
-        ],
+        images: [],
       },
       {
         heading: "6.2 Peer-to-Peer Transactions (P2P)",
@@ -638,7 +802,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/p2p-transaction-flow.png",
+            src: "/images/book_images/P2p.jpeg",
             alt: "Diagram showing the flow: Alice creates transaction → broadcasts → nodes verify → miners confirm",
             caption: "Peer-to-peer transaction flow",
           },
@@ -709,7 +873,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/block-structure.png",
+            src: "/images/book_images/block-structure.png",
             alt: "Diagram showing block structure: transactions, hash, previous block hash",
             caption: "Structure of a Bitcoin block",
           },
@@ -726,13 +890,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Think of hashes like a fingerprint: even a tiny change creates a completely different hash, making tampering immediately obvious.",
           },
         ],
-        images: [
-          {
-            src: "/images/hash-fingerprint.png",
-            alt: "Diagram showing how a tiny change in data creates a completely different hash",
-            caption: "Hashes are like fingerprints - tiny changes create completely different results",
-          },
-        ],
       },
       {
         heading: "7.2 Why It's Called a Chain",
@@ -741,7 +898,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/blockchain-chain.png",
+            src: "/images/book_images/block.jpeg",
             alt: "Diagram showing blocks linked in a chain, each pointing to the previous block",
             caption: "Blocks linked in a chain - each depends on the previous",
           },
@@ -751,6 +908,13 @@ export const chaptersContent: ChapterContent[] = [
         heading: "7.3 Who Adds the Blocks?",
         paragraphs: [
           "New blocks don't appear by magic; they are added by people called miners. Miners gather fresh transactions and bundle them into a block. To seal the block, they solve a math puzzle that requires time and computing power. Once a miner finds the correct solution, the block is locked in place and added to the chain, and everyone else on the network updates their copy of the notebook. This process, known as Proof of Work, ensures that no one can cheaply rewrite history — it's always far easier to be honest than to try to cheat.",
+        ],
+        images: [
+          {
+            src: "/images/book_images/miners.jpeg",
+            alt: "Miners add new blocks to the blockchain by solving Proof of Work puzzles",
+            caption: "Who adds the blocks? Miners seal and add blocks to the chain",
+          },
         ],
       },
       {
@@ -764,6 +928,7 @@ export const chaptersContent: ChapterContent[] = [
             content: "Blockchain's immutability means that once a transaction is confirmed, it becomes part of permanent history that cannot be altered.",
           },
         ],
+        images: [],
       },
     ],
     activities: [
@@ -823,8 +988,8 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/exchange-flow.png",
-            alt: "Diagram showing exchange flow: local currency → exchange → Bitcoin → withdraw to wallet",
+            src: "/images/book_images/excha.jpeg",
+            alt: "Bitcoin exchange and wallet process",
             caption: "Exchange flow: buy Bitcoin, then withdraw to your own wallet",
           },
         ],
@@ -834,25 +999,9 @@ export const chaptersContent: ChapterContent[] = [
         paragraphs: [
           "A Bitcoin 'wallet' is really two things: a signer and a notebook. The signer is the part that holds your secret—your private keys—and uses them to sign transactions. The notebook is the interface that helps you see balances and create payments. Many apps bundle both into one, so we simply refer to it as a wallet.",
           "Creating a wallet feels like opening a new lockbox. The app will generate a seed phrase—usually 12 or 24 simple words. Those words are the master key to every present and future address your wallet will create. Write them carefully on paper, check the spelling, and store the paper where fire, water, and curious eyes can't reach. Don't take photos, don't put the words in cloud storage, and don't paste them into chat apps. If someone gets that phrase, they can take your coins without asking. If you lose it and your phone dies, no company can help you recover—Bitcoin is a bearer asset.",
-          "Add a strong wallet PIN, and if your app supports it, learn about the optional 'passphrase' (sometimes called the 25th word). This adds a second layer of protection that safeguards you if someone discovers your written seed. It also means you must remember two things instead of one. Security is a trade-off; choose the level that fits your life. Before you receive any real value, practice a full recovery: wipe the app, restore from the seed you wrote down, and confirm that your addresses and test funds reappear. That ten-minute rehearsal is priceless.",
         ],
-        callouts: [
-          {
-            type: "warning",
-            content: "If someone gets your seed phrase, they can take your coins without asking. Never share it, photograph it, or store it digitally.",
-          },
-          {
-            type: "tip",
-            content: "Write your seed phrase on paper, check spelling twice, and store it in a safe place where fire, water, and curious eyes can't reach.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/seed-phrase-example.png",
-            alt: "Example of a 24-word seed phrase written on paper",
-            caption: "Example seed phrase - write it down carefully on paper",
-          },
-        ],
+        callouts: [],
+        images: [],
       },
       {
         heading: "8.2 Complete a First Transaction (send/receive)",
@@ -941,6 +1090,13 @@ export const chaptersContent: ChapterContent[] = [
           "When you open your Bitcoin wallet, you usually just see a single number: your balance. But under the hood, Bitcoin doesn't actually work like a simple bank account. Instead, it uses something called the UTXO model — short for Unspent Transaction Outputs. You can think of these UTXOs like individual coins in your pocket. Some are big, some are small, and together they add up to your total balance.",
           "Whenever you spend Bitcoin, you don't just 'subtract' money from your balance like a bank would. Instead, you pick specific UTXOs to spend, and if the one you use is larger than what you owe, you get change back — just like paying for a coffee with a $20 bill. This difference between 'account balances' and 'coin outputs' is one of the most important (and often misunderstood) parts of how Bitcoin works.",
         ],
+        images: [
+          {
+            src: "/images/book_images/transaction.jpg",
+            alt: "Bitcoin transaction and UTXO flow",
+            caption: "Understanding transactions and the UTXO model",
+          },
+        ],
       },
       {
         heading: "9.0 What You Really Own — The UTXO Model",
@@ -950,7 +1106,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/utxo-model.png",
+            src: "/images/book_images/utxo.png",
             alt: "Diagram showing UTXOs as individual coins that make up your balance",
             caption: "UTXOs are like individual coins in your wallet",
           },
@@ -1064,6 +1220,13 @@ export const chaptersContent: ChapterContent[] = [
             content: "Label transactions immediately when you receive them. Future you will thank present you for the clarity.",
           },
         ],
+        images: [
+          {
+            src: "/images/book_images/utxosize.jpg",
+            alt: "Labeling transactions and UTXO size",
+            caption: "Labeling transactions and UTXOs for future spending",
+          },
+        ],
       },
       {
         heading: "10.2 Basic Privacy Habits (Avoid Reuse; Payment Flow Awareness)",
@@ -1130,9 +1293,19 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/hardware-wallet.png",
-            alt: "Hardware wallet device showing secure key storage",
+            src: "/images/book_images/jade.png",
+            alt: "Jade hardware wallet device",
             caption: "Hardware wallets keep your keys offline and secure",
+          },
+          {
+            src: "/images/book_images/ledger.jpeg",
+            alt: "Ledger hardware wallet device",
+            caption: "Ledger hardware wallet",
+          },
+          {
+            src: "/images/book_images/trazeor.jpeg",
+            alt: "Trezor hardware wallet device",
+            caption: "Trezor hardware wallet",
           },
         ],
       },
@@ -1168,7 +1341,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/psbt-flow.png",
+            src: "/images/book_images/psbt-flow.png",
             alt: "Diagram showing PSBT flow: create on computer → sign on hardware → broadcast",
             caption: "PSBT flow keeps keys secure on hardware device",
           },
@@ -1198,137 +1371,16 @@ export const chaptersContent: ChapterContent[] = [
       "Seed phrase",
       "Recovery",
     ],
-    nextSlug: "layer-2-sidechains-in-daily-life",
-  },
-  {
-    slug: "layer-2-sidechains-in-daily-life",
-    number: 12,
-    title: "Layer 2 & Sidechains",
-    level: "Intermediate",
-    duration: "50–60 min",
-    type: "Mixed",
-    hook: "Lightning and sidechains make Bitcoin faster and more flexible—with trade-offs.",
-    learn: [
-      "Lightning basics and settlement trade-offs",
-      "Custodial vs non-custodial Lightning",
-      "Sidechains (e.g., Liquid) and federated trust",
-      "Circular economies running on sats",
-    ],
-    sections: [
-      {
-        heading: "Introduction",
-        paragraphs: [
-          "Bitcoin's base layer is secure and decentralized, but it has limitations: transactions can take time to confirm, and fees can be high during busy periods. Layer 2 solutions and sidechains address these challenges by building additional layers on top of Bitcoin, enabling faster payments, lower fees, and new features. However, these solutions come with trade-offs, including different security models and trust assumptions. Understanding these options helps you choose the right tool for each situation.",
-        ],
-      },
-      {
-        heading: "12.0 Lightning Basics (Off-Chain Channels; Settlement Trade-Offs)",
-        paragraphs: [
-          "The Lightning Network is a Layer 2 solution that enables instant, low-fee payments by moving transactions off the main Bitcoin blockchain. Instead of broadcasting every payment to the entire network, Lightning uses payment channels — private connections between two parties that allow them to send and receive Bitcoin instantly, with fees often just a fraction of a cent.",
-          "To use Lightning, you first open a channel by locking some Bitcoin on the main chain. Once the channel is open, you can make unlimited payments through it without touching the blockchain. When you're done, you close the channel, and the final balance is settled back on Bitcoin's main chain. This design trades immediate speed and low fees for delayed final settlement — a trade-off that works well for everyday spending.",
-        ],
-        callouts: [
-          {
-            type: "note",
-            content: "Lightning channels require liquidity management. You need inbound capacity to receive and outbound capacity to send.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/lightning-channel.png",
-            alt: "Diagram showing Lightning payment channel opening, payments, and closing",
-            caption: "Lightning channels enable instant off-chain payments",
-          },
-        ],
-      },
-      {
-        heading: "12.1 Receive and Spend on Lightning (Custodial vs Non-Custodial)",
-        paragraphs: [
-          "There are two main ways to use Lightning: custodial and non-custodial. Custodial Lightning wallets are like bank accounts — a company holds your funds and handles all the technical details. They're convenient and easy to use, but you're trusting that company with your money. If they disappear or get hacked, your funds could be at risk.",
-          "Non-custodial Lightning wallets give you full control. You manage your own channels, liquidity, and keys. This offers better privacy and sovereignty, but it requires more technical knowledge and active management. You need to understand channel capacity, routing, and how to keep channels healthy. For beginners, custodial options are a good starting point, but as you learn more, non-custodial solutions offer greater independence.",
-        ],
-        callouts: [
-          {
-            type: "tip",
-            content: "Start with a custodial Lightning wallet to learn, then graduate to non-custodial for full control and privacy.",
-          },
-          {
-            type: "warning",
-            content: "Custodial Lightning wallets require trust in the provider. Only keep small amounts in custodial wallets.",
-          },
-        ],
-      },
-      {
-        heading: "12.2 Sidechains (e.g., Liquid) and Federated Trust",
-        paragraphs: [
-          "Sidechains are separate blockchains that are pegged to Bitcoin, meaning you can move Bitcoin onto them and back. They often have their own consensus rules, enabling features like faster confirmations, confidential transactions, or smart contracts. However, sidechains typically use federated trust — a group of trusted entities (called a federation) that validate transactions and manage the peg.",
-          "This introduces a trust assumption that doesn't exist on Bitcoin's main chain. If the federation is compromised or acts maliciously, your funds could be at risk. That said, sidechains can be useful for specific use cases where speed or features matter more than absolute decentralization. Understanding the trade-offs helps you make informed decisions about when to use them.",
-        ],
-        callouts: [
-          {
-            type: "warning",
-            content: "Sidechains introduce trust in federations. Only use them if you understand and accept this trade-off.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/sidechain-peg.png",
-            alt: "Diagram showing Bitcoin pegged to sidechain and back",
-            caption: "Sidechains are pegged to Bitcoin but use different consensus",
-          },
-        ],
-      },
-      {
-        heading: "12.3 Circular Economies Running on Sats",
-        paragraphs: [
-          "One of the most exciting developments in Bitcoin is the growth of circular economies — communities where people earn and spend Bitcoin entirely within their local network. These economies can run on Lightning for fast, cheap payments, or on sidechains for additional features. By keeping value circulating locally, these communities reduce dependence on traditional banking systems and build financial resilience.",
-          "Examples include local marketplaces, freelancer networks, and community currencies. These systems demonstrate how Bitcoin can enable economic activity that's both global (anyone can join) and local (value stays in the community). As more people adopt Bitcoin, these circular economies become more powerful and self-sustaining.",
-        ],
-        callouts: [
-          {
-            type: "example",
-            content: "A local marketplace where vendors accept Lightning payments, and customers can spend their earnings at other vendors in the same network, creating a circular economy.",
-          },
-        ],
-      },
-    ],
-    activities: [
-      "Activity: Live Lightning Payment Demo (Testnet or Small Real)",
-      "To experience Lightning firsthand, students can participate in a live payment demo. Using either a testnet Lightning wallet (free, no real value) or a small real Lightning wallet, students:",
-      "• Open a Lightning wallet (custodial or non-custodial)",
-      "• Receive a small amount of sats",
-      "• Make a payment to another student or a merchant",
-      "• Observe the instant confirmation and low fees",
-      "This hands-on experience makes the abstract concept of Layer 2 tangible and helps students understand when Lightning is the right tool for a payment.",
-    ],
-    summary: [
-      "Lightning Network enables instant, low-fee payments through off-chain channels.",
-      "Lightning trades immediate speed for delayed on-chain final settlement.",
-      "Custodial Lightning is convenient but requires trust; non-custodial offers control but needs more management.",
-      "Sidechains add features but introduce trust in federations.",
-      "Circular economies demonstrate how Bitcoin can enable local economic activity.",
-    ],
-    keyTerms: [
-      "Lightning Network",
-      "Lightning channel",
-      "Liquidity",
-      "Custodial",
-      "Non-custodial",
-      "Sidechain",
-      "Federation",
-      "Peg",
-      "Layer 2",
-    ],
     nextSlug: "verify-for-yourself-block-explorers-nodes",
   },
   {
     slug: "verify-for-yourself-block-explorers-nodes",
-    number: 13,
-    title: "Verify — Block Explorers & Nodes",
+    number: 12,
+    title: "Verify for Yourself — Block Explorers & Nodes",
     level: "Intermediate",
-    duration: "40–50 min",
+    duration: "60 min",
     type: "Practice",
-    hook: "Don’t trust—verify your own transactions and the network.",
+    hook: "Don't trust—verify your own transactions and the network.",
     learn: [
       "Use explorers for txids, confirmations, fees",
       "Merkle path inclusion (conceptual)",
@@ -1342,7 +1394,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
-        heading: "13.0 Using a Block Explorer (Txids, Confirmations, Fees, Mempool)",
+        heading: "12.0 Using a Block Explorer (Txids, Confirmations, Fees, Mempool)",
         paragraphs: [
           "A block explorer is like a search engine for the Bitcoin blockchain. You can paste in a transaction ID (txid) or address and see its history, status, and details. This is incredibly useful for checking if a payment you sent has been confirmed, how many confirmations it has, what fee was paid, and whether it's still waiting in the mempool (the pool of unconfirmed transactions).",
           "When you receive a payment, you can look up the txid on a block explorer to verify it independently of your wallet. This helps you catch errors, understand delays, and confirm that transactions are progressing as expected. Block explorers are also great for learning — you can browse recent transactions, see how fees fluctuate, and understand network activity.",
@@ -1355,14 +1407,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/block-explorer.png",
-            alt: "Screenshot of block explorer showing transaction details",
+            src: "/images/book_images/mempool.jpeg",
+            alt: "Mempool block explorer interface",
             caption: "Block explorers let you verify transactions independently",
           },
         ],
       },
       {
-        heading: "13.1 Proving Inclusion (Merkle Path Concept)",
+        heading: "12.1 Proving Inclusion (Merkle Path Concept)",
         paragraphs: [
           "How can you prove that a transaction is included in a block without downloading the entire blockchain? Bitcoin uses something called a Merkle tree. Think of it like a family tree, but for transactions. Each transaction is hashed, then pairs of hashes are combined and hashed again, and this continues until you reach a single root hash at the top. This root is stored in the block header.",
           "A Merkle path (or Merkle proof) is a small set of hashes that proves your transaction is part of the tree without needing all the other transactions. By following the path from your transaction up to the root, you can mathematically prove inclusion. This is how lightweight wallets can verify transactions without storing the full blockchain — they just need the Merkle proof, not every single transaction.",
@@ -1375,14 +1427,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/merkle-tree.png",
+            src: "/images/book_images/markel.jpg",
             alt: "Diagram showing Merkle tree structure with transaction hashes",
             caption: "Merkle trees enable efficient transaction verification",
           },
         ],
       },
       {
-        heading: "13.2 Why Run a Node (Independent Validation; Mempool Visibility; Policy/Relay Basics)",
+        heading: "12.2 Why Run a Node (Independent Validation; Mempool Visibility; Policy/Relay Basics)",
         paragraphs: [
           "While block explorers are useful, they're run by third parties. If that third party is compromised, censored, or simply wrong, you might get incorrect information. Running your own Bitcoin node solves this problem by giving you complete independence. Your node downloads and validates the entire blockchain, checking every transaction and block according to Bitcoin's rules. No one can lie to you about what's on the blockchain because you're verifying it yourself.",
           "Your node also gives you direct access to the mempool — the pool of transactions waiting to be confirmed. This visibility helps you understand network congestion, estimate fees accurately, and see what's happening in real-time. Additionally, your node enforces your own policy rules about which transactions to relay, giving you control over what you participate in.",
@@ -1395,7 +1447,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
-        heading: "13.3 First-Time Node Sync (Full vs Pruned/Light; Storage/Bandwidth Planning)",
+        heading: "12.3 First-Time Node Sync (Full vs Pruned/Light; Storage/Bandwidth Planning)",
         paragraphs: [
           "When you first run a Bitcoin node, it needs to download and verify the entire blockchain — currently over 500 GB of data. This initial sync can take days or weeks depending on your internet connection and hardware. You have a few options:",
           "For most users, a pruned node offers the best balance — you get full validation with much less storage. Plan ahead for the initial sync time and bandwidth usage, and don't worry about advanced configurations until you're comfortable with the basics.",
@@ -1413,16 +1465,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
     ],
-    activities: [
-      "Activity: Explorer Scavenger Hunt",
-      "To practice using block explorers, students can complete a scavenger hunt:",
-      "• Find a specific transaction by its txid",
-      "• Count how many confirmations it has",
-      "• Identify the fee paid (in sats/vbyte)",
-      "• Check the current mempool state (how many transactions are waiting)",
-      "• Find a recent block and list some transactions in it",
-      "This exercise builds familiarity with block explorers and helps students understand how to verify transactions independently.",
-    ],
+    activities: [],
     summary: [
       "Block explorers are useful tools for checking transaction status, but they're run by third parties.",
       "Merkle proofs enable lightweight verification without downloading the full blockchain.",
@@ -1446,10 +1489,10 @@ export const chaptersContent: ChapterContent[] = [
   },
   {
     slug: "proof-of-work-and-block-rewards",
-    number: 14,
+    number: 13,
     title: "Proof of Work and Block Rewards",
     level: "Intermediate",
-    duration: "40–50 min",
+    duration: "55 min",
     type: "Theory",
     hook: "PoW makes blocks hard to forge but easy to verify.",
     learn: [
@@ -1466,7 +1509,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
-        heading: "14.0 Proof of Work (Asymmetry: Costly to Create, Trivial to Verify)",
+        heading: "13.0 Proof of Work (Asymmetry: Costly to Create, Trivial to Verify)",
         paragraphs: [
           "Proof of Work is like a cryptographic puzzle that miners must solve to create a new block. The puzzle requires finding a number (called a nonce) that, when combined with the block's data and hashed, produces a result below a certain target. This process requires enormous computational power — miners must try trillions of different numbers until they find one that works. The difficulty adjusts automatically so that, on average, a new block is found every 10 minutes.",
           "The genius of Proof of Work is its asymmetry: creating a valid block is extremely expensive (requiring massive amounts of electricity and specialized hardware), but verifying that a block is valid is trivial (any computer can check the hash in milliseconds). This makes it economically irrational to attack the network — the cost of creating a fraudulent block far exceeds any potential gain, and the network will reject invalid blocks instantly.",
@@ -1479,14 +1522,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/proof-of-work.png",
+            src: "/images/book_images/pow.jpeg",
             alt: "Diagram showing miners solving cryptographic puzzles to create blocks",
             caption: "Proof of Work requires expensive computation but easy verification",
           },
         ],
       },
       {
-        heading: "14.1 Miners and Block Rewards (New Coins + Fees)",
+        heading: "13.1 Miners and Block Rewards (New Coins + Fees)",
         paragraphs: [
           "Miners are rewarded for their work in two ways: block rewards (newly created Bitcoin) and transaction fees. The block reward is currently 3.125 BTC per block (as of the April 2024 halving). This reward is how new Bitcoin enters circulation — it's the only way new coins are created. In addition to the block reward, miners collect all the transaction fees from the transactions they include in their block.",
           "These rewards incentivize miners to act honestly. If a miner tries to include invalid transactions or create fraudulent blocks, the network will reject them, and the miner will have wasted expensive electricity for nothing. The economic incentive to follow the rules keeps the network secure and decentralized.",
@@ -1499,14 +1542,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/block-reward.png",
+            src: "/images/book_images/miners.jpeg",
             alt: "Diagram showing block reward and fees going to miners",
             caption: "Miners receive block rewards and transaction fees",
           },
         ],
       },
       {
-        heading: "14.2 Halving Schedule and Fixed Supply (Declining Inflation)",
+        heading: "13.2 Halving Schedule and Fixed Supply (Declining Inflation)",
         paragraphs: [
           "Bitcoin's monetary policy is completely predictable and transparent. Approximately every four years (or every 210,000 blocks), the block reward is cut in half in an event called 'the halving.' This means the rate at which new Bitcoin is created decreases over time. The first halving occurred in 2012 (reward dropped from 50 to 25 BTC), the second in 2016 (25 to 12.5 BTC), the third in 2020 (12.5 to 6.25 BTC), and the fourth in 2024 (6.25 to 3.125 BTC).",
           "This predictable, declining inflation stands in stark contrast to fiat currencies, where central banks can print money at will. Bitcoin's total supply is fixed at 21 million coins, and the halving schedule ensures that the last Bitcoin will be mined around the year 2140. This fixed supply and predictable issuance schedule make Bitcoin a truly scarce digital asset.",
@@ -1519,14 +1562,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/halving-schedule.png",
-            alt: "Chart showing Bitcoin halving schedule and declining block rewards",
-            caption: "Bitcoin's halving schedule creates predictable monetary policy",
+            src: "/images/book_images/halving.png",
+            alt: "Bitcoin halving schedule and declining block reward",
+            caption: "Halving schedule and fixed supply — declining inflation every ~210,000 blocks",
           },
         ],
       },
       {
-        heading: "14.3 End of Subsidy (2140 Timeline; Fee Market)",
+        heading: "13.3 End of Subsidy (2140 Timeline; Fee Market)",
         paragraphs: [
           "Around the year 2140, the block reward will drop to zero, and miners will rely entirely on transaction fees for their income. This transition is already beginning — as block rewards decrease with each halving, fees become a larger percentage of miner revenue. For Bitcoin to remain secure after the subsidy ends, there must be a healthy fee market where users pay sufficient fees to incentivize miners to continue securing the network.",
           "This is one of Bitcoin's most important long-term questions: will transaction fees be high enough to maintain network security? The answer depends on Bitcoin's adoption and usage. If Bitcoin becomes widely used as a store of value and medium of exchange, transaction fees should naturally rise to support the network. Layer 2 solutions like Lightning can help by enabling low-fee payments while still generating on-chain fees for settlement.",
@@ -1535,6 +1578,13 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "note",
             content: "After 2140, miners will rely entirely on transaction fees. A healthy fee market is essential for long-term network security.",
+          },
+        ],
+        images: [
+          {
+            src: "/images/book_images/subsidy.jpeg",
+            alt: "Timeline showing the end of the block subsidy around 2140",
+            caption: "End of subsidy: by ~2140 miners rely entirely on transaction fees, supported by a healthy fee market.",
           },
         ],
       },
@@ -1572,10 +1622,10 @@ export const chaptersContent: ChapterContent[] = [
   },
   {
     slug: "mining-in-practice",
-    number: 15,
+    number: 14,
     title: "Mining in Practice",
     level: "Intermediate",
-    duration: "45–60 min",
+    duration: "60 min",
     type: "Theory",
     hook: "Mining economics—difficulty, pools, fees—shape network security.",
     learn: [
@@ -1592,7 +1642,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
-        heading: "15.0 Difficulty Adjustment (Every 2016 Blocks; Self-Regulation)",
+        heading: "14.0 Difficulty Adjustment (Every 2016 Blocks; Self-Regulation)",
         paragraphs: [
           "Bitcoin's difficulty adjustment is a brilliant self-regulating mechanism. Every 2016 blocks (approximately every two weeks), the network automatically adjusts the mining difficulty based on how quickly blocks were found. If blocks were found faster than 10 minutes on average, difficulty increases. If they were found slower, difficulty decreases. This keeps block times stable at around 10 minutes regardless of how much mining power joins or leaves the network.",
           "This automatic adjustment is crucial for Bitcoin's stability. It means the network can handle massive changes in mining power — whether from new miners joining, old miners leaving, or even attacks — without breaking. The difficulty adjustment ensures that Bitcoin's monetary policy (new blocks every 10 minutes) remains predictable and reliable.",
@@ -1605,14 +1655,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/difficulty-adjustment.png",
+            src: "/images/book_images/difficulty-adjustment.png",
             alt: "Chart showing Bitcoin difficulty adjustment over time",
             caption: "Difficulty automatically adjusts to maintain 10-minute block times",
           },
         ],
       },
       {
-        heading: "15.1 Mining Pools and Centralization Risk (Stratum, Payout Models, Censorship)",
+        heading: "14.1 Mining Pools and Centralization Risk (Stratum, Payout Models, Censorship)",
         paragraphs: [
           "Mining Bitcoin solo is like playing the lottery — you might find a block and win the full reward, but the odds are extremely low. Most miners join mining pools, which combine their hashing power and share rewards proportionally. This gives miners more predictable income, but it also creates centralization risks.",
           "Large mining pools could potentially censor transactions, influence network upgrades, or even attempt attacks if they gain too much control. The Stratum protocol used by most pools gives pool operators significant power. Additionally, different payout models (like PPS, PPLNS, or FPPS) affect how rewards are distributed and can influence miner behavior.",
@@ -1626,14 +1676,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/mining-pools.png",
+            src: "/images/book_images/mining-pools.png",
             alt: "Diagram showing how mining pools combine hashing power",
             caption: "Mining pools combine hashing power and share rewards",
           },
         ],
       },
       {
-        heading: "15.2 Security Budget (Subsidy vs Fees; Long-Term Sustainability)",
+        heading: "14.2 Security Budget (Subsidy vs Fees; Long-Term Sustainability)",
         paragraphs: [
           "Bitcoin's security budget — the total value miners receive for securing the network — comes from two sources: block rewards (subsidy) and transaction fees. Currently, block rewards dominate, but as halvings continue, fees must grow to maintain security. This transition is already happening — fees now represent a larger percentage of miner revenue than in Bitcoin's early days.",
           "The question is whether fees will be sufficient to maintain network security after block rewards end around 2140. If Bitcoin adoption grows and transaction volume increases, fees should naturally rise. However, if fees remain too low, miners might leave the network, reducing security. This is one of Bitcoin's most important long-term challenges.",
@@ -1646,7 +1696,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
       },
       {
-        heading: "15.3 ASIC Supply Chains and Geopolitical Risks",
+        heading: "14.3 ASIC Supply Chains and Geopolitical Risks",
         paragraphs: [
           "Bitcoin mining requires specialized hardware called ASICs (Application-Specific Integrated Circuits). These devices are extremely efficient at mining Bitcoin but are expensive and have a concentrated supply chain. Most ASICs are manufactured in a few countries, creating potential geopolitical risks. If a major manufacturer is shut down or sanctioned, it could affect the global hash rate and network security.",
           "Additionally, mining itself has become concentrated in certain regions due to cheap electricity. While this concentration doesn't directly threaten Bitcoin's security (miners can't change the rules), it does create risks from regulatory changes, natural disasters, or political instability. Understanding these supply chain and geographic risks helps you appreciate the real-world challenges Bitcoin faces.",
@@ -1687,6 +1737,127 @@ export const chaptersContent: ChapterContent[] = [
       "Hash rate",
       "Payout model",
     ],
+    nextSlug: "layer-2-sidechains-in-daily-life",
+  },
+  {
+    slug: "layer-2-sidechains-in-daily-life",
+    number: 15,
+    title: "Layer 2 & Sidechains in Daily Life",
+    level: "Intermediate",
+    duration: "70 min",
+    type: "Practice",
+    hook: "Lightning and sidechains make Bitcoin faster and more flexible—with trade-offs.",
+    learn: [
+      "Lightning basics and settlement trade-offs",
+      "Custodial vs non-custodial Lightning",
+      "Sidechains (e.g., Liquid) and federated trust",
+      "Circular economies running on sats",
+    ],
+    sections: [
+      {
+        heading: "Introduction",
+        paragraphs: [
+          "Bitcoin's base layer is secure and decentralized, but it has limitations: transactions can take time to confirm, and fees can be high during busy periods. Layer 2 solutions and sidechains address these challenges by building additional layers on top of Bitcoin, enabling faster payments, lower fees, and new features. However, these solutions come with trade-offs, including different security models and trust assumptions. Understanding these options helps you choose the right tool for each situation.",
+        ],
+      },
+      {
+        heading: "15.0 Lightning Basics (Off-Chain Channels; Settlement Trade-Offs)",
+        paragraphs: [
+          "The Lightning Network is a Layer 2 solution that enables instant, low-fee payments by moving transactions off the main Bitcoin blockchain. Instead of broadcasting every payment to the entire network, Lightning uses payment channels — private connections between two parties that allow them to send and receive Bitcoin instantly, with fees often just a fraction of a cent.",
+          "To use Lightning, you first open a channel by locking some Bitcoin on the main chain. Once the channel is open, you can make unlimited payments through it without touching the blockchain. When you're done, you close the channel, and the final balance is settled back on Bitcoin's main chain. This design trades immediate speed and low fees for delayed final settlement — a trade-off that works well for everyday spending.",
+        ],
+        callouts: [
+          {
+            type: "note",
+            content: "Lightning channels require liquidity management. You need inbound capacity to receive and outbound capacity to send.",
+          },
+        ],
+        images: [
+          {
+            src: "/images/book_images/lightning_networ.png",
+            alt: "Diagram showing Lightning payment channel opening, payments, and closing",
+            caption: "Lightning channels enable instant off-chain payments",
+          },
+        ],
+      },
+      {
+        heading: "15.1 Receive and Spend on Lightning (Custodial vs Non-Custodial)",
+        paragraphs: [
+          "There are two main ways to use Lightning: custodial and non-custodial. Custodial Lightning wallets are like bank accounts — a company holds your funds and handles all the technical details. They're convenient and easy to use, but you're trusting that company with your money. If they disappear or get hacked, your funds could be at risk.",
+          "Non-custodial Lightning wallets give you full control. You manage your own channels, liquidity, and keys. This offers better privacy and sovereignty, but it requires more technical knowledge and active management. You need to understand channel capacity, routing, and how to keep channels healthy. For beginners, custodial options are a good starting point, but as you learn more, non-custodial solutions offer greater independence.",
+        ],
+        callouts: [
+          {
+            type: "tip",
+            content: "Start with a custodial Lightning wallet to learn, then graduate to non-custodial for full control and privacy.",
+          },
+          {
+            type: "warning",
+            content: "Custodial Lightning wallets require trust in the provider. Only keep small amounts in custodial wallets.",
+          },
+        ],
+      },
+      {
+        heading: "15.2 Sidechains (e.g., Liquid) and Federated Trust",
+        paragraphs: [
+          "Sidechains are separate blockchains that are pegged to Bitcoin, meaning you can move Bitcoin onto them and back. They often have their own consensus rules, enabling features like faster confirmations, confidential transactions, or smart contracts. However, sidechains typically use federated trust — a group of trusted entities (called a federation) that validate transactions and manage the peg.",
+          "This introduces a trust assumption that doesn't exist on Bitcoin's main chain. If the federation is compromised or acts maliciously, your funds could be at risk. That said, sidechains can be useful for specific use cases where speed or features matter more than absolute decentralization. Understanding the trade-offs helps you make informed decisions about when to use them.",
+        ],
+        callouts: [
+          {
+            type: "warning",
+            content: "Sidechains introduce trust in federations. Only use them if you understand and accept this trade-off.",
+          },
+        ],
+        images: [
+          {
+            src: "/images/book_images/sidechain-peg.png",
+            alt: "Diagram showing Bitcoin pegged to sidechain and back",
+            caption: "Sidechains are pegged to Bitcoin but use different consensus",
+          },
+        ],
+      },
+      {
+        heading: "15.3 Circular Economies Running on Sats",
+        paragraphs: [
+          "One of the most exciting developments in Bitcoin is the growth of circular economies — communities where people earn and spend Bitcoin entirely within their local network. These economies can run on Lightning for fast, cheap payments, or on sidechains for additional features. By keeping value circulating locally, these communities reduce dependence on traditional banking systems and build financial resilience.",
+          "Examples include local marketplaces, freelancer networks, and community currencies. These systems demonstrate how Bitcoin can enable economic activity that's both global (anyone can join) and local (value stays in the community). As more people adopt Bitcoin, these circular economies become more powerful and self-sustaining.",
+        ],
+        callouts: [
+          {
+            type: "example",
+            content: "A local marketplace where vendors accept Lightning payments, and customers can spend their earnings at other vendors in the same network, creating a circular economy.",
+          },
+        ],
+      },
+    ],
+    activities: [
+      "Activity: Live Lightning Payment Demo (Testnet or Small Real)",
+      "To experience Lightning firsthand, students can participate in a live payment demo. Using either a testnet Lightning wallet (free, no real value) or a small real Lightning wallet, students:",
+      "• Open a Lightning wallet (custodial or non-custodial)",
+      "• Receive a small amount of sats",
+      "• Make a payment to another student or a merchant",
+      "• Observe the instant confirmation and low fees",
+      "This hands-on experience makes the abstract concept of Layer 2 tangible and helps students understand when Lightning is the right tool for a payment.",
+    ],
+    summary: [
+      "Lightning Network enables instant, low-fee payments through off-chain channels.",
+      "Lightning trades immediate speed for delayed on-chain final settlement.",
+      "Custodial Lightning is convenient but requires trust; non-custodial offers control but needs more management.",
+      "Sidechains add features but introduce trust in federations.",
+      "Circular economies demonstrate how Bitcoin can enable local economic activity.",
+    ],
+    keyTerms: [
+      "Lightning Network",
+      "Lightning channel",
+      "Liquidity",
+      "Custodial",
+      "Non-custodial",
+      "Sidechain",
+      "Federation",
+      "Peg",
+      "Layer 2",
+    ],
     nextSlug: "full-node-opening-a-lightning-channel",
   },
   {
@@ -1723,7 +1894,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/node-stack.png",
+            src: "/images/book_images/node-stack.png",
             alt: "Diagram showing Bitcoin Core + Lightning node setup",
             caption: "Bitcoin Core + Lightning enables full sovereignty",
           },
@@ -1743,7 +1914,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/lightning-channel-open.png",
+            src: "/images/book_images/lightning-channel-open.png",
             alt: "Diagram showing Lightning channel opening process",
             caption: "Opening a Lightning channel locks funds in multi-sig",
           },
@@ -1836,7 +2007,12 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/multi-sig.png",
+            src: "/images/book_images/single_signiture.png",
+            alt: "Diagram showing single signature transaction",
+            caption: "Single signature requires one key to authorize transactions",
+          },
+          {
+            src: "/images/book_images/multi_sig.png",
             alt: "Diagram showing multi-sig requiring multiple signatures",
             caption: "Multi-sig requires multiple keys to authorize transactions",
           },
@@ -1856,9 +2032,39 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/multi-sig-design.png",
-            alt: "Diagram showing 2-of-3 and 3-of-5 multi-sig setups",
-            caption: "Different multi-sig designs balance security and redundancy",
+            src: "/images/wallet/starting.jpeg",
+            alt: "Create wallet page — beginning of multi-sig setup",
+            caption: "1. Starting the flow: coordinator-based or coordinator-less multi-sig (create wallet page)",
+          },
+          {
+            src: "/images/wallet/createseed.jpeg",
+            alt: "Create a new seed for your key",
+            caption: "2. Seed creation: the foundation for each key in a 2-of-3 or 3-of-5 setup",
+          },
+          {
+            src: "/images/wallet/choos.jpeg",
+            alt: "Choose how many signers (M-of-N)",
+            caption: "3. Choosing your setup: balance security (more keys) and complexity (2-of-3 vs 3-of-5)",
+          },
+          {
+            src: "/images/wallet/keyto.jpeg",
+            alt: "Setting up and sharing keys between signers",
+            caption: "4. Keys and wallet setup: each signer has their own key in multi-sig designs",
+          },
+          {
+            src: "/images/wallet/password.jpeg",
+            alt: "Create a password for the wallet",
+            caption: "5. Security and redundancy: strong passwords protect each key in the setup",
+          },
+          {
+            src: "/images/wallet/final.jpeg",
+            alt: "Wallet created successfully",
+            caption: "6. Different multi-sig designs balance security and redundancy (wallet created)",
+          },
+          {
+            src: "/images/wallet/settingend.jpeg",
+            alt: "Wallet details and configuration summary",
+            caption: "7. Completing configuration: document key distribution for 2-of-3 or 3-of-5",
           },
         ],
       },
@@ -1957,9 +2163,9 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/script-types.png",
-            alt: "Diagram comparing P2PKH, P2WPKH, P2SH, and P2TR script types",
-            caption: "Different script types offer different features and efficiency",
+            src: "/images/book_images/p2sh.png",
+            alt: "P2SH (Pay-to-Script-Hash) script diagram",
+            caption: "P2SH (Pay-to-Script-Hash): Allows complex scripts to be hidden behind a hash",
           },
         ],
       },
@@ -1981,7 +2187,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/timelocks.png",
+            src: "/images/book_images/time_lock.png",
             alt: "Diagram showing CLTV and CSV timelock mechanisms",
             caption: "Timelocks enable time-based spending conditions",
           },
@@ -2091,7 +2297,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/mempool-fees.png",
+            src: "/images/book_images/mempool-fees.png",
             alt: "Chart showing mempool fee levels over time",
             caption: "Watch mempool conditions to time consolidation",
           },
@@ -2191,7 +2397,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/money-frameworks.png",
+            src: "/images/book_images/money-frameworks.png",
             alt: "Diagram comparing Chartalism, Metallism, and Platform Money",
             caption: "Bitcoin represents a new category of money",
           },
@@ -2257,6 +2463,94 @@ export const chaptersContent: ChapterContent[] = [
       "Financial sovereignty",
       "Network consensus",
       "Cryptographic scarcity",
+    ],
+    nextSlug: "wrap-up-resources",
+  },
+  {
+    slug: "wrap-up-resources",
+    number: 21,
+    title: "Wrap-Up & Resources",
+    level: "Advanced",
+    duration: "40–50 min",
+    type: "Theory",
+    hook: "Close the loop: definitions, primary sources, and where to go next in your Bitcoin journey.",
+    learn: [
+      "Glossary recap of core terms used across the course",
+      "Primary sources and local-first tools to deepen learning",
+      "How to keep practicing verification, security, and self-custody",
+    ],
+    sections: [
+      {
+        heading: "Introduction",
+        paragraphs: [
+          "You have worked through the story of money, the limits of fiat, Bitcoin’s design, custody, mining, Lightning, and more. This final chapter is not new theory — it is a compass: concise definitions, trustworthy references, and practical next steps so you keep learning safely after the cohort ends.",
+        ],
+      },
+      {
+        heading: "21.1 Course Summary — What to Remember",
+        paragraphs: [
+          "A few ideas repeat across every chapter: verify instead of trusting marketing, protect private keys and recovery words, understand trade-offs (convenience vs sovereignty), and treat fixed-supply digital scarcity as a different category from inflated fiat.",
+        ],
+        bullets: [
+          "Money functions and sound-money properties still matter in a digital world.",
+          "Bitcoin’s security model combines proof-of-work, full nodes, and economic incentives.",
+          "Self-custody and good operational security are skills, not one-time setup tasks.",
+        ],
+      },
+      {
+        heading: "21.2 Glossary & Key Terms (Quick Reference)",
+        paragraphs: [
+          "Use this list as a launch point; your notes and the earlier chapters remain the full reference.",
+        ],
+        bullets: [
+          "UTXO, address, seed phrase, PSBT, fee rate (sat/vB), mempool, confirmation, merkle root, difficulty adjustment, halving.",
+          "Layer 1 vs Layer 2 (e.g. Lightning) — settlement vs speed.",
+          "Hot vs cold signing; multi-sig; coin control; privacy vs fee trade-offs.",
+        ],
+      },
+      {
+        heading: "21.3 Primary Sources & Local-First Tools",
+        paragraphs: [
+          "Prefer original documents and open-source tools you can run yourself. When in doubt, read the sources and verify checksums or builds from projects you trust.",
+        ],
+        bullets: [
+          "Bitcoin Core, Bitcoin whitepaper, BIPs repository.",
+          "Block explorers and your own node for checking transactions and policy.",
+          "Wallet projects with reproducible builds and clear security models.",
+        ],
+        callouts: [
+          {
+            type: "tip",
+            content: "Bookmark a short list of tools you actually use; fewer trusted surfaces is simpler and safer than dozens of half-tested apps.",
+          },
+        ],
+      },
+      {
+        heading: "21.4 Next Steps — Stay Secure, Stay Curious",
+        paragraphs: [
+          "Continue with small, deliberate experiments: run a node when you can, practice restoring a wallet from backup, and teach one concept you understand well. Community learning and open-source collaboration are part of how Bitcoin improves over time.",
+        ],
+      },
+    ],
+    activities: [
+      "Final reflection — From Failing Fiat to Sovereign Bitcoin:",
+      "• Name one habit you will keep (e.g. verifying addresses, labeling UTXOs, avoiding phishing links).",
+      "• What is one topic you want to study next — technical (Script, Lightning), operational (multi-sig), or economic (monetary history)?",
+      "• Who could you responsibly help with one clear lesson you learned in this course?",
+    ],
+    summary: [
+      "This wrap-up ties together themes from the full curriculum rather than introducing new consensus rules.",
+      "A compact glossary helps you retrieve vocabulary when reading docs or talking with peers.",
+      "Primary sources and local-first tools keep you anchored to verifiable reality.",
+      "Small ongoing practices (backups, verification, node usage) matter more than one-time cramming.",
+    ],
+    keyTerms: [
+      "Self-custody",
+      "Verification",
+      "Primary sources",
+      "Operational security",
+      "Layer 2",
+      "Open source",
     ],
     nextSlug: undefined,
   },

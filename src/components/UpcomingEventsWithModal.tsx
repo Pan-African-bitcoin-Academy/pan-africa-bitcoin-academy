@@ -14,7 +14,6 @@ import {
   ExternalLink,
   BookOpen,
 } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface UpcomingEventForModal {
   id: string;
@@ -184,18 +183,11 @@ export function UpcomingEventsWithModal({ events }: { events: UpcomingEventForMo
     };
   }, [mounted, selectedEvent]);
 
-  const { language } = useLanguage();
-  const isTigrinya = language === 'ti';
-
   if (events.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-700/50 bg-zinc-900/30 p-12 text-center">
-        <p className="text-lg text-zinc-400 mb-2">
-          {isTigrinya ? "ዝተመደበ ቀረባ መደብ የለን" : "No upcoming events scheduled"}
-        </p>
-        <p className="text-sm text-zinc-500">
-          {isTigrinya ? "ሓደስቲ መደባትን ክፍለ-ግዜታትን ንምርካብ ኣብ ቀረባ ተመሊስኩም ርኣዩ!" : "Check back soon for new sessions and events!"}
-        </p>
+        <p className="text-lg text-zinc-400 mb-2">No upcoming events scheduled</p>
+        <p className="text-sm text-zinc-500">Check back soon for new sessions and events!</p>
       </div>
     );
   }
@@ -242,7 +234,7 @@ export function UpcomingEventsWithModal({ events }: { events: UpcomingEventForMo
                     {isClosestEvent && (
                       <div className="mb-2">
                         <span className="inline-flex items-center rounded-full bg-yellow-500/30 px-2.5 py-1 text-xs font-semibold text-yellow-200">
-                          {isTigrinya ? "ቀጻሊ ዝካየድ" : "Next Up"}
+                          Next Up
                         </span>
                       </div>
                     )}

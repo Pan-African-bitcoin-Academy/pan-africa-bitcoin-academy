@@ -2,40 +2,40 @@
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import { ForgotPasswordModal } from './ForgotPasswordModal';
-import { validatePassword, getPasswordRequirements } from '@/lib/passwordValidation';
+import { Eye, EyeOff, Check, Circle, X } from 'lucide-react';
+import { validatePassword, getPasswordRequirementStatuses, PASSWORD_REQUIREMENTS_HEADING, PASSWORD_REQUIREMENTS_HEADING_TIGRINYA, CONFIRM_PASSWORD_LABEL, CONFIRM_PASSWORD_LABEL_TIGRINYA } from '@/lib/passwordValidation';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'signin' | 'signup';
-  redirectAfterLogin?: string | null;
   onForgotPassword?: (email: string) => void;
+  redirectAfterLogin?: string | null; // If null, don't redirect. If string, redirect to that URL. If undefined, default to /dashboard
 }
 
-export function AuthModal({
-  isOpen,
-  onClose,
-  mode,
-  redirectAfterLogin,
-  onForgotPassword,
-}: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAfterLogin }: AuthModalProps) {
   const [isSignIn, setIsSignIn] = useState(mode === 'signin');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
+    needsVerification: false,
+    userEmail: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [signupSuccessMessage, setSignupSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -52,6 +52,16 @@ export function AuthModal({
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  // Countdown timer for resend verification
+  useEffect(() => {
+    if (resendCountdown > 0) {
+      const timer = setTimeout(() => {
+        setResendCountdown(resendCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCountdown]);
 
   if (!isOpen || !mounted) return null;
 
@@ -87,7 +97,8 @@ export function AuthModal({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               email: formData.email,
-              password: formData.password 
+              password: formData.password,
+              rememberMe: rememberMe
             }),
           });
           
@@ -100,9 +111,24 @@ export function AuthModal({
               window.location.href = data.setupPasswordUrl;
               return;
             }
+            // Check if user needs to verify email
+            if (data.needsEmailVerification) {
+              // Use the message from API which already indicates if email was sent
+              const verificationMsg = data.message || 'Please verify your email address before logging in.';
+              setServerError(verificationMsg);
+              // Store email for resend action
+              setFormData(prev => ({ 
+                ...prev, 
+                needsVerification: true, 
+                userEmail: formData.email 
+              }));
+              setLoading(false);
+              return;
+            }
             // Handle specific error messages from API
             const errorMsg = data.error || `Sign in failed (${res.status})`;
             setServerError(errorMsg);
+            setLoading(false);
             return;
           }
           
@@ -114,18 +140,28 @@ export function AuthModal({
             } catch {
               // ignore
             }
+            // Keep loading spinner visible during redirect
+            // Don't set loading to false yet - let it show during redirect
             onClose();
-            // Redirect after successful sign-in if not suppressed
-            if (redirectAfterLogin !== null) {
-              window.location.href = redirectAfterLogin || '/dashboard';
+            // Redirect based on redirectAfterLogin prop
+            if (redirectAfterLogin === null) {
+              // Don't redirect - stay on current page
+              // The auth state will update and the page will re-render
+              setLoading(false);
+            } else if (redirectAfterLogin) {
+              // Redirect to specified URL - spinner will disappear when page unloads
+              window.location.href = redirectAfterLogin;
+            } else {
+              // Default behavior: redirect to dashboard - spinner will disappear when page unloads
+              window.location.href = '/dashboard';
             }
           } else {
             setServerError(data.error || 'Invalid credentials. Please try again.');
+            setLoading(false);
           }
         } catch (err: any) {
           console.error('Login error:', err);
           setServerError(err.message || 'Sign in failed. Please try again.');
-        } finally {
           setLoading(false);
         }
       }
@@ -145,6 +181,10 @@ export function AuthModal({
         newErrors.confirmPassword = 'Passwords do not match';
       }
 
+      if (!formData.phone?.trim()) {
+        newErrors.phone = 'WhatsApp number is required';
+      }
+
       if (Object.keys(newErrors).length === 0) {
         try {
           setLoading(true);
@@ -155,6 +195,7 @@ export function AuthModal({
               firstName: formData.firstName,
               lastName: formData.lastName,
               email: formData.email,
+              phone: formData.phone.trim(),
               password: formData.password,
             }),
           });
@@ -162,8 +203,15 @@ export function AuthModal({
           const data = await res.json();
           
           if (!res.ok) {
-            const errorMsg = data.details || data.error || `Sign up failed (${res.status})`;
-            throw new Error(errorMsg);
+            const rawMsg = data.details || data.error || `Sign up failed (${res.status})`;
+            const isAlreadyExists = /already exists|already registered/i.test(rawMsg);
+            setServerError(
+              isAlreadyExists
+                ? 'An account with this email already exists. Please sign in or use a different email.'
+                : rawMsg
+            );
+            setLoading(false);
+            return;
           }
           
           // Success - profile was created
@@ -175,16 +223,14 @@ export function AuthModal({
             } catch {
               // ignore
             }
-            onClose();
-            // Reload page to update navbar with new auth state
-            window.location.reload();
+            setLoading(false);
+            setSignupSuccessMessage('Account created successfully! Please check your email to verify your address before logging in.');
           } else {
             throw new Error(data.error || 'Sign up failed');
           }
         } catch (err: any) {
           console.error('Registration error:', err);
           setServerError(err.message || 'Sign up failed. Please try again.');
-        } finally {
           setLoading(false);
         }
       }
@@ -213,16 +259,22 @@ export function AuthModal({
       firstName: '',
       lastName: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
+      needsVerification: false,
+      userEmail: '',
     });
     setErrors({});
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setRememberMe(false); // Reset remember me when switching modes
   };
 
   const modalContent = (
-    <div
+    <>
+      {loading && <LoadingSpinner overlay />}
+      <div
       className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl"
       style={{ 
         position: 'fixed', 
@@ -236,13 +288,41 @@ export function AuthModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md mx-4 rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black p-8 shadow-2xl"
+        className="relative w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black p-8 shadow-2xl scrollbar-modal"
         onClick={(e) => e.stopPropagation()}
         style={{ 
           margin: 'auto',
           zIndex: 100000
         }}
       >
+        {signupSuccessMessage ? (
+          /* Success popup */
+          <div className="py-4 text-center">
+            <div className="mb-6 flex justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">
+                <svg className="h-8 w-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-zinc-100 mb-3">Account created</h3>
+            <p className="text-zinc-300 text-sm leading-relaxed mb-8">
+              {signupSuccessMessage}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSignupSuccessMessage(null);
+                onClose();
+                window.location.reload();
+              }}
+              className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 font-semibold text-black transition hover:from-orange-400 hover:to-orange-500"
+            >
+              OK
+            </button>
+          </div>
+        ) : (
+          <>
         {/* Close button */}
         <button
           onClick={onClose}
@@ -284,7 +364,7 @@ export function AuthModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
           {!isSignIn && (
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
@@ -292,12 +372,14 @@ export function AuthModal({
                   htmlFor="firstName"
                   className="mb-2 block text-sm font-medium text-zinc-300"
                 >
-                  First Name
+                  First Name <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   id="firstName"
                   name="firstName"
+                  autoComplete="given-name"
+                  required
                   value={formData.firstName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
@@ -312,12 +394,14 @@ export function AuthModal({
                   htmlFor="lastName"
                   className="mb-2 block text-sm font-medium text-zinc-300"
                 >
-                  Last Name
+                  Last Name <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   id="lastName"
                   name="lastName"
+                  autoComplete="family-name"
+                  required
                   value={formData.lastName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
@@ -335,12 +419,13 @@ export function AuthModal({
               htmlFor="email"
               className="mb-2 block text-sm font-medium text-zinc-300"
             >
-              Email Address
+              Email Address <span className="text-red-400">*</span>
             </label>
             <input
               type="email"
               id="email"
               name="email"
+              required
               value={formData.email}
               onChange={handleChange}
               className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
@@ -351,18 +436,46 @@ export function AuthModal({
             )}
           </div>
 
+          {!isSignIn && (
+            <div>
+              <label
+                htmlFor="phone"
+                className="mb-2 block text-sm font-medium text-zinc-300"
+              >
+                WhatsApp Number <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                autoComplete="tel"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+                placeholder="e.g. +291 7 123 4567"
+              />
+              <p className="mt-1 text-xs text-zinc-500">Include country code.</p>
+              {errors.phone && (
+                <p className="mt-1 text-sm text-red-400">{errors.phone}</p>
+              )}
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="password"
               className="mb-2 block text-sm font-medium text-zinc-300"
             >
-              Password
+              Password <span className="text-red-400">*</span>
             </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
+                autoComplete={isSignIn ? "current-password" : "new-password"}
+                required
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 pr-10 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
@@ -382,9 +495,31 @@ export function AuthModal({
               </button>
             </div>
             {!isSignIn && (
-              <p className="mt-1 text-xs text-zinc-500">
-                {getPasswordRequirements()}
-              </p>
+              <div className="mt-2">
+                <p className="mb-1.5 text-xs font-medium text-zinc-400">
+                  {PASSWORD_REQUIREMENTS_HEADING} / {PASSWORD_REQUIREMENTS_HEADING_TIGRINYA}
+                </p>
+                <div className="space-y-1.5">
+                  {getPasswordRequirementStatuses(formData.password).map((req) => (
+                    <div
+                      key={req.id}
+                      className={req.met ? 'text-green-400' : 'text-zinc-500'}
+                      style={{ transition: 'color 0.2s ease' }}
+                    >
+                      <span className="inline-flex items-start gap-2 text-xs">
+                        {req.met ? (
+                          <Check className="h-3.5 w-3.5 shrink-0 mt-0.5 text-green-400" aria-hidden />
+                        ) : (
+                          <Circle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-zinc-500" aria-hidden />
+                        )}
+                        <span className={req.met ? 'text-green-400/90' : 'text-zinc-500'}>
+                          {req.label} / {req.labelTigrinya}
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
             {errors.password && (
               <p className="mt-1 text-sm text-red-400">{errors.password}</p>
@@ -397,18 +532,34 @@ export function AuthModal({
                 htmlFor="confirmPassword"
                 className="mb-2 block text-sm font-medium text-zinc-300"
               >
-                Confirm Password
+                {CONFIRM_PASSWORD_LABEL} / {CONFIRM_PASSWORD_LABEL_TIGRINYA} <span className="text-red-400">*</span>
               </label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
+                  required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 pr-10 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+                  className={`w-full rounded-lg border bg-zinc-900/50 px-4 py-3 pr-24 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ${
+                    formData.confirmPassword.length > 0
+                      ? formData.password === formData.confirmPassword
+                        ? 'border-emerald-500/70 focus:border-emerald-500 focus:ring-emerald-500/20'
+                        : 'border-red-500/70 focus:border-red-500 focus:ring-red-500/20'
+                      : 'border-zinc-700 focus:border-orange-400/50 focus:ring-orange-400/20'
+                  }`}
                   placeholder="••••••••"
                 />
+                {formData.confirmPassword.length > 0 && (
+                  <span className="absolute right-14 top-1/2 -translate-y-1/2 pointer-events-none">
+                    {formData.password === formData.confirmPassword ? (
+                      <Check className="h-5 w-5 text-emerald-400" aria-hidden />
+                    ) : (
+                      <X className="h-5 w-5 text-red-400" aria-hidden />
+                    )}
+                  </span>
+                )}
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -432,10 +583,12 @@ export function AuthModal({
 
           {isSignIn && (
             <div className="flex items-center justify-between">
-              <label className="flex items-center">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  className="mr-2 rounded border-zinc-700 bg-zinc-900/50 text-orange-400 focus:ring-orange-400/20"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="mr-2 rounded border-zinc-700 bg-zinc-900/50 text-orange-400 focus:ring-orange-400/20 cursor-pointer"
                 />
                 <span className="text-sm text-zinc-400">Remember me</span>
               </label>
@@ -443,13 +596,14 @@ export function AuthModal({
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
+                  // Call parent's onForgotPassword callback with current email
+                  const currentEmail = formData.email;
                   if (onForgotPassword) {
-                    onForgotPassword(formData.email);
-                  } else {
-                    setForgotPasswordOpen(true);
+                    onForgotPassword(currentEmail);
                   }
                 }}
-                className="text-sm text-orange-400 hover:text-orange-300"
+                className="text-sm text-orange-400 hover:text-orange-300 transition cursor-pointer underline"
               >
                 Forgot password?
               </button>
@@ -461,13 +615,51 @@ export function AuthModal({
             disabled={loading}
             className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 font-semibold text-white transition hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400/50 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? 'Working...' : isSignIn ? 'Sign In' : 'Create Account'}
+            {loading ? (isSignIn ? 'Signing in...' : 'Creating account...') : isSignIn ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
         {serverError && (
-          <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
-            {serverError}
+          <div className="mt-4 space-y-2">
+            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+              {serverError}
+            </div>
+            {formData.needsVerification && formData.userEmail && (
+              <button
+                type="button"
+                onClick={async () => {
+                  setResendingVerification(true);
+                  try {
+                    const res = await fetch('/api/profile/resend-verification', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: formData.userEmail }),
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                      setServerError('Verification email sent! Please check your inbox and click the verification link.');
+                      setFormData(prev => ({ ...prev, needsVerification: false }));
+                      // Start 60 second countdown
+                      setResendCountdown(60);
+                    } else {
+                      setServerError(data.error || 'Failed to send verification email. Please try again.');
+                    }
+                  } catch (error: any) {
+                    setServerError('Failed to send verification email. Please try again.');
+                  } finally {
+                    setResendingVerification(false);
+                  }
+                }}
+                disabled={resendingVerification || resendCountdown > 0}
+                className="w-full rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {resendingVerification 
+                  ? 'Sending...' 
+                  : resendCountdown > 0 
+                    ? `Resend Verification Email (${resendCountdown}s)`
+                    : 'Resend Verification Email'}
+              </button>
+            )}
           </div>
         )}
 
@@ -483,19 +675,14 @@ export function AuthModal({
             </button>
           </p>
         </div>
+          </>
+        )}
       </div>
     </div>
-  );
-
-  return (
-    <>
-      {createPortal(modalContent, document.body)}
-      <ForgotPasswordModal
-        isOpen={forgotPasswordOpen}
-        onClose={() => setForgotPasswordOpen(false)}
-      />
     </>
   );
+
+  return createPortal(modalContent, document.body);
 }
 
 

@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import bcrypt from 'bcryptjs';
 import { setStudentCookie } from '@/lib/session';
 import { validateAndNormalizeEmail, validatePassword } from '@/lib/validation';
 import { handleApiError } from '@/lib/api-error-handler';
 import { checkRateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { sendVerificationEmail } from '@/lib/email';
+import { secureEmailInput, validateRequestBody, addSecurityHeaders } from '@/lib/security-utils';
+import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   // Rate limiting
@@ -29,31 +32,63 @@ export async function POST(req: NextRequest) {
     );
   }
   try {
-    const { email, password } = await req.json();
+    const body = await req.json();
 
-    // Validate email
-    const emailValidation = validateAndNormalizeEmail(email);
-    if (!emailValidation.valid) {
-      return NextResponse.json(
+    // Validate request body structure and size
+    const bodyValidation = validateRequestBody(body, 10000);
+    if (!bodyValidation.valid) {
+      const response = NextResponse.json(
+        { error: bodyValidation.error || 'Invalid request' },
+        { status: 400 }
+      );
+      return addSecurityHeaders(response);
+    }
+
+    const { email, password, rememberMe } = body;
+
+    // Validate and sanitize email
+    const emailValidation = secureEmailInput(email);
+    if (!emailValidation.valid || !emailValidation.normalized) {
+      const response = NextResponse.json(
         { error: emailValidation.error || 'Email is required' },
         { status: 400 }
       );
+      return addSecurityHeaders(response);
     }
-    const normalizedEmail = emailValidation.normalized!;
+    const normalizedEmail = emailValidation.normalized;
 
-    // Validate password
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.valid) {
-      return NextResponse.json(
-        { error: passwordValidation.error || 'Password is required' },
+    // Validate password type and length (prevent DoS)
+    if (!password || typeof password !== 'string') {
+      const response = NextResponse.json(
+        { error: 'Password is required' },
         { status: 400 }
       );
+      return addSecurityHeaders(response);
+    }
+
+    // Limit password length (prevent DoS attacks)
+    if (password.length > 128) {
+      const response = NextResponse.json(
+        { error: 'Password too long' },
+        { status: 400 }
+      );
+      return addSecurityHeaders(response);
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      const response = NextResponse.json(
+        { error: passwordValidation.error || 'Password does not meet requirements' },
+        { status: 400 }
+      );
+      return addSecurityHeaders(response);
     }
 
     // Look up profile by email (including password_hash for verification)
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, email_verified_at, email_verification_token, email_verification_token_expiry, created_at')
       .eq('email', normalizedEmail)
       .maybeSingle();
 
@@ -79,19 +114,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Please set a password for your account. Your application was approved!',
-          found: true,
-          needsPasswordSetup: true,
-          setupPasswordUrl: `/setup-password?email=${encodeURIComponent(profile.email)}`
-        },
-        { status: 401 }
-      );
-    }
-
-    // Check if status is "Pending Password Setup"
-    if (profile.status === 'Pending Password Setup') {
-      return NextResponse.json(
-        { 
-          error: 'Please complete your registration by setting a password.',
           found: true,
           needsPasswordSetup: true,
           setupPasswordUrl: `/setup-password?email=${encodeURIComponent(profile.email)}`
@@ -128,6 +150,117 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // If the profile has a password but status is still "Pending Password Setup"
+    // (e.g. they set their password via "Forgot Password"), migrate to "Active"
+    // only after we have verified the password, so they are not asked to set password again.
+    if (profile.status === 'Pending Password Setup' && profile.password_hash) {
+      try {
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            status: 'Active',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', profile.id);
+      } catch (e) {
+        console.error('Error auto-updating profile status from Pending Password Setup to Active:', e);
+      }
+    }
+
+    // Check email verification status
+    // For existing users (grandfathered): if email_verified_at is NULL and profile was created before email verification feature,
+    // we consider them verified. For new profiles, email_verified_at must be set.
+    const profileCreatedAt = profile.created_at ? new Date(profile.created_at) : null;
+    const verificationFeatureDate = new Date('2025-01-15'); // Date when email verification was added
+    const isGrandfathered = profileCreatedAt && profileCreatedAt < verificationFeatureDate;
+    
+    // If email is not verified and not grandfathered, generate token and send verification email
+    if (!profile.email_verified_at && !isGrandfathered) {
+      // Generate verification token if one doesn't exist or has expired
+      let verificationToken = null;
+      let needsNewToken = true;
+      
+      // Check if there's an existing valid token
+      if (profile.email_verification_token && profile.email_verification_token_expiry) {
+        const expiryDate = new Date(profile.email_verification_token_expiry);
+        const now = new Date();
+        if (now < expiryDate) {
+          // Token is still valid, use existing one
+          verificationToken = profile.email_verification_token;
+          needsNewToken = false;
+        }
+      }
+      
+      // Generate new token if needed
+      if (needsNewToken) {
+        verificationToken = crypto.randomBytes(32).toString('hex');
+        const tokenExpiry = new Date();
+        tokenExpiry.setHours(tokenExpiry.getHours() + 24); // Expires in 24 hours
+        
+        // Update profile with new token (use admin client to bypass RLS)
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            email_verification_token: verificationToken,
+            email_verification_token_expiry: tokenExpiry.toISOString(),
+          })
+          .eq('id', profile.id);
+      }
+      
+      // Always send verification email when user tries to log in without verification
+      if (verificationToken) {
+        const emailResult = await sendVerificationEmail({
+          userName: profile.name || 'User',
+          userEmail: profile.email,
+          verificationToken,
+        });
+        
+        if (emailResult.success) {
+          return NextResponse.json(
+            { 
+              error: 'Email verification required',
+              found: true,
+              needsEmailVerification: true,
+              message: 'Please verify your email address before logging in. A verification email has been sent to your inbox. Check your email and click the verification link.',
+              verificationUrl: '/verify-email',
+              resendVerificationUrl: '/api/profile/resend-verification',
+              emailSent: true
+            },
+            { status: 403 }
+          );
+        } else {
+          console.error('Failed to send verification email during login:', emailResult.error);
+          // Still return error but indicate email wasn't sent
+          return NextResponse.json(
+            { 
+              error: 'Email verification required',
+              found: true,
+              needsEmailVerification: true,
+              message: 'Please verify your email address before logging in. Click the button below to receive a verification email.',
+              verificationUrl: '/verify-email',
+              resendVerificationUrl: '/api/profile/resend-verification',
+              emailSent: false
+            },
+            { status: 403 }
+          );
+        }
+      } else {
+        // Fallback if token generation failed
+        return NextResponse.json(
+          { 
+            error: 'Email verification required',
+            found: true,
+            needsEmailVerification: true,
+            message: 'Please verify your email address before logging in. Click the button below to receive a verification email.',
+            verificationUrl: '/verify-email',
+            resendVerificationUrl: '/api/profile/resend-verification',
+            emailSent: false
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     // Password is valid - create secure session
     const now = Date.now();
     const session = {
@@ -135,6 +268,7 @@ export async function POST(req: NextRequest) {
       email: profile.email.toLowerCase().trim(),
       issuedAt: now,
       lastActive: now,
+      rememberMe: rememberMe === true, // Store remember me preference in session
     };
 
     const res = NextResponse.json(

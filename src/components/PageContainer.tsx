@@ -3,31 +3,46 @@ import type { ReactNode } from "react";
 type PageContainerProps = {
   title?: string;
   subtitle?: string;
+  /** Rendered beside `subtitle` (e.g. decorative badge); use with `subtitle` for a two-column header row */
+  subtitleExtra?: ReactNode;
   children: ReactNode;
 };
 
-export function PageContainer({ title, subtitle, children }: PageContainerProps) {
+export function PageContainer({ title, subtitle, subtitleExtra, children }: PageContainerProps) {
   return (
-    <div className="relative flex min-h-screen flex-col bg-black/80 text-zinc-50 bitcoin-bg-pattern">
-      <div className="bitcoin-network-lines" />
-      <main className="bg-grid relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8">
-        {/* Bitcoin-themed background elements */}
-        <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -right-40 top-32 h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-purple-500/5 blur-3xl" />
+    <div className="relative flex min-h-screen flex-col bg-black text-zinc-50 w-full">
+      {/* Full width on mobile, max-width only on larger screens */}
+      <main className="relative z-10 w-full flex flex-1 flex-col overflow-x-hidden px-4 pb-8 pt-6 sm:px-6 sm:pb-12 sm:pt-8 sm:max-w-6xl sm:mx-auto lg:px-12 lg:pb-16 lg:pt-10 xl:px-20 xl:px-24">
+        {/* Subtle peripheral framing - moved far to edges, reduced by 70% */}
+        <div className="pointer-events-none fixed -left-96 -top-96 h-[600px] w-[600px] rounded-full bg-cyan-500/3 blur-3xl" />
+        <div className="pointer-events-none fixed -right-96 top-0 h-[500px] w-[500px] rounded-full bg-orange-500/3 blur-3xl" />
+        <div className="pointer-events-none fixed -bottom-96 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-purple-500/2 blur-3xl" />
         
         {title ? (
-          <header className="relative mb-8 space-y-3 sm:mb-12">
-            <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-cyan-300/80">
+          <header className="relative mb-8 space-y-3 sm:mb-12 z-10">
+            <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-cyan-300/60">
               Bitcoin · Learning Path
             </p>
             <h1 className="text-balance text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl lg:text-5xl">
               {title}
             </h1>
-            {subtitle ? (
-              <p className="max-w-3xl text-sm text-zinc-400 sm:text-base lg:text-lg">
-                {subtitle}
-              </p>
+            {subtitle || subtitleExtra ? (
+              subtitleExtra ? (
+                <div className="flex flex-wrap items-start gap-x-3 gap-y-2 sm:items-center sm:justify-between sm:gap-x-5">
+                  {subtitle ? (
+                    <p className="min-w-0 flex-1 text-pretty text-sm leading-snug text-zinc-400 sm:max-w-3xl sm:text-base lg:text-lg">
+                      {subtitle}
+                    </p>
+                  ) : (
+                    <span className="min-w-0 flex-1" aria-hidden />
+                  )}
+                  <div className="shrink-0 self-start sm:self-center">{subtitleExtra}</div>
+                </div>
+              ) : subtitle ? (
+                <p className="w-full text-sm text-zinc-400 sm:text-base sm:max-w-3xl lg:text-lg">
+                  {subtitle}
+                </p>
+              ) : null
             ) : null}
           </header>
         ) : null}

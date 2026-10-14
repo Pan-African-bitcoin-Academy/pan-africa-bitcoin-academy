@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 const DURATION_MS = 2000;
 
@@ -21,20 +20,14 @@ export function ImpactStatsCountUp({
   satsRewarded,
   countriesRepresented,
 }: ImpactStatsCountUpProps) {
-  const satsK = Math.floor((satsRewarded || 0) / 1000);
-  const [displayStudents, setDisplayStudents] = useState(studentsTrained);
-  const [displaySatsK, setDisplaySatsK] = useState(satsK);
-  const [displayCountries, setDisplayCountries] = useState(countriesRepresented);
+  const [displayStudents, setDisplayStudents] = useState(0);
+  const [displaySatsK, setDisplaySatsK] = useState(0);
+  const [displayCountries, setDisplayCountries] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
-
-  useEffect(() => {
-    setDisplayStudents(studentsTrained);
-    setDisplaySatsK(satsK);
-    setDisplayCountries(countriesRepresented);
-  }, [studentsTrained, satsK, countriesRepresented]);
+  const satsK = Math.floor(satsRewarded / 1000);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -53,7 +46,7 @@ export function ImpactStatsCountUp({
         if (!entry.isIntersecting || hasAnimated) return;
         setHasAnimated(true);
       },
-      { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+      { threshold: 0.2, rootMargin: '0px 0px -50px 0px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -67,7 +60,6 @@ export function ImpactStatsCountUp({
       return;
     }
     if (!hasAnimated) return;
-
 
     const start = performance.now();
     const animate = (now: number) => {
@@ -84,9 +76,6 @@ export function ImpactStatsCountUp({
     requestAnimationFrame(animate);
   }, [hasAnimated, prefersReducedMotion, studentsTrained, satsK, countriesRepresented]);
 
-  const { language } = useLanguage();
-  const isTigrinya = language === 'ti';
-
   return (
     <section
       ref={sectionRef}
@@ -94,12 +83,10 @@ export function ImpactStatsCountUp({
     >
       <div className="flex flex-col items-center text-center">
         <h2 className="mb-4 text-3xl font-semibold text-orange-200 sm:text-4xl lg:text-5xl">
-          {isTigrinya ? "ዝተገብረ ምዕባለ" : "Our Impact"}
+          Our Impact
         </h2>
         <p className="mx-auto mb-12 max-w-xl text-base text-zinc-400 sm:text-lg">
-          {isTigrinya
-            ? "ካብ ናይ ቢትኮይን ትምህርታዊ መደባትና ዝተረኽበ ናይ ሓቂ ቁጽርታት።"
-            : "Real numbers from our Bitcoin education programs across Africa."}
+          Real numbers from our Bitcoin education programs across Africa.
         </p>
 
         <div className="grid w-full max-w-4xl gap-8 sm:grid-cols-3 sm:gap-10">
@@ -107,25 +94,19 @@ export function ImpactStatsCountUp({
             <div className="text-5xl font-bold text-orange-400 sm:text-6xl tabular-nums">
               {displayStudents}
             </div>
-            <div className="mt-3 text-base text-zinc-400">
-              {isTigrinya ? "ዝሰልጠኑ ተመሃሮ" : "Students trained"}
-            </div>
+            <div className="mt-3 text-base text-zinc-400">Students trained</div>
           </div>
           <div className="flex flex-col items-center text-center">
             <div className="text-5xl font-bold text-orange-400 sm:text-6xl tabular-nums">
               {displaySatsK}K+
             </div>
-            <div className="mt-3 text-base text-zinc-400">
-              {isTigrinya ? "ዝተዓደለ ሳትስ (Sats)" : "Sats rewarded"}
-            </div>
+            <div className="mt-3 text-base text-zinc-400">Sats rewarded</div>
           </div>
           <div className="flex flex-col items-center text-center">
             <div className="text-5xl font-bold text-orange-400 sm:text-6xl tabular-nums">
               {displayCountries}
             </div>
-            <div className="mt-3 text-base text-zinc-400">
-              {isTigrinya ? "ዝተሳተፋ ሃገራት" : "Countries represented"}
-            </div>
+            <div className="mt-3 text-base text-zinc-400">Countries represented</div>
           </div>
         </div>
 
@@ -134,7 +115,7 @@ export function ImpactStatsCountUp({
             href="/impact"
             className="inline-flex items-center justify-center rounded-xl border border-orange-400/40 bg-orange-500/10 px-6 py-3.5 text-base font-semibold text-orange-300 transition hover:bg-orange-500/20 hover:border-orange-400/60"
           >
-            {isTigrinya ? "ናይ ጽልዋና ዳሽቦርድ ርኣዩ" : "See Our Impact Dashboard"}
+            See Our Impact Dashboard
           </Link>
         </div>
       </div>

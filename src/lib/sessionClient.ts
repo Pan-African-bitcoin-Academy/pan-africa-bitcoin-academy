@@ -1,9 +1,15 @@
 /**
  * Client-side session management utilities
- * Handles cross-tab activity tracking and session expiration
+ * Handles cross-tab activity tracking and session expiration.
+ * Inactivity limits match server (sessionConfig) so client and server expire together.
  */
 
-export const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 minutes
+import { getInactivityLimitMs } from '@/lib/sessionConfig';
+
+export function getInactivityLimit(userType: UserType): number {
+  return getInactivityLimitMs(userType);
+}
+
 export const ACTIVITY_KEY = 'sessionLastActivityAt';
 export const ACTIVITY_CHANNEL = 'session-activity';
 
@@ -49,11 +55,13 @@ export function markActivity(userType: UserType) {
  */
 export function hasExpired(userType: UserType): boolean {
   try {
+    const inactivityLimit = getInactivityLimit(userType);
+    
     // Check current tab activity
     const currentTabActivity = localStorage.getItem(`${ACTIVITY_KEY}_${userType}`);
     if (currentTabActivity) {
       const lastTs = Number(currentTabActivity);
-      if (!Number.isNaN(lastTs) && Date.now() - lastTs <= INACTIVITY_LIMIT_MS) {
+      if (!Number.isNaN(lastTs) && Date.now() - lastTs <= inactivityLimit) {
         return false; // Current tab is active
       }
     }
@@ -62,7 +70,7 @@ export function hasExpired(userType: UserType): boolean {
     const sharedActivity = localStorage.getItem(ACTIVITY_KEY);
     if (sharedActivity) {
       const lastTs = Number(sharedActivity);
-      if (!Number.isNaN(lastTs) && Date.now() - lastTs <= INACTIVITY_LIMIT_MS) {
+      if (!Number.isNaN(lastTs) && Date.now() - lastTs <= inactivityLimit) {
         return false; // Some tab is active
       }
     }

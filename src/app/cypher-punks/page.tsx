@@ -19,30 +19,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/cypher-punks',
   },
-  openGraph: {
-    title: 'ሳይፈርፓንክስ፡ ብሕታዊነት፡ ክሪፕቶግራፊን ቃልሲ ንዲጂታላዊ ናጽነትን',
-    description:
-      'Long-form article on cypherpunk ideas, cryptography, privacy, and digital freedom in Tigrinya.',
-    url: 'https://panafricanbitcoin.com/cypher-punks',
-    siteName: 'Pan-African Bitcoin Academy',
-    locale: 'ti_ER',
-    type: 'article',
-    images: [
-      {
-        url: '/cypher-punk/The%20cypherpunk%20movement.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'The Cypherpunk Movement',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'ሳይፈርፓንክስ፡ ብሕታዊነት፡ ክሪፕቶግራፊን ቃልሲ ንዲጂታላዊ ናጽነትን',
-    description:
-      'Long-form article on cypherpunk ideas, cryptography, privacy, and digital freedom in Tigrinya.',
-    images: ['/cypher-punk/The%20cypherpunk%20movement.jpg'],
-  },
 };
 
 const sectionImages: Record<string, { src: string; alt: string; caption: string }[]> = {
@@ -253,23 +229,17 @@ export default function CypherpunksPage() {
                   <MarkdownContent content={section.body} highlightTerms={[]} />
 
                   {sectionImageList.length > 0 ? (
-                    <div
-                      className={`mt-6 ${
-                        sectionImageList.length > 1
-                          ? 'grid grid-cols-1 sm:grid-cols-2 gap-6 items-start'
-                          : 'space-y-5'
-                      }`}
-                    >
+                    <div className="mt-6 space-y-5">
                       {sectionImageList.map((image, index) => (
-                        <figure key={`${section.id}-${image.src}`} className="mx-auto w-full flex flex-col items-center">
+                        <figure key={`${section.id}-${image.src}`} className="mx-auto max-w-full">
                           <img
                             src={`/cypher-punk/${encodeURIComponent(image.src)}`}
                             alt={image.alt}
-                            className="mx-auto block h-auto w-auto max-h-[260px] max-w-full rounded-lg object-contain sm:max-h-[380px]"
+                            className="mx-auto block h-auto w-auto max-h-[260px] max-w-full object-contain sm:max-h-[400px]"
                             loading={index === 0 ? 'eager' : 'lazy'}
                             decoding="async"
                           />
-                          <figcaption className="mx-auto mt-2 max-w-xl text-center text-xs leading-relaxed text-zinc-400 sm:text-sm">
+                          <figcaption className="mx-auto mt-2 max-w-2xl text-center text-xs leading-relaxed text-zinc-400 sm:text-sm">
                             {image.caption}
                           </figcaption>
                         </figure>

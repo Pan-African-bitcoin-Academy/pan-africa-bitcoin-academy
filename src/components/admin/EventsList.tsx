@@ -1,0 +1,650 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Calendar, Clock, Link as LinkIcon, Video, FileText, Users, GraduationCap, Rocket, Trash2, Edit, ExternalLink, AlertCircle, RefreshCw, ZoomIn, X, Mail, Loader2, CheckCircle2, CheckCircle } from 'lucide-react';
+
+interface Event {
+  id: string;
+  name: string;
+  type: string;
+  start_time: string;
+  end_time: string | null;
+  description: string | null;
+  link: string | null;
+  recording_url: string | null;
+  image_url: string | null;
+  image_alt_text?: string | null;
+  cohort_id: string | null;
+  cohort_name?: string | null;
+  created_at: string;
+  updated_at: string;
+  status?: string;
+  duration_minutes?: number | null;
+}
+
+const EVENT_TYPE_ICONS: Record<string, any> = {
+  'live-class': Video,
+  'assignment': FileText,
+  'community': Users,
+  'workshop': GraduationCap,
+  'deadline': Clock,
+  'quiz': FileText,
+  'cohort': Rocket,
+};
+
+const EVENT_TYPE_LABELS: Record<string, string> = {
+  'live-class': 'Live Class',
+  'assignment': 'Assignment',
+  'community': 'Community',
+  'workshop': 'Workshop',
+  'deadline': 'Deadline',
+  'quiz': 'Quiz',
+  'cohort': 'Cohort',
+};
+
+export default function EventsList({ 
+  onRefresh,
+  onEdit 
+}: { 
+  onRefresh?: () => void;
+  onEdit?: (event: Event) => void;
+}) {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'all' | 'upcoming' | 'past' | 'everyone' | 'cohort'>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [sendingInvitationsId, setSendingInvitationsId] = useState<string | null>(null);
+  const [invitationResult, setInvitationResult] = useState<{ eventId: string; success: boolean; message: string; details?: any } | null>(null);
+  const [markingDoneId, setMarkingDoneId] = useState<string | null>(null);
+
+  const fetchEvents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/admin/events/all', {
+        credentials: 'include',
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch events');
+      }
+
+      // Transform events to match our interface
+      // The API returns events with 'title' (from database 'name') and 'date' (from 'start_time')
+      const transformedEvents: Event[] = (data.events || []).map((event: any) => ({
+        id: event.id,
+        name: event.title || 'Untitled Event',
+        type: event.type || 'community',
+        start_time: event.date,
+        end_time: event.endTime || null,
+        description: event.description || null,
+        link: event.link && event.link !== '#' ? event.link : null,
+        recording_url: event.recordingUrl || null,
+        image_url: event.imageUrl || null,
+        image_alt_text: event.imageAltText || null,
+        cohort_id: event.cohortId || null,
+        cohort_name: null,
+        created_at: '',
+        updated_at: '',
+        status: event.status ?? 'scheduled',
+        duration_minutes: event.durationMinutes ?? null,
+      }));
+
+      setEvents(transformedEvents);
+    } catch (err: any) {
+      console.error('Error fetching events:', err);
+      setError(err.message || 'Failed to fetch events');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+    
+    // Listen for refresh event from EventForm
+    const handleRefresh = () => {
+      fetchEvents();
+    };
+    
+    window.addEventListener('refreshEventsList', handleRefresh);
+    
+    return () => {
+      window.removeEventListener('refreshEventsList', handleRefresh);
+    };
+  }, []);
+
+  // Handle ESC key to close image modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedImage) {
+        setSelectedImage(null);
+      }
+    };
+
+    if (selectedImage) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedImage]);
+
+  const handleDelete = async (eventId: string, eventName: string) => {
+    if (!confirm(`Are you sure you want to delete "${eventName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingId(eventId);
+    try {
+      const response = await fetch(`/api/admin/events/${eventId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete event');
+      }
+
+      // Remove from list
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+      
+      // Refresh if callback provided
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (err: any) {
+      console.error('Error deleting event:', err);
+      alert(err.message || 'Failed to delete event');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleMarkDone = async (eventId: string, durationMinutes: number) => {
+    setMarkingDoneId(eventId);
+    try {
+      const response = await fetch(`/api/admin/events/${eventId}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed', duration_minutes: durationMinutes }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to mark event as done');
+      setEvents(prev =>
+        prev.map(e =>
+          e.id === eventId
+            ? { ...e, status: 'completed', duration_minutes: durationMinutes }
+            : e
+        )
+      );
+      if (onRefresh) onRefresh();
+    } catch (err: any) {
+      alert(err.message || 'Failed to mark event as done');
+    } finally {
+      setMarkingDoneId(null);
+    }
+  };
+
+  const handleSendInvitations = async (eventId: string, eventName: string) => {
+    if (!confirm(`Send invitation emails to all students for "${eventName}"?`)) {
+      return;
+    }
+
+    setSendingInvitationsId(eventId);
+    setInvitationResult(null);
+    
+    try {
+      const response = await fetch(`/api/admin/events/${eventId}/send-invitations`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send invitations');
+      }
+
+      setInvitationResult({
+        eventId,
+        success: true,
+        message: data.message || 'Invitations sent successfully',
+        details: data,
+      });
+
+      // Clear result after 5 seconds
+      setTimeout(() => {
+        setInvitationResult(null);
+      }, 5000);
+    } catch (err: any) {
+      console.error('Error sending invitations:', err);
+      setInvitationResult({
+        eventId,
+        success: false,
+        message: err.message || 'Failed to send invitations',
+      });
+      
+      // Clear error after 5 seconds
+      setTimeout(() => {
+        setInvitationResult(null);
+      }, 5000);
+    } finally {
+      setSendingInvitationsId(null);
+    }
+  };
+
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatTime = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  const isUpcoming = (event: Event): boolean => {
+    try {
+      const startTime = new Date(event.start_time);
+      return startTime > new Date();
+    } catch {
+      return false;
+    }
+  };
+
+  const filteredEvents = events.filter(event => {
+    // Time filter
+    if (filter === 'upcoming' && !isUpcoming(event)) return false;
+    if (filter === 'past' && isUpcoming(event)) return false;
+    if (filter === 'everyone' && event.cohort_id !== null) return false;
+    if (filter === 'cohort' && event.cohort_id === null) return false;
+
+    // Type filter
+    if (typeFilter !== 'all' && event.type !== typeFilter) return false;
+
+    return true;
+  });
+
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    const dateA = new Date(a.start_time).getTime();
+    const dateB = new Date(b.start_time).getTime();
+    return dateB - dateA; // Most recent first
+  });
+
+  if (loading) {
+    return (
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-zinc-400">Loading events...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-zinc-50 mb-2">All Events</h2>
+          <p className="text-sm text-zinc-400">
+            Manage and view all events in the system
+          </p>
+        </div>
+        <button
+          onClick={fetchEvents}
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-900 transition flex items-center gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Refresh
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-red-300">Error</p>
+            <p className="text-sm text-red-400/80 mt-1">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Invitation Result Message */}
+      {invitationResult && (
+        <div className={`mb-4 rounded-lg border p-4 flex items-start gap-3 ${
+          invitationResult.success
+            ? 'border-green-500/30 bg-green-500/10'
+            : 'border-red-500/30 bg-red-500/10'
+        }`}>
+          {invitationResult.success ? (
+            <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+          ) : (
+            <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+          )}
+          <div className="flex-1">
+            <p className={`text-sm font-medium ${
+              invitationResult.success ? 'text-green-300' : 'text-red-300'
+            }`}>
+              {invitationResult.success ? 'Success' : 'Error'}
+            </p>
+            <p className={`text-sm mt-1 ${
+              invitationResult.success ? 'text-green-400/80' : 'text-red-400/80'
+            }`}>
+              {invitationResult.message}
+              {invitationResult.details && invitationResult.details.totalStudents && (
+                <span className="block mt-1 text-xs">
+                  Sent to {invitationResult.details.successCount} of {invitationResult.details.totalStudents} students
+                  {invitationResult.details.failureCount > 0 && (
+                    <span className="text-yellow-400"> ({invitationResult.details.failureCount} failed)</span>
+                  )}
+                </span>
+              )}
+            </p>
+          </div>
+          <button
+            onClick={() => setInvitationResult(null)}
+            className="text-zinc-400 hover:text-zinc-300 transition"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-wrap gap-3">
+          <label className="text-sm font-medium text-zinc-300">Filter by time:</label>
+          {(['all', 'upcoming', 'past', 'everyone', 'cohort'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                filter === f
+                  ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
+                  : 'border-zinc-700 bg-zinc-950 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+              }`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <label className="text-sm font-medium text-zinc-300">Filter by type:</label>
+          <button
+            onClick={() => setTypeFilter('all')}
+            className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+              typeFilter === 'all'
+                ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
+                : 'border-zinc-700 bg-zinc-950 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+            }`}
+          >
+            All Types
+          </button>
+          {Object.entries(EVENT_TYPE_LABELS).map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => setTypeFilter(value)}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                typeFilter === value
+                  ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
+                  : 'border-zinc-700 bg-zinc-950 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Events List */}
+      {sortedEvents.length === 0 ? (
+        <div className="rounded-lg border border-zinc-700/50 bg-zinc-900/30 p-12 text-center">
+          <Calendar className="h-12 w-12 text-zinc-600 mx-auto mb-4" />
+          <p className="text-lg text-zinc-400 mb-2">No events found</p>
+          <p className="text-sm text-zinc-500">
+            {filter !== 'all' || typeFilter !== 'all'
+              ? 'Try adjusting your filters'
+              : 'Create your first event to get started'}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {sortedEvents.map((event) => {
+            const Icon = EVENT_TYPE_ICONS[event.type] || Calendar;
+            const isEventUpcoming = isUpcoming(event);
+            const startDate = new Date(event.start_time);
+            const endDate = event.end_time ? new Date(event.end_time) : null;
+
+            return (
+              <div
+                key={event.id}
+                className={`rounded-lg border overflow-hidden transition ${
+                  isEventUpcoming
+                    ? 'border-cyan-500/30 bg-cyan-500/5'
+                    : 'border-zinc-700/50 bg-zinc-950/50'
+                }`}
+              >
+                {event.image_url && (
+                  <div 
+                    className="w-full h-32 overflow-hidden bg-zinc-900 relative group cursor-pointer flex items-center justify-center"
+                    onClick={() => setSelectedImage(event.image_url!)}
+                  >
+                    <img
+                      src={event.image_url}
+                      alt={event.name}
+                      className="w-full h-full object-contain p-2 transition group-hover:scale-105"
+                      onError={(e) => {
+                        // Hide image on error
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                    {/* Hover overlay with view hint */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <div className="flex items-center gap-2 text-white">
+                        <ZoomIn className="h-4 w-4" />
+                        <span className="text-xs font-medium">Click to view full size</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-2">
+                      <div className={`rounded-lg p-2 ${
+                        isEventUpcoming ? 'bg-cyan-500/20' : 'bg-zinc-800'
+                      }`}>
+                        <Icon className={`h-5 w-5 ${
+                          isEventUpcoming ? 'text-cyan-300' : 'text-zinc-400'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-base font-semibold text-zinc-100">
+                            {event.name}
+                          </h3>
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                            event.cohort_id
+                              ? 'bg-purple-500/20 text-purple-300'
+                              : 'bg-green-500/20 text-green-300'
+                          }`}>
+                            {event.cohort_id ? 'Cohort-Specific' : 'For Everyone'}
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-zinc-800 text-zinc-400">
+                            {EVENT_TYPE_LABELS[event.type] || event.type}
+                          </span>
+                          {event.status === 'completed' && (
+                            <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-500/20 text-green-300 flex items-center gap-1">
+                              <CheckCircle className="h-3.5 w-3.5" /> Done
+                              {event.duration_minutes != null && (
+                                <span className="text-green-400/90">({event.duration_minutes}m)</span>
+                              )}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="ml-11 space-y-2">
+                      <div className="flex items-center gap-4 text-sm text-zinc-400">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="h-4 w-4" />
+                          <span>{formatDate(event.start_time)}</span>
+                        </div>
+                        {endDate && (
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-4 w-4" />
+                            <span>Ends: {formatDate(event.end_time!)}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {event.description && (
+                        <p className="text-sm text-zinc-400 line-clamp-2">
+                          {event.description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-4 flex-wrap">
+                        {event.link && (
+                          <a
+                            href={event.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            Event Link
+                          </a>
+                        )}
+                        {event.recording_url && (
+                          <a
+                            href={event.recording_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-xs text-purple-400 hover:text-purple-300 transition"
+                          >
+                            <Video className="h-3.5 w-3.5" />
+                            Recording
+                          </a>
+                        )}
+                      </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {!isEventUpcoming && event.status !== 'completed' && (
+                        <button
+                          onClick={() => {
+                            const input = window.prompt('Duration in minutes?', '60');
+                            if (input == null) return;
+                            const mins = Math.max(1, parseInt(input, 10) || 60);
+                            handleMarkDone(event.id, mins);
+                          }}
+                          disabled={markingDoneId === event.id}
+                          className="rounded-lg border border-green-500/30 bg-green-500/10 p-2 text-green-400 hover:bg-green-500/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Mark as done (record time spent)"
+                        >
+                          {markingDoneId === event.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <CheckCircle className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(event)}
+                          className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-2 text-cyan-400 hover:bg-cyan-500/20 transition"
+                          title="Edit event"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDelete(event.id, event.name)}
+                        disabled={deletingId === event.id}
+                        className="rounded-lg border border-red-500/30 bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Delete event"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Full-Size Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div 
+            className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 z-10 rounded-full bg-red-500/90 hover:bg-red-500 p-3 text-white transition shadow-lg"
+              title="Close (ESC)"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Full-size image */}
+            <div className="relative w-full h-full flex items-center justify-center overflow-auto">
+              <img
+                src={selectedImage}
+                alt="Event image full size"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+
+            {/* Image info */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-zinc-900/90 backdrop-blur-sm rounded-lg px-4 py-2 text-sm text-zinc-300 border border-zinc-700">
+              <p>Press <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded">ESC</kbd> or click outside to close</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+

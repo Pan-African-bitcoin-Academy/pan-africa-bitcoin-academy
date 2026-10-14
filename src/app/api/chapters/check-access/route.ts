@@ -19,6 +19,48 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Step 0: Check if user is an admin (admins bypass all requirements)
+    const { data: admin } = await supabaseAdmin
+      .from('admins')
+      .select('id, email, role')
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
+
+    const isAdmin = !!admin;
+
+    // If admin, grant full access to all chapters (bypass all restrictions)
+    if (isAdmin) {
+      // Check if admin has a profile (they might have one for testing)
+      const { data: adminProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', email.toLowerCase().trim())
+        .maybeSingle();
+
+      // Check if chapter is marked as completed (for admin testing purposes)
+      let isCompleted = false;
+      if (adminProfile) {
+        const { data: progress } = await supabaseAdmin
+          .from('chapter_progress')
+          .select('is_completed')
+          .eq('student_id', adminProfile.id)
+          .eq('chapter_number', chapterNumber)
+          .maybeSingle();
+        isCompleted = progress?.is_completed || false;
+      }
+
+      return NextResponse.json({
+        hasAccess: true, // Admins always have access to all chapters
+        isRegistered: true,
+        isEnrolled: true,
+        isAdmin: true,
+        isUnlocked: true, // All chapters unlocked for admins
+        isCompleted,
+        chapterNumber,
+        message: 'Admin access granted - all chapters unlocked',
+      });
+    }
+
     // Step 1: Check if user has a profile
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')

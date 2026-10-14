@@ -1,9 +1,17 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from '@/hooks/useAuth';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AnimatedSection } from '@/components/AnimatedSection';
+import { AnimatedHeading } from '@/components/AnimatedHeading';
+import SplitText from '@/components/SplitText';
+import { DatePicker } from '@/components/ui/DatePicker';
+import { sortedCountries, getPhoneRule, type Country } from '@/lib/countries';
+import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
+import { inputStyles, labelStyles, formStyles, buttonStyles, cardStyles, alertStyles, cn } from '@/lib/styles';
+import { FormGrid } from '@/components/ui';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 interface Cohort {
   id: string;
@@ -18,232 +26,67 @@ interface Cohort {
   enrolled: number;
 }
 
-const africanCountries = [
-  { name: "Nigeria", code: "+234", flag: "🇳🇬" },
-  { name: "Ghana", code: "+233", flag: "🇬🇭" },
-  { name: "Kenya", code: "+254", flag: "🇰🇪" },
-  { name: "South Africa", code: "+27", flag: "🇿🇦" },
-  { name: "Egypt", code: "+20", flag: "🇪🇬" },
-  { name: "Ethiopia", code: "+251", flag: "🇪🇹" },
-  { name: "Tanzania", code: "+255", flag: "🇹🇿" },
-  { name: "Uganda", code: "+256", flag: "🇺🇬" },
-  { name: "Algeria", code: "+213", flag: "🇩🇿" },
-  { name: "Morocco", code: "+212", flag: "🇲🇦" },
-  { name: "Angola", code: "+244", flag: "🇦🇴" },
-  { name: "Mozambique", code: "+258", flag: "🇲🇿" },
-  { name: "Madagascar", code: "+261", flag: "🇲🇬" },
-  { name: "Cameroon", code: "+237", flag: "🇨🇲" },
-  { name: "Côte d'Ivoire", code: "+225", flag: "🇨🇮" },
-  { name: "Niger", code: "+227", flag: "🇳🇪" },
-  { name: "Burkina Faso", code: "+226", flag: "🇧🇫" },
-  { name: "Mali", code: "+223", flag: "🇲🇱" },
-  { name: "Malawi", code: "+265", flag: "🇲🇼" },
-  { name: "Zambia", code: "+260", flag: "🇿🇲" },
-  { name: "Senegal", code: "+221", flag: "🇸🇳" },
-  { name: "Chad", code: "+235", flag: "🇹🇩" },
-  { name: "Somalia", code: "+252", flag: "🇸🇴" },
-  { name: "Zimbabwe", code: "+263", flag: "🇿🇼" },
-  { name: "Guinea", code: "+224", flag: "🇬🇳" },
-  { name: "Rwanda", code: "+250", flag: "🇷🇼" },
-  { name: "Benin", code: "+229", flag: "🇧🇯" },
-  { name: "Burundi", code: "+257", flag: "🇧🇮" },
-  { name: "Tunisia", code: "+216", flag: "🇹🇳" },
-  { name: "South Sudan", code: "+211", flag: "🇸🇸" },
-  { name: "Togo", code: "+228", flag: "🇹🇬" },
-  { name: "Sierra Leone", code: "+232", flag: "🇸🇱" },
-  { name: "Libya", code: "+218", flag: "🇱🇾" },
-  { name: "Liberia", code: "+231", flag: "🇱🇷" },
-  { name: "Central African Republic", code: "+236", flag: "🇨🇫" },
-  { name: "Mauritania", code: "+222", flag: "🇲🇷" },
-  { name: "Eritrea", code: "+291", flag: "🇪🇷" },
-  { name: "Gambia", code: "+220", flag: "🇬🇲" },
-  { name: "Botswana", code: "+267", flag: "🇧🇼" },
-  { name: "Namibia", code: "+264", flag: "🇳🇦" },
-  { name: "Gabon", code: "+241", flag: "🇬🇦" },
-  { name: "Lesotho", code: "+266", flag: "🇱🇸" },
-  { name: "Guinea-Bissau", code: "+245", flag: "🇬🇼" },
-  { name: "Equatorial Guinea", code: "+240", flag: "🇬🇶" },
-  { name: "Mauritius", code: "+230", flag: "🇲🇺" },
-  { name: "Eswatini", code: "+268", flag: "🇸🇿" },
-  { name: "Djibouti", code: "+253", flag: "🇩🇯" },
-  { name: "Comoros", code: "+269", flag: "🇰🇲" },
-  { name: "Cabo Verde", code: "+238", flag: "🇨🇻" },
-  { name: "São Tomé and Príncipe", code: "+239", flag: "🇸🇹" },
-  { name: "Seychelles", code: "+248", flag: "🇸🇨" },
-];
+type LearningPace = 'live_cohort' | 'self_paced';
 
-const phoneRules: Record<string, { min: number; max: number }> = {
-  Nigeria: { min: 10, max: 10 },
-  Ghana: { min: 9, max: 9 },
-  Kenya: { min: 9, max: 9 },
-  "South Africa": { min: 9, max: 9 },
-  Egypt: { min: 9, max: 10 },
-  Ethiopia: { min: 9, max: 9 },
-  Tanzania: { min: 9, max: 9 },
-  Uganda: { min: 9, max: 9 },
-  Algeria: { min: 9, max: 9 },
-  Morocco: { min: 9, max: 9 },
-  Angola: { min: 9, max: 9 },
-  Mozambique: { min: 9, max: 9 },
-  Madagascar: { min: 9, max: 9 },
-  Cameroon: { min: 9, max: 9 },
-  "Côte d'Ivoire": { min: 8, max: 9 },
-  Niger: { min: 8, max: 8 },
-  "Burkina Faso": { min: 8, max: 8 },
-  Mali: { min: 8, max: 8 },
-  Malawi: { min: 8, max: 9 },
-  Zambia: { min: 9, max: 9 },
-  Senegal: { min: 9, max: 9 },
-  Chad: { min: 8, max: 8 },
-  Somalia: { min: 8, max: 9 },
-  Zimbabwe: { min: 9, max: 9 },
-  Guinea: { min: 8, max: 9 },
-  Rwanda: { min: 9, max: 9 },
-  Benin: { min: 8, max: 8 },
-  Burundi: { min: 8, max: 8 },
-  Tunisia: { min: 8, max: 8 },
-  "South Sudan": { min: 9, max: 9 },
-  Togo: { min: 8, max: 8 },
-  "Sierra Leone": { min: 8, max: 8 },
-  Libya: { min: 9, max: 9 },
-  Liberia: { min: 8, max: 8 },
-  "Central African Republic": { min: 8, max: 8 },
-  Mauritania: { min: 8, max: 8 },
-  Eritrea: { min: 7, max: 7 },
-  Gambia: { min: 7, max: 7 },
-  Botswana: { min: 8, max: 8 },
-  Namibia: { min: 9, max: 9 },
-  Gabon: { min: 8, max: 8 },
-  Lesotho: { min: 8, max: 8 },
-  "Guinea-Bissau": { min: 7, max: 7 },
-  "Equatorial Guinea": { min: 9, max: 9 },
-  Mauritius: { min: 8, max: 8 },
-  Eswatini: { min: 8, max: 8 },
-  Djibouti: { min: 6, max: 6 },
-  Comoros: { min: 7, max: 7 },
-  "Cabo Verde": { min: 7, max: 7 },
-  "São Tomé and Príncipe": { min: 7, max: 7 },
-  Seychelles: { min: 7, max: 7 },
-};
+const applySocialLinks = [
+  { label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61586743276906' },
+  { label: 'X (Twitter)', href: 'https://x.com/panafricanbtc' },
+  { label: 'Instagram', href: 'https://www.instagram.com/panafricanbitcoin/' },
+  { label: 'TikTok', href: 'https://www.tiktok.com/@panafricanbitcoin' },
+  { label: 'Discord', href: 'https://discord.gg/4G4TUAP7' },
+  { label: 'GitHub', href: 'https://github.com/Joie199/pan-africa-bitcoin-academy' },
+] as const;
+
+const whatsappGroupLink = 'https://chat.whatsapp.com/KpjlC90BGIj1EChMHsW6Ji';
 
 export default function ApplyPage() {
-  const { isAuthenticated, profile, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const { isAuthenticated, profile, isRegistered, loading: authLoading } = useAuth();
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
   const [cohortsLoading, setCohortsLoading] = useState(true);
   const [cohortsError, setCohortsError] = useState<string | null>(null);
   const [selectedCohort, setSelectedCohort] = useState<string | null>(null);
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(1);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-
-  // Calculate items per view based on screen size
+  const [submitting, setSubmitting] = useState(false);
+  
+  // Show loading spinner overlay when submitting
   useEffect(() => {
-    const updateItemsPerView = () => {
-      if (window.innerWidth >= 1024) {
-        setItemsPerView(3);
-      } else if (window.innerWidth >= 640) {
-        setItemsPerView(2);
-      } else {
-        setItemsPerView(1);
+    if (submitting) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [submitting]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (codeDropdownRef.current && !codeDropdownRef.current.contains(e.target as Node)) {
+        setCodeDropdownOpen(false);
+        setCodeSearch("");
       }
     };
-
-    updateItemsPerView();
-    window.addEventListener('resize', updateItemsPerView);
-    return () => window.removeEventListener('resize', updateItemsPerView);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Reset carousel index when items per view or cohorts change
+  // Redirect enrolled students away from the apply flow
   useEffect(() => {
-    const maxIndex = Math.max(0, cohorts.length - itemsPerView);
-    if (carouselIndex > maxIndex) {
-      setCarouselIndex(Math.max(0, maxIndex));
+    if (!authLoading && isAuthenticated && isRegistered) {
+      router.replace('/dashboard');
     }
-  }, [itemsPerView, cohorts.length, carouselIndex]);
-
-  // Swipe handlers
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      const maxIndex = Math.max(0, cohorts.length - itemsPerView);
-      setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
-    }
-    
-    if (isRightSwipe) {
-      setCarouselIndex((prev) => Math.max(0, prev - 1));
-    }
-
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
-
-  // Mouse drag handlers for desktop
-  const onMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setTouchStart(e.clientX);
-    setTouchEnd(null);
-  };
-
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    setTouchEnd(e.clientX);
-  };
-
-  const onMouseUp = () => {
-    if (!isDragging || !touchStart || !touchEnd) {
-      setIsDragging(false);
-      return;
-    }
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      const maxIndex = Math.max(0, cohorts.length - itemsPerView);
-      setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
-    }
-    
-    if (isRightSwipe) {
-      setCarouselIndex((prev) => Math.max(0, prev - 1));
-    }
-
-    setIsDragging(false);
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
-
-  const onMouseLeave = () => {
-    setIsDragging(false);
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
+  }, [authLoading, isAuthenticated, isRegistered, router]);
 
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneValid, setPhoneValid] = useState(false);
   const [birthDate, setBirthDate] = useState("");
+  const [codeDropdownOpen, setCodeDropdownOpen] = useState(false);
+  const [codeSearch, setCodeSearch] = useState("");
+  const codeDropdownRef = useRef<HTMLDivElement>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -257,6 +100,7 @@ export default function ApplyPage() {
     preferredCohort: "",
     birthDate: "",
     preferredLanguage: "",
+    learningPace: 'live_cohort' as LearningPace,
   });
 
   // Pre-fill form data from profile if user is logged in (only once when profile loads)
@@ -293,7 +137,7 @@ export default function ApplyPage() {
         countryCodeToSet = code;
         phoneNumberToSet = number;
         // Try to find country from code
-        const country = africanCountries.find(c => c.code === code);
+        const country = sortedCountries.find(c => c.code === code);
         if (country) {
           countryToSet = country.name;
         }
@@ -319,16 +163,15 @@ export default function ApplyPage() {
       preferredCohort: '',
       birthDate: '',
       preferredLanguage: '',
+      learningPace: 'live_cohort',
     });
   }, [authLoading, isAuthenticated, profile]); // Only depend on auth state, not form state
-
-  const getPhoneRule = (country: string) => phoneRules[country] || { min: 7, max: 12 };
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const country = e.target.value;
     setSelectedCountry(country);
     setPhoneError(null);
-    const countryData = africanCountries.find((c) => c.name === country);
+    const countryData = sortedCountries.find((c) => c.name === country);
     // Auto-fill country code if country is selected
     if (countryData) {
       setSelectedCountryCode(countryData.code);
@@ -341,103 +184,178 @@ export default function ApplyPage() {
     const code = e.target.value;
     setSelectedCountryCode(code);
     setPhoneError(null);
-    // Update phone number in form data
     const fullPhone = code && phoneNumber ? `${code} ${phoneNumber}`.trim() : phoneNumber;
     setFormData({ ...formData, phone: fullPhone });
+    if (phoneNumber.replace(/\D/g, '').length > 0) {
+      validateWhatsAppNumber(code, phoneNumber, false);
+    }
+  };
+
+  const validateWhatsAppNumber = (code: string, number: string, strict = false) => {
+    const digits = number.replace(/\D/g, '');
+    if (!code || digits.length === 0) {
+      setPhoneError(null);
+      setPhoneValid(false);
+      return;
+    }
+    const cleanCode = code.replace(/[^+\d]/g, '');
+    const fullNumber = `${cleanCode}${digits}`;
+    try {
+      if (isValidPhoneNumber(fullNumber)) {
+        const parsed = parsePhoneNumber(fullNumber);
+        if (parsed) {
+          setPhoneError(null);
+          setPhoneValid(true);
+          setFormData(prev => ({ ...prev, phone: parsed.formatInternational() }));
+          return;
+        }
+      }
+      setPhoneValid(false);
+      const { max } = getPhoneRule(selectedCountry);
+      if (digits.length > max) {
+        setPhoneError(`Number too long — max ${max} digits for ${selectedCountry || 'this country'}.`);
+      } else if (strict) {
+        setPhoneError(`Invalid WhatsApp number for ${selectedCountry || 'this country'}. Please check and try again.`);
+      } else {
+        setPhoneError(null);
+      }
+    } catch {
+      setPhoneError(null);
+      setPhoneValid(false);
+    }
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Only allow digits and spaces
     const cleanedValue = value.replace(/[^\d\s]/g, "");
     setPhoneNumber(cleanedValue);
-    
-    // Combine with selected country code for form data
+
     const fullPhone = selectedCountryCode && cleanedValue ? `${selectedCountryCode} ${cleanedValue}`.trim() : cleanedValue;
     setFormData({ ...formData, phone: fullPhone });
 
-    // Live validate digits against country rule
-    if (selectedCountry) {
-      const digits = cleanedValue.replace(/\D/g, '');
-      const { min, max } = getPhoneRule(selectedCountry);
-      if (digits.length > 0 && (digits.length < min || digits.length > max)) {
-        setPhoneError(`Needs ${min}${min !== max ? `-${max}` : ''} digits for ${selectedCountry} (excluding country code).`);
-      } else {
-        setPhoneError(null);
-      }
+    validateWhatsAppNumber(selectedCountryCode, cleanedValue, false);
+  };
+
+  const handlePhoneBlur = () => {
+    if (phoneNumber.replace(/\D/g, '').length > 0 && selectedCountryCode) {
+      validateWhatsAppNumber(selectedCountryCode, phoneNumber, true);
     }
   };
 
-  // Fetch cohorts from Supabase
-  useEffect(() => {
-    const fetchCohorts = async () => {
-      try {
-        setCohortsLoading(true);
-        setCohortsError(null);
-        const res = await fetch('/api/cohorts');
-        if (!res.ok) {
-          throw new Error(`Failed to fetch cohorts: ${res.status}`);
+  // Fetch cohorts from API (no cache so seat counts stay correct after approvals)
+  const fetchCohorts = useCallback(async (retryAfter429 = true) => {
+    try {
+      setCohortsLoading(true);
+      setCohortsError(null);
+      const res = await fetch('/api/cohorts', { cache: 'no-store' });
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
+        const retryAfter = data.retryAfter ?? 60;
+        setCohortsError(`Too many requests. Retrying in ${retryAfter} seconds…`);
+        if (retryAfter429) {
+          setTimeout(() => fetchCohorts(false), retryAfter * 1000);
+          return;
         }
-        const data = await res.json();
-        
-        // Format dates and transform data
-        const formatDate = (dateStr: string) => {
-          if (!dateStr) return 'TBD';
-          try {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { 
-              month: 'long', 
-              day: 'numeric', 
-              year: 'numeric' 
-            });
-          } catch {
-            return dateStr;
-          }
-        };
-        
-        const formattedCohorts: Cohort[] = (data.cohorts || []).map((cohort: any) => ({
-          id: cohort.id,
-          name: cohort.name || 'Unnamed Cohort',
-          startDate: formatDate(cohort.startDate),
-          endDate: formatDate(cohort.endDate),
-          status: cohort.status || '',
-          sessions: cohort.sessions || 0,
-          level: cohort.level || 'Beginner',
-          seats: cohort.seats || 0,
-          available: cohort.available || 0,
-          enrolled: cohort.enrolled || 0,
-        }));
-        
-        setCohorts(formattedCohorts);
-      } catch (err: any) {
-        console.error('Error fetching cohorts:', err);
-        setCohortsError(err.message || 'Failed to load cohorts');
-        // Fallback to empty array
-        setCohorts([]);
-      } finally {
-        setCohortsLoading(false);
+        throw new Error('Too many requests. Please wait a moment and refresh the page.');
       }
-    };
-    
-    fetchCohorts();
+      if (!res.ok) {
+        throw new Error(`Failed to fetch cohorts: ${res.status}`);
+      }
+      const data = await res.json();
+
+      const formatDate = (dateStr: string) => {
+        if (!dateStr) return 'TBD';
+        try {
+          const date = new Date(dateStr);
+          return date.toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } catch {
+          return dateStr;
+        }
+      };
+
+      const formattedCohorts: Cohort[] = (data.cohorts || []).map((cohort: any) => ({
+        id: cohort.id,
+        name: cohort.name || 'Unnamed Cohort',
+        startDate: formatDate(cohort.startDate),
+        endDate: formatDate(cohort.endDate),
+        status: cohort.status || '',
+        sessions: cohort.sessions || 0,
+        level: cohort.level || 'Beginner',
+        seats: cohort.seats || 0,
+        available: cohort.available || 0,
+        enrolled: cohort.enrolled || 0,
+      }));
+
+      setCohorts(formattedCohorts);
+    } catch (err: any) {
+      console.error('Error fetching cohorts:', err);
+      setCohortsError(err.message || 'Failed to load cohorts');
+      setCohorts([]);
+    } finally {
+      setCohortsLoading(false);
+    }
   }, []);
 
-  // Auto-fill preferred cohort when a cohort is selected
   useEffect(() => {
+    fetchCohorts();
+  }, [fetchCohorts]);
+
+  // Refetch when tab/window gains focus so returning from admin shows updated seat counts
+  useEffect(() => {
+    const onFocus = () => fetchCohorts();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [fetchCohorts]);
+
+  // Helper function to normalize cohort level to match select option values
+  const normalizeLevel = (level: string | undefined): string => {
+    if (!level) return '';
+    const normalized = level.trim().toLowerCase();
+    // Map common variations to exact select values
+    if (normalized === 'beginner') return 'beginner';
+    if (normalized === 'intermediate') return 'intermediate';
+    if (normalized === 'advanced') return 'advanced';
+    return normalized;
+  };
+
+  // Auto-fill preferred cohort and experience from cohort selection (live cohort only)
+  useEffect(() => {
+    if (formData.learningPace === 'self_paced') {
+      return;
+    }
     if (selectedCohort !== null) {
       const cohort = cohorts.find((c) => c.id === selectedCohort);
       if (cohort) {
-        // Update preferredCohort to match the selected cohort ID (dropdown uses ID as value)
+        const normalizedLevel = normalizeLevel(cohort.level);
         setFormData((prev) => ({
           ...prev,
           preferredCohort: cohort.id,
-          experienceLevel: cohort.level?.toLowerCase() || '',
+          experienceLevel: normalizedLevel,
         }));
       }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        experienceLevel: '',
+      }));
     }
-  }, [selectedCohort, cohorts]);
+  }, [selectedCohort, cohorts, formData.learningPace]);
 
-  const selectedCohortData = selectedCohort ? cohorts.find((c) => c.id === selectedCohort) : null;
+  const handleLearningPaceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const v = e.target.value as LearningPace;
+    setFormData((prev) => ({
+      ...prev,
+      learningPace: v,
+      preferredCohort: v === 'self_paced' ? '' : prev.preferredCohort,
+    }));
+    if (v === 'self_paced') {
+      setSelectedCohort(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -446,9 +364,6 @@ export default function ApplyPage() {
     setSubmitting(true);
     setPhoneError(null);
 
-    // Validate phone length based on country rules
-    const phoneDigits = phoneNumber.replace(/\D/g, '');
-    const { min, max } = getPhoneRule(selectedCountry);
     if (!selectedCountry) {
       setSubmitError('Please select your country.');
       setPhoneError('Please select your country.');
@@ -461,25 +376,62 @@ export default function ApplyPage() {
       setSubmitting(false);
       return;
     }
-    if (phoneDigits.length < min || phoneDigits.length > max) {
-      const msg = `Phone number should have ${min}${min !== max ? `-${max}` : ''} digits for ${selectedCountry}.`;
+
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    if (phoneDigits.length === 0) {
+      setSubmitError('Please enter your WhatsApp number.');
+      setPhoneError('Please enter your WhatsApp number.');
+      setSubmitting(false);
+      return;
+    }
+
+    const cleanCode = selectedCountryCode.replace(/[^+\d]/g, '');
+    const fullNumber = `${cleanCode}${phoneDigits}`;
+    if (!isValidPhoneNumber(fullNumber)) {
+      const msg = `Invalid WhatsApp number for ${selectedCountry}. Please check the number and try again.`;
       setSubmitError(msg);
       setPhoneError(msg);
       setSubmitting(false);
       return;
     }
     
-    // The phone number is already combined in formData.phone via handlePhoneChange
-    const selectedCohortObj = selectedCohort ? cohorts.find((c) => c.id === selectedCohort) : null;
-    const cohortNumber = selectedCohortObj ? selectedCohortObj.id : null;
-    
+    const selectedCohortObj =
+      formData.learningPace === 'live_cohort' && selectedCohort
+        ? cohorts.find((c) => c.id === selectedCohort)
+        : null;
+
+    if (formData.learningPace === 'live_cohort') {
+      if (!selectedCohortObj) {
+        setSubmitError('Please select a cohort for live cohort enrollment.');
+        setSubmitting(false);
+        return;
+      }
+      if (selectedCohortObj.available === 0) {
+        setSubmitError('This cohort is full. Please select a different cohort.');
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    const cohortNumber =
+      formData.learningPace === 'live_cohort' && selectedCohortObj
+        ? selectedCohortObj.id
+        : null;
+
     const finalFormData = {
       ...formData,
       name: `${formData.firstName} ${formData.lastName}`.trim(), // Combine first and last name
       country: selectedCountry,
       birthDate: birthDate || null,
-      phone: `${selectedCountryCode} ${phoneNumber}`.trim(),
-      preferredCohort: cohortNumber, // Add preferredCohort (cohort ID) to the request
+      phone: (() => {
+        try {
+          const parsed = parsePhoneNumber(`${cleanCode}${phoneDigits}`);
+          return parsed ? parsed.formatInternational() : `${selectedCountryCode} ${phoneNumber}`.trim();
+        } catch { return `${selectedCountryCode} ${phoneNumber}`.trim(); }
+      })(),
+      preferredCohort: cohortNumber,
+      preferredLanguage: formData.preferredLanguage || null,
+      learningPace: formData.learningPace,
     };
 
     try {
@@ -494,7 +446,12 @@ export default function ApplyPage() {
       const result = await applicationRes.json();
 
       if (applicationRes.ok) {
-        setSubmitSuccess('Application submitted successfully! We will review and get back to you soon.');
+        // Check if verification email was sent (new profile created)
+        if (result.verificationEmailSent) {
+          setSubmitSuccess('Application submitted successfully! Please check your email to verify your address. We will review your application and get back to you soon.');
+        } else {
+          setSubmitSuccess('Application submitted successfully! We will review and get back to you soon.');
+        }
         // Reset form
         setFormData({
           firstName: "",
@@ -507,6 +464,7 @@ export default function ApplyPage() {
           preferredCohort: "",
           birthDate: "",
           preferredLanguage: "",
+          learningPace: 'live_cohort',
         });
         setSelectedCountry("");
         setSelectedCountryCode("");
@@ -541,185 +499,47 @@ export default function ApplyPage() {
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
+      {submitting && <LoadingSpinner overlay />}
       <div className="relative z-10 w-full bg-black/95">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="w-full px-4 py-12 sm:px-6 sm:py-16 sm:max-w-7xl sm:mx-auto lg:px-8 lg:py-20">
           {/* Hero Section */}
           <AnimatedSection animation="slideUp">
-            <div className="mb-16 text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
-                Apply to PanAfrican Bitcoin Academy - Join Bitcoin Education Program
-              </h1>
-              <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
-                Apply to join the Pan-Africa Bitcoin Academy and start your journey toward financial sovereignty.
+            <div className="mb-16 text-center w-full">
+              <AnimatedHeading as="h1" className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+                <SplitText
+                  text="Join our Program"
+                  tag="span"
+                  className="inline-block"
+                  delay={50}
+                  duration={1.25}
+                  ease="bounce.out"
+                  splitType="chars"
+                  from={{ opacity: 0, y: 40 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.1}
+                  rootMargin="-100px"
+                  textAlign="center"
+                />
+              </AnimatedHeading>
+              <p className="w-full mt-6 text-lg text-zinc-400 sm:text-xl sm:max-w-3xl sm:mx-auto">
+                Apply to join the Pan-Africa Bitcoin Academy and <b>start</b> your journey toward financial sovereignty.
               </p>
             </div>
           </AnimatedSection>
 
       <div className="space-y-12">
-        {/* Cohort Details */}
-        <AnimatedSection animation="slideLeft">
-          <section className="space-y-6">
-          <h2 className="text-xl font-semibold text-zinc-50">Upcoming Cohorts</h2>
-          {cohortsLoading ? (
-            <div className="text-center py-8 text-cyan-400">Loading cohorts...</div>
-          ) : cohortsError ? (
-            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-center text-red-300">
-              {cohortsError}
-            </div>
-          ) : cohorts.length === 0 ? (
-            <div className="text-center py-8 text-zinc-400">No upcoming cohorts available at this time.</div>
-          ) : (
-          <div className="relative">
-            {/* Carousel Container */}
-            <div 
-              className="relative overflow-hidden rounded-xl cursor-grab active:cursor-grabbing select-none"
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-              onMouseDown={onMouseDown}
-              onMouseMove={onMouseMove}
-              onMouseUp={onMouseUp}
-              onMouseLeave={onMouseLeave}
-            >
-              <div 
-                ref={carouselRef}
-                className="flex transition-transform duration-300 ease-in-out gap-4"
-                style={{
-                  transform: `translateX(-${carouselIndex * (100 / itemsPerView)}%)`,
-                  pointerEvents: isDragging ? 'none' : 'auto',
-                }}
-              >
-                {cohorts.map((cohort) => (
-                  <div
-                    key={cohort.id}
-                    className={`min-w-0 flex-[0_0_100%] sm:flex-[0_0_calc(50%-0.5rem)] lg:flex-[0_0_calc(33.333%-0.67rem)] rounded-xl border p-6 transition ${
-                      selectedCohort === cohort.id
-                        ? "border-orange-400/50 bg-orange-500/10 shadow-[0_0_30px_rgba(249,115,22,0.3)]"
-                        : "border-cyan-400/25 bg-black/80 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
-                    }`}
-                  >
-                    <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-zinc-50">{cohort.name}</h3>
-                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${
-                        cohort.level?.toLowerCase() === 'beginner' 
-                          ? 'bg-blue-500/20 text-blue-300'
-                          : cohort.level?.toLowerCase() === 'intermediate'
-                          ? 'bg-orange-500/20 text-orange-300'
-                          : cohort.level?.toLowerCase() === 'advanced'
-                          ? 'bg-purple-500/20 text-purple-300'
-                          : 'bg-cyan-500/20 text-cyan-300'
-                      }`}>
-                        {cohort.level}
-                      </span>
-                    </div>
-                    <div className="space-y-2 text-sm text-zinc-300">
-                      <p><span className="font-medium text-zinc-400">Start:</span> {cohort.startDate}</p>
-                      <p><span className="font-medium text-zinc-400">End:</span> {cohort.endDate}</p>
-                      {cohort.status && (
-                        <p><span className="font-medium text-zinc-400">Status:</span> {cohort.status}</p>
-                      )}
-                      <div className="mt-4 space-y-2">
-                        <div className="flex items-center justify-between rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-2">
-                          <span className="text-xs text-zinc-400">Sessions</span>
-                          <span className="font-semibold text-cyan-400">
-                            {cohort.sessions}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between rounded-lg border border-orange-400/20 bg-zinc-900/50 p-2">
-                          <span className="text-xs text-zinc-400">Seats Available</span>
-                          <span className={`font-semibold ${cohort.available > 0 ? "text-orange-400" : "text-red-400"}`}>
-                            {cohort.available} / {cohort.seats}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Cohort selected:', cohort.id, cohort.name);
-                        setSelectedCohort(cohort.id);
-                        setFormData((prev) => ({
-                          ...prev,
-                          preferredCohort: cohort.id,
-                          experienceLevel: cohort.level?.toLowerCase() || '',
-                        }));
-                      }}
-                      onMouseDown={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className={`mt-4 w-full rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                        selectedCohort === cohort.id
-                          ? "bg-orange-400 text-black"
-                          : "bg-cyan-400/20 text-cyan-300 hover:bg-cyan-400/30"
-                      }`}
-                    >
-                      {selectedCohort === cohort.id ? "Selected" : "Select Cohort"}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="mt-4 flex items-center justify-center gap-4">
-              <button
-                onClick={() => {
-                  setCarouselIndex((prev) => Math.max(0, prev - 1));
-                }}
-                disabled={carouselIndex === 0}
-                className={`rounded-lg border border-zinc-700 bg-zinc-900/50 p-2 transition ${
-                  carouselIndex === 0
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-zinc-800 text-zinc-300'
-                }`}
-                aria-label="Previous cohort"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              
-              {/* Dots Indicator */}
-              <div className="flex gap-2">
-                {Array.from({ length: Math.ceil(cohorts.length / itemsPerView) }).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCarouselIndex(index)}
-                    className={`h-2 rounded-full transition ${
-                      carouselIndex === index
-                        ? 'w-8 bg-cyan-400'
-                        : 'w-2 bg-zinc-600 hover:bg-zinc-500'
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={() => {
-                  const maxIndex = Math.max(0, cohorts.length - itemsPerView);
-                  setCarouselIndex((prev) => Math.min(maxIndex, prev + 1));
-                }}
-                disabled={carouselIndex >= Math.max(0, cohorts.length - itemsPerView)}
-                className={`rounded-lg border border-zinc-700 bg-zinc-900/50 p-2 transition ${
-                  carouselIndex >= Math.max(0, cohorts.length - itemsPerView)
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-zinc-800 text-zinc-300'
-                }`}
-                aria-label="Next cohort"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-          )}
-          </section>
-        </AnimatedSection>
-
         {/* Registration Form */}
         <AnimatedSection animation="slideRight">
-          <section className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-          <h2 className="mb-6 text-xl font-semibold text-cyan-200">Application Form</h2>
+          <section className="rounded-2xl border border-cyan-400/30 bg-gradient-to-b from-zinc-900/90 to-black/90 p-6 sm:p-8 shadow-[0_0_40px_rgba(34,211,238,0.15)] ring-1 ring-cyan-400/10">
+          <AnimatedHeading as="h2" className="mb-2 text-xl font-semibold text-cyan-200">Application Form</AnimatedHeading>
+          <div className="mb-6 space-y-2 text-sm">
+            <p className="text-zinc-400">
+              Choose how you want to learn, then complete your details. Live cohort students join a scheduled group; self-paced students use the same materials on their own schedule.
+            </p>
+            <p className="text-zinc-500 leading-relaxed">
+              ብኸመይ መገዲ ኢኻ ክትመሃር ትደሊ ምስ መምህር ኣብ ሰሙን 3 ግዜ ዝተዳለው ክላስ ወላ ባዕልኻ ነቲ ተዳልዩ ዘሎ ኮርስ ክትወስዶ ኢዩ ድለትካ።
+            </p>
+          </div>
           {submitSuccess && (
             <div className="mb-4 rounded-lg border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-200">
               {submitSuccess}
@@ -730,44 +550,238 @@ export default function ApplyPage() {
               {submitError}
             </div>
           )}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
+            <div>
+              <label htmlFor="learningPace" className={labelStyles.required}>
+                How do you want to take the course?{' '}
+                <span className="text-zinc-400 font-normal">ብኸመይ መገዲ ኢኻ ክትመሃር ትደሊ?</span>{' '}
+                <span className={labelStyles.requiredStar}>*</span>
+              </label>
+              <select
+                id="learningPace"
+                required
+                value={formData.learningPace}
+                onChange={handleLearningPaceChange}
+                className={cn(
+                  inputStyles.selectWithValue(true),
+                  'max-w-md py-2 pl-2.5 pr-8 text-xs sm:text-sm'
+                )}
+                aria-label="How do you want to take the course? ብኸመይ መገዲ ኢኻ ክትመሃር ትደሊ? Live cohort or self-paced."
+              >
+                <option value="live_cohort" className="bg-zinc-950 text-xs sm:text-sm text-zinc-50">
+                  Live cohort — ብኣካል ክንመሃር
+                </option>
+                <option value="self_paced" className="bg-zinc-950 text-xs sm:text-sm text-zinc-50">
+                  Self-paced — ባዕልና ከነንብብ
+                </option>
+              </select>
+            </div>
+
+            {formData.learningPace === 'self_paced' ? (
+              <div className="rounded-xl border border-cyan-400/20 bg-zinc-950/50 p-4 text-sm text-zinc-300">
+                <p className="font-medium text-cyan-200 mb-1">Self-paced — ባዕልና ከነንብብ</p>
+                <p>
+                  You will read the materials and progress on your own schedule. No live cohort or start date is required. Select your experience level below.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4 border-b border-zinc-800 pb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-zinc-50">Upcoming cohorts</h3>
+                  <p className="mt-1 text-sm text-zinc-500">Pick a cohort (or use the dropdown later in the form).</p>
+                </div>
+                {cohortsLoading ? (
+                  <div className="flex items-center justify-center py-12 text-cyan-400">Loading cohorts…</div>
+                ) : cohortsError ? (
+                  <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-300">
+                    {cohortsError}
+                  </div>
+                ) : cohorts.length === 0 ? (
+                  <div className="rounded-xl border border-zinc-700/50 bg-zinc-900/30 py-12 text-center text-zinc-400">
+                    No upcoming cohorts at this time. Check back later or contact us.
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-zinc-950/90 to-transparent z-10" aria-hidden />
+                    <div
+                      className="overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-hide py-2 -mx-2 px-2 sm:-mx-4 sm:px-4"
+                      style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}
+                    >
+                      <div className="flex gap-5 w-max min-w-full pb-1">
+                        {cohorts.map((cohort, index) => {
+                          const statusLower = (cohort.status || '').toLowerCase();
+                          const isCompleted = statusLower === 'completed' || statusLower === 'ended';
+                          const isActive = statusLower === 'active' || statusLower === 'live';
+                          const isUpcoming = statusLower === 'upcoming' || (!isCompleted && !isActive);
+                          const seatsPct = cohort.seats ? Math.round((cohort.available / cohort.seats) * 100) : 0;
+                          const levelLabel = cohort.level ? cohort.level.charAt(0).toUpperCase() + cohort.level.slice(1).toLowerCase() : 'Beginner';
+                          const isCardSelected = selectedCohort === cohort.id;
+
+                          return (
+                            <div
+                              key={cohort.id}
+                              className={cn(
+                                "cohort-card-entrance flex-shrink-0 w-[88vw] sm:w-[44vw] lg:w-[340px] transition-all duration-300 scroll-ml-4 sm:scroll-ml-6 rounded-2xl overflow-hidden",
+                                isCardSelected &&
+                                  "ring-2 ring-amber-400/90 ring-offset-2 ring-offset-zinc-950 shadow-[0_0_36px_rgba(245,158,11,0.35),0_0_72px_rgba(234,179,8,0.12)]"
+                              )}
+                              style={{ scrollSnapAlign: 'start', animationDelay: `${index * 80}ms` }}
+                            >
+                              <div
+                                className={cn(
+                                  "h-full rounded-2xl border bg-zinc-900/90 p-5 flex flex-col transition-[box-shadow,border-color] duration-300",
+                                  isCardSelected &&
+                                    "border-amber-400/75 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.2),0_0_28px_rgba(245,158,11,0.18)]",
+                                  !isCardSelected && isCompleted && "border-zinc-700/60 opacity-80",
+                                  !isCardSelected && isActive && "border-emerald-500/40 shadow-[0_0_24px_rgba(16,185,129,0.12)]",
+                                  !isCardSelected && isUpcoming && !isCompleted && "border-cyan-400/30"
+                                )}
+                              >
+                                <div className="flex items-center justify-between gap-2 mb-4">
+                                  <span
+                                    className={cn(
+                                      "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide",
+                                      isCompleted && "bg-zinc-600/40 text-zinc-400",
+                                      isActive && "bg-emerald-500/25 text-emerald-300",
+                                      isUpcoming && "bg-cyan-500/25 text-cyan-300"
+                                    )}
+                                  >
+                                    {isActive && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />}
+                                    {isCompleted ? 'Completed' : isActive ? 'Active' : 'Upcoming'}
+                                  </span>
+                                  <span
+                                    className={cn(
+                                      "rounded-full px-2.5 py-1 text-xs font-medium",
+                                      cohort.level?.toLowerCase() === 'intermediate' && "bg-amber-500/20 text-amber-300",
+                                      cohort.level?.toLowerCase() === 'advanced' && "bg-purple-500/20 text-purple-300",
+                                      (cohort.level?.toLowerCase() === 'beginner' || !cohort.level) && "bg-blue-500/20 text-blue-300",
+                                      cohort.level?.toLowerCase() && !['beginner', 'intermediate', 'advanced'].includes(cohort.level?.toLowerCase()) && "bg-cyan-500/20 text-cyan-300"
+                                    )}
+                                  >
+                                    {levelLabel}
+                                  </span>
+                                </div>
+
+                                <h3 className="text-lg font-bold text-zinc-50 mb-1">{cohort.name}</h3>
+                                <p className="text-sm text-zinc-500 mb-4">
+                                  {cohort.startDate} → {cohort.endDate}
+                                </p>
+
+                                <div className="flex items-center gap-4 text-sm mb-4">
+                                  <span className="text-zinc-400">
+                                    <span className="font-semibold text-zinc-200">{cohort.sessions}</span> sessions
+                                  </span>
+                                  <span className="text-zinc-500">·</span>
+                                  <span
+                                    className={
+                                      cohort.available === 0
+                                        ? "text-zinc-500"
+                                        : isCardSelected
+                                          ? "text-amber-400"
+                                          : "text-cyan-400"
+                                    }
+                                  >
+                                    <span className="font-semibold">{cohort.available}</span> / {cohort.seats} seats
+                                  </span>
+                                </div>
+
+                                <div className="mb-4 h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+                                  <div
+                                    className={cn(
+                                      "h-full rounded-full transition-all",
+                                      cohort.available === 0 && "bg-zinc-600",
+                                      cohort.available > 0 && seatsPct <= 20 && "bg-amber-500/80",
+                                      cohort.available > 0 && seatsPct > 20 && !isCardSelected && "bg-cyan-500/80",
+                                      cohort.available > 0 && seatsPct > 20 && isCardSelected && "bg-gradient-to-r from-amber-500 to-amber-400"
+                                    )}
+                                    style={{ width: `${100 - seatsPct}%` }}
+                                    aria-hidden
+                                  />
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (cohort.available === 0) return;
+                                    setSelectedCohort(cohort.id);
+                                    const normalizedLevel = normalizeLevel(cohort.level);
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      preferredCohort: cohort.id,
+                                      experienceLevel: normalizedLevel,
+                                    }));
+                                  }}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  disabled={cohort.available === 0}
+                                  className={cn(
+                                    "mt-auto w-full rounded-xl py-3 text-sm font-semibold transition-all duration-300",
+                                    cohort.available === 0
+                                      ? "cursor-not-allowed bg-zinc-800 text-zinc-500"
+                                      : isCardSelected
+                                        ? "bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-[0_0_24px_rgba(245,158,11,0.45)] hover:from-amber-300 hover:to-amber-400"
+                                        : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+                                  )}
+                                >
+                                  {cohort.available === 0
+                                    ? "Full"
+                                    : isCardSelected
+                                      ? "Selected"
+                                      : "Select cohort"}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* First Name and Last Name */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <FormGrid>
               <div>
-                <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-zinc-300">
-                  First Name <span className="text-red-400">*</span>
+                <label htmlFor="firstName" className={labelStyles.required}>
+                  First Name <span className={labelStyles.requiredStar}>*</span>
                 </label>
                 <input
                   id="firstName"
+                  name="firstName"
                   type="text"
+                  autoComplete="given-name"
                   required
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
-                  placeholder="John"
+                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-2.5 text-base sm:text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 cursor-text"
+                  placeholder="Micheal"
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Last Name <span className="text-red-400">*</span>
+                <label htmlFor="lastName" className={labelStyles.required}>
+                  Last Name <span className={labelStyles.requiredStar}>*</span>
                 </label>
                 <input
                   id="lastName"
+                  name="lastName"
                   type="text"
+                  autoComplete="family-name"
                   required
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
-                  placeholder="Doe"
+                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-2.5 text-base sm:text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 cursor-text"
+                  placeholder="Jordan"
                 />
               </div>
-            </div>
+            </FormGrid>
 
             {/* Email, Phone, Birth Date, Language */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <FormGrid>
               <div>
-                <label htmlFor="email" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Email <span className="text-red-400">*</span>
+                <label htmlFor="email" className={labelStyles.required}>
+                  Email <span className={labelStyles.requiredStar}>*</span>
                 </label>
                 <input
                   id="email"
@@ -775,104 +789,164 @@ export default function ApplyPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
+                  className={inputStyles.base}
                   placeholder="john@example.com"
                 />
               </div>
               <div>
-                <label htmlFor="phone" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Phone <span className="text-red-400">*</span>
+                <label htmlFor="phone" className={labelStyles.required}>
+                  WhatsApp Number <span className={labelStyles.requiredStar}>*</span>
                 </label>
-                <div className="flex gap-2">
-                  <label htmlFor="countryCode" className="sr-only">
-                    Country Code
-                  </label>
-                  <select
-                    id="countryCode"
-                    value={selectedCountryCode}
-                    onChange={handleCountryCodeChange}
-                    aria-label="Country code"
-                    className="flex-shrink-0 rounded-lg border border-cyan-400/30 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
-                    style={{ minWidth: '90px' }}
-                    title={selectedCountryCode ? africanCountries.find(c => c.code === selectedCountryCode)?.name : "Select country code"}
-                  >
-                    <option value="" className="bg-zinc-950 text-zinc-400">Code</option>
-                    {africanCountries.map((country) => (
-                      <option key={country.code} value={country.code} className="bg-zinc-950 text-zinc-50">
-                        {country.flag} {country.code}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    id="phone"
-                    type="tel"
-                    required
-                    value={phoneNumber}
-                    onChange={handlePhoneChange}
-                    className="flex-1 rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
-                    placeholder="1234567890"
-                    aria-describedby={phoneError ? "phone-error" : selectedCountry ? "phone-help" : undefined}
-                  />
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 w-full">
+                  {/* Searchable country code dropdown */}
+                  <div ref={codeDropdownRef} className="relative w-full sm:w-auto sm:shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => { setCodeDropdownOpen(!codeDropdownOpen); setCodeSearch(""); }}
+                      className="flex items-center gap-1.5 rounded-lg border border-cyan-400/30 bg-zinc-950 px-2.5 py-2.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 cursor-pointer hover:border-cyan-400/50 transition w-full sm:min-w-[90px] sm:w-auto"
+                      aria-label="Country code"
+                    >
+                      {selectedCountryCode ? (
+                        <>
+                          <span>{sortedCountries.find(c => c.code === selectedCountryCode)?.flag}</span>
+                          <span className="font-mono text-xs">{selectedCountryCode}</span>
+                          <svg className="h-3 w-3 text-zinc-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-zinc-500 text-xs">Code</span>
+                          <svg className="h-3 w-3 text-zinc-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                        </>
+                      )}
+                    </button>
+
+                    {codeDropdownOpen && (
+                      <div className="absolute left-0 top-full z-50 mt-1 w-full sm:w-64 rounded-lg border border-cyan-400/30 bg-zinc-950 shadow-xl shadow-black/50 overflow-hidden">
+                        <div className="p-2 border-b border-zinc-800">
+                          <input
+                            type="text"
+                            value={codeSearch}
+                            onChange={(e) => setCodeSearch(e.target.value)}
+                            placeholder="Search country..."
+                            autoFocus
+                            className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:outline-none"
+                          />
+                        </div>
+                        <div className="max-h-52 overflow-y-auto">
+                          {sortedCountries
+                            .filter(c => {
+                              if (!codeSearch) return true;
+                              const q = codeSearch.toLowerCase();
+                              return c.name.toLowerCase().includes(q) || c.code.includes(q);
+                            })
+                            .map((country) => (
+                              <button
+                                key={country.name}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedCountryCode(country.code);
+                                  setSelectedCountry(country.name);
+                                  setFormData(prev => ({ ...prev, country: country.name }));
+                                  setPhoneError(null);
+                                  setCodeDropdownOpen(false);
+                                  setCodeSearch("");
+                                  if (phoneNumber.replace(/\D/g, '').length > 0) {
+                                    validateWhatsAppNumber(country.code, phoneNumber, false);
+                                  }
+                                }}
+                                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition hover:bg-cyan-500/10 ${selectedCountryCode === country.code ? 'bg-cyan-500/10 text-cyan-300' : 'text-zinc-300'}`}
+                              >
+                                <span className="text-base">{country.flag}</span>
+                                <span className="flex-1 truncate">{country.name}</span>
+                                <span className="font-mono text-xs text-zinc-500">{country.code}</span>
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="relative w-full sm:flex-1 sm:min-w-0">
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      autoComplete="tel-national"
+                      required
+                      value={phoneNumber}
+                      onChange={handlePhoneChange}
+                      onBlur={handlePhoneBlur}
+                      maxLength={15}
+                      className={`w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-2.5 sm:py-2 text-base sm:text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 cursor-text min-w-0 ${phoneValid ? 'border-green-500/50 focus:border-green-500/60 focus:ring-green-500/20' : ''} ${phoneError ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : ''} pr-9`}
+                      placeholder="e.g. 712 345 678"
+                      aria-describedby={phoneError ? "phone-error" : undefined}
+                    />
+                    {phoneValid && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-400">
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                      </span>
+                    )}
+                    {phoneError && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400">
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      </span>
+                    )}
+                  </div>
                 </div>
-                {selectedCountry && (
-                  <p id="phone-help" className="mt-1 text-xs text-zinc-400">
-                    Requires {getPhoneRule(selectedCountry).min}
-                    {getPhoneRule(selectedCountry).min !== getPhoneRule(selectedCountry).max ? `-${getPhoneRule(selectedCountry).max}` : ''} digits (excluding country code).
-                  </p>
-                )}
                 {phoneError && (
                   <p id="phone-error" className="mt-1 text-xs text-red-300" role="alert">{phoneError}</p>
                 )}
+                {phoneValid && (
+                  <p className="mt-1 text-xs text-green-400/80">Valid WhatsApp number</p>
+                )}
               </div>
+              <DatePicker
+                label="Birth Date"
+                value={formData.birthDate}
+                onChange={(v) => {
+                  setBirthDate(v);
+                  setFormData({ ...formData, birthDate: v });
+                }}
+                placeholder="Select your birth date"
+                required
+                maxDate={new Date()}
+                inputClassName="border-cyan-400/30 bg-zinc-950 focus:border-cyan-400/50 focus:ring-cyan-400/20"
+              />
               <div>
-                <label htmlFor="birthDate" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Birth Date <span className="text-red-400">*</span>
-                </label>
-                <input
-                  id="birthDate"
-                  type="date"
-                  required
-                  value={birthDate}
-                  onChange={(e) => {
-                    setBirthDate(e.target.value);
-                    setFormData({ ...formData, birthDate: e.target.value });
-                  }}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
-                />
-              </div>
-              <div>
-                <label htmlFor="preferredLanguage" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Preferred Language <span className="text-red-400">*</span>
+                <label htmlFor="preferredLanguage" className={labelStyles.required}>
+                  Preferred Language <span className={labelStyles.requiredStar}>*</span>
                 </label>
                 <select
                   id="preferredLanguage"
                   required
                   value={formData.preferredLanguage}
                   onChange={(e) => setFormData({ ...formData, preferredLanguage: e.target.value })}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
+                  className={inputStyles.select}
+                  aria-label="Preferred language"
                 >
-                  <option value="" className="bg-zinc-950 text-zinc-400">Select</option>
+                  <option value="" className="bg-zinc-950 text-zinc-400">Select language</option>
                   <option value="english" className="bg-zinc-950 text-zinc-50">English</option>
                   <option value="tigrigna" className="bg-zinc-950 text-zinc-50">Tigrinya (ትግርኛ)</option>
                 </select>
               </div>
-            </div>
+            </FormGrid>
 
             {/* Country and City */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <FormGrid>
               <div>
-                <label htmlFor="country" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Country <span className="text-red-400">*</span>
+                <label htmlFor="country" className={labelStyles.required}>
+                  Country <span className={labelStyles.requiredStar}>*</span>
                 </label>
                 <select
                   id="country"
+                  name="country"
+                  autoComplete="country-name"
                   required
                   value={selectedCountry}
                   onChange={handleCountryChange}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
+                  className={inputStyles.select}
                 >
                   <option value="" className="bg-zinc-950 text-zinc-400">Select your country</option>
-                  {africanCountries.map((country) => (
+                  {sortedCountries.map((country) => (
                     <option key={country.name} value={country.name} className="bg-zinc-950 text-zinc-50">
                       {country.flag} {country.name}
                     </option>
@@ -880,87 +954,195 @@ export default function ApplyPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="city" className="mb-2 block text-sm font-medium text-zinc-300">City</label>
+                <label htmlFor="city" className={labelStyles.required}>City <span className="text-zinc-500 text-xs">(optional)</span></label>
                 <input
                   id="city"
+                  name="city"
                   type="text"
+                  autoComplete="address-level2"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full rounded-lg border border-cyan-400/20 bg-zinc-900/50 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
-                  placeholder="Lagos"
+                  className={inputStyles.optional}
+                  placeholder="Asmara"
                 />
               </div>
-            </div>
+            </FormGrid>
 
-            {/* Experience Level and Preferred Cohort */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="experienceLevel" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Experience Level <span className="text-red-400">*</span>
-                </label>
-                <select
-                  id="experienceLevel"
-                  required
-                  value={formData.experienceLevel}
-                  onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
-                  disabled={!!selectedCohort}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
-                >
-                  <option value="" className="bg-zinc-950 text-zinc-400">Select your level</option>
-                  <option value="beginner" className="bg-zinc-950 text-zinc-50">Beginner - New to Bitcoin</option>
-                  <option value="intermediate" className="bg-zinc-950 text-zinc-50">Intermediate - Some knowledge</option>
-                  <option value="advanced" className="bg-zinc-950 text-zinc-50">Advanced - Experienced user</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="preferredCohort" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Preferred Cohort <span className="text-red-400">*</span>
-                </label>
-                <select
-                  id="preferredCohort"
-                  required
-                  value={formData.preferredCohort}
-                  onChange={(e) => {
-                    const cohortId = e.target.value;
-                    setFormData({ ...formData, preferredCohort: cohortId });
-                    setSelectedCohort(cohortId || null);
-                  }}
-                  className={`w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer ${
-                    formData.preferredCohort ? 'text-green-400' : 'text-zinc-50'
-                  }`}
-                >
-                  <option value="" className="bg-zinc-950 text-zinc-400">Select a cohort</option>
-                  {cohorts.map((cohort) => (
-                    <option 
-                      key={cohort.id} 
-                      value={cohort.id} 
+            {/* Experience level; live cohort also picks preferred cohort here */}
+            {formData.learningPace === 'self_paced' ? (
+              <FormGrid cols={1}>
+                <div>
+                  <label htmlFor="experienceLevel" className={labelStyles.required}>
+                    Experience Level <span className={labelStyles.requiredStar}>*</span>
+                  </label>
+                  <select
+                    id="experienceLevel"
+                    required
+                    value={formData.experienceLevel}
+                    onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
+                    className={inputStyles.selectWithValue(!!formData.experienceLevel)}
+                  >
+                    <option value="" className="bg-zinc-950 text-zinc-400">Select your level</option>
+                    <option
+                      value="beginner"
                       className={`bg-zinc-950 ${
-                        formData.preferredCohort === cohort.id.toString() ? 'text-green-400' : 'text-zinc-50'
+                        formData.experienceLevel === 'beginner' ? 'text-green-400' : 'text-zinc-50'
                       }`}
                     >
-                      {cohort.name} ({cohort.available} seats available)
+                      Beginner - New to Bitcoin
                     </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+                    <option
+                      value="intermediate"
+                      className={`bg-zinc-950 ${
+                        formData.experienceLevel === 'intermediate' ? 'text-green-400' : 'text-zinc-50'
+                      }`}
+                    >
+                      Intermediate - Some knowledge
+                    </option>
+                    <option
+                      value="advanced"
+                      className={`bg-zinc-950 ${
+                        formData.experienceLevel === 'advanced' ? 'text-green-400' : 'text-zinc-50'
+                      }`}
+                    >
+                      Advanced - Experienced user
+                    </option>
+                  </select>
+                </div>
+              </FormGrid>
+            ) : (
+              <FormGrid>
+                <div>
+                  <label htmlFor="experienceLevel" className={labelStyles.required}>
+                    Experience Level <span className={labelStyles.requiredStar}>*</span>
+                  </label>
+                  <select
+                    id="experienceLevel"
+                    required
+                    value={formData.experienceLevel}
+                    onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
+                    className={inputStyles.selectWithValue(!!formData.experienceLevel)}
+                  >
+                    <option value="" className="bg-zinc-950 text-zinc-400">Select your level</option>
+                    <option
+                      value="beginner"
+                      className={`bg-zinc-950 ${
+                        formData.experienceLevel === 'beginner' ? 'text-green-400' : 'text-zinc-50'
+                      }`}
+                    >
+                      Beginner - New to Bitcoin
+                    </option>
+                    <option
+                      value="intermediate"
+                      className={`bg-zinc-950 ${
+                        formData.experienceLevel === 'intermediate' ? 'text-green-400' : 'text-zinc-50'
+                      }`}
+                    >
+                      Intermediate - Some knowledge
+                    </option>
+                    <option
+                      value="advanced"
+                      className={`bg-zinc-950 ${
+                        formData.experienceLevel === 'advanced' ? 'text-green-400' : 'text-zinc-50'
+                      }`}
+                    >
+                      Advanced - Experienced user
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="preferredCohort" className={labelStyles.required}>
+                    Preferred Cohort <span className={labelStyles.requiredStar}>*</span>
+                  </label>
+                  <select
+                    id="preferredCohort"
+                    required
+                    value={formData.preferredCohort}
+                    onChange={(e) => {
+                      const cohortId = e.target.value;
+                      const cohortOpt = cohorts.find((c) => c.id === cohortId);
+                      const normalizedLevel = normalizeLevel(cohortOpt?.level);
+                      setFormData({
+                        ...formData,
+                        preferredCohort: cohortId,
+                        experienceLevel: normalizedLevel,
+                      });
+                      setSelectedCohort(cohortId || null);
+                    }}
+                    className={cn(inputStyles.select, formData.preferredCohort ? 'text-green-400' : 'text-zinc-50')}
+                  >
+                    <option value="" className="bg-zinc-950 text-zinc-400">Select a cohort</option>
+                    {cohorts.map((cohort) => (
+                      <option
+                        key={cohort.id}
+                        value={cohort.id}
+                        disabled={cohort.available === 0}
+                        className={`bg-zinc-950 ${
+                          cohort.available === 0
+                            ? 'text-zinc-600 cursor-not-allowed'
+                            : formData.preferredCohort === cohort.id.toString()
+                              ? 'text-green-400'
+                              : 'text-zinc-50'
+                        }`}
+                      >
+                        {cohort.name} ({cohort.available === 0 ? 'Full' : `${cohort.available} seats available`})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </FormGrid>
+            )}
 
-            <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-4">
-              <p className="text-xs text-zinc-400">
-                <span className="font-semibold text-orange-300">Note:</span> After submitting, you'll be redirected to complete your application. We'll review and get back to you within 3-5 business days.
+            <div className="rounded-lg border border-cyan-400/20 bg-cyan-500/5 p-4">
+              <p className="text-sm text-zinc-300">
+                <span className="font-semibold text-cyan-300">Note:</span> We'll review and get back to you within 3-5 business days.
               </p>
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-2">
               <button
                 type="submit"
                 disabled={submitting}
-                className={`inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3 text-base font-semibold text-black transition ${
-                  submitting ? 'opacity-70 cursor-not-allowed' : 'hover:brightness-110'
-                }`}
+                className="inline-flex min-h-[48px] min-w-[180px] items-center justify-center rounded-xl bg-gradient-to-r from-cyan-400 to-cyan-500 px-8 py-3.5 text-base font-semibold text-black shadow-lg shadow-cyan-500/20 transition hover:from-cyan-300 hover:to-cyan-400 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:from-cyan-400 disabled:hover:to-cyan-500"
               >
                 {submitting ? 'Submitting...' : 'Register'}
               </button>
+            </div>
+
+            <div className="rounded-xl border border-zinc-700/60 bg-zinc-950/60 p-4 sm:p-5 space-y-4">
+              <div>
+                <p className="text-sm font-semibold text-zinc-100">Join our WhatsApp group</p>
+                <p className="mt-1 text-xs text-zinc-400">
+                  Get updates, ask questions, and connect with other learners.
+                </p>
+              </div>
+              <a
+                href={whatsappGroupLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-300 transition hover:border-green-400/50 hover:bg-green-500/20"
+              >
+                Join WhatsApp Group
+              </a>
+
+              <div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
+                  Follow us on social media
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {applySocialLinks.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md border border-cyan-400/25 bg-cyan-500/10 px-3 py-1.5 text-xs font-medium text-cyan-300 transition hover:border-cyan-300/45 hover:bg-cyan-500/20"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
           </form>
           </section>

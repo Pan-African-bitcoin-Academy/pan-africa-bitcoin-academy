@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { validateAndNormalizeEmail, sanitizeName } from '@/lib/validation';
+import { requireStudent } from '@/lib/session';
+import { sendVerificationEmail } from '@/lib/email';
+import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +18,12 @@ export async function POST(req: NextRequest) {
       birthDate,
       experienceLevel,
       preferredCohort,
+      preferredLanguage,
+      learningPace: learningPaceRaw,
     } = body;
+
+    const learningPace =
+      learningPaceRaw === 'self_paced' ? 'self_paced' : 'live_cohort';
 
     if (!firstName || !lastName || !email) {
       return NextResponse.json(
@@ -23,8 +32,48 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const emailLower = email.toLowerCase().trim();
-    const phoneNormalized = phone ? String(phone).trim() : null;
+    // Validate and normalize email
+    const emailValidation = validateAndNormalizeEmail(email);
+    if (!emailValidation.valid || !emailValidation.normalized) {
+      return NextResponse.json(
+        { error: emailValidation.error || 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+    const emailLower = emailValidation.normalized;
+
+    // Optional: If user is logged in, verify email matches their session
+    const session = requireStudent(req);
+    if (session) {
+      const sessionEmail = session.email.toLowerCase().trim();
+      if (sessionEmail !== emailLower) {
+        return NextResponse.json(
+          { error: 'If you are logged in, you must use your account email address.' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Sanitize names
+    const sanitizedFirstName = sanitizeName(firstName, 50);
+    const sanitizedLastName = sanitizeName(lastName, 50);
+    
+    if (!sanitizedFirstName || sanitizedFirstName.length < 2) {
+      return NextResponse.json(
+        { error: 'First name must be at least 2 characters and contain only letters' },
+        { status: 400 }
+      );
+    }
+    
+    if (!sanitizedLastName || sanitizedLastName.length < 2) {
+      return NextResponse.json(
+        { error: 'Last name must be at least 2 characters and contain only letters' },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize phone
+    const phoneNormalized = phone ? String(phone).replace(/[^\d\s\-\(\)\+]/g, '').trim() : null;
 
     // Basic phone validation (ensure 7-15 digits)
     if (phoneNormalized) {
@@ -67,7 +116,7 @@ export async function POST(req: NextRequest) {
     // Check if user already has a profile (they're already registered) - use admin client
     const { data: existingProfile } = await supabaseAdmin
       .from('profiles')
-      .select('id, email, status')
+      .select('id, email, status, password_hash')
       .eq('email', emailLower)
       .maybeSingle();
 
@@ -82,11 +131,13 @@ export async function POST(req: NextRequest) {
           .single();
         
         if (appData?.status === 'Approved') {
+          // Only ask to set password if they have no password_hash (source of truth)
+          // Status can be stale; password_hash confirms they've set a password (forgot or setup)
           return NextResponse.json(
             { 
               error: 'You already have an approved application. Please sign in to access your account.',
               hasProfile: !!existingProfile,
-              needsPassword: existingProfile && !existingProfile.status?.includes('Active')
+              needsPassword: existingProfile && !existingProfile.password_hash
             },
             { status: 409 }
           );
@@ -103,9 +154,64 @@ export async function POST(req: NextRequest) {
     // The application will be linked to their existing profile on approval
     // Don't block - they can apply even if they have a profile
 
-    // Resolve cohort (accepts ID or name). Frontend sends ID. - use admin client
+    // If profile doesn't exist, create one and send verification email
+    // This ensures email verification happens before application approval
+    if (!existingProfile) {
+      const fullName = `${sanitizedFirstName} ${sanitizedLastName}`.trim();
+      
+      // Generate email verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const tokenExpiry = new Date();
+      tokenExpiry.setHours(tokenExpiry.getHours() + 72); // Expires in 72 hours
+
+      // Create profile with unverified email
+      const { data: newProfile, error: profileCreateError } = await supabaseAdmin
+        .from('profiles')
+        .insert({
+          name: fullName,
+          email: emailLower,
+          phone: phoneNormalized,
+          country: country ? String(country).substring(0, 100) : null,
+          city: city ? String(city).substring(0, 100) : null,
+          status: 'New',
+          email_verification_token: verificationToken,
+          email_verification_token_expiry: tokenExpiry.toISOString(),
+          email_verified_at: null, // Email not verified yet
+        })
+        .select()
+        .single();
+
+      if (profileCreateError) {
+        console.error('Error creating profile for application:', profileCreateError);
+        // Don't fail application submission if profile creation fails
+        // But log it for admin awareness
+      } else if (newProfile) {
+        // Send verification email
+        const emailResult = await sendVerificationEmail({
+          userName: fullName,
+          userEmail: emailLower,
+          verificationToken,
+        });
+
+        if (!emailResult.success) {
+          console.error('Failed to send verification email:', emailResult.error);
+          // Don't fail application submission if email fails
+        }
+      }
+    }
+
+    // Resolve cohort only for live cohort mode; self-paced has no cohort
     let cohortId: string | null = null;
-    if (preferredCohort) {
+    if (learningPace === 'live_cohort') {
+      if (!preferredCohort) {
+        return NextResponse.json(
+          {
+            error:
+              'Please select a cohort for live cohort enrollment, or choose self-paced study.',
+          },
+          { status: 400 }
+        );
+      }
       // First try direct ID match
       const { data: byId } = await supabaseAdmin
         .from('cohorts')
@@ -126,11 +232,17 @@ export async function POST(req: NextRequest) {
           cohortId = byName.id;
         }
       }
+      if (!cohortId) {
+        return NextResponse.json(
+          { error: 'Invalid cohort selection. Please choose an available cohort.' },
+          { status: 400 }
+        );
+      }
     }
 
     // Check cohort availability before applying - use admin client
     if (cohortId) {
-      const [{ data: cohort, error: cohortError }, { count }] = await Promise.all([
+      const [{ data: cohort, error: cohortError }, { count: enrolledCount }, { count: pendingCount }] = await Promise.all([
         supabaseAdmin
           .from('cohorts')
           .select('id, seats_total')
@@ -140,6 +252,11 @@ export async function POST(req: NextRequest) {
           .from('cohort_enrollment')
           .select('*', { count: 'exact', head: true })
           .eq('cohort_id', cohortId),
+        supabaseAdmin
+          .from('applications')
+          .select('*', { count: 'exact', head: true })
+          .eq('preferred_cohort_id', cohortId)
+          .eq('status', 'Pending'),
       ]);
 
       if (cohortError) {
@@ -151,8 +268,11 @@ export async function POST(req: NextRequest) {
       }
 
       const seatsTotal = cohort?.seats_total || 0;
-      const enrolled = count || 0;
-      if (seatsTotal > 0 && enrolled >= seatsTotal) {
+      const enrolled = enrolledCount || 0;
+      const pending = pendingCount || 0;
+      
+      // Check if cohort is full: enrolled + pending applications >= total seats
+      if (seatsTotal > 0 && (enrolled + pending) >= seatsTotal) {
         return NextResponse.json(
           { error: 'This cohort is full. Please select another cohort.' },
           { status: 409 }
@@ -161,19 +281,22 @@ export async function POST(req: NextRequest) {
     }
 
     // Create application using admin client to bypass RLS and ensure reliable inserts
+    // The application.id (UUID) will be used as the student identifier across all databases
     // Link to existing profile if user is signed in
     const { data: application, error } = await supabaseAdmin
       .from('applications')
       .insert({
-        first_name: firstName,
-        last_name: lastName,
+        first_name: sanitizedFirstName,
+        last_name: sanitizedLastName,
         email: emailLower,
         phone: phoneNormalized,
-        country: country || null,
-        city: city || null,
+        country: country ? String(country).substring(0, 100) : null,
+        city: city ? String(city).substring(0, 100) : null,
         birth_date: birthDate || null,
         experience_level: experienceLevel || null,
         preferred_cohort_id: cohortId,
+        preferred_language: preferredLanguage || null,
+        learning_pace: learningPace,
         status: 'Pending',
         profile_id: existingProfile?.id || null, // Link to existing profile if found
       })
@@ -193,8 +316,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check if we created a new profile (which means verification email was sent)
+    const profileWasCreated = !existingProfile;
+    
     return NextResponse.json(
-      { success: true, applicationId: application.id },
+      { 
+        success: true, 
+        applicationId: application.id,
+        verificationEmailSent: profileWasCreated // Indicate if verification email was sent
+      },
       { status: 200 }
     );
   } catch (error: any) {

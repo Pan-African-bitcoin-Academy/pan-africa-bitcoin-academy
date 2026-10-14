@@ -1,6 +1,8 @@
 'use client';
 
 import { AnimatedSection } from "@/components/AnimatedSection";
+import { AnimatedHeading } from "@/components/AnimatedHeading";
+import SplitText from "@/components/SplitText";
 
 const ONCHAIN_ADDRESS = 'bc1q4pg073ws86qdnxac3y8zhk4t8vtkg2vx529jrj';
 const ONCHAIN_QR_SRC = '/images/onchain-btc-qr.jpeg'; // Using provided JPEG QR image
@@ -15,9 +17,22 @@ export default function DonatePage() {
           {/* Hero Section */}
           <AnimatedSection animation="slideUp">
             <div className="mb-16 text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
-                Support Bitcoin Education
-              </h1>
+              <AnimatedHeading as="h1" className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+                <SplitText
+                  text="Support Bitcoin Education"
+                  tag="span"
+                  className="inline-block"
+                  delay={50}
+                  duration={1.25}
+                  ease="bounce.out"
+                  splitType="chars"
+                  from={{ opacity: 0, y: 40 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.1}
+                  rootMargin="-100px"
+                  textAlign="center"
+                />
+              </AnimatedHeading>
               <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
                 Help us build Bitcoin sovereignty and education in Africa. Every sat counts.
               </p>
@@ -28,7 +43,7 @@ export default function DonatePage() {
         {/* Why Donations Matter */}
         <AnimatedSection animation="slideRight">
           <section className="space-y-4 rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-          <h2 className="text-xl font-semibold text-orange-200">Why Donations Matter</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-orange-200">Why Donations Matter</AnimatedHeading>
           <p className="text-sm text-zinc-300 sm:text-base">
             Many Bitcoin projects survive on donations. Your support helps us:
           </p>
@@ -60,7 +75,7 @@ export default function DonatePage() {
         {/* Payment Methods */}
         <AnimatedSection animation="slideLeft">
           <section className="space-y-6">
-          <h2 className="text-xl font-semibold text-zinc-50">Bitcoin-Only Support</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-zinc-50">Bitcoin-Only Support</AnimatedHeading>
           <p className="text-sm text-zinc-400">
             We accept Bitcoin payments via Lightning Network and on-chain. Choose your preferred method:
           </p>
@@ -68,7 +83,7 @@ export default function DonatePage() {
           <div className="grid gap-6 sm:grid-cols-2">
             {/* Lightning Network */}
             <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
-              <h3 className="mb-4 text-lg font-semibold text-cyan-200">Lightning Network</h3>
+              <AnimatedHeading as="h3" className="mb-4 text-lg font-semibold text-cyan-200">Lightning Network</AnimatedHeading>
               <div className="space-y-4">
                 {/* Lightning QR Code */}
                 <div className="flex flex-col items-center gap-3">
@@ -100,7 +115,7 @@ export default function DonatePage() {
 
             {/* On-Chain */}
             <div className="rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_30px_rgba(249,115,22,0.2)]">
-              <h3 className="mb-4 text-lg font-semibold text-orange-200">On-Chain Address</h3>
+              <AnimatedHeading as="h3" className="mb-4 text-lg font-semibold text-orange-200">On-Chain Address</AnimatedHeading>
               <div className="space-y-4">
                 {/* QR Image */}
                 <div className="flex flex-col items-center gap-3">
@@ -140,7 +155,7 @@ export default function DonatePage() {
         {/* Transparency Plan */}
         <AnimatedSection animation="slideRight">
           <section className="space-y-4 rounded-xl border border-purple-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
-          <h2 className="text-xl font-semibold text-purple-200">Transparency Plan</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-purple-200">Transparency Plan</AnimatedHeading>
           <p className="text-sm text-zinc-300 sm:text-base">
             We believe in transparency and accountability. Here's how we handle donations:
           </p>
@@ -151,15 +166,15 @@ export default function DonatePage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-400">✓</span>
-              <span><strong className="text-purple-200">Student Rewards:</strong> 50% of donations go directly to student sats rewards</span>
+              <span><strong className="text-purple-200">Student Rewards:</strong> Donations go directly to student sats rewards</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-400">✓</span>
-              <span><strong className="text-purple-200">Infrastructure:</strong> 25% for tools, hosting, and educational resources</span>
+              <span><strong className="text-purple-200">Infrastructure:</strong> For tools, hosting, and educational resources</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-purple-400">✓</span>
-              <span><strong className="text-purple-200">Growth:</strong> 10% for expanding to new regions and communities</span>
+              <span><strong className="text-purple-200">Growth:</strong> For expanding to new regions and communities</span>
             </li>
           </ul>
           <div className="mt-4 rounded-lg border border-purple-500/20 bg-purple-500/5 p-4">
@@ -174,7 +189,7 @@ export default function DonatePage() {
         <AnimatedSection animation="slideUp">
           <section className="text-center">
             <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-              <h2 className="text-2xl font-semibold text-cyan-200">Thank You</h2>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-cyan-200">Thank You</AnimatedHeading>
               <p className="mt-4 text-sm text-zinc-300 sm:text-base">
                 Your support helps build Bitcoin sovereignty and education in Africa. Every contribution, no matter how small, makes a difference.
               </p>

@@ -4,6 +4,7 @@
 import { StructuredData } from "@/components/StructuredData";
 import { generateFAQStructuredData } from "@/lib/structured-data";
 import { AnimatedSection } from "@/components/AnimatedSection";
+import { AnimatedHeading } from "@/components/AnimatedHeading";
 
 const faqs = [
   {
@@ -11,15 +12,15 @@ const faqs = [
     questions: [
       {
         q: "What time zones do you support?",
-        a: "Our cohorts are designed to accommodate students across Africa. Sessions are typically scheduled in UTC+0 (GMT) or UTC+1 to ensure maximum participation. We also record all sessions for students who cannot attend live.",
+        a: "Our cohorts are designed to accommodate students across Africa. Sessions are typically scheduled in UTC+2 (GMT) or UTC+3 to ensure maximum participation. We also record all sessions for students who cannot attend live.",
       },
       {
         q: "What are the class times?",
-        a: "Classes are held twice a week, typically on Tuesdays and Thursdays at 6:00 PM UTC. Each session lasts 90 minutes. We also offer weekend sessions for students who prefer Saturday mornings.",
+        a: "Classes are held twice a week, typically on Tuesdays and Thursdays at 7:00 PM UTC. Each session lasts 60 minutes. We also offer weekend sessions for students who prefer Saturday mornings.",
       },
       {
         q: "Can I attend if I'm in a different time zone?",
-        a: "Yes! All sessions are recorded and made available within 24 hours. You can watch at your convenience and participate in asynchronous discussions.",
+        a: "Yes! All sessions are recorded and made available within 48 hours. You can watch at your convenience and participate in asynchronous discussions.",
       },
     ],
   },
@@ -53,7 +54,7 @@ const faqs = [
       },
       {
         q: "Is there an age requirement?",
-        a: "Students must be 18 years or older to participate. We welcome learners of all ages and backgrounds.",
+        a: "There is no age limit to participate. Learners of all ages and backgrounds are welcome.",
       },
     ],
   },
@@ -87,7 +88,7 @@ const faqs = [
     questions: [
       {
         q: "How much does the course cost?",
-        a: "The course is completely free! We're funded by donations and sponsors who believe in Bitcoin education.",
+        a: "The course is completely free!",
       },
       {
         q: "How do sats rewards work?",
@@ -118,9 +119,9 @@ export default function FAQPage() {
           {/* Hero Section */}
           <AnimatedSection animation="slideUp">
             <div className="mb-16 text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+              <AnimatedHeading as="h1" className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
                 Bitcoin Education FAQ - PanAfrican Bitcoin Academy
-              </h1>
+              </AnimatedHeading>
               <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
                 Everything you need to know about joining PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy.
               </p>
@@ -133,7 +134,7 @@ export default function FAQPage() {
           return (
           <AnimatedSection key={categoryIndex} animation={animationType}>
             <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-cyan-200">{category.category}</h2>
+            <AnimatedHeading as="h2" className="text-xl font-semibold text-cyan-200">{category.category}</AnimatedHeading>
             <div className="space-y-4">
               {category.questions.map((faq, faqIndex) => (
                 <div
@@ -153,7 +154,7 @@ export default function FAQPage() {
         {/* Still Have Questions */}
         <AnimatedSection animation="slideUp">
           <section className="rounded-xl border border-orange-500/25 bg-black/80 p-8 text-center shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-          <h2 className="text-xl font-semibold text-orange-200">Still Have Questions?</h2>
+          <AnimatedHeading as="h2" className="text-xl font-semibold text-orange-200">Still Have Questions?</AnimatedHeading>
           <p className="mt-4 text-sm text-zinc-300 sm:text-base">
             Can't find what you're looking for? We're here to help!
           </p>

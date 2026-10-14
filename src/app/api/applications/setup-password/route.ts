@@ -3,13 +3,94 @@ import { supabaseAdmin } from '@/lib/supabase';
 import bcrypt from 'bcryptjs';
 import { validatePassword } from '@/lib/passwordValidation';
 
+/**
+ * GET /api/applications/setup-password?email=...&token=...
+ * Check if this email still needs to set a password. When token is present, it must
+ * match the profile's reset_token and not be expired (72h set-password link).
+ * Returns needsSetup: true only when profile exists, has no password_hash, and
+ * (no token in URL or token valid and not expired). linkExpired: true when token
+ * was provided but is invalid or expired.
+ */
+export async function GET(req: NextRequest) {
+  try {
+    const email = req.nextUrl.searchParams.get('email');
+    const token = req.nextUrl.searchParams.get('token');
+    if (!email || typeof email !== 'string') {
+      return NextResponse.json({ needsSetup: false }, { status: 200 });
+    }
+
+    const emailLower = email.toLowerCase().trim();
+
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('password_hash, name, cohort_id, reset_token, reset_token_expiry')
+      .eq('email', emailLower)
+      .maybeSingle();
+
+    if (token != null && token !== '') {
+      const now = new Date();
+      const tokenExists = profile?.reset_token != null && profile.reset_token !== '';
+      const tokenMatches = tokenExists && profile!.reset_token === token;
+      const expiryExists = profile?.reset_token_expiry != null;
+      const notExpired = expiryExists && new Date(profile!.reset_token_expiry) > now;
+      if (!tokenExists || !tokenMatches || !notExpired) {
+        console.error('❌ Setup password GET: token invalid for', emailLower, {
+          profileFound: !!profile,
+          tokenInDB: tokenExists,
+          tokenMatches,
+          expiryExists,
+          notExpired,
+          dbTokenLen: profile?.reset_token?.length,
+          urlTokenLen: token?.length,
+        });
+        return NextResponse.json({
+          needsSetup: false,
+          linkExpired: true,
+          studentName: null,
+          cohortName: null,
+        }, { status: 200 });
+      }
+    }
+
+    // needsSetup only when profile exists AND has no password
+    const needsSetup = !!profile && !profile.password_hash;
+
+    let cohortName: string | null = null;
+    if (profile?.cohort_id) {
+      const { data: cohort } = await supabaseAdmin
+        .from('cohorts')
+        .select('name')
+        .eq('id', profile.cohort_id)
+        .maybeSingle();
+      cohortName = cohort?.name ?? null;
+    }
+
+    return NextResponse.json({
+      needsSetup,
+      linkExpired: false,
+      studentName: needsSetup && profile?.name ? profile.name : null,
+      cohortName,
+    }, { status: 200 });
+  } catch {
+    return NextResponse.json({ needsSetup: false }, { status: 200 });
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, applicationId } = await req.json();
+    const { email, password, token: bodyToken, applicationId } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
+        { status: 400 }
+      );
+    }
+
+    const token = bodyToken != null && bodyToken !== '' ? bodyToken : null;
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Invalid or expired link. Please use the link from your approval email or ask your admin to send a new link.' },
         { status: 400 }
       );
     }
@@ -25,10 +106,10 @@ export async function POST(req: NextRequest) {
 
     const emailLower = email.toLowerCase().trim();
 
-    // Find profile by email
+    // Find profile by email and validate set-password token (72h link)
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('id, email, status, password_hash')
+      .select('id, email, status, password_hash, reset_token, reset_token_expiry')
       .eq('email', emailLower)
       .single();
 
@@ -39,10 +120,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if password is already set
-    if (profile.password_hash) {
+    const now = new Date();
+    const tokenExists = profile.reset_token != null && profile.reset_token !== '';
+    const tokenMatches = tokenExists && profile.reset_token === token;
+    const expiryExists = profile.reset_token_expiry != null;
+    const notExpired = expiryExists && new Date(profile.reset_token_expiry) > now;
+
+    if (!tokenExists) {
+      console.error('❌ Setup password: no reset_token in DB for', emailLower);
       return NextResponse.json(
-        { error: 'Password is already set. Please sign in or use "Forgot Password" if needed.' },
+        { error: 'No setup link found. Please ask your admin to send a new password setup link.' },
+        { status: 400 }
+      );
+    }
+    if (!tokenMatches) {
+      console.error('❌ Setup password: token mismatch for', emailLower, '| DB token length:', profile.reset_token?.length, '| URL token length:', token?.length);
+      return NextResponse.json(
+        { error: 'This link is no longer valid. A newer link may have been sent. Please use the most recent email or ask your admin to resend.' },
+        { status: 400 }
+      );
+    }
+    if (!notExpired) {
+      console.error('❌ Setup password: token expired for', emailLower, '| expired at:', profile.reset_token_expiry, '| now:', now.toISOString());
+      return NextResponse.json(
+        { error: 'This link has expired. Please ask your admin to send a new password setup link.' },
         { status: 400 }
       );
     }
@@ -68,13 +169,16 @@ export async function POST(req: NextRequest) {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Update profile with password and set status to Active
+    // Update profile: set password, clear reset token/expiry, set status and email_verified_at
     const { error: updateError } = await supabaseAdmin
       .from('profiles')
       .update({
         password_hash: passwordHash,
         status: 'Active',
+        email_verified_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        reset_token: null,
+        reset_token_expiry: null,
       })
       .eq('id', profile.id);
 

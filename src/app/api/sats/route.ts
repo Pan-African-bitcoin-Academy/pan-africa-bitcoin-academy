@@ -1,12 +1,48 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Sum all sats rewards
-    const { data: rewards, error } = await supabase
+    const searchParams = request.nextUrl.searchParams;
+    const email = searchParams.get('email');
+    const studentId = searchParams.get('studentId'); // UUID of profile.id
+
+    let profileId: string | null = null;
+
+    // If studentId (profile UUID) is provided, use it directly
+    if (studentId) {
+      profileId = studentId;
+    } 
+    // If email is provided, get profile ID from email
+    else if (email) {
+      const { data: profile, error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', email.toLowerCase().trim())
+        .maybeSingle();
+
+      if (profileError || !profile) {
+        // No profile found - return zeros
+        return NextResponse.json(
+          { totalPaid: 0, totalPending: 0 },
+          { status: 200 }
+        );
+      }
+
+      profileId = profile.id;
+    } else {
+      // No email or studentId provided - return zeros
+      return NextResponse.json(
+        { totalPaid: 0, totalPending: 0 },
+        { status: 200 }
+      );
+    }
+
+    // Fetch sats rewards for this specific student
+    const { data: rewards, error } = await supabaseAdmin
       .from('sats_rewards')
-      .select('amount_paid, amount_pending');
+      .select('amount_paid, amount_pending')
+      .eq('student_id', profileId);
 
     if (error) {
       console.error('Error fetching sats rewards:', error);
@@ -19,7 +55,7 @@ export async function GET() {
       );
     }
 
-    // Calculate totals
+    // Calculate totals for this student
     const totalPaid = (rewards || []).reduce(
       (sum: number, reward: any) => sum + (reward.amount_paid || 0),
       0

@@ -1,6 +1,6 @@
-# 🟠 Pan-Africa Bitcoin Academy
+#              <div align="center"> Pan-Africa Bitcoin Academy </dev>
 
-<div align="center">
+<div align="center ">
 
 ![Bitcoin Academy](https://img.shields.io/badge/Bitcoin-Education-orange?style=for-the-badge&logo=bitcoin)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
@@ -9,9 +9,76 @@
 
 **Empowering the next generation of African Bitcoin talent through education, mentorship, and community.**
 
-[🌐 Live Website](https://panafricanbitcoin.com) • [📚 Documentation](./STEP_BY_STEP_GUIDE.md) • [💬 Community](#community) • [🤝 Contribute](#contributing)
+[🌐 Live Website](https://panafricanbitcoin.com) • [📚 Course Materials](https://github.com/Joie199/pan-africa-bitcoin-academy/tree/main/content/courses/genesis) • [📖 Documentation](./STEP_BY_STEP_GUIDE.md) • [💬 Community](#community) • [🤝 Contribute](#contributing)
+
+---
+
+## 📚 Open Course Materials (CC-BY-SA-4.0)
+
+**All course content is freely available in this repository!**
+
+👉 **[Browse All Chapters →](https://github.com/Joie199/pan-africa-bitcoin-academy/tree/main/content/courses/genesis/chapters)**
+
+### Quick Chapter Links
+
+**Level I (Genesis)** - Foundations, the fiat problem, and first steps into Bitcoin
+
+<br><center> [Chapter 1: The Nature of Money](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch01-nature-of-money.md)</center>
+<br><center> [Chapter 2: The Journey of Money](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch02-journey-of-money.md)</center>
+<br><center> [Chapter 3: Problems with Traditional (Fiat) Money](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch03-fiat-problems.md)</center>
+<br><center> [Chapter 4: From Crisis to Innovation](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch04-crisis-to-innovation.md)</center>
+<br><center> [Chapter 5: The Birth of Bitcoin](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch05-birth-of-bitcoin.md)</center>
+<br><center> [Chapter 6: Keys and Transactions](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch06-keys-and-transactions.md)</center>
+<br><center> [Chapter 7: Blockchain Basics](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch07-blockchain-basics.md)</center>
+<br><center> [Chapter 8: Exchange & Software Wallet](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch08-exchange-and-wallet.md)</center>
+
+**Level II (Difficulty-Adjustment 1)**
+<br><center> [Chapter 9: UTXOs, Fees & Coin Control](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch09-utxos-fees.md)</center>
+<br><center> [Chapter 10: Good Bitcoin Hygiene](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch10-hygiene.md)</center>
+<br><center> [Chapter 11: Hardware Signers](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch11-hardware-signers.md)</center>
+<br><center> [Chapter 12: Layer 2 & Sidechains](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch12-layer2-sidechains.md)</center>
+<br><center> [Chapter 13: Verify for Yourself — Block Explorers & Nodes](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch13-verify.md)</center>
+<br><center> [Chapter 14: Proof of Work and Block Rewards](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch14-pow-rewards.md)</center>
+<br><center> [Chapter 15: Mining in Practice](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch15-mining-practice.md)</center>
+
+**Level III (Advanced Sovereignty)**
+<br><center> [Chapter 16: Full Node & Opening a Lightning Channel](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch16-full-node-lightning.md)</center>
+<br><center> [Chapter 17: Multi-Sig (Collaborative Custody)](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch17-multisig.md)</center>
+<br><center> [Chapter 18: Intro to Bitcoin Script](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch18-bitcoin-script.md)</center>
+<br><center> [Chapter 19: UTXO Consolidation & Privacy Risks](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch19-consolidation-privacy.md)</center>
+<br><center> [Chapter 20: Why Bitcoin? Philosophy & Adoption](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch20-philosophy.md)</center>
+<br><center> [Chapter 21: Wrap-Up & Resources](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch21-wrap-up.md)</center>
+
+📖 **[View Full Course Overview →](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/README.md)**
 
 </div>
+
+---
+
+## 📄 Bitcoin Whitepaper (Tigrigna + English)
+
+Access the whitepaper in multiple formats:
+
+- **Interactive reader (web):** [`/white_paper`](https://panafricanbitcoin.com/white_paper)
+- **English original PDF (bitcoin.org):** [`https://bitcoin.org/bitcoin.pdf`](https://bitcoin.org/bitcoin.pdf)
+- **Tigrigna PDF (project file):** [`public/doc_files/Bitcoin white paper Tigrigna.pdf`](./public/doc_files/Bitcoin%20white%20paper%20Tigrigna.pdf)
+
+### Whitepaper Contents
+
+1. Abstract
+2. Introduction
+3. Transactions
+4. Timestamp Server
+5. Proof-of-Work
+6. Network
+7. Incentive
+8. Reclaiming Disk Space
+9. Simplified Payment Verification
+10. Combining and Splitting Value
+11. Privacy
+12. Calculations
+13. Conclusion
+14. References
 
 ---
 
@@ -29,9 +96,6 @@
 ![Chapters](./public/images/screenshots/chapters.png)
 *Interactive learning chapters with progress indicators*
 
-![Calendar](./public/images/screenshots/calendar.png)
-*Interactive calendar with events and assignments*
-
 </div>
 
 ---
@@ -42,7 +106,7 @@ A modern, comprehensive Bitcoin education platform designed specifically for Afr
 
 ### 🌟 Key Highlights
 
-- **20 Comprehensive Chapters** - From "The Nature of Money" to "Why Bitcoin? Philosophy & Adoption"
+- **21 Comprehensive Chapters** - From "The Nature of Money" to "Why Bitcoin? Philosophy & Adoption"
 - **Interactive Learning** - Progress tracking, achievements, sats rewards, and gamification
 - **Community-Driven** - Mentorship programs, cohort-based learning, and peer support
 - **Bitcoin-First** - Lightning Network donations, sats-based rewards, and Bitcoin-native features
@@ -359,7 +423,13 @@ Join our community:
 
 ## 📄 License
 
-Educational content - use responsibly. Not financial advice.
+This program is free software: you can redistribute it and/or modify it under the terms of the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0.html) or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html) for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+**Educational content - use responsibly. Not financial advice.**
 
 This project is open source and available for educational purposes. Please use responsibly and do not consider this as financial advice.
 

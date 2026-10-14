@@ -18,7 +18,12 @@ function readStoredLanguage(): SiteLanguage {
   if (typeof window === "undefined") return "en";
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw === "ti" || raw === "en") return raw;
+    if (raw === "ti") {
+      // Tigrinya UI not live yet — default to English and clear stale preference
+      localStorage.setItem(STORAGE_KEY, "en");
+      return "en";
+    }
+    if (raw === "en") return "en";
   } catch {
     /* ignore */
   }

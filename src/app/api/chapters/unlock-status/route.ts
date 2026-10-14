@@ -12,6 +12,53 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Step 0: Check if user is an admin (admins bypass all requirements)
+    const { data: admin } = await supabaseAdmin
+      .from('admins')
+      .select('id, email, role')
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
+
+    const isAdmin = !!admin;
+
+    // If admin, unlock all chapters (1-21)
+    if (isAdmin) {
+      const allChapters: Record<number, { isUnlocked: boolean; isCompleted: boolean }> = {};
+      for (let i = 1; i <= 21; i++) {
+        allChapters[i] = { isUnlocked: true, isCompleted: false };
+      }
+
+      // Check if admin has a profile and get completion status
+      const { data: adminProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', email.toLowerCase().trim())
+        .maybeSingle();
+
+      if (adminProfile) {
+        const { data: chapterProgress } = await supabaseAdmin
+          .from('chapter_progress')
+          .select('chapter_number, is_completed')
+          .eq('student_id', adminProfile.id);
+
+        if (chapterProgress) {
+          chapterProgress.forEach((progress) => {
+            if (allChapters[progress.chapter_number]) {
+              allChapters[progress.chapter_number].isCompleted = progress.is_completed || false;
+            }
+          });
+        }
+      }
+
+      return NextResponse.json({
+        isRegistered: true,
+        isEnrolled: true,
+        isAdmin: true,
+        chapters: allChapters,
+        message: 'Admin access - all chapters unlocked',
+      });
+    }
+
     // Get profile ID
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')

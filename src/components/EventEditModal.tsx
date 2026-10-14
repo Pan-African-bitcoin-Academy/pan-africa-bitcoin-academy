@@ -226,7 +226,7 @@ export function EventEditModal({ isOpen, onClose, event, cohorts, onUpdate }: Ev
           <DatePicker
             label="Start Time"
             value={formData.start_time}
-            onChange={(v: string) => setFormData({ ...formData, start_time: v })}
+            onChange={(v) => setFormData({ ...formData, start_time: v })}
             placeholder="Pick date & time"
             showTime
             required
@@ -235,7 +235,7 @@ export function EventEditModal({ isOpen, onClose, event, cohorts, onUpdate }: Ev
           <DatePicker
             label="End Time (Optional)"
             value={formData.end_time}
-            onChange={(v: string) => setFormData({ ...formData, end_time: v })}
+            onChange={(v) => setFormData({ ...formData, end_time: v })}
             placeholder="Pick end date & time"
             showTime
           />
