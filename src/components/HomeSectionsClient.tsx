@@ -529,7 +529,7 @@ export function HomeSectionsClient({
               {[
                 {
                   title: isTigrinya
-                    ? "ሳይፈርፓንክስ፡ ብሕታዊነት፡ ክሪፕቶግራፊን ቃልሲ ንዲጂታላዊ ናጽነትን"
+                    ? "ሳይፈርፓንክስ፡ ብሕታዊነት፡ ክሪፕቶግራፊን: ቃልሲ ንዲጂታላዊ ናጽነትን"
                     : "The Cypherpunks: Privacy, Cryptography & the Fight for Digital Freedom",
                   subtitle: isTigrinya
                     ? "ብሕታዊነት፡ ክሪፕቶግራፊን ቃልሲ ንዲጂታላዊ ናጽነትን"
@@ -614,7 +614,7 @@ export function HomeSectionsClient({
               </AnimatedHeading>
               <p className="mx-auto mt-4 max-w-xl text-base text-zinc-400 sm:text-lg">
                 {isTigrinya
-                  ? "ትምህርቲ ቢትኮይን ኣብ መላእ ኣፍሪቃ ንምስፋሕ ብዝሰርሑ ውድባት ዝድገፍ።"
+                  ? "ትምህርቲ ቢትኮይን ኣብ መላእ ኣፍሪቃ ንምስፋሕ ብዝሰርሑ ማሕበራት ዝድገፍ።"
                   : "Backed by organizations advancing Bitcoin education across Africa."}
               </p>
             </div>
