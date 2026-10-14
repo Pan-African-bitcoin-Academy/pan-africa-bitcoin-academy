@@ -114,6 +114,19 @@ export function sanitizeName(input: string, maxLength: number = 100): string {
 }
 
 /**
+ * Sanitize name input
+ */
+export function sanitizeName(name: string, maxLength?: number): string {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  const sanitized = name.trim().replace(/[<>{}[\]\\]/g, '');
+  return maxLength ? sanitized.slice(0, maxLength) : sanitized;
+}
+
+
+
+/**
  * Validate email and return normalized version
  */
 export function validateAndNormalizeEmail(email: unknown): {

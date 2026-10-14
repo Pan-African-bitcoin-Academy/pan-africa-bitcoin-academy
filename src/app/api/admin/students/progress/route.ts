@@ -179,6 +179,33 @@ export async function GET(_req: NextRequest) {
       }
     }
 
+    // If we don't have cohort_enrollment data in the query, fetch it separately for profiles that need it
+    const profilesNeedingCohort: string[] = [];
+    profiles.forEach((p: any) => {
+      if (!p.cohort_id && (!p.students || !p.students[0]?.cohort_id) && (!p.cohort_enrollment || p.cohort_enrollment.length === 0)) {
+        profilesNeedingCohort.push(p.id);
+      }
+    });
+
+    // Fetch cohort_enrollment for profiles that don't have cohort info
+    const enrollmentMap = new Map<string, string>(); // profile_id -> cohort_id
+    if (profilesNeedingCohort.length > 0) {
+      try {
+        const { data: enrollments } = await supabaseAdmin
+          .from('cohort_enrollment')
+          .select('student_id, cohort_id')
+          .in('student_id', profilesNeedingCohort);
+        
+        if (enrollments) {
+          enrollments.forEach((e: any) => {
+            enrollmentMap.set(e.student_id, e.cohort_id);
+          });
+        }
+      } catch (enrollmentError) {
+        console.warn('Error fetching cohort enrollments (non-critical):', enrollmentError);
+      }
+    }
+
     // Map profiles to progress data
     const progress = profiles.map((p: any) => {
       const chapterData = p.chapter_progress || [];

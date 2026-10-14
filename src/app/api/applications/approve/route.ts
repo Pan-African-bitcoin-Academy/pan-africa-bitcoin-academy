@@ -9,6 +9,33 @@ import { logAdminAction, AUDIT_ACTIONS } from '@/lib/audit-log';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.com';
 const SETUP_PASSWORD_TOKEN_EXPIRY_HOURS = 72;
 
+/**
+ * APPROVAL FLOW - Transfer Data from Applications to Students & Profiles
+ * 
+ * When admin approves an application:
+ * 1. STEP 1: Create/Register Profile in profiles table (or update if exists)
+ *    - Transfers: name, email, phone, country, city, cohort_id from application
+ *    - Sets status: 'Pending Password Setup' (or 'Active' if password exists)
+ * 
+ * 2. STEP 2: Create/Update Student Record in students table
+ *    - Transfers ALL data from application to students table
+ *    - This is the main data transfer: applications → students
+ *    - Sets status: 'Enrolled'
+ * 
+ * 3. STEP 3: Update Profile from Student Record
+ *    - Syncs profile with student data (students is source of truth)
+ *    - Ensures profile has all latest data
+ * 
+ * 4. STEP 4: Enroll in Cohort
+ *    - Creates cohort_enrollment record
+ * 
+ * 5. STEP 5: Unlock Chapter 1
+ *    - Creates chapter_progress record
+ * 
+ * 6. STEP 6: Update Application Status
+ *    - Sets status to 'Approved'
+ *    - Links application to profile
+ */
 export async function POST(req: NextRequest) {
   try {
     const session = requireAdmin(req);
@@ -85,7 +112,7 @@ export async function POST(req: NextRequest) {
     let profileId: string;
     let isExistingProfile = false;
 
-    const { data: existingProfile } = await supabaseAdmin
+    const { data: existingProfile, error: profileCheckError } = await supabaseAdmin
       .from('profiles')
       .select('id, email, status, cohort_id, phone, country, city, password_hash, email_verified_at, created_at')
       .eq('email', emailLower)
@@ -101,7 +128,7 @@ export async function POST(req: NextRequest) {
       // Link to existing profile (basic profile already exists)
       profileId = existingProfile.id;
       isExistingProfile = true;
-      // Profile will be updated from students data after students record is created/updated
+      console.log('Existing profile found, will update with application data:', profileId);
     } else {
       // Double-check if profile exists (race condition protection)
       const { data: doubleCheckProfile } = await supabaseAdmin
@@ -153,9 +180,9 @@ export async function POST(req: NextRequest) {
 
       const { data: newProfile, error: profileError } = await supabaseAdmin
         .from('profiles')
-        .insert(profileData)
-        .select()
-        .single();
+        .select('id')
+        .eq('email', emailLower)
+        .maybeSingle();
 
       if (profileError || !newProfile) {
         console.error('Error creating profile:', profileError);
@@ -215,6 +242,7 @@ export async function POST(req: NextRequest) {
       .eq('profile_id', profileId) // profileId is now the same as studentIdentifier (application.id)
       .maybeSingle();
 
+    // Transfer ALL data from application to students table
     const studentData: any = {
       profile_id: profileId, // This is the same as studentIdentifier (application.id)
       name: fullName,
@@ -226,6 +254,7 @@ export async function POST(req: NextRequest) {
       learning_pace: application.learning_pace || 'live_cohort',
       preferred_language: application.preferred_language || null,
       status: 'Enrolled', // Student is enrolled after approval
+      // Preserve existing progress data if student record already exists
       progress_percent: existingStudent?.progress_percent || 0,
       assignments_completed: existingStudent?.assignments_completed || 0,
       projects_completed: existingStudent?.projects_completed || 0,
@@ -236,6 +265,12 @@ export async function POST(req: NextRequest) {
     if (!existingStudent) {
       studentData.id = studentIdentifier; // Use application.id as students.id
     }
+
+    console.log('Transferring application data to students table:', {
+      applicationId: application.id,
+      profileId,
+      studentData,
+    });
 
     let studentRecord;
     if (existingStudent) {
@@ -273,32 +308,121 @@ export async function POST(req: NextRequest) {
       studentRecord = newStudent;
     }
 
-    // STEP 3: Update Profile from Students Data (Profile is for display)
-    // Profile gets updated from students database (students is source of truth)
+    // Ensure studentRecord exists
+    if (!studentRecord) {
+      console.error('Student record was not created/updated');
+      return NextResponse.json(
+        { 
+          error: 'Failed to create or update student record', 
+          details: 'Student record is missing after creation/update',
+        },
+        { status: 500 }
+      );
+    }
+
+    // STEP 3: UPDATE PROFILE WITH APPLICATION DATA
+    // Update profile (whether new or existing) with all data from application
+    // This ensures profile database is synced with the application data
+    
+    // Get current profile to check password_hash
+    const { data: currentProfile, error: currentProfileError } = await supabaseAdmin
+      .from('profiles')
+      .select('password_hash, status')
+      .eq('id', profileId)
+      .maybeSingle();
+
+    if (currentProfileError) {
+      console.error('Error fetching current profile:', currentProfileError);
+      return NextResponse.json(
+        { 
+          error: 'Failed to fetch profile for update', 
+          details: currentProfileError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!currentProfile) {
+      console.error('Profile not found for update:', profileId);
+      return NextResponse.json(
+        { 
+          error: 'Profile not found', 
+          details: `Profile with ID ${profileId} does not exist`,
+        },
+        { status: 404 }
+      );
+    }
+
+    // STEP 3: Update Profile with ALL application data
+    // Transfer all data from application to profile (whether new or existing)
     const profileUpdateData: any = {
-      name: studentRecord.name,
-      phone: studentRecord.phone,
-      country: studentRecord.country,
-      city: studentRecord.city,
-      cohort_id: studentRecord.cohort_id,
+      // Transfer all data from application/student record
+      name: fullName, // From application
+      email: emailLower, // From application
+      phone: application.phone || null, // From application
+      country: application.country || null, // From application
+      city: application.city || null, // From application
+      cohort_id: application.preferred_cohort_id || null, // From application
     };
 
     // Update status based on password
-    if (existingProfile?.password_hash) {
+    // If profile already has password, keep it Active, otherwise set to Pending Password Setup
+    if (currentProfile?.password_hash) {
       profileUpdateData.status = 'Active';
     } else {
       profileUpdateData.status = 'Pending Password Setup';
     }
 
-    const { error: profileUpdateError } = await supabaseAdmin
+    console.log('Updating profile with application data:', {
+      profileId,
+      isExistingProfile,
+      updateData: profileUpdateData,
+    });
+
+    const { data: updatedProfile, error: profileUpdateError } = await supabaseAdmin
       .from('profiles')
       .update(profileUpdateData)
-      .eq('id', profileId);
+      .eq('id', profileId)
+      .select()
+      .single();
 
     if (profileUpdateError) {
       console.error('Error updating profile from student data:', profileUpdateError);
-      // Don't fail - profile update is secondary
+      console.error('Profile update data:', profileUpdateData);
+      console.error('Profile ID:', profileId);
+      // This is critical - profile must be updated with student data
+      return NextResponse.json(
+        { 
+          error: 'Failed to update profile with student data', 
+          details: profileUpdateError.message,
+          code: profileUpdateError.code,
+          hint: profileUpdateError.hint,
+          profileId,
+          studentRecordId: studentRecord.id,
+        },
+        { status: 500 }
+      );
     }
+
+    if (!updatedProfile) {
+      console.error('Profile update returned no data - profile may not exist');
+      return NextResponse.json(
+        { 
+          error: 'Failed to update profile - profile not found',
+          details: 'Profile update returned no data. Profile may have been deleted.',
+          profileId,
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log('Profile updated successfully:', {
+      profileId: updatedProfile.id,
+      name: updatedProfile.name,
+      email: updatedProfile.email,
+      cohort_id: updatedProfile.cohort_id,
+      status: updatedProfile.status,
+    });
 
     // STEP 4: Enroll in Cohort (if cohort_id exists in students record)
     if (studentRecord.cohort_id) {
@@ -450,8 +574,56 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Profile status is already updated from students data above
-    // No need for additional update here
+    // Verify both profile and student records were updated
+    const { data: finalProfile, error: finalProfileError } = await supabaseAdmin
+      .from('profiles')
+      .select('id, name, email, cohort_id, status, student_id')
+      .eq('id', profileId)
+      .maybeSingle();
+
+    const { data: finalStudent, error: finalStudentError } = await supabaseAdmin
+      .from('students')
+      .select('id, name, email, cohort_id, status')
+      .eq('profile_id', profileId)
+      .maybeSingle();
+
+    // Log any verification errors (non-critical)
+    if (finalProfileError) {
+      console.warn('Error verifying profile after update:', finalProfileError);
+    }
+    if (finalStudentError) {
+      console.warn('Error verifying student after update:', finalStudentError);
+    }
+
+    console.log('✅ Approval completed - Data Transfer Summary:', {
+      application: {
+        id: application.id,
+        email: application.email,
+        name: fullName,
+      },
+      profile: finalProfile ? {
+        id: finalProfile.id,
+        name: finalProfile.name,
+        email: finalProfile.email,
+        cohort_id: finalProfile.cohort_id,
+        status: finalProfile.status,
+        student_id: finalProfile.student_id,
+        wasExisting: isExistingProfile,
+      } : 'NOT FOUND',
+      student: finalStudent ? {
+        id: finalStudent.id,
+        name: finalStudent.name,
+        email: finalStudent.email,
+        cohort_id: finalStudent.cohort_id,
+        status: finalStudent.status,
+        wasExisting: !!existingStudent,
+      } : 'NOT FOUND',
+      dataTransferred: {
+        from: 'applications table',
+        to: ['profiles table', 'students table'],
+        fields: ['name', 'email', 'phone', 'country', 'city', 'cohort_id'],
+      },
+    });
 
     // Send approval email to student
     let emailSent = false;
@@ -533,6 +705,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message: 'Application approved successfully',
       profileId,
+      studentId: finalStudent?.id || null,
       isExistingProfile,
       needsPasswordSetup: !existingProfile || existingProfile.status === 'Pending Password Setup',
       emailSent,
@@ -542,13 +715,13 @@ export async function POST(req: NextRequest) {
     return res;
   } catch (error: any) {
     console.error('Error approving application:', error);
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
-      },
-      { status: 500 }
-    );
+    const errorResponse: any = {
+      error: 'Internal server error',
+    };
+    if (process.env.NODE_ENV === 'development' && error?.message) {
+      errorResponse.details = error.message;
+    }
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 

@@ -15,6 +15,7 @@ import { getChapterListByTitle } from "@/content/chaptersListContent";
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 
+
 export const metadata: Metadata = {
   title: "Learn Bitcoin - First Eritrea Based Bitcoin Academy",
   description: "PanAfrican Bitcoin Academy (ፓናፍሪካን ቢትኮይን ኣካዳሚ) - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners and the ኤርትራ ቢትኮይን community. Clear lessons, real security, and developer pathways.",

@@ -471,28 +471,28 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              Home
+              {isTi ? "መበገሲ ገጽ" : "Home"}
             </Link>
             <Link
               href="/chapters"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              Chapters
+              {isTi ? "ምዕራፋት" : "Chapters"}
             </Link>
             <Link
               href="/blog"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              Blog
+              {isTi ? "ብሎግ" : "Blog"}
             </Link>
             <Link
               href="/developer-hub"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              Developer Hub
+              {isTi ? "ማእከል ዲቨሎፐር" : "Developer Hub"}
             </Link>
             {!isRegistered && (
             <Link
@@ -500,7 +500,7 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:bg-orange-400/10 touch-target flex items-center"
             >
-              Apply
+              {isTi ? "ኣመልክቱ" : "Apply"}
             </Link>
             )}
             <Link
@@ -515,21 +515,21 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              Impact
+              {isTi ? "ጽልዋ" : "Impact"}
             </Link>
             <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              About
+              {isTi ? "ብዛዕባና" : "About"}
             </Link>
             <Link
               href="/donate"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:from-orange-400/30 active:to-cyan-400/30 touch-target flex items-center"
             >
-              Donate
+              {isTi ? "ሓገዝ ወፍዩ" : "Donate"}
             </Link>
             {isAdminAuth ? (
               <div className="space-y-2 mt-3 border-t border-zinc-700 pt-3">

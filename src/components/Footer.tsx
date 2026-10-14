@@ -1,8 +1,12 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
 import { FooterAnimated } from "@/components/FooterAnimated";
 
 export function Footer() {
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   return (
     <footer className="relative border-t border-cyan-400/15 bg-black/90 backdrop-blur-xl w-full overflow-hidden">
       {/* Large Bitcoin ₿ background watermark */}
