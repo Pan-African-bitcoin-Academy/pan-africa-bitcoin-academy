@@ -10,6 +10,7 @@ import { useSession } from "@/hooks/useSession";
 import { SearchBar } from "./SearchBar";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Lazy load modals - only load when needed (using React.lazy for better code splitting)
 const AuthModal = lazy(() => import("./AuthModal").then(mod => ({ default: mod.AuthModal })));
@@ -37,6 +38,8 @@ export function Navbar() {
   const tabletDropdownRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, profile, isRegistered, loading, logout, showSessionExpired, setShowSessionExpired } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, logout: adminLogout, loading: adminLoading } = useSession('admin');
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   const [logoutLoading, setLogoutLoading] = useState(false);
   
   const handleLogout = async () => {

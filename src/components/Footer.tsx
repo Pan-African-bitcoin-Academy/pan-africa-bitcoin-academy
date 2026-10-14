@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FooterAnimated } from "@/components/FooterAnimated";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Footer() {
   const { language } = useLanguage();

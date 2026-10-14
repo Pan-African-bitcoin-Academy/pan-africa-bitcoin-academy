@@ -75,7 +75,6 @@ export function useAuth() {
 
   return {
     isAuthenticated,
-    isRegistered: isAuthenticated || !!profile,
     profile,
     isRegistered,
     loading,

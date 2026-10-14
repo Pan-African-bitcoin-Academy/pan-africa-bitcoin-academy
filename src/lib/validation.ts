@@ -99,29 +99,17 @@ export function sanitizeName(input: string, maxLength: number = 100): string {
     return '';
   }
 
-  // Allow letters, spaces, hyphens, apostrophes, and basic Unicode
-  let sanitized = input.replace(/[^a-zA-Z\s\-\'\u00C0-\u017F]/g, '');
+  // Remove dangerous characters while supporting international/Ethiopic characters
+  let sanitized = input.trim().replace(/[<>{}[\]\\]/g, '');
   
   // Remove multiple consecutive spaces
   sanitized = sanitized.replace(/\s+/g, ' ');
-  
-  sanitized = sanitized.trim();
-  if (sanitized.length > maxLength) {
-    sanitized = sanitized.substring(0, maxLength);
-  }
-  
-  return sanitized;
-}
 
-/**
- * Sanitize name input
- */
-export function sanitizeName(name: string, maxLength?: number): string {
-  if (typeof name !== 'string') {
-    return '';
+  if (maxLength && sanitized.length > maxLength) {
+    sanitized = sanitized.slice(0, maxLength);
   }
-  const sanitized = name.trim().replace(/[<>{}[\]\\]/g, '');
-  return maxLength ? sanitized.slice(0, maxLength) : sanitized;
+
+  return sanitized;
 }
 
 
