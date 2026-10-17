@@ -4,10 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { FooterAnimated } from "@/components/FooterAnimated";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getHomeCopy } from "@/lib/translations/home";
 
 export function Footer() {
   const { language } = useLanguage();
   const isTi = language === 'ti';
+  const t = getHomeCopy(language);
   return (
     <footer className="relative border-t border-cyan-400/15 bg-black/90 backdrop-blur-xl w-full overflow-hidden">
       {/* Large Bitcoin ₿ background watermark */}
@@ -53,13 +55,13 @@ export function Footer() {
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
-                  Pan-African
+                  {t.footer.brand_line_1}
                 </span>
-                <span className="text-sm font-medium text-zinc-100">₿itcoin Academy</span>
+                <span className="text-sm font-medium text-zinc-100">{t.footer.brand_line_2}</span>
               </div>
             </Link>
             <p className="max-w-xs text-xs leading-relaxed text-zinc-500">
-              Empowering learners across Africa with sound Bitcoin education, one cohort at a time.
+              {t.footer.tagline}
             </p>
 
             {/* Social icons */}
@@ -90,49 +92,48 @@ export function Footer() {
 
           {/* Learn column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>Learn</FooterHeading>
+            <FooterHeading>{t.footer.learn_heading}</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/chapters">Chapters</FooterLink>
-              <FooterLink href="/white_paper">Bitcoin Whitepaper</FooterLink>
-              <FooterLink href="/bitcoin-in-eritrea">Bitcoin in Eritrea</FooterLink>
-              <FooterLink href="/scam">Scam Awareness</FooterLink>
-              <FooterLink href="/developer-hub">Developer Hub</FooterLink>
-              <FooterLink href="/faq">FAQ</FooterLink>
+              <FooterLink href="/chapters">{t.footer.chapters}</FooterLink>
+              <FooterLink href="/white_paper">{t.footer.whitepaper}</FooterLink>
+              <FooterLink href="/bitcoin-in-eritrea">{t.footer.bitcoin_in_eritrea}</FooterLink>
+              <FooterLink href="/scam">{t.footer.scam_awareness}</FooterLink>
+              <FooterLink href="/developer-hub">{t.footer.developer_hub}</FooterLink>
+              <FooterLink href="/faq">{t.footer.faq}</FooterLink>
             </ul>
           </div>
 
           {/* Academy column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>Academy</FooterHeading>
+            <FooterHeading>{t.footer.academy_heading}</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/about">About Us</FooterLink>
-              <FooterLink href="/impact">Impact</FooterLink>
-              <FooterLink href="/mentorship">Join us on mentoring</FooterLink>
-              <FooterLink href="/events">Events</FooterLink>
-              <FooterLink href="/flfl">FLFL Expo 2026</FooterLink>
-              <FooterLink href="/blog">Blog</FooterLink>
+              <FooterLink href="/about">{t.footer.about_us}</FooterLink>
+              <FooterLink href="/impact">{t.footer.impact}</FooterLink>
+              <FooterLink href="/mentorship">{t.footer.mentorship}</FooterLink>
+              <FooterLink href="/events">{t.footer.events}</FooterLink>
+              <FooterLink href="/blog">{t.footer.blog}</FooterLink>
             </ul>
           </div>
 
           {/* Get Involved column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>Get Involved</FooterHeading>
+            <FooterHeading>{t.footer.get_involved_heading}</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/apply">Apply Now</FooterLink>
-              <FooterLink href="/donate">Donate</FooterLink>
-              <FooterLink href="/sponsor">Sponsor</FooterLink>
-              <FooterLink href="/contact">Contact</FooterLink>
-              <FooterLink href="/search">Search</FooterLink>
+              <FooterLink href="/apply">{t.footer.apply_now}</FooterLink>
+              <FooterLink href="/donate">{t.footer.donate}</FooterLink>
+              <FooterLink href="/sponsor">{t.footer.sponsor}</FooterLink>
+              <FooterLink href="/contact">{t.footer.contact}</FooterLink>
+              <FooterLink href="/search">{t.footer.search}</FooterLink>
             </ul>
           </div>
 
           {/* Students column */}
           <div className="footer-block lg:col-span-2">
-            <FooterHeading>Students</FooterHeading>
+            <FooterHeading>{t.footer.students_heading}</FooterHeading>
             <ul className="space-y-1.5 text-xs sm:space-y-2">
-              <FooterLink href="/dashboard">Dashboard</FooterLink>
-              <FooterLink href="/blog/submit">Write a Post</FooterLink>
-              <FooterLink href="/chapters">Start Learning</FooterLink>
+              <FooterLink href="/dashboard">{t.footer.dashboard}</FooterLink>
+              <FooterLink href="/blog/submit">{t.footer.write_post}</FooterLink>
+              <FooterLink href="/chapters">{t.footer.start_learning}</FooterLink>
             </ul>
           </div>
         </div>
@@ -144,18 +145,18 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col gap-3 text-[11px] text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} Pan-African ₿itcoin Academy. Built by{" "}
+            &copy; {new Date().getFullYear()} {t.footer.copyright_text}{" "}
             <a
               href="https://github.com/Joie199"
               target="_blank"
               rel="noreferrer"
               className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
             >
-              Joie
+              {t.footer.built_by_name}
             </a>
           </p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span>Educational only &middot; Not financial advice</span>
+            <span>{t.footer.educational_disclaimer}</span>
             <span className="hidden sm:inline">&middot;</span>
             <a
               href="https://www.gnu.org/licenses/gpl-3.0.html"
@@ -163,7 +164,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="text-zinc-500 hover:text-cyan-400 transition-colors"
             >
-              GPL-3.0 License
+              {t.footer.license}
             </a>
           </div>
         </div>
