@@ -11,6 +11,7 @@ import { SearchBar } from "./SearchBar";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getHomeCopy } from "@/lib/translations/home";
 
 // Lazy load modals - only load when needed (using React.lazy for better code splitting)
 const AuthModal = lazy(() => import("./AuthModal").then(mod => ({ default: mod.AuthModal })));
@@ -40,6 +41,7 @@ export function Navbar() {
   const { isAuthenticated: isAdminAuth, email: adminEmail, logout: adminLogout, loading: adminLoading } = useSession('admin');
   const { language } = useLanguage();
   const isTi = language === 'ti';
+  const t = getHomeCopy(language);
   const [logoutLoading, setLogoutLoading] = useState(false);
   
   const handleLogout = async () => {
@@ -142,9 +144,9 @@ export function Navbar() {
           </div>
           <div className="hidden flex-col leading-tight sm:flex">
             <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
-              Pan-African
+              {t.navbar.brand_line_1}
             </span>
-            <span className="text-xs sm:text-sm font-medium text-zinc-100">Bitcoin Academy</span>
+            <span className="text-xs sm:text-sm font-medium text-zinc-100">{t.navbar.brand_line_2}</span>
           </div>
         </Link>
 
@@ -155,51 +157,51 @@ export function Navbar() {
               href="/chapters"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Chapters
+              {t.navbar.chapters}
             </Link>
             <Link
               href="/blog"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Blog
+              {t.navbar.blog}
             </Link>
             <Link
               href="/developer-hub"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Developer Hub
+              {t.navbar.developer_hub}
             </Link>
             {!isRegistered && (
               <Link
                 href="/apply"
                 className="rounded-full px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
               >
-                Apply
+                {t.navbar.apply}
               </Link>
             )}
             <Link
               href="/mentorship"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Mentoring
+              {t.navbar.mentorship}
             </Link>
             <Link
               href="/impact"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Impact
+              {t.navbar.impact}
             </Link>
             <Link
               href="/about"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              About
+              {t.navbar.about}
             </Link>
             <Link
               href="/donate"
               className="rounded-full bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:from-orange-400/30 hover:to-cyan-400/30"
             >
-              Donate
+              {t.navbar.donate}
             </Link>
           </nav>
           <div className="flex shrink-0 items-center gap-1.5 border-l border-cyan-400/25 pl-2 sm:gap-2 sm:pl-3">
@@ -295,7 +297,7 @@ export function Navbar() {
                 }}
                 className="rounded-full bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-2.5 py-1.5 text-sm font-medium text-orange-300 transition hover:from-orange-500/30 hover:to-cyan-500/30"
               >
-                Sign In
+                {t.navbar.sign_in}
               </button>
             )}
             <SearchBar />
@@ -309,33 +311,33 @@ export function Navbar() {
               href="/chapters"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Chapters
+              {t.navbar.chapters}
             </Link>
             <Link
               href="/developer-hub"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Dev Hub
+              {t.navbar.developer_hub_short}
             </Link>
             {!isRegistered && (
               <Link
                 href="/apply"
                 className="rounded-full px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
               >
-                Apply
+                {t.navbar.apply}
               </Link>
             )}
             <Link
               href="/impact"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
-              Impact
+              {t.navbar.impact}
             </Link>
             <Link
               href="/donate"
               className="rounded-full bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:from-orange-400/30 hover:to-cyan-400/30"
             >
-              Donate
+              {t.navbar.donate}
             </Link>
           </nav>
           <div className="flex shrink-0 items-center gap-1.5 border-l border-cyan-400/25 pl-2 sm:pl-3">
@@ -437,7 +439,7 @@ export function Navbar() {
                 }}
                 className="rounded-full bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:from-orange-500/30 hover:to-cyan-500/30"
               >
-                Sign In
+                {t.navbar.sign_in}
               </button>
             )}
             <SearchBar />
@@ -465,7 +467,7 @@ export function Navbar() {
             <div className="mb-3 flex flex-col gap-3 sm:mb-4">
               <SearchBar />
               <div className="flex items-center justify-between gap-3 rounded-lg border border-cyan-400/20 bg-cyan-400/5 px-3 py-2">
-                <span className="text-sm text-zinc-400">Language</span>
+                <span className="text-sm text-zinc-400">{t.navbar.language}</span>
                 <LanguageSwitcher compact />
               </div>
             </div>
@@ -474,28 +476,28 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              {isTi ? "መበገሲ ገጽ" : "Home"}
+              {t.navbar.home}
             </Link>
             <Link
               href="/chapters"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              {isTi ? "ምዕራፋት" : "Chapters"}
+              {t.navbar.chapters}
             </Link>
             <Link
               href="/blog"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              {isTi ? "ብሎግ" : "Blog"}
+              {t.navbar.blog}
             </Link>
             <Link
               href="/developer-hub"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              {isTi ? "ማእከል ዲቨሎፐር" : "Developer Hub"}
+              {t.navbar.developer_hub}
             </Link>
             {!isRegistered && (
             <Link
@@ -503,7 +505,7 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:bg-orange-400/10 touch-target flex items-center"
             >
-              {isTi ? "ተመዝገቡ" : "Apply"}
+              {t.navbar.apply}
             </Link>
             )}
             <Link
@@ -511,28 +513,28 @@ export function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              Mentoring
+              {t.navbar.mentorship}
             </Link>
             <Link
               href="/impact"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              {isTi ? "ጽልዋ" : "Impact"}
+              {t.navbar.impact}
             </Link>
             <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
-              {isTi ? "ብዛዕባና" : "About"}
+              {t.navbar.about}
             </Link>
             <Link
               href="/donate"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:from-orange-400/30 active:to-cyan-400/30 touch-target flex items-center"
             >
-              {isTi ? "ሓገዝ ወፍዩ" : "Donate"}
+              {t.navbar.donate}
             </Link>
             {isAdminAuth ? (
               <div className="space-y-2 mt-3 border-t border-zinc-700 pt-3">
