@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getHomeCopy } from '@/lib/translations/home';
 
 const DURATION_MS = 2000;
 
@@ -20,6 +22,8 @@ export function ImpactStatsCountUp({
   satsRewarded,
   countriesRepresented,
 }: ImpactStatsCountUpProps) {
+  const { language } = useLanguage();
+  const t = getHomeCopy(language);
   const [displayStudents, setDisplayStudents] = useState(0);
   const [displaySatsK, setDisplaySatsK] = useState(0);
   const [displayCountries, setDisplayCountries] = useState(0);
@@ -83,10 +87,10 @@ export function ImpactStatsCountUp({
     >
       <div className="flex flex-col items-center text-center">
         <h2 className="mb-4 text-3xl font-semibold text-orange-200 sm:text-4xl lg:text-5xl">
-          Our Impact
+          {t.impact.heading}
         </h2>
         <p className="mx-auto mb-12 max-w-xl text-base text-zinc-400 sm:text-lg">
-          Real numbers from our Bitcoin education programs across Africa.
+          {t.impact.subheading}
         </p>
 
         <div className="grid w-full max-w-4xl gap-8 sm:grid-cols-3 sm:gap-10">
@@ -94,19 +98,25 @@ export function ImpactStatsCountUp({
             <div className="text-5xl font-bold text-orange-400 sm:text-6xl tabular-nums">
               {displayStudents}
             </div>
-            <div className="mt-3 text-base text-zinc-400">Students trained</div>
+            <div className="mt-3 text-base text-zinc-400">
+              {t.impact.stats[0]?.label || "Students trained"}
+            </div>
           </div>
           <div className="flex flex-col items-center text-center">
             <div className="text-5xl font-bold text-orange-400 sm:text-6xl tabular-nums">
               {displaySatsK}K+
             </div>
-            <div className="mt-3 text-base text-zinc-400">Sats rewarded</div>
+            <div className="mt-3 text-base text-zinc-400">
+              {t.impact.stats[1]?.label || "Sats rewarded"}
+            </div>
           </div>
           <div className="flex flex-col items-center text-center">
             <div className="text-5xl font-bold text-orange-400 sm:text-6xl tabular-nums">
               {displayCountries}
             </div>
-            <div className="mt-3 text-base text-zinc-400">Countries represented</div>
+            <div className="mt-3 text-base text-zinc-400">
+              {t.impact.stats[2]?.label || "Countries represented"}
+            </div>
           </div>
         </div>
 
@@ -115,7 +125,7 @@ export function ImpactStatsCountUp({
             href="/impact"
             className="inline-flex items-center justify-center rounded-xl border border-orange-400/40 bg-orange-500/10 px-6 py-3.5 text-base font-semibold text-orange-300 transition hover:bg-orange-500/20 hover:border-orange-400/60"
           >
-            See Our Impact Dashboard
+            {t.impact.cta}
           </Link>
         </div>
       </div>
