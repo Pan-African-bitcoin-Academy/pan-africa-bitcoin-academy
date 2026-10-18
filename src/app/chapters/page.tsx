@@ -13,6 +13,8 @@ import { AnimatedList } from "@/components/AnimatedList";
 import { SyllabusModal } from "@/components/SyllabusModal";
 import SplitText from "@/components/SplitText";
 import { chaptersList as chapters } from "@/content/chaptersListContent";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getChaptersCopy } from "@/lib/translations/chapters";
 import type { Metadata } from "next";
 
 // Note: Metadata cannot be exported from client components
@@ -188,6 +190,8 @@ export default function ChaptersPage() {
   const [isSyllabusOpen, setIsSyllabusOpen] = useState(false);
   const { isAuthenticated, profile, loading } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
+  const { language } = useLanguage();
+  const t = getChaptersCopy(language);
   const router = useRouter();
 
   useEffect(() => {
@@ -254,8 +258,23 @@ export default function ChaptersPage() {
 
     if (!isChapterUnlocked(chapterNumber)) {
       // Show message or redirect
-      alert(`Please complete Chapter ${chapterNumber - 1} first to unlock this chapter.`);
+      const prevChapter = chapterNumber - 1;
+      const alertMsg = t.chapter_card.alert_locked.replace('{prev}', String(prevChapter));
+      alert(alertMsg);
       return;
+    }
+  };
+
+  const getDifficultyLabel = (difficulty: string) => {
+    switch (difficulty) {
+      case "Beginner":
+        return t.difficulty.beginner;
+      case "Intermediate":
+        return t.difficulty.intermediate;
+      case "Advanced":
+        return t.difficulty.advanced;
+      default:
+        return difficulty;
     }
   };
 
@@ -307,7 +326,7 @@ export default function ChaptersPage() {
                 className="text-4xl font-extrabold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl leading-[1.15] pb-1"
               >
                 <SplitText
-                  text="Learning Path"
+                  text={t.hero.heading}
                   tag="span"
                   className="inline-block align-top"
                   delay={50}
@@ -324,23 +343,23 @@ export default function ChaptersPage() {
               <div className="mx-auto mt-8 max-w-4xl">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-xl sm:text-2xl lg:text-3xl font-semibold">
                   <div className="flex items-center gap-3 text-cyan-300">
-                    <span>Bitcoin Foundations</span>
+                    <span>{t.hero.path_labels.foundations}</span>
                   </div>
                   <span className="text-orange-400 text-2xl sm:text-3xl">→</span>
                   <div className="flex items-center gap-3 text-orange-300">
-                    <span>Lightning</span>
+                    <span>{t.hero.path_labels.lightning}</span>
                   </div>
                   <span className="text-purple-400 text-2xl sm:text-3xl">→</span>
                   <div className="flex items-center gap-3 text-purple-300">
-                    <span>Sovereignty</span>
+                    <span>{t.hero.path_labels.sovereignty}</span>
                   </div>
                 </div>
               </div>
               <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
-                Follow the lessons in order—complete each chapter to unlock the next.
+                {t.hero.description_1}
               </p>
               <p className="mx-auto mt-2 max-w-3xl text-base text-zinc-400">
-                Each chapter includes diagrams, real examples, assignments, and a quick quiz.
+                {t.hero.description_2}
               </p>
             </div>
           </AnimatedSection>
@@ -349,7 +368,7 @@ export default function ChaptersPage() {
           <AnimatedSection animation="slideRight">
             <div className="mb-16 rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
             <AnimatedHeading as="h2" className="mb-6 text-center text-xl font-semibold text-cyan-200">
-              Your Progress Through the Levels
+              {t.progress_bar.heading}
             </AnimatedHeading>
             {/* Aligned grid-cols-3: circles + paths share the same columns as Level + theme below */}
             <div className="w-full space-y-4 px-0 sm:px-1">
@@ -430,6 +449,7 @@ export default function ChaptersPage() {
               </div>
               <div className="grid w-full grid-cols-3 divide-x divide-zinc-700/50">
                 {levels.map((level) => {
+                  const translatedLevel = t.levels.find((l) => l.id === level.id);
                   const themeClass =
                     level.color === "cyan"
                       ? "text-cyan-200"
@@ -442,10 +462,10 @@ export default function ChaptersPage() {
                       className="flex min-w-0 flex-col items-center gap-2 px-2 py-1 text-center sm:px-4"
                     >
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 sm:text-xs">
-                        Level {level.roman}
+                        {t.progress_bar.level_label} {level.roman}
                       </div>
                       <div className={`text-xs font-semibold leading-snug sm:text-sm ${themeClass}`}>
-                        {level.theme}
+                        {translatedLevel?.theme || level.theme}
                       </div>
                     </div>
                   );
@@ -817,9 +837,9 @@ export default function ChaptersPage() {
           {/* Study Materials */}
           <div className="mb-16">
             <AnimatedSection animation="slideUp">
-              <AnimatedHeading as="h2" className="mb-3 text-2xl font-semibold text-orange-300 sm:text-3xl">Study Materials</AnimatedHeading>
+              <AnimatedHeading as="h2" className="mb-3 text-2xl font-semibold text-orange-300 sm:text-3xl">{t.study_materials.heading}</AnimatedHeading>
               <p className="mb-8 text-base text-zinc-300 sm:text-lg">
-                Download essential Bitcoin resources and books to deepen your understanding:
+                {t.study_materials.description}
               </p>
             </AnimatedSection>
             <div className="hidden mb-6 space-y-2">
@@ -886,6 +906,15 @@ export default function ChaptersPage() {
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {studyMaterials.map((material, index) => {
+                // Merge static link/id data with translated text
+                const translated = t.study_materials.items.find((i) => i.id === material.id);
+                const displayTitle = translated?.title || material.title;
+                const displayAuthor = translated?.author || material.author;
+                const displayLabel = translated?.label || material.label;
+                const displayDescription = translated?.description || material.description;
+                const displayAction = translated?.action || material.action;
+                const displayPageLabel = (translated as { page_label?: string } | undefined)?.page_label || material.pageLabel;
+
                 const isOpen = expandedStudyMaterial === material.id;
                 const accentClasses = [
                   'border-orange-400/30 text-orange-300 bg-orange-500/10',
@@ -915,25 +944,25 @@ export default function ChaptersPage() {
                         <div className="min-w-0 flex-1">
                           <div className="mb-1 flex items-center gap-2">
                             <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${accent}`}>
-                              {material.label}
+                              {displayLabel}
                             </span>
                           </div>
-                          <p className="line-clamp-2 text-lg font-semibold text-zinc-100 sm:text-[1.1rem]">{material.title}</p>
-                          <p className="mt-1 text-[11px] text-zinc-400 sm:text-[12px]">{material.author}</p>
+                          <p className="line-clamp-2 text-lg font-semibold text-zinc-100 sm:text-[1.1rem]">{displayTitle}</p>
+                          <p className="mt-1 text-[11px] text-zinc-400 sm:text-[12px]">{displayAuthor}</p>
                         </div>
                         <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                       </button>
 
                       {isOpen && (
                         <div className="border-t border-zinc-800/80 px-3 py-3">
-                          <p className="mb-3 text-sm leading-relaxed text-zinc-300 sm:text-[0.95rem]">{material.description}</p>
+                          <p className="mb-3 text-sm leading-relaxed text-zinc-300 sm:text-[0.95rem]">{displayDescription}</p>
                           <div className="flex flex-wrap gap-2">
                             {material.pageHref ? (
                               <Link
                                 href={material.pageHref}
                                 className="inline-flex items-center gap-1 rounded-md border border-cyan-400/35 bg-cyan-500/10 px-2.5 py-1.5 text-[12px] font-medium text-cyan-200 transition hover:bg-cyan-500/20 sm:text-sm"
                               >
-                                {material.pageLabel || 'Read'}
+                                {displayPageLabel || 'Read'}
                               </Link>
                             ) : null}
                             {isInternalLink ? (
@@ -941,7 +970,7 @@ export default function ChaptersPage() {
                                 href={material.href}
                                 className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-[12px] font-medium text-zinc-200 transition hover:border-zinc-500 sm:text-sm"
                               >
-                                {material.action}
+                                {displayAction}
                                 <ExternalLink className="h-3.5 w-3.5" />
                               </Link>
                             ) : (
@@ -951,7 +980,7 @@ export default function ChaptersPage() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900/80 px-2.5 py-1.5 text-[12px] font-medium text-zinc-200 transition hover:border-zinc-500 sm:text-sm"
                               >
-                                {material.action}
+                                {displayAction}
                                 <ExternalLink className="h-3.5 w-3.5" />
                               </a>
                             )}
@@ -968,6 +997,10 @@ export default function ChaptersPage() {
           {/* Chapters by Level */}
           {levels.map((level, levelIndex) => {
             const levelChapters = getLevelChapters(level.id);
+            const translatedLevel = t.levels.find((l) => l.id === level.id);
+            const levelTheme = translatedLevel?.theme || level.theme;
+            const levelDescription = translatedLevel?.description || level.description;
+
             // Level I (index 0) slides from left, Level II (index 1) from right, Level III (index 2) from left
             const animationType = levelIndex === 0 ? 'slideLeft' : levelIndex === 1 ? 'slideRight' : 'slideLeft';
             const levelHeadingAccent =
@@ -991,18 +1024,18 @@ export default function ChaptersPage() {
                     as="h2"
                     className="text-3xl font-semibold tracking-tight text-zinc-100 sm:text-4xl"
                   >
-                    <span className="text-zinc-400">Level {level.roman}</span>
+                    <span className="text-zinc-400">{t.progress_bar.level_label} {level.roman}</span>
                     <span className="mx-2 text-zinc-600 sm:mx-3" aria-hidden>
                       —
                     </span>
-                    <span className={levelHeadingAccent}>{level.theme}</span>
+                    <span className={levelHeadingAccent}>{levelTheme}</span>
                   </AnimatedHeading>
                   <div
                     className={`mt-4 h-px w-16 rounded-full bg-gradient-to-r ${levelIntroBar} to-transparent`}
                     aria-hidden
                   />
                   <p className="mt-4 text-base leading-relaxed text-zinc-300 sm:text-lg">
-                    {level.description}
+                    {levelDescription}
                   </p>
                 </div>
 
@@ -1021,14 +1054,14 @@ export default function ChaptersPage() {
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-medium text-cyan-300">
-                                Chapter {chapter.number}
+                                {t.chapter_card.chapter_label} {chapter.number}
                               </span>
                               <span
                                 className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${getDifficultyColor(
                                   chapter.difficulty
                                 )}`}
                               >
-                                {chapter.difficulty}
+                                {getDifficultyLabel(chapter.difficulty)}
                               </span>
                             </div>
                             <AnimatedHeading as="h3" className="mt-1 text-lg font-semibold text-zinc-50 group-hover:text-cyan-100">
@@ -1049,7 +1082,7 @@ export default function ChaptersPage() {
 
                       {/* What You Will Learn */}
                       <div className="mb-4">
-                        <p className="mb-2 text-xs font-medium text-zinc-400">You will learn:</p>
+                        <p className="mb-2 text-xs font-medium text-zinc-400">{t.chapter_card.you_will_learn}:</p>
                         <ul className="space-y-1 text-xs text-zinc-300">
                           {chapter.learnPoints.slice(0, 3).map((point, idx) => (
                             <li key={idx} className="flex items-start gap-2">
@@ -1058,7 +1091,7 @@ export default function ChaptersPage() {
                             </li>
                           ))}
                           {chapter.learnPoints.length > 3 && (
-                            <li className="text-cyan-400">+ {chapter.learnPoints.length - 3} more</li>
+                            <li className="text-cyan-400">+ {chapter.learnPoints.length - 3} {t.chapter_card.more_points}</li>
                           )}
                         </ul>
                       </div>
@@ -1067,7 +1100,7 @@ export default function ChaptersPage() {
                       {chapter.activities.length > 0 && (
                         <div className="mb-4">
                           <span className="inline-flex items-center gap-1 rounded-lg bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
-                            <ToolIcon className="w-3 h-3" /> {chapter.activities.length} {chapter.activities.length === 1 ? "Activity" : "Activities"}
+                            <ToolIcon className="w-3 h-3" /> {chapter.activities.length} {chapter.activities.length === 1 ? t.chapter_card.activity_singular : t.chapter_card.activity_plural}
                           </span>
                         </div>
                       )}
@@ -1079,14 +1112,14 @@ export default function ChaptersPage() {
                         }
                         className="mb-4 w-full rounded-lg border border-cyan-400/20 bg-cyan-400/5 px-3 py-2 text-xs font-medium text-cyan-300 transition hover:bg-cyan-400/10"
                       >
-                        {expandedChapter === chapter.id ? "Hide" : "Show"} What&apos;s Inside ↓
+                        {expandedChapter === chapter.id ? t.chapter_card.hide_whats_inside : t.chapter_card.show_whats_inside}
                       </button>
 
                       {/* What&apos;s Inside Content */}
                       {expandedChapter === chapter.id && (
                         <div className="mb-4 space-y-3 rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-4 text-xs">
                           <div>
-                            <p className="mb-1 font-medium text-cyan-200">📘 Theory:</p>
+                            <p className="mb-1 font-medium text-cyan-200">{t.chapter_card.theory_label}</p>
                             <ul className="ml-4 list-disc space-y-1 text-zinc-400">
                               {chapter.theory.map((item, idx) => (
                                 <li key={idx}>{item}</li>
@@ -1094,7 +1127,7 @@ export default function ChaptersPage() {
                             </ul>
                           </div>
                           <div>
-                            <p className="mb-1 font-medium text-orange-200">🛠 Practice:</p>
+                            <p className="mb-1 font-medium text-orange-200">{t.chapter_card.practice_label}</p>
                             <ul className="ml-4 list-disc space-y-1 text-zinc-400">
                               {chapter.practice.map((item, idx) => (
                                 <li key={idx}>{item}</li>
@@ -1102,11 +1135,11 @@ export default function ChaptersPage() {
                             </ul>
                           </div>
                           <div>
-                            <p className="mb-1 font-medium text-purple-200">🎥 Live Session:</p>
+                            <p className="mb-1 font-medium text-purple-200">{t.chapter_card.live_session_label}</p>
                             <p className="ml-4 text-zinc-400">{chapter.LiveSession}</p>
                           </div>
                           <div>
-                            <p className="mb-1 font-medium text-cyan-200">Quiz:</p>
+                            <p className="mb-1 font-medium text-cyan-200">{t.chapter_card.quiz_label}</p>
                             <p className="ml-4 text-zinc-400">{chapter.quiz}</p>
                           </div>
                         </div>
@@ -1117,15 +1150,15 @@ export default function ChaptersPage() {
                         <div className="mb-3">
                           {isChapterCompleted(chapter.number) ? (
                             <span className="inline-flex items-center gap-1 rounded-lg bg-green-500/20 px-2 py-1 text-[10px] font-medium text-green-300">
-                              ✓ Completed
+                              {t.chapter_card.status_completed}
                             </span>
                           ) : isChapterUnlocked(chapter.number) ? (
                             <span className="inline-flex items-center gap-1 rounded-lg bg-orange-500/20 px-2 py-1 text-[10px] font-medium text-orange-300">
-                              🔓 Unlocked
+                              {t.chapter_card.status_unlocked}
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-500/20 px-2 py-1 text-[10px] font-medium text-zinc-400">
-                              🔒 Locked
+                              {t.chapter_card.status_locked}
                             </span>
                           )}
                         </div>
@@ -1137,7 +1170,7 @@ export default function ChaptersPage() {
                           href={`/chapters/${generateSlug(chapter.title)}`}
                           className="block w-full rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-4 py-2 text-center text-sm font-semibold text-black transition hover:brightness-110"
                         >
-                          {isChapterCompleted(chapter.number) ? 'Review Chapter →' : 'View Chapter →'}
+                          {isChapterCompleted(chapter.number) ? t.chapter_card.cta_review : t.chapter_card.cta_view}
                         </Link>
                       ) : (isAuthenticated && profile) ? (
                         <button
@@ -1145,14 +1178,14 @@ export default function ChaptersPage() {
                           className="block w-full rounded-lg bg-zinc-700/50 px-4 py-2 text-center text-sm font-semibold text-zinc-400 cursor-not-allowed"
                           disabled
                         >
-                          🔒 Locked
+                          {t.chapter_card.status_locked}
                         </button>
                       ) : (
                         <Link
                           href="/apply?redirect=/chapters"
                           className="block w-full rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-4 py-2 text-center text-sm font-semibold text-black transition hover:brightness-110"
                         >
-                          Register to Access →
+                          {t.chapter_card.cta_register}
                         </Link>
                       )}
                     </div>
@@ -1166,12 +1199,12 @@ export default function ChaptersPage() {
           {/* Coming Soon Section */}
           <AnimatedSection animation="slideUp">
             <div className="mb-16 rounded-xl border border-purple-500/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
-            <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-purple-200">Coming Soon</AnimatedHeading>
+            <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-purple-200">{t.coming_soon.heading}</AnimatedHeading>
             <p className="mb-4 text-sm text-zinc-300">
-              We&apos;re constantly expanding our curriculum. Here&apos;s what&apos;s coming next:
+              {t.coming_soon.description}
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {comingSoon.map((item, idx) => (
+              {t.coming_soon.items.map((item, idx) => (
                 <div
                   key={idx}
                   className="flex items-center gap-2 rounded-lg border border-purple-400/20 bg-purple-500/10 px-4 py-2"
@@ -1186,19 +1219,19 @@ export default function ChaptersPage() {
           {/* Footer CTA */}
           <AnimatedSection animation="slideRight">
             <div className="rounded-xl border border-orange-500/25 bg-black/80 p-8 text-center shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-            <AnimatedHeading as="h2" className="mb-4 text-2xl font-semibold text-orange-200">Ready to start learning?</AnimatedHeading>
+            <AnimatedHeading as="h2" className="mb-4 text-2xl font-semibold text-orange-200">{t.footer_cta.heading}</AnimatedHeading>
             <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/apply"
                 className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3 text-base font-semibold text-black transition hover:brightness-110"
               >
-                🔸 Join our course
+                {t.footer_cta.cta_join}
               </Link>
               <button
                 onClick={() => setIsSyllabusOpen(true)}
                 className="inline-flex items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3 text-base font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
               >
-                🔸 Download the Syllabus
+                {t.footer_cta.cta_syllabus}
               </button>
               <a
                 href="https://chat.whatsapp.com/KpjlC90BGIj1EChMHsW6Ji"
@@ -1206,7 +1239,7 @@ export default function ChaptersPage() {
                 rel="noreferrer"
                 className="inline-flex items-center justify-center rounded-lg border border-green-400/30 bg-green-400/10 px-6 py-3 text-base font-semibold text-green-300 transition hover:bg-green-400/20"
               >
-                🔸 Join WhatsApp Community
+                {t.footer_cta.cta_whatsapp}
               </a>
             </div>
             </div>

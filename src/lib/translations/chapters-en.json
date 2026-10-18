@@ -1,0 +1,183 @@
+{
+  "hero": {
+    "heading": "Learning Path",
+    "path_labels": {
+      "foundations": "Bitcoin Foundations",
+      "lightning": "Lightning",
+      "sovereignty": "Sovereignty"
+    },
+    "description_1": "Follow the lessons in order—complete each chapter to unlock the next.",
+    "description_2": "Each chapter includes diagrams, real examples, assignments, and a quick quiz."
+  },
+  "progress_bar": {
+    "heading": "Your Progress Through the Levels",
+    "level_label": "Level"
+  },
+  "levels": [
+    {
+      "id": 1,
+      "name": "Level I — Genesis",
+      "theme": "Genesis",
+      "description": "Why money breaks down today, what Bitcoin changes, and your first concrete steps—wallets, keys, and using the network with confidence."
+    },
+    {
+      "id": 2,
+      "name": "Level II — Difficulty Adjustment",
+      "theme": "Difficulty Adjustment",
+      "description": "How mining and the difficulty adjustment secure the chain, plus security habits and practical skills you can apply in real situations."
+    },
+    {
+      "id": 3,
+      "name": "Level III — Advanced Sovereignty",
+      "theme": "Advanced Sovereignty",
+      "description": "Deep verification, custody models, and collaborative setups—full control of your rules without having to go it alone."
+    }
+  ],
+  "study_materials": {
+    "heading": "Study Materials",
+    "description": "Download essential Bitcoin resources and books to deepen your understanding:",
+    "items": [
+      {
+        "id": "bitcoin-whitepaper-en",
+        "title": "Bitcoin: A Peer-to-Peer Electronic Cash System (English)",
+        "author": "Satoshi Nakamoto (2008)",
+        "label": "PDF",
+        "description": "The original white paper that started it all. Essential reading for understanding Bitcoin's core design.",
+        "action": "Download"
+      },
+      {
+        "id": "bitcoin-whitepaper-tigrigna",
+        "title": "ቢትኮይን፡ ስርዓት ናይ መዘና-ናብ-መዘና ኤሌክትሮኒካዊ ገንዘብ",
+        "author": "ትግርኛ ትርጉም (Pan-African Bitcoin Academy)",
+        "label": "PDF (Tigrigna)",
+        "description": "Tigrigna translation of the Bitcoin whitepaper for Eritrean learners and native Tigrigna readers.",
+        "action": "Open PDF",
+        "page_label": "Read"
+      },
+      {
+        "id": "little-bitcoin-book",
+        "title": "The Little Bitcoin Book",
+        "author": "Bitcoin Collective (2019)",
+        "label": "Free",
+        "description": "A simple, beginner-friendly introduction to Bitcoin that explains why it matters for sovereignty and self-custody.",
+        "action": "Read Online"
+      },
+      {
+        "id": "mastering-bitcoin",
+        "title": "Mastering Bitcoin",
+        "author": "Andreas M. Antonopoulos",
+        "label": "Free (GitHub)",
+        "description": "Comprehensive technical guide to Bitcoin for developers, engineers, and technically-minded individuals.",
+        "action": "Access"
+      },
+      {
+        "id": "bitcoin-standard",
+        "title": "The Bitcoin Standard",
+        "author": "Saifedean Ammous (2018)",
+        "label": "Book",
+        "description": "Economic analysis of Bitcoin's origins, monetary properties, and its potential impact on the global economy.",
+        "action": "Learn More"
+      },
+      {
+        "id": "bitcoin-africa",
+        "title": "Bitcoin Africa: Guide to Freedom Money",
+        "author": "African Bitcoiners (2nd Edition)",
+        "label": "Free PDF",
+        "description": "A practical Africa-focused Bitcoin guide covering financial freedom, self-custody, and real-world use.",
+        "action": "Download PDF"
+      },
+      {
+        "id": "programming-bitcoin",
+        "title": "Programming Bitcoin",
+        "author": "Jimmy Song (2019)",
+        "label": "Free (GitHub)",
+        "description": "Learn Bitcoin by programming it from scratch. Build Bitcoin libraries in Python step by step.",
+        "action": "Access"
+      },
+      {
+        "id": "layered-money",
+        "title": "Layered Money",
+        "author": "Nik Bhatia (2021)",
+        "label": "Book",
+        "description": "Explains the evolution of money through different layers and why Bitcoin represents a new monetary layer.",
+        "action": "Learn More"
+      },
+      {
+        "id": "little-bitcoin-book-tigrigna",
+        "title": "The Little Book of Bitcoin in Tigrigna",
+        "author": "ትግርኛ ትርጉም",
+        "label": "PDF (Tigrigna)",
+        "description": "A simple, beginner-friendly introduction to Bitcoin translated into Tigrigna, explaining why it matters for sovereignty and self-custody.",
+        "action": "Download"
+      },
+      {
+        "id": "bitcoin-development-philosophy",
+        "title": "Bitcoin Development Philosophy",
+        "author": "Kalle Rosenbaum & Linnéa Rosenbaum",
+        "label": "Free (Online)",
+        "description": "A guide for Bitcoin developers covering decentralization, trustlessness, privacy, scaling, and the philosophy behind Bitcoin's design trade-offs.",
+        "action": "Read Online"
+      },
+      {
+        "id": "understanding-bitcoin-scams",
+        "title": "Understanding Bitcoin Scams",
+        "author": "Pan-Africa Bitcoin Academy",
+        "label": "Guide",
+        "description": "Learn to recognize and avoid investment scams, impersonation, phishing, and malware. Essential reading to protect yourself.",
+        "action": "Read"
+      },
+      {
+        "id": "exonumia-africa",
+        "title": "Exonumia Africa",
+        "author": "Localized African Bitcoin learning resources",
+        "label": "Free (Online)",
+        "description": "Explore Bitcoin education resources in multiple African languages and countries.",
+        "action": "Visit"
+      }
+    ]
+  },
+  "chapter_card": {
+    "chapter_label": "Chapter",
+    "you_will_learn": "You will learn:",
+    "more_points": "+ {count} more",
+    "activity_singular": "Activity",
+    "activity_plural": "Activities",
+    "show_whats_inside": "Show What's Inside ↓",
+    "hide_whats_inside": "Hide What's Inside ↓",
+    "theory_label": "📘 Theory:",
+    "practice_label": "🛠 Practice:",
+    "live_session_label": "🎥 Live Session:",
+    "quiz_label": "Quiz:",
+    "status_completed": "✓ Completed",
+    "status_unlocked": "🔓 Unlocked",
+    "status_locked": "🔒 Locked",
+    "cta_review": "Review Chapter →",
+    "cta_view": "View Chapter →",
+    "cta_register": "Register to Access →",
+    "alert_locked": "Please complete Chapter {prev} first to unlock this chapter."
+  },
+  "coming_soon": {
+    "heading": "Coming Soon",
+    "description": "We're constantly expanding our curriculum. Here's what's coming next:",
+    "items": [
+      "Deep dive into nodes",
+      "Self-custody advanced",
+      "CBDCs vs Bitcoin",
+      "Bitcoin for entrepreneurs",
+      "Satoshi-level coding intro",
+      "Formally verified assignments",
+      "Lightning developer path"
+    ]
+  },
+  "footer_cta": {
+    "heading": "Ready to start learning?",
+    "cta_join": "🔸 Join our course",
+    "cta_syllabus": "🔸 Download the Syllabus",
+    "cta_whatsapp": "🔸 Join WhatsApp Community"
+  },
+  "difficulty": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  }
+}

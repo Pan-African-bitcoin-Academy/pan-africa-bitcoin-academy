@@ -1,0 +1,183 @@
+{
+  "hero": {
+    "heading": "መንገዲ ትምህርቲ",
+    "path_labels": {
+      "foundations": "መሰረታት Bitcoin",
+      "lightning": "ላይትኒንግ",
+      "sovereignty": "ርእሰ-ምቁጽጻር"
+    },
+    "description_1": "ትምህርትታት ብቅደም ተኸተል ተኸታተል። ነፍሲ ወከፍ ምዕራፍ ዛዚምካ፡ ነቲ ዝቕጽል ክፈት።",
+    "description_2": "ነፍሲ ወከፍ ምዕራፍ ስእላዊ መግለጺታት፣ ኣብ ናይ ሓቂ ኩነታት ዝተመርኮሱ ኣብነታት፣ ዕማማትን ሓጺር ፈተናን የጠቓልል።"
+  },
+  "progress_bar": {
+    "heading": "ምዕባለኻ ኣብ ደረጃታት",
+    "level_label": "ደረጃ"
+  },
+  "levels": [
+    {
+      "id": 1,
+      "name": "ደረጃ I — Genesis (መበገሲ)",
+      "theme": "Genesis",
+      "description": "ስርዓት ገንዘብ ሎሚ ስለምንታይ ከም ዝዳኸም፣ Bitcoin እንታይ ከም ዝቕይር፣ ከምኡውን ክትጅምሮም ዘለካ ተግባራዊ ስጉምትታት፤ እዚኦም ድማ wallets፣ keys ከምኡውን ነቲ ኔትወርክ ብእምነት ምጥቃም የጠቓልሉ።"
+    },
+    {
+      "id": 2,
+      "name": "ደረጃ II — ምትዕርራይ ጸገም",
+      "theme": "ምትዕርራይ ጸገም",
+      "description": "Miningን ምትዕርራይ ጸገምን ንሰንሰለት Bitcoin ብኸመይ ውሑስ ከም ዝገብርዎ፣ ከምኡውን ኣብ ናይ ሓቂ ኩነታት ክትጥቀመሎም እትኽእል ልምድታት ድሕነትን ተግባራዊ ክእለታትን ተማሃር።"
+    },
+    {
+      "id": 3,
+      "name": "ደረጃ III — ምዕቡል ርእሰ-ምቁጽጻር",
+      "theme": "ምዕቡል ርእሰ-ምቁጽጻር",
+      "description": "ብዛዕባ ቴክኒካዊ መርግጋጽ፣ ዝተፈላለዩ ኣገባባት ምሕላው ገንዘብን ብሓባር ዝሰርሑ ቅንብራትን ብዕምቆት ተማሃር። በይንኻ ክትሰርሕ ከየድለየካ፡ ነቲ እትኽተሎ ሕግታትን ኣገባባትን ብምሉእ ተቆጻጸር።"
+    }
+  ],
+  "study_materials": {
+    "heading": "መጽናዕታዊ መሳርሒታት",
+    "description": "ኣፍልጦኻ ንምዕማቕ ኣገደስቲ ናይ Bitcoin ጸጋታትን መጻሕፍትን ኣውርድ።",
+    "items": [
+      {
+        "id": "bitcoin-whitepaper-en",
+        "title": "Bitcoin: A Peer-to-Peer Electronic Cash System (English)",
+        "author": "Satoshi Nakamoto (2008)",
+        "label": "PDF",
+        "description": "The original white paper that started it all. Essential reading for understanding Bitcoin's core design.",
+        "action": "Download"
+      },
+      {
+        "id": "bitcoin-whitepaper-tigrigna",
+        "title": "ቢትኮይን፡ ስርዓት ናይ መዘና-ናብ-መዘና ኤሌክትሮኒካዊ ገንዘብ",
+        "author": "ትግርኛ ትርጉም (Pan-African Bitcoin Academy)",
+        "label": "PDF (Tigrigna)",
+        "description": "Tigrigna translation of the Bitcoin whitepaper for Eritrean learners and native Tigrigna readers.",
+        "action": "Open PDF",
+        "page_label": "Read"
+      },
+      {
+        "id": "little-bitcoin-book",
+        "title": "The Little Bitcoin Book",
+        "author": "Bitcoin Collective (2019)",
+        "label": "Free",
+        "description": "A simple, beginner-friendly introduction to Bitcoin that explains why it matters for sovereignty and self-custody.",
+        "action": "Read Online"
+      },
+      {
+        "id": "mastering-bitcoin",
+        "title": "Mastering Bitcoin",
+        "author": "Andreas M. Antonopoulos",
+        "label": "Free (GitHub)",
+        "description": "Comprehensive technical guide to Bitcoin for developers, engineers, and technically-minded individuals.",
+        "action": "Access"
+      },
+      {
+        "id": "bitcoin-standard",
+        "title": "The Bitcoin Standard",
+        "author": "Saifedean Ammous (2018)",
+        "label": "Book",
+        "description": "Economic analysis of Bitcoin's origins, monetary properties, and its potential impact on the global economy.",
+        "action": "Learn More"
+      },
+      {
+        "id": "bitcoin-africa",
+        "title": "Bitcoin Africa: Guide to Freedom Money",
+        "author": "African Bitcoiners (2nd Edition)",
+        "label": "Free PDF",
+        "description": "A practical Africa-focused Bitcoin guide covering financial freedom, self-custody, and real-world use.",
+        "action": "Download PDF"
+      },
+      {
+        "id": "programming-bitcoin",
+        "title": "Programming Bitcoin",
+        "author": "Jimmy Song (2019)",
+        "label": "Free (GitHub)",
+        "description": "Learn Bitcoin by programming it from scratch. Build Bitcoin libraries in Python step by step.",
+        "action": "Access"
+      },
+      {
+        "id": "layered-money",
+        "title": "Layered Money",
+        "author": "Nik Bhatia (2021)",
+        "label": "Book",
+        "description": "Explains the evolution of money through different layers and why Bitcoin represents a new monetary layer.",
+        "action": "Learn More"
+      },
+      {
+        "id": "little-bitcoin-book-tigrigna",
+        "title": "The Little Book of Bitcoin in Tigrigna",
+        "author": "ትግርኛ ትርጉም",
+        "label": "PDF (Tigrigna)",
+        "description": "A simple, beginner-friendly introduction to Bitcoin translated into Tigrigna, explaining why it matters for sovereignty and self-custody.",
+        "action": "Download"
+      },
+      {
+        "id": "bitcoin-development-philosophy",
+        "title": "Bitcoin Development Philosophy",
+        "author": "Kalle Rosenbaum & Linnéa Rosenbaum",
+        "label": "Free (Online)",
+        "description": "A guide for Bitcoin developers covering decentralization, trustlessness, privacy, scaling, and the philosophy behind Bitcoin's design trade-offs.",
+        "action": "Read Online"
+      },
+      {
+        "id": "understanding-bitcoin-scams",
+        "title": "Understanding Bitcoin Scams",
+        "author": "Pan-Africa Bitcoin Academy",
+        "label": "መምርሒ",
+        "description": "ናይ ወፍሪ ምትላላት፣ ብሓሶት መንነት ምምሳል፣ ናይ ሓሶት መልእኽቲ ብምጥቃም ሓበሬታ ምስራቕ (phishing)፣ ከምኡውን ጎዳኢ ሶፍትዌር ክትፈልጥን ክትርሕቕን ተማሃር። ንነብስኻ ንምክልኻል ኣገዳሲ ንባብ።",
+        "action": "ኣንብብ"
+      },
+      {
+        "id": "exonumia-africa",
+        "title": "Exonumia Africa",
+        "author": "ብናይ ኣፍሪቃ ቋንቋታት ዝተዳለዉ መምሃሪ ጸጋታት Bitcoin",
+        "label": "ብነጻ (ብኢንተርነት)",
+        "description": "ኣብ ዝተፈላለዩ ቋንቋታትን ሃገራትን ኣፍሪቃ ዝቐርቡ ናይ Bitcoin ትምህርታዊ ጸጋታት ዳህስስ።",
+        "action": "ብጻሕ"
+      }
+    ]
+  },
+  "chapter_card": {
+    "chapter_label": "ምዕራፍ",
+    "you_will_learn": "ክትመሃርዎ እትኽእሉ",
+    "more_points": "ተወሳኺ ነጥብታት",
+    "activity_singular": "ንጥፈት",
+    "activity_plural": "ንጥፈታት",
+    "show_whats_inside": "ውሽጡ ዘሎ ርአ",
+    "hide_whats_inside": "ውሽጡ ዘሎ ሕባእ",
+    "theory_label": "ክልሰ ሓሳብ",
+    "practice_label": "ተግባራዊ ልምምድ",
+    "live_session_label": "ቀጥታዊ ክፍለ ትምህርቲ",
+    "quiz_label": "ሓጺር ፈተና",
+    "status_completed": "ተዛዚሙ",
+    "status_unlocked": "ተኸፊቱ",
+    "status_locked": "ተዓጽዩ",
+    "cta_review": "ክለሳ ግበር",
+    "cta_view": "ርአ",
+    "cta_register": "ተመዝገብ",
+    "alert_locked": "እዚ ምዕራፍ ገና ኣይተኸፍተን። ንምኽፋቱ ቅድሚኡ ዘለዉ ምዕራፋት ዛዝም።"
+  },
+  "coming_soon": {
+    "heading": "ብቐረባ ዝመጽእ",
+    "description": "እዞም ባህርያት ኣብ ቀረባ ክውሰኹ እዮም።",
+    "items": [
+      "ብዛዕባ Bitcoin Nodes ብዕምቆት ተማሃር",
+      "ምዕቡል ርእሰ-ምቁጽጻር ቁልፍታትን Bitcoinን",
+      "ዲጂታላዊ ገንዘብ ማእከላይ ባንክ (CBDCs) ኣንጻር Bitcoin",
+      "Bitcoin ንስራሕ ፈጠርቲ",
+      "መእተዊ ናብ ፕሮግራሚንግ ብደረጃ Satoshi",
+      "ዕማማት ብመደበኛ ቴክኒካዊ ምርግጋጽ ምርግጋጽ",
+      "መንገዲ ስልጠና ንኣማዕበልቲ Lightning"
+    ]
+  },
+  "footer_cta": {
+    "heading": "ኣብ ማሕበረሰብና ተጸንበር",
+    "cta_join": "ተጸንበር",
+    "cta_syllabus": "መደብ ትምህርቲ ርአ",
+    "cta_whatsapp": "ኣብ WhatsApp ተጸንበር"
+  },
+  "difficulty": {
+    "beginner": "ጀማሪ",
+    "intermediate": "ማእከላይ",
+    "advanced": "ምዕቡል"
+  }
+}
