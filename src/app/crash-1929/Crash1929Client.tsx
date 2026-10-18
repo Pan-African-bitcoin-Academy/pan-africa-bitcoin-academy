@@ -24,15 +24,7 @@ import { ZoomableImage } from '@/components/ZoomableImage';
 import { DownloadPdfButton } from '@/components/DownloadPdfButton';
 import { crash1929ArticleSections } from '@/content/crash1929Article';
 
-interface SectionImage {
-  src: string;
-  alt: string;
-  caption: string;
-}
 
-interface Crash1929ClientProps {
-  sectionImages: Record<string, SectionImage[]>;
-}
 
 const CRASH_1929_PDF_NAME = 'Tig The 1929 Stock Market Crash and the Great Depression - panBTC.pdf';
 const CRASH_1929_PDF_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -206,7 +198,7 @@ const REFERENCES_DATA = [
   },
 ];
 
-export function Crash1929Client({ sectionImages }: Crash1929ClientProps) {
+export function Crash1929Client() {
   // Reading progress and active section state
   const [readingProgress, setReadingProgress] = useState(0);
   const [activeSectionId, setActiveSectionId] = useState('intro');
@@ -502,7 +494,6 @@ export function Crash1929Client({ sectionImages }: Crash1929ClientProps) {
         {/* 4. Main Long-Form Article Stream with Expansive Width */}
         <main className="mx-auto max-w-6xl space-y-12">
           {crash1929ArticleSections.map((section, sectionIndex) => {
-            const imageList = sectionImages[section.id] ?? [];
             const isIntro = section.id === 'intro';
             const isSection5 = section.id === 'section-5';
             const isSection8 = section.id === 'section-8';
@@ -760,29 +751,7 @@ export function Crash1929Client({ sectionImages }: Crash1929ClientProps) {
                   </div>
                 )}
 
-                {/* Section Historical Photo Exhibition Gallery */}
-                {imageList.length > 0 && (
-                  <div className="mt-8 pt-6 border-t border-stone-800/80 space-y-6">
-                    <div className="grid gap-6 sm:grid-cols-1">
-                      {imageList.map((img) => (
-                        <div
-                          key={img.src}
-                          className="hover-lift-card rounded-2xl border border-amber-900/30 bg-stone-950/80 p-3 sm:p-4 shadow-xl transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_12px_36px_rgba(245,158,11,0.15)]"
-                        >
-                          <div className="relative overflow-hidden rounded-xl border border-stone-800">
-                            {/* ZoomableImage renders its caption once cleanly below the image and inside modal */}
-                            <ZoomableImage
-                              src={`/1929/${encodeURIComponent(img.src)}`}
-                              alt={img.alt}
-                              caption={img.caption}
-                              thumbnailClassName="max-h-[420px] sm:max-h-[480px] w-full object-contain bg-black/60"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+
               </article>
             );
           })}
