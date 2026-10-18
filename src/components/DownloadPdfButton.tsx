@@ -12,12 +12,18 @@ interface DownloadPdfButtonProps {
   fileName?: string;
   /** Optional className override */
   className?: string;
+  /** Optional custom button label */
+  buttonText?: string;
+  /** Optional downloading text */
+  downloadingText?: string;
 }
 
 export function DownloadPdfButton({
   pdfUrl,
   fileName = 'document.pdf',
   className,
+  buttonText,
+  downloadingText,
 }: DownloadPdfButtonProps) {
   const { isAuthenticated, loading } = useSession('student');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -96,7 +102,7 @@ export function DownloadPdfButton({
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
-        {downloading ? 'Downloading…' : 'Download PDF'}
+        {downloading ? (downloadingText ?? 'Downloading…') : (buttonText ?? 'Download PDF')}
       </button>
 
       {/* Auth modal for sign-in */}

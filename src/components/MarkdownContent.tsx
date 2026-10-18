@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { ZoomableImage } from '@/components/ZoomableImage';
 
 interface MarkdownContentProps {
   content: string;
@@ -101,57 +102,82 @@ export function MarkdownContent({ content, highlightTerms = [] }: MarkdownConten
       remarkPlugins={highlightTerms.length ? [remarkGfm, highlightArticleTerms(highlightTerms)] : [remarkGfm]}
       components={{
         h1: ({ node, ...props }) => (
-          <h1 className="mb-4 text-3xl font-bold text-zinc-50" {...props} />
+          <h1 className="mb-4 text-3xl font-bold text-amber-200" {...props} />
         ),
         h2: ({ node, ...props }) => (
-          <h2 className="mb-3 mt-6 text-2xl font-semibold text-zinc-50" {...props} />
+          <h2 className="mb-4 mt-8 text-2xl font-bold text-amber-200 border-b border-stone-800 pb-2" {...props} />
         ),
         h3: ({ node, ...props }) => (
-          <h3 className="mb-2 mt-4 text-xl font-semibold text-zinc-50" {...props} />
+          <h3 className="mb-3 mt-7 text-lg sm:text-xl font-bold text-amber-300 flex items-center gap-2.5 before:content-[''] before:w-1.5 before:h-5 before:bg-gradient-to-b before:from-amber-400 before:to-orange-500 before:rounded-full before:shrink-0" {...props} />
         ),
-        p: ({ node, ...props }) => (
-          <p className="mb-4 text-base leading-relaxed text-zinc-300" {...props} />
-        ),
+        p: ({ node, children, ...props }: any) => {
+          const hasImage = node?.children?.some(
+            (child: any) => child.tagName === 'img' || (child.type === 'element' && child.tagName === 'img')
+          );
+          if (hasImage) {
+            return <div className="my-6">{children}</div>;
+          }
+          return (
+            <p className="mb-4 text-stone-300 leading-relaxed text-base sm:text-lg" {...props}>
+              {children}
+            </p>
+          );
+        },
+        img: ({ src, alt }: any) => {
+          if (!src) return null;
+          return (
+            <div className="rounded-2xl border border-amber-900/30 bg-stone-950/80 p-3 sm:p-4 shadow-xl">
+              <div className="relative overflow-hidden rounded-xl border border-stone-800">
+                <ZoomableImage
+                  src={src}
+                  alt={alt || ''}
+                  caption={alt || undefined}
+                  thumbnailClassName="max-h-[420px] sm:max-h-[480px] w-full object-contain bg-black/60"
+                />
+              </div>
+            </div>
+          );
+        },
         ul: ({ node, ...props }) => (
-          <ul className="mb-4 ml-6 list-disc space-y-2 text-zinc-300" {...props} />
+          <ul className="mb-5 ml-4 list-disc space-y-2 text-stone-300 marker:text-amber-400" {...props} />
         ),
         ol: ({ node, ...props }) => (
-          <ol className="mb-4 ml-6 list-decimal space-y-2 text-zinc-300" {...props} />
+          <ol className="mb-5 ml-4 list-decimal space-y-2 text-stone-300 marker:text-amber-400 font-medium" {...props} />
         ),
         li: ({ node, ...props }) => (
-          <li className="text-base leading-relaxed" {...props} />
+          <li className="leading-relaxed text-sm sm:text-base text-stone-300" {...props} />
         ),
-        strong: ({ node, className, ...props }) => (
-          <strong
-            className={className === 'article-highlight' ? 'font-medium text-[#F97602]' : 'font-semibold text-zinc-100'}
-            {...props}
-          />
-        ),
+        strong: ({ node, className, ...props }) => {
+          if (className === 'article-highlight') {
+            return <strong className="font-semibold text-amber-400" {...props} />;
+          }
+          return <strong className="font-semibold text-stone-100" {...props} />;
+        },
         em: ({ node, ...props }) => (
-          <em className="italic text-zinc-200" {...props} />
+          <em className="italic text-amber-200/90" {...props} />
         ),
         code: ({ node, inline, ...props }: any) => {
           if (inline) {
             return (
               <code
-                className="rounded bg-zinc-800 px-1.5 py-0.5 text-sm text-cyan-300"
+                className="rounded border border-amber-500/20 bg-stone-900 px-1.5 py-0.5 text-xs sm:text-sm font-mono text-amber-300"
                 {...props}
               />
             );
           }
           return (
             <code
-              className="block overflow-x-auto rounded-lg bg-zinc-900 p-4 text-sm text-zinc-200"
+              className="block overflow-x-auto rounded-xl border border-stone-800 bg-stone-950 p-4 text-xs sm:text-sm font-mono text-stone-200"
               {...props}
             />
           );
         },
         pre: ({ node, ...props }) => (
-          <pre className="mb-4 overflow-x-auto rounded-lg bg-zinc-900 p-4" {...props} />
+          <pre className="mb-5 overflow-x-auto rounded-xl border border-stone-800 bg-stone-950 p-4" {...props} />
         ),
         a: ({ node, ...props }) => (
           <a
-            className="text-cyan-400 underline transition hover:text-cyan-300"
+            className="text-amber-400 underline decoration-amber-500/40 underline-offset-4 transition hover:text-amber-300 hover:decoration-amber-400"
             target="_blank"
             rel="noopener noreferrer"
             {...props}
@@ -159,12 +185,12 @@ export function MarkdownContent({ content, highlightTerms = [] }: MarkdownConten
         ),
         blockquote: ({ node, ...props }) => (
           <blockquote
-            className="my-4 border-l-4 border-cyan-500/50 pl-4 italic text-zinc-400"
+            className="my-6 rounded-r-2xl border-l-4 border-amber-400 bg-gradient-to-r from-amber-500/10 via-stone-900/30 to-transparent p-4 sm:p-5 text-stone-200 italic shadow-sm"
             {...props}
           />
         ),
         hr: ({ node, ...props }) => (
-          <hr className="my-8 border-zinc-700" {...props} />
+          <hr className="my-8 border-stone-800" {...props} />
         ),
       }}
     >

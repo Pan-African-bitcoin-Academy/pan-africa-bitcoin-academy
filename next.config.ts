@@ -43,6 +43,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/dashbaord', destination: '/dashboard', permanent: true },
+      { source: '/1929', destination: '/crash-1929', permanent: false },
     ];
   },
 

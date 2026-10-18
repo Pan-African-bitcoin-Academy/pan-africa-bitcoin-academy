@@ -493,6 +493,24 @@ export function HomeSectionsClient({
                     ? ["ሳይፈርፓንክስ", "ብሕታዊነት", "ክሪፕቶግራፊ"]
                     : ["Cypherpunks", "Privacy", "Cryptography"],
                 },
+                {
+                  title: isTigrinya
+                    ? "1929: ምውዳቅ ስቶክ ማርኬትን እቲ ዓቢ ቅልውላውን"
+                    : "1929: The Stock Market Crash & The Great Depression",
+                  subtitle: isTigrinya
+                    ? "ምውዳቅ ስቶክ ማርኬትን እቲ ዓቢ ቅልውላውን"
+                    : "The 1929 Crash & The Great Depression",
+                  description: isTigrinya
+                    ? "ኣብ ጥቅምቲ 1929 ዘጋጠመ ናይ ስቶክ ማርኬት ምውዳቕ፡ ምፍራስ ባንክታትን ንዓለም ዘናወጸ ናይ 1930ታት ዓቢ ቅልውላውን (The Great Depression) ዝድህስስ ምሉእ ናይ ትግርኛ ጽሑፍ።"
+                    : "A comprehensive article on the October 1929 Wall Street crash, bank failures, debt deflation, and the global Great Depression of the 1930s.",
+                  image: "/1929/the%20greate%20depression.jpg",
+                  href: "/crash-1929",
+                  lang: isTigrinya ? "ትግርኛ" : "Tigrinya",
+                  readTime: isTigrinya ? "15-20 ደቒቕ ንባብ" : "15-20 min read",
+                  tags: isTigrinya
+                    ? ["1929", "ስቶክ ማርኬት", "ዓቢ ቅልውላው"]
+                    : ["1929 Crash", "Stock Market", "Great Depression"],
+                },
               ].map((article, index) => (
                 <Link
                   key={index}

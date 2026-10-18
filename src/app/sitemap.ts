@@ -126,6 +126,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/flfl', priority: 0.85, changeFrequency: 'monthly' },
     { path: '/sponsor', priority: 0.65, changeFrequency: 'monthly' },
     { path: '/scam', priority: 0.7, changeFrequency: 'monthly' },
+    { path: '/cypher-punks', priority: 0.85, changeFrequency: 'monthly' },
+    { path: '/crash-1929', priority: 0.85, changeFrequency: 'monthly' },
     { path: '/search', priority: 0.55, changeFrequency: 'weekly' },
   ];
 
