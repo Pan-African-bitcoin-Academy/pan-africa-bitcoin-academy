@@ -18,10 +18,16 @@ import {
   Zap,
   HeartHandshake,
   UserPlus,
+  Lock,
 } from 'lucide-react';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { AnimatedHeading } from '@/components/AnimatedHeading';
 import SplitText from '@/components/SplitText';
+import { useAuth } from '@/hooks/useAuth';
+import { useSession } from '@/hooks/useSession';
+import { AuthModal } from '@/components/AuthModal';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { BitcoinNetworkAnimation } from '@/components/BitcoinNetworkAnimation';
 
 interface ImpactMetrics {
   totalStudentsTrained: number;
@@ -116,6 +122,16 @@ function useAnimatedCounter(target: number, duration: number = 1500, startAnimat
 }
 
 export default function ImpactPage() {
+  const { isAuthenticated: isStudentAuth, loading: studentAuthLoading } = useAuth();
+  const { isAuthenticated: isAdminAuth, loading: adminAuthLoading } = useSession('admin');
+  const { language } = useLanguage();
+  const isTigrinya = language === 'ti';
+
+  const isAuthLoading = studentAuthLoading || adminAuthLoading;
+  const isAuthenticated = isStudentAuth || isAdminAuth;
+
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [metrics, setMetrics] = useState<ImpactMetrics | null>(null);
   const [cohorts, setCohorts] = useState<CohortData[]>([]);
   const [progressMetrics, setProgressMetrics] = useState<ProgressMetrics | null>(null);
@@ -148,6 +164,11 @@ export default function ImpactPage() {
   );
 
   useEffect(() => {
+    // Only fetch impact details if authenticated
+    if (isAuthLoading || !isAuthenticated) {
+      return;
+    }
+
     const fetchData = async () => {
       try {
         // Fetch all data in parallel
@@ -192,7 +213,7 @@ export default function ImpactPage() {
     };
 
     fetchData();
-  }, []);
+  }, [isAuthLoading, isAuthenticated]);
 
   type MetricIcon = typeof Users;
   const keyMetricDefs: { label: string; Icon: MetricIcon; getValue: (m: ImpactMetrics) => number | string }[] = [
@@ -211,7 +232,150 @@ export default function ImpactPage() {
     { label: 'Events Completed', Icon: CalendarCheck, getValue: (m) => m.eventsCompleted ?? 0 },
   ];
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black/95">
+        <div className="text-center">
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-orange-400 border-t-transparent mx-auto" />
+          <p className="text-zinc-400">
+            {isTigrinya ? 'ዝተገብረ ምዕባለ ይጽዓን ኣሎ...' : 'Loading impact data...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <div className="relative min-h-screen w-full overflow-hidden bg-black">
+          {/* Animated Bitcoin Network Background Canvas with full visibility */}
+          <div className="absolute inset-0 z-0">
+            <BitcoinNetworkAnimation className="h-full w-full" />
+          </div>
+
+          {/* Radial ambient glow accents */}
+          <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-gradient-to-b from-orange-500/25 via-cyan-500/15 to-transparent blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 right-10 h-[350px] w-[350px] rounded-full bg-orange-600/15 blur-3xl" />
+
+          <div className="relative z-10 w-full">
+            <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 text-center">
+              <AnimatedSection animation="slideUp">
+                {/* Academy Logo Emblem with Pulse Ring */}
+                <div className="relative mx-auto mb-6 flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center">
+                  <div className="absolute inset-0 rounded-full bg-orange-500/20 animate-ping" style={{ animationDuration: '3.5s' }} />
+                  <div className="relative flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-2xl border border-orange-400/40 bg-gradient-to-b from-orange-500/15 to-black/85 p-3 shadow-[0_0_50px_rgba(249,115,22,0.45)] backdrop-blur-md">
+                    <Image
+                      src="/images/logo_3.png"
+                      alt="Pan-African Bitcoin Academy Logo"
+                      width={96}
+                      height={96}
+                      priority
+                      className="h-full w-full object-contain brightness-110 contrast-125 saturate-120 drop-shadow-[0_0_15px_rgba(249,115,22,0.6)]"
+                    />
+                  </div>
+                </div>
+
+                <AnimatedHeading as="h1" className="text-3xl font-extrabold tracking-tight text-zinc-50 sm:text-4xl lg:text-5xl">
+                  {isTigrinya ? 'ናይ ኣካዳሚና ዝተገብረ ምዕባለ' : 'Our Academy Impact'}
+                </AnimatedHeading>
+                <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-gradient-to-r from-orange-400 via-amber-300 to-cyan-400" aria-hidden />
+
+                <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
+                  {isTigrinya
+                    ? 'ናይ ኣካዳሚና ምሉእ ጸብጻብን ዝተገብረ ምዕባለን ንምርኣይ፡ በጃኹም ብኣካውንትኹም እተዉ ወይ ሓድሽ መመልከቲ ኣቕርቡ።'
+                    : 'To view our detailed academy metrics, student milestones, and cohort outcomes, please sign in to your account.'}
+                </p>
+
+                {/* CTA Action Buttons */}
+                <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode('signin');
+                      setAuthModalOpen(true);
+                    }}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3.5 text-base font-semibold text-black transition hover:brightness-110 shadow-[0_0_25px_rgba(249,115,22,0.35)]"
+                  >
+                    <Lock className="h-4 w-4" />
+                    {isTigrinya ? 'እቶ (መእተዊ)' : 'Sign In to View Impact'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode('signup');
+                      setAuthModalOpen(true);
+                    }}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-orange-400/30 bg-zinc-900/80 px-6 py-3.5 text-base font-semibold text-zinc-100 transition hover:border-orange-400/60 hover:bg-zinc-800 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
+                  >
+                    <UserPlus className="h-4 w-4 text-orange-400" />
+                    {isTigrinya ? 'ተመዝገብ (Sign Up)' : 'Sign Up'}
+                  </button>
+                </div>
+
+                {/* Animated Preview Cards of what awaits inside */}
+                <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-3 text-left">
+                  <div className="relative overflow-hidden rounded-xl border border-orange-500/20 bg-gradient-to-b from-zinc-900/80 to-black/80 p-5 shadow-[0_0_25px_rgba(249,115,22,0.08)] backdrop-blur-md transition hover:border-orange-500/40">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-orange-400/30 bg-orange-500/10 text-orange-400">
+                      <TrendingUp className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-zinc-100">
+                      {isTigrinya ? 'ናይ ተመሃሮ ምዕባለ' : 'Student Outcomes'}
+                    </h3>
+                    <p className="mt-1 text-xs text-zinc-400">
+                      {isTigrinya
+                        ? 'መዓልታዊ ኣጠቓቕማ ቢትኮይንን ኣብ ከባቢ ዝተገብረ ለውጥን።'
+                        : 'Daily Bitcoin adoption, community education & real-world tasks.'}
+                    </p>
+                  </div>
+
+                  <div className="relative overflow-hidden rounded-xl border border-cyan-500/20 bg-gradient-to-b from-zinc-900/80 to-black/80 p-5 shadow-[0_0_25px_rgba(34,211,238,0.08)] backdrop-blur-md transition hover:border-cyan-500/40">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-500/10 text-cyan-300">
+                      <Zap className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-zinc-100">
+                      {isTigrinya ? 'ናይ ላይትኒንግ ዝውውራት' : 'Lightning Volume'}
+                    </h3>
+                    <p className="mt-1 text-xs text-zinc-400">
+                      {isTigrinya
+                        ? 'ዝተዓደለን ዝተዘርገሐን ሳትስ (Sats) ብትኽክለኛ ኔትወርክ።'
+                        : 'Sats earned, circulated, and transacted across cohorts.'}
+                    </p>
+                  </div>
+
+                  <div className="relative overflow-hidden rounded-xl border border-purple-500/20 bg-gradient-to-b from-zinc-900/80 to-black/80 p-5 shadow-[0_0_25px_rgba(168,85,247,0.08)] backdrop-blur-md transition hover:border-purple-500/40">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-purple-400/30 bg-purple-500/10 text-purple-300">
+                      <Globe2 className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-zinc-100">
+                      {isTigrinya ? 'ዝተወከሉ ሃገራት' : 'Pan-African Reach'}
+                    </h3>
+                    <p className="mt-1 text-xs text-zinc-400">
+                      {isTigrinya
+                        ? 'ኣብ መላእ ኣፍሪቃ ዝርከቡ ተመሃሮን ዝተዛዘሙ ጉጅለታትን።'
+                        : 'Countries represented, active cohorts & hours taught.'}
+                    </p>
+                  </div>
+                </div>
+              </AnimatedSection>
+            </div>
+          </div>
+        </div>
+
+        {authModalOpen && (
+          <AuthModal
+            isOpen={authModalOpen}
+            onClose={() => setAuthModalOpen(false)}
+            mode={authMode}
+            redirectAfterLogin="/impact"
+          />
+        )}
+      </>
+    );
+  }
+
   return (
+    <>
     <div className="relative min-h-screen w-full overflow-x-hidden">
       <div className="relative z-10 w-full bg-black/95">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
@@ -588,6 +752,7 @@ export default function ImpactPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
