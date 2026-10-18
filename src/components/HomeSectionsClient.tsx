@@ -473,9 +473,11 @@ export function HomeSectionsClient({
                   : "In-depth explorations of Bitcoin history, BItcoin philosophy, and the ideas shaping digital freedom."}
               </p>
             </div>
-            <AnimatedList animation="slideUp" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 {
+                  animation: "slideLeft" as const,
+                  delay: 100,
                   title: isTigrinya
                     ? "ሳይፈርፓንክስ፡ ብሕታዊነት፡ ክሪፕቶግራፊን: ቃልሲ ንዲጂታላዊ ናጽነትን"
                     : "The Cypherpunks: Privacy, Cryptography & the Fight for Digital Freedom",
@@ -494,6 +496,8 @@ export function HomeSectionsClient({
                     : ["Cypherpunks", "Privacy", "Cryptography"],
                 },
                 {
+                  animation: "slideRight" as const,
+                  delay: 250,
                   title: isTigrinya
                     ? "1929: ምውዳቅ ስቶክ ማርኬትን እቲ ዓቢ ቅልውላውን"
                     : "1929: The Stock Market Crash & The Great Depression",
@@ -512,62 +516,73 @@ export function HomeSectionsClient({
                     : ["1929 Crash", "Stock Market", "Great Depression"],
                 },
               ].map((article, index) => (
-                <Link
+                <AnimatedSection
                   key={index}
-                  href={article.href}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-orange-500/20 bg-black/80 shadow-[0_0_20px_rgba(249,115,22,0.08)] transition-all duration-300 hover:border-orange-400/50 hover:shadow-[0_0_35px_rgba(249,115,22,0.15)] hover:-translate-y-1"
+                  animation={article.animation}
+                  delay={article.delay}
+                  className="h-full"
                 >
-                  <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-zinc-900 via-orange-900/20 to-zinc-900">
-                    <img
-                      src={article.image}
-                      alt={article.subtitle}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <div className="absolute left-3 top-3 flex items-center gap-2">
-                      <span className="rounded-full border border-cyan-500/40 bg-cyan-500/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-cyan-300 backdrop-blur-sm">
-                        {article.lang}
-                      </span>
-                    </div>
-                    <div className="absolute right-3 top-3">
-                      <span className="rounded-full border border-zinc-600/50 bg-black/60 px-2.5 py-1 text-[10px] font-medium text-zinc-300 backdrop-blur-sm">
-                        {article.readTime}
-                      </span>
-                    </div>
-                  </div>
+                  <Link
+                    href={article.href}
+                    className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-orange-500/25 bg-gradient-to-b from-zinc-950 via-black to-zinc-950/95 shadow-[0_0_20px_rgba(249,115,22,0.08)] transition-all duration-300 hover:border-orange-400/60 hover:shadow-[0_12px_40px_rgba(249,115,22,0.2)] hover:-translate-y-2 hover:scale-[1.01]"
+                  >
+                    {/* Subtle top amber highlight beam */}
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-20" />
 
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="mb-1 text-lg font-bold leading-snug text-orange-200 transition-colors group-hover:text-orange-100">
-                      {article.title}
-                    </h3>
-                    <p className="mb-3 text-sm font-medium text-zinc-400">
-                      {article.subtitle}
-                    </p>
-                    <p className="mb-4 text-sm leading-relaxed text-zinc-400 line-clamp-3">
-                      {article.description}
-                    </p>
-                    <div className="mt-auto flex flex-wrap gap-2">
-                      {article.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full border border-orange-500/25 bg-orange-500/10 px-2.5 py-1 text-[10px] font-medium text-orange-300/80"
-                        >
-                          {tag}
+                    <div className="relative h-52 w-full overflow-hidden bg-gradient-to-br from-zinc-900 via-orange-950/30 to-zinc-950">
+                      <img
+                        src={article.image}
+                        alt={article.subtitle}
+                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-[0.5deg]"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent transition-opacity duration-300 group-hover:opacity-80" />
+                      
+                      {/* Top badges */}
+                      <div className="absolute left-3 top-3 flex items-center gap-2 z-10">
+                        <span className="rounded-full border border-cyan-500/50 bg-cyan-500/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-cyan-300 backdrop-blur-md shadow-sm transition-transform duration-200 group-hover:scale-105">
+                          {article.lang}
                         </span>
-                      ))}
+                      </div>
+                      <div className="absolute right-3 top-3 z-10">
+                        <span className="rounded-full border border-orange-500/40 bg-black/70 px-3 py-1 text-[11px] font-medium text-amber-200 backdrop-blur-md shadow-sm transition-transform duration-200 group-hover:scale-105">
+                          {article.readTime}
+                        </span>
+                      </div>
                     </div>
-                    <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-cyan-400 transition-colors group-hover:text-cyan-300">
-                      {isTigrinya ? "ጽሑፍ ኣንብቡ" : "Read article"}
-                      <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                      </svg>
+
+                    <div className="flex flex-1 flex-col p-6">
+                      <h3 className="mb-2 text-xl font-bold leading-snug text-orange-200 transition-all duration-300 group-hover:text-amber-100 group-hover:translate-x-0.5">
+                        {article.title}
+                      </h3>
+                      <p className="mb-3 text-sm font-semibold text-orange-400/90 transition-colors group-hover:text-amber-300">
+                        {article.subtitle}
+                      </p>
+                      <p className="mb-5 text-sm leading-relaxed text-zinc-400 line-clamp-3 transition-colors group-hover:text-zinc-300">
+                        {article.description}
+                      </p>
+                      <div className="mt-auto flex flex-wrap gap-2">
+                        {article.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[11px] font-medium text-orange-300 transition-all duration-200 group-hover:border-orange-400/60 group-hover:bg-orange-500/20 group-hover:text-orange-200"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mt-5 flex items-center gap-2 text-sm font-bold text-cyan-400 transition-all duration-300 group-hover:text-cyan-300 group-hover:gap-3">
+                        <span>{isTigrinya ? "ጽሑፍ ኣንብቡ" : "Read article"}</span>
+                        <svg className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </AnimatedSection>
               ))}
-            </AnimatedList>
+            </div>
           </section>
         </AnimatedSection>
 

@@ -43,43 +43,7 @@ export const metadata: Metadata = {
   },
 };
 
-const sectionImages: Record<string, { src: string; alt: string; caption: string }[]> = {
-  'section-2': [
-    {
-      src: 'electified apliances.jpg',
-      alt: 'Electrified home appliances in the 1920s',
-      caption: 'ኤሌክትሪካዊ መሳርሒታትን ናይ ተጠቃሚ ኣቑሑትን ኣብ መዓልታዊ ህይወት ዝፈጠሮ ዕብየት።',
-    },
-  ],
-  'section-3': [
-    {
-      src: 'supply.jpg',
-      alt: 'Illustration of supply, demand, and speculative market behavior',
-      caption: 'ናይ ስቶክ ዕዳጋ ግምትታትን (speculation) ተራ ናይ ቀረብን ድልየትን ኣብ ምፍጣር ባብል (market bubble)።',
-    },
-  ],
-  'section-6': [
-    {
-      src: 'car for 100.jpg',
-      alt: 'Man selling his luxury roadster car for $100 cash after losing in the stock market',
-      caption: 'ኣውፈርቲ ኣብ ዕዳጋ ስቶክ ድሕሪ ምኽሳሮም ዘለዎም ክቡር ንብረት ብሕሳር ዋጋ ($100 ጥረ ገንዘብ) ንምሽያጥ ተገደዱ።',
-    },
-  ],
-  'section-7': [
-    {
-      src: 'need job.jpg',
-      alt: 'Unemployed man wearing a sign stating his skills and need for a job',
-      caption: 'ምፍራስ ባንክታትን ምዕጻው ፋብሪካታትን ንሚልዮናት ክኢላታት ሰራሕተኛታት ስራሕ-ኣልቦ ገበሮም።',
-    },
-  ],
-  conclusion: [
-    {
-      src: 'the greate depression.jpg',
-      alt: 'The Great Depression historic portrait of economic struggle and resilience',
-      caption: 'እቲ ዓቢ ቅልውላው (The Great Depression) ኣብ ዘመናዊ ቁጠባ፡ ፋይናንሳዊ ስርዓታትን ትምህርቲ ጽኑዕ ገንዘብን ዘይሃስስ ታሪኻዊ ትምህርቲ ገደፈ።',
-    },
-  ],
-};
+
 
 const jsonLdData = {
   '@context': 'https://schema.org',
@@ -108,7 +72,7 @@ export default function Crash1929Page() {
   return (
     <div className={`${notoEthiopic.className} min-h-screen overflow-x-hidden bg-[#07080b] text-stone-100 selection:bg-amber-500/30 selection:text-amber-200`}>
       <StructuredData data={jsonLdData} />
-      <Crash1929Client sectionImages={sectionImages} />
+      <Crash1929Client />
     </div>
   );
 }

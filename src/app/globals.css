@@ -877,3 +877,92 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
   }
 }
 
+/* ========================================================================= */
+/* 1929 Crash Article Animations (Fluid, Atmospheric & Scroll-Synced)       */
+/* ========================================================================= */
+
+@keyframes crashFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes crashFadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes crashGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.12), inset 0 0 15px rgba(245, 158, 11, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(245, 158, 11, 0.28), inset 0 0 25px rgba(245, 158, 11, 0.1);
+  }
+}
+
+@keyframes crashShimmerText {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes tickerMarquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-crash-hero {
+  animation: crashFadeSlideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-crash-title {
+  background: linear-gradient(90deg, #fef3c7 0%, #fbbf24 35%, #ffffff 50%, #f59e0b 65%, #fef3c7 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: crashShimmerText 8s linear infinite;
+}
+
+.animate-subtle-glow {
+  animation: crashGlowPulse 4s ease-in-out infinite;
+}
+
+/* Hover lift on interactive cards */
+.hover-lift-card {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+}
+.hover-lift-card:hover {
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-crash-hero,
+  .animate-crash-title,
+  .animate-subtle-glow,
+  .hover-lift-card {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
