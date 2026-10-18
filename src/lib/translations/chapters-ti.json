@@ -1,6 +1,6 @@
 {
   "hero": {
-    "heading": "መንገዲ ትምህርቲ",
+    "heading": "ትሕዝቶታት ትምህርትና",
     "path_labels": {
       "foundations": "መሰረታት Bitcoin",
       "lightning": "ላይትኒንግ",
@@ -10,7 +10,7 @@
     "description_2": "ነፍሲ ወከፍ ምዕራፍ ስእላዊ መግለጺታት፣ ኣብ ናይ ሓቂ ኩነታት ዝተመርኮሱ ኣብነታት፣ ዕማማትን ሓጺር ፈተናን የጠቓልል።"
   },
   "progress_bar": {
-    "heading": "ምዕባለኻ ኣብ ደረጃታት",
+    "heading": "ደረጃታት ምዕባለኻ",
     "level_label": "ደረጃ"
   },
   "levels": [
