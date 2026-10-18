@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, TrendingDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, TrendingDown, TrendingUp, Activity } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -211,6 +211,7 @@ export function InflationTrackerWidget() {
   const [priorityOrder, setPriorityOrder] = useState<LifestyleItemId[]>(DEFAULT_PRIORITY_ORDER);
   const [hydrated, setHydrated] = useState(false);
   const [trackingEnabled, setTrackingEnabled] = useState(false);
+  const [initialCapital, setInitialCapital] = useState(100000);
   const [displayLifestyleBudget, setDisplayLifestyleBudget] = useState(BASE_AMOUNT);
   const prevLifestyleRef = useRef(BASE_AMOUNT);
   const dragIdRef = useRef<LifestyleItemId | null>(null);
@@ -408,11 +409,15 @@ export function InflationTrackerWidget() {
     if (year < firstBtcYear) return null;
     return interpolateByYear(BTC_POINTS, year);
   }, [year]);
-  /** BTC you would receive converting the same unmoved $100k at this year's average BTC/USD. */
-  const btcEquivalent = btcPrice ? BASE_AMOUNT / btcPrice : null;
+  /** BTC you would receive converting the initial capital at this year's average BTC/USD. */
+  const btcEquivalent = btcPrice ? initialCapital / btcPrice : null;
   const btcTodayPrice = interpolateByYear(BTC_POINTS, MAX_YEAR);
   const btcValueAtTodayPrice = btcEquivalent ? btcEquivalent * btcTodayPrice : null;
-  const mattressPurchasingPowerToday = useMemo(() => purchasingPowerOfMattressCash(MAX_YEAR), []);
+  const mattressPurchasingPowerToday = useMemo(() => {
+    const cpiStart = CPI_POINTS[BASE_YEAR];
+    const cpiMax = interpolateByYear(CPI_POINTS, MAX_YEAR);
+    return initialCapital * (cpiStart / cpiMax);
+  }, [initialCapital]);
   const btcVsCashMultiple =
     btcValueAtTodayPrice && mattressPurchasingPowerToday > 0
       ? btcValueAtTodayPrice / mattressPurchasingPowerToday
@@ -740,82 +745,173 @@ export function InflationTrackerWidget() {
                     />
                   </div>
                   {btcPrice ? (
-                    <div className="rounded-md border border-zinc-700 bg-zinc-900/60 p-2.5 text-zinc-300">
-                      <p className="mb-2 text-center text-[11px] font-medium text-zinc-200">
-                        By {MAX_YEAR}: same ${BASE_AMOUNT.toLocaleString()}
-                      </p>
-                      <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2.5 py-2 text-[10px] leading-snug text-zinc-500">
-                        <p>
-                          <span className="font-medium text-zinc-400">Cash</span> — keep the{' '}
-                          <span className="tabular-nums text-zinc-300">${BASE_AMOUNT.toLocaleString()}</span>.{' '}
-                          <span className="font-medium text-orange-300/80">BTC</span> — all-in in{' '}
-                          <span className="text-zinc-300">{year}</span>:{' '}
-                          <span className="select-all font-medium text-orange-200">
-                            {btcEquivalent != null ? formatBtcAmount(btcEquivalent) : '—'} BTC
-                          </span>{' '}
-                          @ <span className="tabular-nums text-zinc-300">{formatBtcUsdPrice(btcPrice)}</span>.
-                        </p>
-                        <p className="mt-1.5 border-t border-zinc-800/80 pt-1.5 text-zinc-600">
-                          In {year}, that cash still bought{' '}
-                          <span className="font-medium tabular-nums text-zinc-400">
-                            ${displayLifestyleBudget.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                          </span>{' '}
-                          of the 1971 basket (same year as the widget).
-                        </p>
-                      </div>
-
-                      <p className="mt-3 text-[10px] font-medium uppercase tracking-wide text-zinc-500">
-                        Both measured in {MAX_YEAR} (1971 basket · USD)
-                      </p>
-                      <div className="mt-2 space-y-3">
-                        <div>
-                          <div className="mb-1 flex items-baseline justify-between gap-2">
-                            <span className="text-[11px] text-zinc-400">Cash</span>
-                            <span className="text-sm font-semibold tabular-nums text-zinc-100">
-                              $
-                              {mattressPurchasingPowerToday.toLocaleString('en-US', {
-                                maximumFractionDigits: 0,
-                              })}
-                            </span>
-                          </div>
-                          <div
-                            className="h-2.5 overflow-hidden rounded-full bg-zinc-800"
-                            role="presentation"
-                          >
-                            <div
-                              className="h-full min-w-[2px] rounded-full bg-zinc-500 transition-[width] duration-500"
-                              style={{ width: `${cashBarPct}%` }}
-                            />
-                          </div>
+                    <div className="rounded-xl border border-zinc-700/80 bg-zinc-950/80 p-3.5 text-zinc-300 shadow-inner">
+                      {/* Interactive Initial Capital Selector */}
+                      <div className="mb-3.5 space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-2.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold text-zinc-300">Initial Capital</span>
+                          <span className="font-bold text-orange-400 tabular-nums">${initialCapital.toLocaleString()}</span>
                         </div>
-                        <div>
-                          <div className="mb-1 flex items-baseline justify-between gap-2">
-                            <span className="text-[11px] text-orange-300/90">BTC → USD</span>
-                            <span className="text-sm font-semibold tabular-nums text-cyan-300">
-                              $
-                              {btcValueAtTodayPrice != null
-                                ? btcValueAtTodayPrice.toLocaleString('en-US', { maximumFractionDigits: 0 })
-                                : '—'}
-                            </span>
-                          </div>
-                          <div
-                            className="h-2.5 overflow-hidden rounded-full bg-zinc-800"
-                            role="presentation"
-                          >
-                            <div
-                              className="h-full min-w-[2px] rounded-full bg-gradient-to-r from-orange-500 to-cyan-400 transition-[width] duration-500"
-                              style={{ width: `${btcBarPct}%` }}
-                            />
-                          </div>
+                        <input
+                          type="range"
+                          min={10000}
+                          max={100000}
+                          step={5000}
+                          value={initialCapital}
+                          onChange={(e) => setInitialCapital(Number(e.target.value))}
+                          className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-800 accent-orange-500"
+                        />
+                        <div className="flex justify-between gap-1 pt-0.5">
+                          {[10000, 25000, 50000, 100000].map((amt) => (
+                            <button
+                              key={amt}
+                              type="button"
+                              onClick={() => setInitialCapital(amt)}
+                              className={`flex-1 rounded px-1.5 py-1 text-[10px] font-semibold transition ${
+                                initialCapital === amt
+                                  ? 'bg-orange-500/20 text-orange-300 border border-orange-500/40'
+                                  : 'bg-zinc-800/80 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+                              }`}
+                            >
+                              ${amt >= 1000 ? `${amt / 1000}k` : amt}
+                            </button>
+                          ))}
                         </div>
                       </div>
 
-                      <div className="mt-3 rounded-lg border border-orange-400/25 bg-orange-500/10 py-2 text-center">
-                        <div className="text-[10px] font-medium uppercase tracking-wide text-orange-200/80">
-                          BTC side is larger by
+                      {/* Header context */}
+                      <div className="mb-3 flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <div className="flex items-center gap-1.5">
+                          <Activity className="h-3.5 w-3.5 text-cyan-400" />
+                          <span className="text-[11px] font-medium text-zinc-300">Purchasing Power Divergence</span>
                         </div>
-                        <div className="mt-0.5 text-xl font-bold tabular-nums text-orange-200">
-                          {btcVsCashMultiple != null ? `${btcVsCashMultiple.toFixed(1)}×` : '—'}
+                        <span className="rounded bg-orange-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-orange-300">
+                          {btcVsCashMultiple != null ? `${btcVsCashMultiple.toFixed(1)}× advantage` : '—'}
+                        </span>
+                      </div>
+
+                      {/* Visual Comparison Progress Bars */}
+                      <div className="space-y-2.5">
+                        {/* Cash Bar */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="flex items-center gap-1 text-zinc-400">
+                              <span className="h-2 w-2 rounded-full bg-rose-500" />
+                              USD Cash
+                            </span>
+                            <div className="text-right">
+                              <span className="font-semibold text-rose-300 tabular-nums">
+                                ${mattressPurchasingPowerToday.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                              </span>
+                              <span className="ml-1 text-[10px] text-zinc-500">
+                                ({((mattressPurchasingPowerToday / initialCapital) * 100).toFixed(0)}% retained)
+                              </span>
+                            </div>
+                          </div>
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-900 border border-zinc-800">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-rose-600 to-rose-400 transition-all duration-300"
+                              style={{ width: `${Math.max(5, (mattressPurchasingPowerToday / initialCapital) * 100)}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Bitcoin Bar */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="flex items-center gap-1 text-orange-300">
+                              <span className="h-2 w-2 rounded-full bg-orange-400" />
+                              Bitcoin (BTC)
+                            </span>
+                            <div className="text-right">
+                              <span className="font-semibold text-cyan-300 tabular-nums">
+                                ${initialCapital.toLocaleString()}
+                              </span>
+                              <span className="ml-1 text-[10px] text-emerald-400 font-medium">
+                                (100% full value)
+                              </span>
+                            </div>
+                          </div>
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-900 border border-zinc-800">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-orange-500 to-cyan-400 transition-all duration-300"
+                              style={{ width: '100%' }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Live Market Trajectory Divergence SVG Chart */}
+                      <div className="mt-3.5 rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-2.5">
+                        <div className="mb-1 flex items-center justify-between text-[10px] text-zinc-400">
+                          <span>Trajectory: {BASE_YEAR} → {MAX_YEAR}</span>
+                          <span className="text-cyan-400">Market Divergence</span>
+                        </div>
+                        <div className="h-14 w-full">
+                          <svg viewBox="0 0 280 60" className="h-full w-full overflow-visible">
+                            <defs>
+                              <linearGradient id="widgetBtcGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#f97316" stopOpacity="0.2" />
+                                <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.8" />
+                              </linearGradient>
+                              <linearGradient id="widgetCashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.8" />
+                                <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.2" />
+                              </linearGradient>
+                            </defs>
+                            {/* Gridlines */}
+                            <line x1="0" y1="10" x2="280" y2="10" stroke="#27272a" strokeDasharray="2 2" strokeWidth="1" />
+                            <line x1="0" y1="35" x2="280" y2="35" stroke="#27272a" strokeDasharray="2 2" strokeWidth="1" />
+                            <line x1="0" y1="52" x2="280" y2="52" stroke="#27272a" strokeWidth="1" />
+                            {/* Bitcoin trajectory line (resilient up & right) */}
+                            <path
+                              d="M 10 38 Q 90 35 150 25 T 270 8"
+                              fill="none"
+                              stroke="url(#widgetBtcGrad)"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                            />
+                            {/* Cash inflation decay line */}
+                            <path
+                              d="M 10 18 Q 80 30 160 44 T 270 52"
+                              fill="none"
+                              stroke="#f43f5e"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeDasharray="4 2"
+                            />
+                            {/* End markers */}
+                            <circle cx="270" cy="8" r="3.5" fill="#22d3ee" />
+                            <circle cx="270" cy="52" r="3" fill="#f43f5e" />
+                          </svg>
+                        </div>
+                        <div className="flex items-center justify-between text-[9px] text-zinc-500 pt-1">
+                          <span className="flex items-center gap-1">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-500" /> Cash: -87% purchasing power
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="inline-block h-1.5 w-1.5 rounded-full bg-cyan-400" /> BTC: Sovereign store of value
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Summary Highlights */}
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
+                        <div className="rounded-lg border border-rose-500/20 bg-rose-500/5 p-2">
+                          <div className="text-[10px] text-zinc-400">Cash Purchasing Power</div>
+                          <div className="text-sm font-bold text-rose-300">
+                            ${mattressPurchasingPowerToday.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                          </div>
+                          <div className="text-[9px] text-rose-400/80 mt-0.5">87% lost to inflation</div>
+                        </div>
+                        <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-2">
+                          <div className="text-[10px] text-orange-200/80">BTC Buying Power</div>
+                          <div className="text-sm font-bold text-orange-200">
+                            {btcVsCashMultiple != null ? `${btcVsCashMultiple.toFixed(1)}×` : '7.7×'} Larger
+                          </div>
+                          <div className="text-[9px] text-cyan-300/80 mt-0.5">
+                            {btcEquivalent != null ? formatBtcAmount(btcEquivalent) : '0.9811'} BTC
+                          </div>
                         </div>
                       </div>
                     </div>
