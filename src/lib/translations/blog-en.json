@@ -1,0 +1,127 @@
+{
+  "hero": {
+    "heading": "Bitcoin Stories, Ideas & Experiences",
+    "subheading": "A community-driven publication featuring essays, insights, and experiences from graduates of the Pan-Africa Bitcoin Academy — exploring the future of Bitcoin in Africa and beyond."
+  },
+  "pre_education_box": {
+    "title": "Pre-Education Ideas",
+    "body": "Are you curious about Bitcoin but haven't started learning yet?\nShare your thoughts, questions, or ideas about Bitcoin as you see it today.",
+    "reward_note": "Thoughtful and well-explained contributions will receive a sats reward.",
+    "cta": "Share Your Pre-Education Ideas →"
+  },
+  "blog_of_month": {
+    "badge": "BLOG OF THE MONTH",
+    "read_cta": "Read Article →",
+    "fallback_role": "Graduate, Cohort 1"
+  },
+  "loading": {
+    "text": "Loading blog posts..."
+  },
+  "featured": {
+    "heading": "Featured Articles"
+  },
+  "categories": {
+    "heading": "Browse by Category",
+    "all_articles": "All Articles",
+    "items": {
+      "all": { "name": "All", "description": "" },
+      "pre-education": {
+        "name": "Pre-Education Ideas",
+        "description": "Thoughts, questions, and ideas from people curious about Bitcoin before starting their education journey. Share what you're thinking about Bitcoin, what questions you have, or what you hope to learn."
+      },
+      "essays": {
+        "name": "Student Essays",
+        "description": "Personal reflections and essays from students exploring how Bitcoin has changed their thinking, what sovereignty means to them, and their learning journeys."
+      },
+      "community": {
+        "name": "Community Stories",
+        "description": "Real-world stories about using Bitcoin in daily life, teaching family and friends, building local communities, and sharing Bitcoin with others."
+      },
+      "africa": {
+        "name": "Bitcoin in Africa",
+        "description": "Articles exploring Bitcoin's role, potential, and impact across Africa—from adoption stories to economic empowerment and sovereignty."
+      },
+      "technical": {
+        "name": "Technical Deep Dives",
+        "description": "In-depth technical articles exploring Bitcoin protocol details, cryptography, consensus mechanisms, and advanced technical concepts."
+      },
+      "lightning": {
+        "name": "Lightning Experiments",
+        "description": "Experiments, tutorials, and experiences with Lightning Network—from first payments to building Lightning applications and exploring its potential."
+      },
+      "future": {
+        "name": "Ideas for the Future",
+        "description": "Visionary articles about the future of Bitcoin in Africa, development ideas, community visions, and forward-thinking perspectives."
+      },
+      "beginner": {
+        "name": "Beginner Lessons",
+        "description": "Educational content designed for beginners—clear explanations of Bitcoin basics, step-by-step guides, and foundational concepts."
+      },
+      "reflections": {
+        "name": "Reflections & Opinions",
+        "description": "Personal reflections, opinions, and philosophical discussions about Bitcoin, sovereignty, economics, and the broader implications of decentralized money."
+      },
+      "builders": {
+        "name": "Builder Showcases",
+        "description": "Showcases of Bitcoin projects, tools, and applications built by students and community members—from wallets to educational resources."
+      },
+      "projects": {
+        "name": "Graduation Projects",
+        "description": "Final projects from academy graduates—comprehensive work demonstrating mastery of Bitcoin concepts, technical skills, and real-world applications."
+      }
+    }
+  },
+  "posts": {
+    "empty": "No posts found in this category yet.",
+    "first_cta": "Be the first to write in this category →",
+    "badge_academy_student": "Academy Student",
+    "badge_graduate": "Graduate",
+    "badge_pre_education": "Pre-Education",
+    "sats_label": "sats"
+  },
+  "write_for_us": {
+    "heading": "Write for Us",
+    "subheading": "Want to publish your Bitcoin story?",
+    "body": "If you're a graduate of the academy, mentor, or community member, we invite you to share your ideas, experiences, and insights.",
+    "cta": "✍️ Submit Your Article"
+  },
+  "what_we_publish": {
+    "heading": "What We Publish",
+    "student_essays": {
+      "heading": "Student Essays",
+      "items": [
+        "How Bitcoin changed your thinking",
+        "What sovereignty means to you",
+        "Personal learning journeys",
+        "New Bitcoin habits and practices"
+      ]
+    },
+    "use_cases": {
+      "heading": "Use Cases & Stories",
+      "items": [
+        "Real-world Bitcoin applications",
+        "Lightning payment experiences",
+        "Teaching family and friends",
+        "Community building stories"
+      ]
+    },
+    "technical": {
+      "heading": "Technical & Development",
+      "items": [
+        "Technical deep dives",
+        "Development projects",
+        "Lightning experiments",
+        "Builder showcases"
+      ]
+    },
+    "vision": {
+      "heading": "Vision & Ideas",
+      "items": [
+        "Future of Bitcoin in Africa",
+        "Development ideas",
+        "Community visions",
+        "Reflections and opinions"
+      ]
+    }
+  }
+}

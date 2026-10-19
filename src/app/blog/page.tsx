@@ -5,78 +5,42 @@ import Link from "next/link";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import SplitText from "@/components/SplitText";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getBlogCopy } from "@/lib/translations/blog";
 
-const categories = [
-  { id: "all", name: "All", icon: "📚", description: "" },
-  { 
-    id: "pre-education", 
-    name: "Pre-Education Ideas", 
-    icon: "💡",
-    description: "Thoughts, questions, and ideas from people curious about Bitcoin before starting their education journey. Share what you're thinking about Bitcoin, what questions you have, or what you hope to learn."
-  },
-  { 
-    id: "essays", 
-    name: "Student Essays", 
-    icon: "✍️",
-    description: "Personal reflections and essays from students exploring how Bitcoin has changed their thinking, what sovereignty means to them, and their learning journeys."
-  },
-  { 
-    id: "community", 
-    name: "Community Stories", 
-    icon: "🤝",
-    description: "Real-world stories about using Bitcoin in daily life, teaching family and friends, building local communities, and sharing Bitcoin with others."
-  },
-  { 
-    id: "africa", 
-    name: "Bitcoin in Africa", 
-    icon: "🌍",
-    description: "Articles exploring Bitcoin's role, potential, and impact across Africa—from adoption stories to economic empowerment and sovereignty."
-  },
-  { 
-    id: "technical", 
-    name: "Technical Deep Dives", 
-    icon: "💻",
-    description: "In-depth technical articles exploring Bitcoin protocol details, cryptography, consensus mechanisms, and advanced technical concepts."
-  },
-  { 
-    id: "lightning", 
-    name: "Lightning Experiments", 
-    icon: "⚡",
-    description: "Experiments, tutorials, and experiences with Lightning Network—from first payments to building Lightning applications and exploring its potential."
-  },
-  { 
-    id: "future", 
-    name: "Ideas for the Future", 
-    icon: "🔮",
-    description: "Visionary articles about the future of Bitcoin in Africa, development ideas, community visions, and forward-thinking perspectives."
-  },
-  { 
-    id: "beginner", 
-    name: "Beginner Lessons", 
-    icon: "📖",
-    description: "Educational content designed for beginners—clear explanations of Bitcoin basics, step-by-step guides, and foundational concepts."
-  },
-  { 
-    id: "reflections", 
-    name: "Reflections & Opinions", 
-    icon: "💭",
-    description: "Personal reflections, opinions, and philosophical discussions about Bitcoin, sovereignty, economics, and the broader implications of decentralized money."
-  },
-  { 
-    id: "builders", 
-    name: "Builder Showcases", 
-    icon: "🛠️",
-    description: "Showcases of Bitcoin projects, tools, and applications built by students and community members—from wallets to educational resources."
-  },
-  { 
-    id: "projects", 
-    name: "Graduation Projects", 
-    icon: "🎓",
-    description: "Final projects from academy graduates—comprehensive work demonstrating mastery of Bitcoin concepts, technical skills, and real-world applications."
-  },
+// Category icons — stable, not translated
+const CATEGORY_ICONS: Record<string, string> = {
+  "all": "📚",
+  "pre-education": "💡",
+  "essays": "✍️",
+  "community": "🤝",
+  "africa": "🌍",
+  "technical": "💻",
+  "lightning": "⚡",
+  "future": "🔮",
+  "beginner": "📖",
+  "reflections": "💭",
+  "builders": "🛠️",
+  "projects": "🎓",
+};
+
+const CATEGORY_IDS = [
+  "all",
+  "pre-education",
+  "essays",
+  "community",
+  "africa",
+  "technical",
+  "lightning",
+  "future",
+  "beginner",
+  "reflections",
+  "builders",
+  "projects",
 ];
 
-const featuredPosts = [
+// Fallback hardcoded posts (used when API fails)
+const fallbackFeaturedPosts = [
   {
     id: 1,
     title: "My First Bitcoin Wallet: Lessons in Sovereignty",
@@ -121,7 +85,7 @@ const featuredPosts = [
   },
 ];
 
-const blogPosts = [
+const fallbackPosts = [
   {
     id: 4,
     title: "How Bitcoin Helped Me Understand Money for the First Time",
@@ -208,7 +172,7 @@ const blogPosts = [
   },
 ];
 
-const blogOfTheMonth = {
+const fallbackBlogOfMonth = {
   id: 1,
   title: "My First Bitcoin Wallet: Lessons in Sovereignty",
   author: "Amina K.",
@@ -216,9 +180,13 @@ const blogOfTheMonth = {
 };
 
 export default function BlogPage() {
+  const { language } = useLanguage();
+  const t = getBlogCopy(language);
+  const isTi = language === "ti";
+
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [posts, setPosts] = useState<any[]>([]);
-  const [featuredPosts, setFeaturedPosts] = useState<any[]>([]);
+  const [featuredPostsList, setFeaturedPostsList] = useState<any[]>([]);
   const [blogOfTheMonth, setBlogOfTheMonth] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -233,15 +201,15 @@ export default function BlogPage() {
         // Fetch all published posts
         const res = await fetch('/api/blog');
         if (!res.ok) {
-          throw new Error('Connection Problems') ;          
-        } 
+          throw new Error('Connection Problems');
+        }
         const data = await res.json();
         const allPosts = data.posts || [];
 
         // Get featured posts
         const featuredRes = await fetch('/api/blog?featured=true&limit=3');
-        const featuredData = await featuredRes.ok ? await featuredRes.json() : { posts: [] };
-        setFeaturedPosts(featuredData.posts || []);
+        const featuredData = featuredRes.ok ? await featuredRes.json() : { posts: [] };
+        setFeaturedPostsList(featuredData.posts || []);
 
         // Get blog of the month
         const monthRes = await fetch('/api/blog?limit=1');
@@ -255,9 +223,9 @@ export default function BlogPage() {
         console.error('Error fetching blog posts:', err);
         setError(err.message || 'Failed to load blog posts');
         // Fallback to hardcoded data if API fails
-        setPosts(blogPosts);
-        setFeaturedPosts(featuredPosts);
-        setBlogOfTheMonth(blogOfTheMonth);
+        setPosts(fallbackPosts);
+        setFeaturedPostsList(fallbackFeaturedPosts);
+        setBlogOfTheMonth(fallbackBlogOfMonth);
       } finally {
         setLoading(false);
       }
@@ -266,24 +234,40 @@ export default function BlogPage() {
     fetchPosts();
   }, []);
 
-  const filteredPosts = selectedCategory === "all" 
-    ? posts 
+  const filteredPosts = selectedCategory === "all"
+    ? posts
     : posts.filter(post => post.category === selectedCategory);
 
   const getCategoryPosts = (categoryId: string) => {
     return posts.filter(post => post.category === categoryId);
   };
 
+  // Build categories from translation
+  const categories = CATEGORY_IDS.map((id) => ({
+    id,
+    icon: CATEGORY_ICONS[id] ?? "📄",
+    name: (t.categories.items as any)[id]?.name ?? id,
+    description: (t.categories.items as any)[id]?.description ?? "",
+  }));
+
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       <div className="relative z-10 w-full bg-black/95">
         <div className="w-full px-4 py-12 sm:px-6 sm:py-16 sm:max-w-7xl sm:mx-auto lg:px-8 lg:py-20">
+
           {/* Header Title + Mission */}
           <AnimatedSection animation="slideUp">
             <div className="mb-16 text-center">
-              <AnimatedHeading as="h1" className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+              <AnimatedHeading
+                as="h1"
+                className={`font-bold tracking-tight text-zinc-50 ${
+                  isTi
+                    ? "text-2xl sm:text-3xl lg:text-4xl"
+                    : "text-4xl sm:text-5xl lg:text-6xl"
+                }`}
+              >
                 <SplitText
-                  text="Bitcoin Stories, Ideas & Experiences"
+                  text={t.hero.heading}
                   tag="span"
                   className="inline-block"
                   delay={50}
@@ -297,27 +281,28 @@ export default function BlogPage() {
                   textAlign="center"
                 />
               </AnimatedHeading>
-              <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
-                A community-driven publication featuring essays, insights, and experiences from graduates of the Pan-Africa Bitcoin Academy — exploring the future of Bitcoin in Africa and beyond.
+              <p className={`mx-auto mt-6 max-w-3xl text-zinc-400 ${isTi ? "text-base sm:text-lg" : "text-lg sm:text-xl"}`}>
+                {t.hero.subheading}
               </p>
               <div className="mx-auto mt-8 max-w-2xl rounded-xl border border-purple-500/30 bg-purple-500/10 p-6">
                 <div className="flex items-start gap-3">
                   <span className="text-2xl">💡</span>
                   <div className="text-left">
-                    <AnimatedHeading as="h3" className="mb-2 text-lg font-semibold text-purple-200">Pre-Education Ideas</AnimatedHeading>
-                    <p className="text-sm text-zinc-300">
-                      Are you curious about Bitcoin but haven't started learning yet?
-                      <br />
-                      Share your thoughts, questions, or ideas about Bitcoin as you see it today.
-                      <br />
-                      <br />
-                      <span className="text-purple-300 font-medium">Thoughtful and well-explained contributions will receive a sats reward.</span>
+                    <AnimatedHeading as="h3" className="mb-2 text-lg font-semibold text-purple-200">
+                      {t.pre_education_box.title}
+                    </AnimatedHeading>
+                    <p className={`text-zinc-300 ${isTi ? "text-xs" : "text-sm"}`}>
+                      {t.pre_education_box.body.split('\n').map((line, i) => (
+                        <span key={i}>{line}{i === 0 && <br />}</span>
+                      ))}
+                      <br /><br />
+                      <span className="text-purple-300 font-medium">{t.pre_education_box.reward_note}</span>
                     </p>
                     <Link
                       href="/blog/submit"
                       className="mt-3 inline-block rounded-lg bg-gradient-to-r from-purple-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
                     >
-                      Share Your Pre-Education Ideas →
+                      {t.pre_education_box.cta}
                     </Link>
                   </div>
                 </div>
@@ -329,32 +314,32 @@ export default function BlogPage() {
           {blogOfTheMonth && (
             <AnimatedSection animation="slideRight">
               <div className="mb-16 rounded-xl border-2 border-orange-400/50 bg-gradient-to-br from-orange-500/10 to-cyan-500/10 p-8 shadow-[0_0_50px_rgba(249,115,22,0.3)]">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="rounded-full border border-orange-400/30 bg-orange-500/20 px-3 py-1 text-xs font-bold text-orange-300">
-                  BLOG OF THE MONTH
-                </span>
-              </div>
-              <AnimatedHeading as="h2" className="mb-3 text-2xl font-semibold text-orange-200 sm:text-3xl">
-                {blogOfTheMonth.title}
-              </AnimatedHeading>
-              <p className="mb-4 text-base text-zinc-300">{blogOfTheMonth.excerpt}</p>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
-                    <span>👤</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-zinc-300">{blogOfTheMonth.author}</p>
-                    <p className="text-xs text-zinc-500">{blogOfTheMonth.authorRole || 'Graduate, Cohort 1'}</p>
-                  </div>
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="rounded-full border border-orange-400/30 bg-orange-500/20 px-3 py-1 text-xs font-bold text-orange-300">
+                    {t.blog_of_month.badge}
+                  </span>
                 </div>
-                <Link
-                  href={`/blog/${blogOfTheMonth.slug || blogOfTheMonth.id}`}
-                  className="ml-auto rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-2 text-sm font-semibold text-black transition hover:brightness-110"
-                >
-                  Read Article →
-                </Link>
-              </div>
+                <AnimatedHeading as="h2" className="mb-3 text-2xl font-semibold text-orange-200 sm:text-3xl">
+                  {blogOfTheMonth.title}
+                </AnimatedHeading>
+                <p className="mb-4 text-base text-zinc-300">{blogOfTheMonth.excerpt}</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
+                      <span>👤</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-zinc-300">{blogOfTheMonth.author}</p>
+                      <p className="text-xs text-zinc-500">{blogOfTheMonth.authorRole || t.blog_of_month.fallback_role}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href={`/blog/${blogOfTheMonth.slug || blogOfTheMonth.id}`}
+                    className="ml-auto rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-2 text-sm font-semibold text-black transition hover:brightness-110"
+                  >
+                    {t.blog_of_month.read_cta}
+                  </Link>
+                </div>
               </div>
             </AnimatedSection>
           )}
@@ -362,7 +347,7 @@ export default function BlogPage() {
           {/* Loading State */}
           {loading && (
             <div className="mb-16 text-center">
-              <div className="text-zinc-400">Loading blog posts...</div>
+              <div className="text-zinc-400">{t.loading.text}</div>
             </div>
           )}
 
@@ -374,85 +359,89 @@ export default function BlogPage() {
           )}
 
           {/* Featured Articles */}
-          {featuredPosts.length > 0 && (
+          {featuredPostsList.length > 0 && (
             <AnimatedSection animation="slideLeft">
               <div className="mb-16">
-              <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-zinc-50 sm:text-3xl">Featured Articles</AnimatedHeading>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {featuredPosts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/blog/${post.slug || post.id}`}
-                  className="group relative rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
-                >
-                  {post.isAcademyStudent && (
-                    <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
-                      🎓 Academy Student
-                    </div>
-                  )}
-                  {post.isGraduate && !post.isAcademyStudent && (
-                    <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
-                      🎓 Graduate
-                    </div>
-                  )}
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-3xl">{post.image}</span>
-                    <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
-                      {categories.find(c => c.id === post.category)?.name}
-                    </span>
-                  </div>
-                  <AnimatedHeading as="h3" className="mb-3 text-xl font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
-                    {post.title}
-                  </AnimatedHeading>
-                  <p className="mb-4 text-sm leading-relaxed text-zinc-400">{post.excerpt}</p>
-                  <div className="mt-auto space-y-2 border-t border-cyan-400/10 pt-4">
-                    <div className="flex items-center justify-between text-xs text-zinc-400">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-zinc-300">{post.author}</span>
-                        <span>•</span>
-                        <span>{post.country}</span>
+                <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-zinc-50 sm:text-3xl">
+                  {t.featured.heading}
+                </AnimatedHeading>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {featuredPostsList.map((post) => (
+                    <Link
+                      key={post.id}
+                      href={`/blog/${post.slug || post.id}`}
+                      className="group relative rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+                    >
+                      {post.isAcademyStudent && (
+                        <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
+                          🎓 {t.posts.badge_academy_student}
+                        </div>
+                      )}
+                      {post.isGraduate && !post.isAcademyStudent && (
+                        <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
+                          🎓 {t.posts.badge_graduate}
+                        </div>
+                      )}
+                      <div className="mb-4 flex items-center justify-between">
+                        <span className="text-3xl">{post.image}</span>
+                        <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
+                          {categories.find(c => c.id === post.category)?.name}
+                        </span>
                       </div>
-                      <span>{post.readTime}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-500">{post.date}</span>
-                      <span className="flex items-center gap-1 rounded-lg bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
-                        ⚡ {post.sats} sats
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-            </div>
-          </AnimatedSection>
+                      <AnimatedHeading as="h3" className="mb-3 text-xl font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
+                        {post.title}
+                      </AnimatedHeading>
+                      <p className="mb-4 text-sm leading-relaxed text-zinc-400">{post.excerpt}</p>
+                      <div className="mt-auto space-y-2 border-t border-cyan-400/10 pt-4">
+                        <div className="flex items-center justify-between text-xs text-zinc-400">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-zinc-300">{post.author}</span>
+                            <span>•</span>
+                            <span>{post.country}</span>
+                          </div>
+                          <span>{post.readTime}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">{post.date}</span>
+                          <span className="flex items-center gap-1 rounded-lg bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
+                            ⚡ {post.sats} {t.posts.sats_label}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
           )}
 
           {/* Categories Filter */}
           <AnimatedSection animation="slideRight">
             <div className="mb-12">
-            <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-zinc-50 sm:text-3xl">Browse by Category</AnimatedHeading>
-            <div className="flex flex-wrap gap-3">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                    selectedCategory === category.id
-                      ? "border-cyan-400/50 bg-cyan-400/20 text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.3)]"
-                      : "border-cyan-400/20 bg-cyan-400/10 text-cyan-300 hover:bg-cyan-400/20"
-                  }`}
-                >
-                  <span>{category.icon}</span>
-                  <span>{category.name}</span>
-                  {category.id !== "all" && (
-                    <span className="rounded-full bg-zinc-900/50 px-2 py-0.5 text-[10px] text-zinc-400">
-                      {getCategoryPosts(category.id).length}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
+              <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-zinc-50 sm:text-3xl">
+                {t.categories.heading}
+              </AnimatedHeading>
+              <div className="flex flex-wrap gap-3">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                      selectedCategory === category.id
+                        ? "border-cyan-400/50 bg-cyan-400/20 text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.3)]"
+                        : "border-cyan-400/20 bg-cyan-400/10 text-cyan-300 hover:bg-cyan-400/20"
+                    }`}
+                  >
+                    <span>{category.icon}</span>
+                    <span>{category.name}</span>
+                    {category.id !== "all" && (
+                      <span className="rounded-full bg-zinc-900/50 px-2 py-0.5 text-[10px] text-zinc-400">
+                        {getCategoryPosts(category.id).length}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </AnimatedSection>
 
@@ -460,85 +449,87 @@ export default function BlogPage() {
           {!loading && (
             <AnimatedSection animation="slideLeft">
               <div className="mb-16">
-              <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-zinc-50 sm:text-3xl">
-                {selectedCategory === "all" ? "All Articles" : categories.find(c => c.id === selectedCategory)?.name}
-              </AnimatedHeading>
-              {selectedCategory !== "all" && (
-                <div className="mb-6 rounded-xl border border-cyan-400/25 bg-cyan-400/10 p-4">
-                  <p className="text-sm text-zinc-300 leading-relaxed">
-                    {categories.find(c => c.id === selectedCategory)?.description}
-                  </p>
-                </div>
-              )}
-              {filteredPosts.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-zinc-400">No posts found in this category yet.</p>
-                  {selectedCategory !== "all" && (
-                    <Link
-                      href="/blog/submit"
-                      className="mt-4 inline-block rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
-                    >
-                      Be the first to write in this category →
-                    </Link>
-                  )}
-                </div>
-              ) : (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredPosts.map((post) => (
-                    <Link
-                      key={post.id}
-                      href={`/blog/${post.slug || post.id}`}
-                  className="group relative flex flex-col rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
-                >
-                  {post.category === "pre-education" && (
-                    <div className="absolute -top-2 -right-2 rounded-full border border-purple-400/30 bg-purple-500/20 px-2 py-1 text-[10px] font-bold text-purple-300">
-                      💡 Pre-Education
-                    </div>
-                  )}
-                  {post.isAcademyStudent && post.category !== "pre-education" && (
-                    <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
-                      🎓 Academy Student
-                    </div>
-                  )}
-                  {post.isGraduate && !post.isAcademyStudent && post.category !== "pre-education" && (
-                    <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
-                      🎓
-                    </div>
-                  )}
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-2xl">{post.image}</span>
-                    <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
-                      {categories.find(c => c.id === post.category)?.name}
-                    </span>
+                <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-zinc-50 sm:text-3xl">
+                  {selectedCategory === "all"
+                    ? t.categories.all_articles
+                    : categories.find(c => c.id === selectedCategory)?.name}
+                </AnimatedHeading>
+                {selectedCategory !== "all" && (
+                  <div className="mb-6 rounded-xl border border-cyan-400/25 bg-cyan-400/10 p-4">
+                    <p className="text-sm text-zinc-300 leading-relaxed">
+                      {categories.find(c => c.id === selectedCategory)?.description}
+                    </p>
                   </div>
-                  <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
-                    {post.title}
-                  </AnimatedHeading>
-                  <p className="mb-4 flex-1 text-sm leading-relaxed text-zinc-400">{post.excerpt}</p>
-                  <div className="mt-auto space-y-2 border-t border-cyan-400/10 pt-4">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
-                        <span className="text-xs">👤</span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-medium text-zinc-300">{post.author}</p>
-                        <p className="text-[10px] text-zinc-500">{post.country} • {post.authorRole}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-zinc-500">
-                      <span>{post.date}</span>
-                      <div className="flex items-center gap-2">
-                        <span>{post.readTime}</span>
-                        <span className="flex items-center gap-1 rounded-lg bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
-                          ⚡ {post.sats}
-                        </span>
-                      </div>
-                    </div>
+                )}
+                {filteredPosts.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-zinc-400">{t.posts.empty}</p>
+                    {selectedCategory !== "all" && (
+                      <Link
+                        href="/blog/submit"
+                        className="mt-4 inline-block rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
+                      >
+                        {t.posts.first_cta}
+                      </Link>
+                    )}
                   </div>
-                </Link>
-                  ))}
-                </div>
-              )}
+                ) : (
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {filteredPosts.map((post) => (
+                      <Link
+                        key={post.id}
+                        href={`/blog/${post.slug || post.id}`}
+                        className="group relative flex flex-col rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+                      >
+                        {post.category === "pre-education" && (
+                          <div className="absolute -top-2 -right-2 rounded-full border border-purple-400/30 bg-purple-500/20 px-2 py-1 text-[10px] font-bold text-purple-300">
+                            💡 {t.posts.badge_pre_education}
+                          </div>
+                        )}
+                        {post.isAcademyStudent && post.category !== "pre-education" && (
+                          <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
+                            🎓 {t.posts.badge_academy_student}
+                          </div>
+                        )}
+                        {post.isGraduate && !post.isAcademyStudent && post.category !== "pre-education" && (
+                          <div className="absolute -top-2 -right-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-2 py-1 text-[10px] font-bold text-cyan-300">
+                            🎓
+                          </div>
+                        )}
+                        <div className="mb-4 flex items-center justify-between">
+                          <span className="text-2xl">{post.image}</span>
+                          <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
+                            {categories.find(c => c.id === post.category)?.name}
+                          </span>
+                        </div>
+                        <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
+                          {post.title}
+                        </AnimatedHeading>
+                        <p className="mb-4 flex-1 text-sm leading-relaxed text-zinc-400">{post.excerpt}</p>
+                        <div className="mt-auto space-y-2 border-t border-cyan-400/10 pt-4">
+                          <div className="flex items-center gap-2">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
+                              <span className="text-xs">👤</span>
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs font-medium text-zinc-300">{post.author}</p>
+                              <p className="text-[10px] text-zinc-500">{post.country} • {post.authorRole}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-zinc-500">
+                            <span>{post.date}</span>
+                            <div className="flex items-center gap-2">
+                              <span>{post.readTime}</span>
+                              <span className="flex items-center gap-1 rounded-lg bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
+                                ⚡ {post.sats}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </AnimatedSection>
           )}
@@ -546,114 +537,87 @@ export default function BlogPage() {
           {/* Write for Us CTA */}
           <AnimatedSection animation="slideUp">
             <div className="mb-16 rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-            <div className="text-center">
-              <AnimatedHeading as="h2" className="mb-4 text-2xl font-semibold text-cyan-200">Write for Us</AnimatedHeading>
-              <p className="mb-2 text-base text-zinc-300">
-                Want to publish your Bitcoin story?
-              </p>
-              <p className="mb-6 text-sm text-zinc-400">
-                If you're a graduate of the academy, mentor, or community member, we invite you to share your ideas, experiences, and insights.
-              </p>
-              <Link
-                href="/blog/submit"
-                className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-6 py-3 text-base font-semibold text-black transition hover:brightness-110"
-              >
-                ✍️ Submit Your Article
-              </Link>
+              <div className="text-center">
+                <AnimatedHeading as="h2" className="mb-4 text-2xl font-semibold text-cyan-200">
+                  {t.write_for_us.heading}
+                </AnimatedHeading>
+                <p className="mb-2 text-base text-zinc-300">{t.write_for_us.subheading}</p>
+                <p className="mb-6 text-sm text-zinc-400">{t.write_for_us.body}</p>
+                <Link
+                  href="/blog/submit"
+                  className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-6 py-3 text-base font-semibold text-black transition hover:brightness-110"
+                >
+                  {t.write_for_us.cta}
+                </Link>
+              </div>
             </div>
-          </div>
 
-          {/* Submission Guidelines */}
-          <div className="rounded-xl border border-purple-500/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
-            <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-purple-200">What We Publish</AnimatedHeading>
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div>
-                <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">Student Essays</AnimatedHeading>
-                <ul className="space-y-2 text-sm text-zinc-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>How Bitcoin changed your thinking</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>What sovereignty means to you</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Personal learning journeys</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>New Bitcoin habits and practices</span>
-                  </li>
-                </ul>
+            {/* Submission Guidelines */}
+            <div className="rounded-xl border border-purple-500/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
+              <AnimatedHeading as="h2" className="mb-6 text-2xl font-semibold text-purple-200">
+                {t.what_we_publish.heading}
+              </AnimatedHeading>
+              <div className="grid gap-6 sm:grid-cols-2">
+                {/* Student Essays */}
+                <div>
+                  <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">
+                    {t.what_we_publish.student_essays.heading}
+                  </AnimatedHeading>
+                  <ul className="space-y-2 text-sm text-zinc-300">
+                    {t.what_we_publish.student_essays.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-purple-400">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Use Cases & Stories */}
+                <div>
+                  <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">
+                    {t.what_we_publish.use_cases.heading}
+                  </AnimatedHeading>
+                  <ul className="space-y-2 text-sm text-zinc-300">
+                    {t.what_we_publish.use_cases.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-purple-400">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Technical & Development */}
+                <div>
+                  <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">
+                    {t.what_we_publish.technical.heading}
+                  </AnimatedHeading>
+                  <ul className="space-y-2 text-sm text-zinc-300">
+                    {t.what_we_publish.technical.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-purple-400">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Vision & Ideas */}
+                <div>
+                  <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">
+                    {t.what_we_publish.vision.heading}
+                  </AnimatedHeading>
+                  <ul className="space-y-2 text-sm text-zinc-300">
+                    {t.what_we_publish.vision.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-purple-400">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <div>
-                <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">Use Cases & Stories</AnimatedHeading>
-                <ul className="space-y-2 text-sm text-zinc-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Real-world Bitcoin applications</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Lightning payment experiences</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Teaching family and friends</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Community building stories</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">Technical & Development</AnimatedHeading>
-                <ul className="space-y-2 text-sm text-zinc-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Technical deep dives</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Development projects</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Lightning experiments</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Builder showcases</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <AnimatedHeading as="h3" className="mb-3 text-lg font-semibold text-purple-200">Vision & Ideas</AnimatedHeading>
-                <ul className="space-y-2 text-sm text-zinc-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Future of Bitcoin in Africa</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Development ideas</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Community visions</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    <span>Reflections and opinions</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
             </div>
           </AnimatedSection>
+
         </div>
       </div>
     </div>
