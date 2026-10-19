@@ -1,237 +1,393 @@
-import { Metadata } from 'next';
-import { AnimatedSection } from '@/components/AnimatedSection';
-import { AnimatedHeading } from '@/components/AnimatedHeading';
-import SplitText from '@/components/SplitText';
+"use client";
 
-export const metadata: Metadata = {
-  title: 'About PanAfrican Bitcoin Academy - First Eritrea Based Bitcoin Academy',
-  description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn about our mission to provide clear Bitcoin education in Eritrea, Uganda, and across Africa. Join Eritrean Bitcoiners community.',
-  keywords: [
-    "Bitcoin education Africa",
-    "Learn Bitcoin",
-    "Bitcoin academy",
-    "PanAfrican Bitcoin Academy",
-    "Eritrea Bitcoin academy",
-    "Eritrea Bitcoin",
-    "Eritrean Bitcoiners",
-    "first Eritrean Bitcoin education",
-    "Asmara Bitcoin education",
-    "Uganda Bitcoin education",
-    "Bitcoin education mission",
-    "Bitcoin in Eritrea",
-  ],
-  alternates: {
-    canonical: '/about',
-  },
-  openGraph: {
-    title: 'About PanAfrican Bitcoin Academy - First Eritrea Based Bitcoin Academy',
-    description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn about our mission to provide clear Bitcoin education in Eritrea, Uganda, and across Africa.',
-    url: '/about',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Pan-African Bitcoin Academy - About Us',
-      },
-    ],
-  },
-};
+import Link from "next/link";
+import { AnimatedSection } from "@/components/AnimatedSection";
+import { AnimatedHeading } from "@/components/AnimatedHeading";
+import SplitText from "@/components/SplitText";
+import { BitcoinNetworkAnimation } from "@/components/BitcoinNetworkAnimation";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getAboutCopy } from "@/lib/translations/about";
 
 export default function AboutPage() {
+  const { language } = useLanguage();
+  const isTi = language === "ti";
+  const t = getAboutCopy(language);
+
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      <div className="relative z-10 w-full bg-black/95">
-        <div className="w-full px-4 py-12 sm:px-6 sm:py-16 sm:max-w-7xl sm:mx-auto lg:px-8 lg:py-20">
-          {/* Hero */}
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-black text-zinc-100 selection:bg-orange-500/30 selection:text-orange-200">
+      
+      {/* 1. Page-confined Dynamic Bitcoin Background Layer */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Live Canvas Bitcoin Blockchain & Nodes Animation */}
+        <div className="absolute inset-0 opacity-45 mix-blend-screen">
+          <BitcoinNetworkAnimation className="h-full w-full" />
+        </div>
+
+        {/* Ambient Radial Gradient Lights */}
+        <div className="absolute -top-40 left-1/2 h-[600px] w-full max-w-7xl -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-500/20 via-cyan-500/10 to-transparent blur-3xl opacity-80" />
+        <div className="absolute top-1/4 -left-32 h-[500px] w-[500px] rounded-full bg-cyan-600/15 blur-[140px]" />
+        <div className="absolute top-2/3 -right-32 h-[500px] w-[500px] rounded-full bg-orange-600/15 blur-[140px]" />
+        
+        {/* Soft Vignette Overlay to guarantee high contrast and readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/85 to-black/95" />
+      </div>
+
+      {/* 2. Main Page Content */}
+      <div className="relative z-10 w-full">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+          
+          {/* Hero Section */}
           <AnimatedSection animation="slideUp">
-            <div className="mb-14 text-center">
-              <AnimatedHeading as="h1" className="mt-4 text-4xl tracking-tight text-zinc-30 sm:text-5xl lg:text-6xl">
+            <div className="relative mx-auto max-w-4xl text-center pt-2 pb-6">
+              {/* Main Headline */}
+              <AnimatedHeading as="h1" className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl leading-[1.28] sm:leading-[1.3] max-w-3xl mx-auto">
                 <SplitText
-                  text="Understand Bitcoin the right way — through precise explanations, transparent guidance, and meaningful technical depth"
+                  text={t.hero.heading}
                   tag="span"
                   className="inline-block"
-                  delay={50}
-                  duration={1.25}
-                  ease="bounce.out"
+                  delay={30}
+                  duration={1.1}
+                  ease="power2.out"
                   splitType="words"
-                  from={{ opacity: 0, y: 40 }}
+                  from={{ opacity: 0, y: 30 }}
                   to={{ opacity: 1, y: 0 }}
                   threshold={0.1}
-                  rootMargin="-100px"
+                  rootMargin="-50px"
                   textAlign="center"
                 />
               </AnimatedHeading>
             </div>
           </AnimatedSection>
 
-          {/* Core Identity */}
+          {/* Core Identity Banner */}
           <AnimatedSection animation="slideUp">
-            <section className="mb-12 rounded-xl border border-cyan-500/30 bg-gradient-to-r from-zinc-900 via-cyan-900/20 to-zinc-900 p-8 shadow-[0_0_40px_rgba(14,165,233,0.2)] sm:p-10">
-              <div className="w-full sm:max-w-4xl sm:mx-auto text-center">
-                <div className="mb-4 inline-block rounded-full bg-cyan-500/20 px-4 py-2">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-cyan-300">Our Core Identity</p>
-                </div>
-                <p className="text-xl font-semibold leading-relaxed text-cyan-100 sm:text-2xl lg:text-3xl">
-                  Pan-African Bitcoin Academy is an open-source Bitcoin education infrastructure about Bitcoin from first principles and builds long-term technical and contributor capacity in underserved communities.
+            <div className="mt-6 relative overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-b from-zinc-900/90 via-zinc-950/95 to-black p-6 sm:p-10 shadow-[0_0_60px_rgba(6,182,212,0.15)] backdrop-blur-xl">
+              <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+              <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl" />
+
+              <div className="relative mx-auto max-w-3xl text-center z-10">
+                <span className="inline-block rounded-full bg-cyan-500/20 px-4 py-1 text-xs font-semibold tracking-wide text-cyan-300 border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                  {t.core_identity.label}
+                </span>
+                <p className="mt-5 text-base sm:text-lg lg:text-xl font-normal leading-relaxed text-zinc-200">
+                  “{t.core_identity.body}”
                 </p>
               </div>
-            </section>
+            </div>
           </AnimatedSection>
 
-          <div className="space-y-10 text-base text-zinc-100 sm:text-lg">
-            {/* Mission */}
+          {/* Main Content Sections */}
+          <div className="mt-20 space-y-16 sm:space-y-24">
+            
+            {/* Mission & Philosophy */}
             <AnimatedSection animation="slideRight">
-              <section className="space-y-3">
-              <p className="text-zinc-200">
-                Pan-African Bitcoin Academy exists to help people across Africa learn Bitcoin the right way —
-                with clarity, honesty, and technical depth. Our mission is to create a trusted learning
-                environment where anyone can understand how Bitcoin truly works: keys, UTXOs, transactions,
-                mining, blocks, wallets, and responsible self-custody.
-              </p>
-              <div className="relative overflow-hidden rounded-xl border border-cyan-500/30 bg-gradient-to-r from-zinc-900 via-cyan-900/20 to-zinc-900 p-5 text-center shadow-[0_0_40px_rgba(14,165,233,0.15)]">
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(34,211,238,0.12),transparent_32%)]" />
-                <p className="relative text-lg font-bold text-cyan-100 sm:text-xl">
-                  “The best thing you can do for yourself is to have the knowledge.”
-                </p>
+              <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/80 p-8 sm:p-12 shadow-2xl backdrop-blur-md">
+                <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+                <div className="pointer-events-none absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
+
+                <div className="relative z-10 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
+                  <div className="lg:col-span-7 space-y-6">
+                    <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-400">
+                      <span className="h-1.5 w-6 rounded-full bg-orange-400" />
+                      <span>{t.mission.badge}</span>
+                    </div>
+                    <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+                      {t.mission.heading}
+                    </h2>
+                    <p className="text-base sm:text-lg leading-relaxed text-zinc-300">
+                      {t.mission.body}
+                    </p>
+                  </div>
+
+                  <div className="lg:col-span-5 space-y-4">
+                    <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-zinc-900/90 to-zinc-950 p-6 sm:p-8 shadow-lg shadow-cyan-950/30">
+                      <div className="text-4xl font-serif text-cyan-400/40">“</div>
+                      <p className="relative -mt-4 text-base sm:text-lg font-semibold italic text-cyan-100">
+                        {t.mission.quote}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-6 text-orange-100 backdrop-blur-sm">
+                      <p className="text-sm sm:text-base font-normal text-orange-200/90">{t.mission.disclaimer_1}</p>
+                      <p className="mt-2 text-base sm:text-lg font-semibold text-orange-300">{t.mission.disclaimer_2}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-4 text-sm text-orange-100 sm:text-base">
-                <p>This is not a hype platform. This is not a trading academy.</p>
-                <p className="mt-1 font-semibold">This is a place for real knowledge, real skills, and real empowerment.</p>
-              </div>
-              </section>
             </AnimatedSection>
 
-            {/* Who it's for */}
+            {/* Who It Is For - 3 Rich Cards */}
             <AnimatedSection animation="slideLeft">
-              <section className="rounded-xl border border-orange-500/25 bg-zinc-950/70 p-5 sm:p-6">
-              <AnimatedHeading as="h2" className="text-lg font-semibold text-orange-200 sm:text-xl">Who this academy is for</AnimatedHeading>
-              <div className="mt-4 space-y-6 text-zinc-200">
-                <div>
-                  <p className="font-semibold text-zinc-100">1) New learners and curious beginners</p>
-                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-300 sm:text-base">
-                    <li>Understand Bitcoin deeply as a system, not a price chart</li>
-                    <li>Protect yourself from scams and common mistakes</li>
-                    <li>Safely use wallets and practice responsible self-custody</li>
-                  </ul>
+              <div>
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                  <div className="inline-block rounded-full bg-zinc-900 px-3 py-1 text-xs font-mono text-zinc-400 border border-zinc-800 mb-3">
+                    AUDIENCE
+                  </div>
+                  <AnimatedHeading as="h2" className="text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                    {t.who_its_for.heading}
+                  </AnimatedHeading>
                 </div>
-                <div>
-                  <p className="font-semibold text-zinc-100">2) People who want detailed Bitcoin technology</p>
-                  <p className="mt-1 text-sm text-zinc-300 sm:text-base">
-                    Go beyond “what is Bitcoin?” and get a structured foundation in how the protocol works.
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                  {/* Group 1: New Learners */}
+                  <div className="relative group overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/80 p-6 sm:p-8 hover:border-orange-500/50 transition-all duration-300 shadow-lg">
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-orange-500/5 blur-2xl group-hover:bg-orange-500/15 transition-all" />
+                    
+                    <div className="relative z-10">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-400 border border-orange-500/30 mb-6 font-mono font-bold text-sm">
+                        01
+                      </div>
+                      <h3 className="text-lg font-bold text-white mb-4">
+                        {t.who_its_for.group_1.title}
+                      </h3>
+                      <ul className="space-y-3.5 text-sm sm:text-base text-zinc-300">
+                        {t.who_its_for.group_1.items.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5">
+                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-400 flex-shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Group 2: Tech Deep-Dive */}
+                  <div className="relative group overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/80 p-6 sm:p-8 hover:border-cyan-500/50 transition-all duration-300 shadow-lg">
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-cyan-500/5 blur-2xl group-hover:bg-cyan-500/15 transition-all" />
+
+                    <div className="relative z-10">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 mb-6 font-mono font-bold text-sm">
+                        02
+                      </div>
+                      <h3 className="text-lg font-bold text-white mb-4">
+                        {t.who_its_for.group_2.title}
+                      </h3>
+                      <p className="text-sm sm:text-base leading-relaxed text-zinc-300">
+                        {t.who_its_for.group_2.body}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Group 3: Future Developers */}
+                  <div className="relative group overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/80 p-6 sm:p-8 hover:border-purple-500/50 transition-all duration-300 shadow-lg">
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-purple-500/5 blur-2xl group-hover:bg-purple-500/15 transition-all" />
+
+                    <div className="relative z-10">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/15 text-purple-400 border border-purple-500/30 mb-6 font-mono font-bold text-sm">
+                        03
+                      </div>
+                      <h3 className="text-lg font-bold text-white mb-4">
+                        {t.who_its_for.group_3.title}
+                      </h3>
+                      <p className="text-sm sm:text-base leading-relaxed text-zinc-300">
+                        {t.who_its_for.group_3.body}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+
+            {/* Developer Support & Contributors */}
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {/* Dev Support Card */}
+              <AnimatedSection animation="slideRight">
+                <div className="relative h-full overflow-hidden rounded-3xl border border-cyan-500/25 bg-zinc-950/85 p-6 sm:p-10 shadow-[0_0_35px_rgba(6,182,212,0.1)] flex flex-col justify-between">
+                  <div className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+
+                  <div className="relative z-10">
+                    <div className="inline-block rounded-xl bg-cyan-500/10 px-3.5 py-1 text-xs font-semibold text-cyan-300 border border-cyan-500/25 mb-5">
+                      {t.developer_support.badge}
+                    </div>
+                    <AnimatedHeading as="h2" className="text-xl font-bold text-white sm:text-2xl lg:text-3xl mb-6">
+                      {t.developer_support.heading}
+                    </AnimatedHeading>
+                    <ul className="space-y-4 text-sm sm:text-base text-zinc-300">
+                      {t.developer_support.items.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-3.5">
+                          <span className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold flex-shrink-0">
+                            ✓
+                          </span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </AnimatedSection>
+
+              {/* Students as Contributors & Community */}
+              <div className="space-y-6">
+                <AnimatedSection animation="slideLeft">
+                  <div className="relative overflow-hidden rounded-3xl border border-purple-500/25 bg-zinc-950/85 p-6 sm:p-8 shadow-lg">
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-purple-500/10 blur-2xl" />
+                    <div className="relative z-10">
+                      <div className="inline-block rounded-xl bg-purple-500/10 px-3.5 py-1 text-xs font-semibold text-purple-300 border border-purple-500/25 mb-4">
+                        {t.students_as_contributors.badge}
+                      </div>
+                      <AnimatedHeading as="h2" className="text-xl font-bold text-white sm:text-2xl mb-3">
+                        {t.students_as_contributors.heading}
+                      </AnimatedHeading>
+                      <p className="text-sm sm:text-base leading-relaxed text-zinc-300">
+                        {t.students_as_contributors.body}
+                      </p>
+                    </div>
+                  </div>
+                </AnimatedSection>
+
+                {/* Community: Emerald / Greenish theme */}
+                <AnimatedSection animation="slideLeft">
+                  <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-zinc-950/85 p-6 sm:p-8 shadow-[0_0_30px_rgba(16,185,129,0.12)]">
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-2xl" />
+                    <div className="relative z-10">
+                      <div className="inline-block rounded-xl bg-emerald-500/15 px-3.5 py-1 text-xs font-semibold text-emerald-300 border border-emerald-500/30 mb-4">
+                        {t.community.badge}
+                      </div>
+                      <AnimatedHeading as="h2" className="text-xl font-bold text-white sm:text-2xl mb-3">
+                        {t.community.heading}
+                      </AnimatedHeading>
+                      <p className="text-sm sm:text-base leading-relaxed text-zinc-300">
+                        {t.community.body}
+                      </p>
+                    </div>
+                  </div>
+                </AnimatedSection>
+              </div>
+            </div>
+
+            {/* What we do NOT do - Greenish Emerald Styling for the Empowering Security focus */}
+            <AnimatedSection animation="slideUp">
+              <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/90 p-6 sm:p-10 shadow-2xl">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 text-zinc-300 font-bold text-lg border border-zinc-700">
+                    ℹ
+                  </div>
+                  <AnimatedHeading as="h2" className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">
+                    {t.what_we_dont_do.heading}
+                  </AnimatedHeading>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {t.what_we_dont_do.items.map((item, idx) => {
+                    const isFocusPoint = idx === 2; // "ርእስኻ ንምክልኻል ክትክእል..."
+
+                    if (isFocusPoint) {
+                      return (
+                        <div
+                          key={idx}
+                          className="relative overflow-hidden rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-zinc-900/90 to-emerald-950/20 p-6 shadow-[0_0_30px_rgba(16,185,129,0.15)] backdrop-blur-md"
+                        >
+                          <div className="pointer-events-none absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-emerald-500/15 blur-xl" />
+                          <div className="relative z-10">
+                            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300 mb-3">
+                              <span>✓</span>
+                              <span>{isTi ? "ቀንዲ ትኹረትና" : "Our Core Focus"}</span>
+                            </div>
+                            <p className="text-sm sm:text-base text-emerald-100 leading-relaxed font-semibold">
+                              {item}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-2xl border border-red-500/25 bg-red-500/5 p-6 backdrop-blur-sm"
+                      >
+                        <div className="inline-flex items-center gap-1.5 rounded-full bg-red-500/20 border border-red-500/30 px-2.5 py-0.5 text-[11px] font-bold text-red-300 mb-3">
+                          <span>✕</span>
+                          <span>{isTi ? "ኣይንገብርን" : "We Do Not"}</span>
+                        </div>
+                        <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-medium">
+                          {item}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </AnimatedSection>
+
+            {/* Open Source License */}
+            <AnimatedSection animation="slideUp">
+              <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/90 p-6 sm:p-10 backdrop-blur-md shadow-2xl">
+                <div className="relative z-10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                      <div className="inline-block rounded-lg bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300 border border-cyan-500/20 mb-2">
+                        GPL-3.0
+                      </div>
+                      <AnimatedHeading as="h2" className="text-xl font-bold text-white sm:text-2xl">
+                        {t.open_source.heading}
+                      </AnimatedHeading>
+                    </div>
+                    
+                    <a
+                      href="/LICENSE"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-fit items-center gap-2 rounded-xl border border-cyan-400/40 bg-cyan-500/10 px-5 py-2.5 text-xs sm:text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20 hover:border-cyan-400"
+                    >
+                      <span>{t.open_source.view_license}</span>
+                      <span>↗</span>
+                    </a>
+                  </div>
+
+                  <p className="text-sm sm:text-base text-zinc-300 leading-relaxed mb-4 max-w-4xl">
+                    {t.open_source.body_prefix}{" "}
+                    <a
+                      href="https://www.gnu.org/licenses/gpl-3.0.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:text-cyan-300 underline font-semibold"
+                    >
+                      {t.open_source.license_link_text}
+                    </a>{" "}
+                    {t.open_source.body_suffix}
+                  </p>
+                  
+                  <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-4xl">
+                    {t.open_source.disclaimer}
                   </p>
                 </div>
-                <div>
-                  <p className="font-semibold text-zinc-100">3) Future Bitcoin and Lightning developers</p>
-                  <p className="mt-1 text-sm text-zinc-300 sm:text-base">
-                    We don’t run a coding bootcamp, but we provide roadmaps, curated resources, mentor connections,
-                    events, hackathons, and guidance to start contributing to Bitcoin Core, wallets, and Lightning.
+              </div>
+            </AnimatedSection>
+
+            {/* An Evolving Project (Bottom Callout with Glowing Hub) */}
+            <AnimatedSection animation="slideUp">
+              <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-b from-zinc-950 via-zinc-900/60 to-black p-8 sm:p-14 text-center max-w-4xl mx-auto shadow-2xl">
+                <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
+                
+                <div className="relative z-10">
+                  <AnimatedHeading as="h2" className="text-2xl font-bold text-white sm:text-4xl mb-5">
+                    {t.evolving.heading}
+                  </AnimatedHeading>
+                  <p className="text-base sm:text-lg text-zinc-300 leading-relaxed mb-10 max-w-2xl mx-auto">
+                    {t.evolving.body}
                   </p>
+                  <div className="flex flex-wrap items-center justify-center gap-4">
+                    <Link
+                      href="/chapters"
+                      className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition hover:scale-105 active:scale-95"
+                    >
+                      {t.evolving.cta_curriculum}
+                    </Link>
+                    <Link
+                      href="/impact"
+                      className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/90 px-7 py-3.5 text-sm font-semibold text-zinc-200 transition hover:border-zinc-500 hover:text-white hover:bg-zinc-800"
+                    >
+                      {t.evolving.cta_impact}
+                    </Link>
+                  </div>
                 </div>
               </div>
-              </section>
             </AnimatedSection>
 
-            {/* Support for developers */}
-            <AnimatedSection animation="slideRight">
-              <section className="rounded-xl border border-cyan-400/25 bg-black/80 p-5 sm:p-6 shadow-[0_0_40px_rgba(34,211,238,0.18)]">
-              <AnimatedHeading as="h2" className="text-lg font-semibold text-cyan-200 sm:text-xl">How we support new developers</AnimatedHeading>
-              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-zinc-200 sm:text-base">
-                <li>Curated library of Bitcoin, wallet, and Lightning development resources</li>
-                <li>Pathways to Bitcoin Core, Lightning, and wallet builder communities</li>
-                <li>Access to mentors, guest speakers, and local/online meetups</li>
-                <li>Introductions to open-source projects, events, and hackathons</li>
-                <li>Guidance on contributing to wallets, tools, and Bitcoin OSS projects</li>
-              </ul>
-              </section>
-            </AnimatedSection>
-
-            {/* Community */}
-            <AnimatedSection animation="slideLeft">
-              <section className="rounded-xl border border-green-400/25 bg-green-500/5 p-5 sm:p-6">
-              <AnimatedHeading as="h2" className="text-lg font-semibold text-green-200 sm:text-xl">A growing community — open to all</AnimatedHeading>
-              <p className="mt-3 text-zinc-200">
-                Connected to the Pan-African and global Bitcoin ecosystem. We welcome mentors,
-                guest lecturers, Bitcoin developers, educators, open-source contributors, builders, wallet creators,
-                Lightning enthusiasts, and anyone who wants to support African learners.
-              </p>
-              </section>
-            </AnimatedSection>
-
-            {/* Students as contributors */}
-            <AnimatedSection animation="slideUp">
-              <section className="rounded-xl border border-purple-400/25 bg-purple-500/10 p-5 sm:p-6">
-              <AnimatedHeading as="h2" className="text-lg font-semibold text-purple-100 sm:text-xl">Our students become contributors</AnimatedHeading>
-              <p className="mt-3 text-zinc-200">
-                Graduates are encouraged to write about their learning journey, share safety lessons, explain the
-                challenges they faced, and teach future cohorts. Many go on to mentor, lecture, or contribute to the
-                curriculum and community resources.
-              </p>
-              </section>
-            </AnimatedSection>
-
-            {/* What we do not do */}
-            <AnimatedSection animation="slideRight">
-              <section className="rounded-xl border border-red-400/25 bg-red-500/10 p-5 sm:p-6">
-              <AnimatedHeading as="h2" className="text-lg font-semibold text-red-100 sm:text-xl">What we do NOT do</AnimatedHeading>
-              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-zinc-200 sm:text-base">
-                <li>We do NOT teach trading.</li>
-                <li>We do NOT give investment advice or push anyone to invest.</li>
-                <li>
-                  We focus on knowledge, security, self-custody skills, technical understanding, and scam awareness so
-                  you can protect yourself.
-                </li>
-              </ul>
-              </section>
-            </AnimatedSection>
-
-            {/* License */}
-            <AnimatedSection animation="slideUp">
-              <section className="rounded-xl border border-cyan-400/25 bg-black/80 p-5 sm:p-6 shadow-[0_0_40px_rgba(34,211,238,0.18)]">
-                <AnimatedHeading as="h2" className="text-lg font-semibold text-cyan-200 sm:text-xl mb-3">Open Source License</AnimatedHeading>
-                <p className="text-zinc-200 mb-4">
-                  This program is free software: you can redistribute it and/or modify it under the terms of the{" "}
-                  <a
-                    href="https://www.gnu.org/licenses/gpl-3.0.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 underline"
-                  >
-                    GNU General Public License v3
-                  </a>
-                  {" "}or (at your option) any later version.
-                </p>
-                <p className="text-zinc-300 text-sm mb-4">
-                  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-                </p>
-                <div className="mt-4">
-                  <a
-                    href="/LICENSE"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
-                  >
-                    View Full License
-                  </a>
-                </div>
-              </section>
-            </AnimatedSection>
-
-            {/* Evolving project */}
-            <AnimatedSection animation="slideLeft">
-              <section className="space-y-3">
-              <AnimatedHeading as="h2" className="text-lg font-semibold text-zinc-100 sm:text-xl">An evolving project</AnimatedHeading>
-              <p className="text-zinc-300">
-                The academy keeps growing as more students join, mentors participate, developers contribute, and
-                communities share resources. Together, we can build a movement of informed, empowered, and technically
-                skilled African Bitcoin developers and builders.
-              </p>
-              </section>
-            </AnimatedSection>
           </div>
         </div>
       </div>
     </div>
   );
 }
-

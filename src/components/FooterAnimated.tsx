@@ -11,8 +11,12 @@ export function FooterAnimated({ children }: { children: ReactNode }) {
     if (!el) return;
 
     const obs = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+        }
+      },
+      { threshold: 0.01, rootMargin: '50px 0px 0px 0px' }
     );
     obs.observe(el);
     return () => obs.disconnect();

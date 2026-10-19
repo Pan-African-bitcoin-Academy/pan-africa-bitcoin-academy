@@ -11,7 +11,7 @@ export function Footer() {
   const isTi = language === 'ti';
   const t = getHomeCopy(language);
   return (
-    <footer className="relative border-t border-cyan-400/15 bg-black/90 backdrop-blur-xl w-full overflow-hidden">
+    <footer className="relative z-20 border-t border-cyan-400/15 bg-black/95 backdrop-blur-xl w-full overflow-hidden">
       {/* Large Bitcoin ₿ background watermark */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-end overflow-hidden" aria-hidden="true">
         <svg

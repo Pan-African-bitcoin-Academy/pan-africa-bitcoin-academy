@@ -1,0 +1,80 @@
+{
+  "hero": {
+    "badge": "Pan-African Bitcoin Academy",
+    "heading": "Understand Bitcoin the right way — through precise explanations, transparent guidance, and meaningful technical depth"
+  },
+  "core_identity": {
+    "label": "Our Core Identity",
+    "body": "Pan-African Bitcoin Academy is an open-source Bitcoin education infrastructure about Bitcoin from first principles and builds long-term technical and contributor capacity in underserved communities."
+  },
+  "mission": {
+    "badge": "Mission & Philosophy",
+    "heading": "Educating with Clarity, Honesty & Rigor",
+    "body": "Pan-African Bitcoin Academy exists to help people across Africa learn Bitcoin the right way — with clarity, honesty, and technical depth. Our mission is to create a trusted learning environment where anyone can understand how Bitcoin truly works: keys, UTXOs, transactions, mining, blocks, wallets, and responsible self-custody.",
+    "quote": "“The best thing you can do for yourself is to have the knowledge.”",
+    "disclaimer_1": "This is not a hype platform. This is not a trading academy.",
+    "disclaimer_2": "This is a place for real knowledge, real skills, and real empowerment."
+  },
+  "who_its_for": {
+    "heading": "Who this academy is for",
+    "group_1": {
+      "title": "1) New learners and curious beginners",
+      "items": [
+        "Understand Bitcoin deeply as a system, not a price chart",
+        "Protect yourself from scams and common mistakes",
+        "Safely use wallets and practice responsible self-custody"
+      ]
+    },
+    "group_2": {
+      "title": "2) People who want detailed Bitcoin technology",
+      "body": "Go beyond \"what is Bitcoin?\" and get a structured foundation in how the protocol works."
+    },
+    "group_3": {
+      "title": "3) Future Bitcoin and Lightning developers",
+      "body": "We don't run a coding bootcamp, but we provide roadmaps, curated resources, mentor connections, events, hackathons, and guidance to start contributing to Bitcoin Core, wallets, and Lightning."
+    }
+  },
+  "developer_support": {
+    "badge": "Developer Ecosystem",
+    "heading": "How we support new developers",
+    "items": [
+      "Curated library of Bitcoin, wallet, and Lightning development resources",
+      "Pathways to Bitcoin Core, Lightning, and wallet builder communities",
+      "Access to mentors, guest speakers, and local/online meetups",
+      "Introductions to open-source projects, events, and hackathons",
+      "Guidance on contributing to wallets, tools, and Bitcoin OSS projects"
+    ]
+  },
+  "community": {
+    "badge": "Global & Local",
+    "heading": "A growing community — open to all",
+    "body": "Connected to the Pan-African and global Bitcoin ecosystem. We welcome mentors, guest lecturers, Bitcoin developers, educators, open-source contributors, builders, wallet creators, Lightning enthusiasts, and anyone who wants to support African learners."
+  },
+  "students_as_contributors": {
+    "badge": "Empowerment",
+    "heading": "Our students become contributors",
+    "body": "Graduates are encouraged to write about their learning journey, share safety lessons, explain the challenges they faced, and teach future cohorts. Many go on to mentor, lecture, or contribute to the curriculum and community resources."
+  },
+  "what_we_dont_do": {
+    "heading": "What we do NOT do",
+    "items": [
+      "We do NOT teach trading.",
+      "We do NOT give investment advice or push anyone to invest.",
+      "We focus on knowledge, security, self-custody skills, technical understanding, and scam awareness so you can protect yourself."
+    ]
+  },
+  "open_source": {
+    "heading": "Open Source License",
+    "body_prefix": "This program is free software: you can redistribute it and/or modify it under the terms of the",
+    "license_link_text": "GNU General Public License v3",
+    "body_suffix": "or (at your option) any later version.",
+    "disclaimer": "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.",
+    "view_license": "View Full License"
+  },
+  "evolving": {
+    "heading": "An evolving project",
+    "body": "The academy keeps growing as more students join, mentors participate, developers contribute, and communities share resources. Together, we can build a movement of informed, empowered, and technically skilled African Bitcoin developers and builders.",
+    "cta_curriculum": "Explore Curriculum →",
+    "cta_impact": "View Our Impact"
+  }
+}

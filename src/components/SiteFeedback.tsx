@@ -55,7 +55,7 @@ export function SiteFeedback() {
   };
 
   return (
-    <section className="w-full border-t border-cyan-400/10 bg-gradient-to-b from-black/60 to-black/90">
+    <section className="relative z-20 w-full border-t border-cyan-400/20 bg-black/95 backdrop-blur-xl">
       <div className="mx-auto max-w-xl px-4 py-8 sm:px-6 sm:py-9">
         {status === 'success' ? (
           <div className="flex items-center justify-center gap-2 rounded-lg bg-green-500/10 px-4 py-2.5 ring-1 ring-green-500/20">
@@ -121,9 +121,9 @@ export function SiteFeedback() {
                 placeholder="Optional comment…"
                 className="w-full resize-none rounded-lg border border-zinc-700/80 bg-zinc-900/80 px-3 py-2 text-sm leading-snug text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 sm:text-[13px]"
               />
-              <div className="mt-1 flex items-center justify-between gap-2 text-[10px] text-zinc-600">
+              <div className="mt-1.5 flex items-center justify-between gap-2 text-xs text-zinc-400">
                 <span>Private — we read feedback to improve the site.</span>
-                <span className="tabular-nums">{comment.length}/{MAX_COMMENT}</span>
+                <span className="tabular-nums text-zinc-400">{comment.length}/{MAX_COMMENT}</span>
               </div>
             </div>
 
