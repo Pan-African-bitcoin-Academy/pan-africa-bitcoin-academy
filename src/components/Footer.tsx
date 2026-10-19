@@ -54,7 +54,13 @@ export function Footer() {
                 />
               </div>
               <div className="flex flex-col leading-tight">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                <span
+                  className={
+                    isTi
+                      ? "text-xs sm:text-sm font-bold tracking-normal text-cyan-300"
+                      : "text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300"
+                  }
+                >
                   {t.footer.brand_line_1}
                 </span>
                 <span className="text-sm font-medium text-zinc-100">{t.footer.brand_line_2}</span>

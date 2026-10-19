@@ -143,7 +143,13 @@ export function Navbar() {
             />
           </div>
           <div className="hidden flex-col leading-tight sm:flex">
-            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
+            <span
+              className={
+                isTi
+                  ? "text-xs sm:text-sm font-bold tracking-normal text-cyan-300"
+                  : "text-[12px] sm:text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300"
+              }
+            >
               {t.navbar.brand_line_1}
             </span>
             <span className="text-xs sm:text-sm font-medium text-zinc-100">{t.navbar.brand_line_2}</span>
