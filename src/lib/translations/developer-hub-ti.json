@@ -1,0 +1,219 @@
+{
+  "hero": {
+    "heading": "ማእከል ክኢላታት ኮምፑተር ቢትኮይን",
+    "subheading": "ከም ክኢላታት ኮምፑተር ቢትኮይን ንምዃን ዝሕግዘካ መምርሒ መንገዲ። ምስ ካልኦት ተራኸብ፣ ተማሃር፣ ኣብ ዓለምለኻዊ ስነ-ምህዳር ቢትኮይን ድማ ኣበርክቶ ግበር።"
+  },
+  "sections": {
+    "path_overview": {
+      "title": "ሓፈሻዊ ትሕዝቶ መንገዲ ክኢላታት ኮምፑተር",
+      "intro_bold": "ክኢላ ናይ ምዃን ድሌት ዘድልየካ ኣይኮነን።",
+      "intro_text": " ሰረታዊ ፕሮግራሚንግ እትፈልጥ ምስ ትኸውንን ኣብ ዓለምለኻዊ ናይ ክኢላታት ግሩፕ ኮምፑተር ቢትኮይን ምጽንባር ትደሊ ምስ ትኸውንን፣ እዛ ገጽ እዚኣ ንዓኻ ነቲ መንገዲ ተርእየካ።",
+      "what_developers_do": {
+        "heading": "ክኢላታት ኮምፑተር ቢትኮይን እንታይ ይሰርሑ",
+        "items": [
+          "ዋሌታትን ኣፕሊኬሽናት ላይትኒንግ መስመርን ምህናጽ",
+          "ኣብ ቢትኮይን Core ኣበርክቶ ምግባር",
+          "ቴክኒካዊ ሰነዳት ምጽሓፍ",
+          "Pull Request (PR) ኮድ ምግምጋም",
+          "ድሕነትን ብሕታውነትን ምምሕያሽ"
+        ]
+      },
+      "skills_required": {
+        "heading": "ዘድልዩ ክእለታት",
+        "items": [
+          "መሰረታዊ ክእለት ፕሮግራሚንግ",
+          "Git ንምቁጽጻር ለውጢ ኮድ ምጥቃም",
+          "ናይ Linux መስመር ትእዛዛት (Command Line)",
+          "ጸገማት ናይ ምፍታሕ ኣተሓሳስባ",
+          "ንምምሃር ድልውነት"
+        ]
+      },
+      "contribute": {
+        "heading": "እንታይ ኣበርክቶ ክትገብር ትኽእል",
+        "items": [
+          "ምዕባለ ዋሌታት",
+          "ኣፕሊኬሽናት ላይትኒንግ መስመር",
+          "ቴክኒካዊ ሰነዳትን መምርሒታትን",
+          "ክለሳ ኮድን ምፍታንን",
+          "ጌጋታት ምእራምን ምምሕያሽን"
+        ]
+      }
+    },
+    "starter_guide": {
+      "title": "መበገሲ መምርሒ ንጀመርቲ ክኢላታት ኮምፑተር",
+      "intro": "1. መእተዊ ናብ ቢትኮይን (ንክኢላታት ኮምፑተር)",
+      "learn_tools": "2. መሳርሒታት ትምህርቲ",
+      "developer_roadmap": "3. መምርሒ መንገዲ ከም ክኢላታት ኮምፑተር",
+      "roadmap_description": "ካብ ዜሮ ክሳብ ናይ መጀመርታ ኣበርክቶ ኣብ ክፉት ምንጪ ፕሮጀክት ዝወስደካ ተግባራዊ መንገዲ።",
+      "explore_button": "ጸጋታት መምርሒ መንገዲ ዳህስስ",
+      "roadmap_steps": {
+        "start": "ጀምር",
+        "learn_basics": "መሰረታት ተማሃር",
+        "bitcoin_internals": "ውሽጣዊ ስርዓት ቢትኮይን",
+        "explore_scripting": "Scripting ዳህስስ",
+        "learn_wallet": "ምዕባለ ዋሌት ተማሃር",
+        "lightning_basics": "መሰረታት ላይትኒንግ",
+        "join_oss": "ኣብ OSS ተጸንበር",
+        "first_contribution": "ናይ መጀመርታ ኣበርክቶ"
+      },
+      "tools": {
+        "bitcoin_core_desc": "ንዝኾነ ከም ክኢላታት ኮምፑተር ቢትኮይን መሰረታዊ መሳርሒ።",
+        "why_use_it": "ስለምንታይ ትጥቀመሉ?",
+        "bitcoin_core_items": [
+          "ተምሃሮ ምሉእ node ክነቅሉ ይሕግዞም",
+          "ዳታ Blockchain ምጽናዕ",
+          "ትእዛዛት RPC ምልምማድ",
+          "ብኸመይ ዝሰርሓ ውዕሎታትን ብሎካትን ካብ ውሽጡ ምምሃር"
+        ],
+        "sparrow_desc": "ናይ UTXOs፣ ፊርማን PSBTsን ንምርዳእ ካብቶም ዝበሉ መምሃሪ መሳርሒታት ሓደ።",
+        "sparrow_items": [
+          "UTXOs ብምስሊ የርኢ",
+          "ውዕሎታት ናይ ምህናጽ፣ ናይ ምፋርማን ናይ ምልኣኽን ቀሊል መንገዲ",
+          "ኢንፑት፣ ኣውትፑት፣ መኽፈሊ ዋጋን ዓይነታት Script ምምሃር",
+          "Testnetን Signetን ይድግፍ"
+        ],
+        "cli_desc": "ክኢላታት ኮምፑተር ቢትኮይን Core ኣብ መዓልታዊ ስርሓቶም ዝጥቀምሉ እዩ።",
+        "cli_items": [
+          "ምስ Node ቀጥታ ርክብ",
+          "JSON-RPC ምምሃር",
+          "ንፕሮግራሚንግ ዋሌታ መሰረት ምህናጽ"
+        ],
+        "satoshi_desc": "ብኮድ ምስጢራት ቢትኮይን ዳህስስ።",
+        "satoshi_items": [
+          "ናይ ኮዲንግ ብደረጃ ዝካየዱ ብድሆታት",
+          "ሓሳባት ቢትኮይን ብተግባር ምምሃር",
+          "ብግሩፕ ቢትኮይን ዝተፈርሐ ክፉት ምንጪ",
+          "ናይ ግብሪ ክእለታት ምዕባለ ቢትኮይን ምምሃር"
+        ],
+        "mempool_heading": "Mempool Explorers ን Block Explorers",
+        "mempool_desc": "ቢትኮይን ኣብ ተግባር ንምርኣይ ዝሕግዙ መሳርሒታት።",
+        "mempool_best": "ዝበሉ:",
+        "signet_desc": "ነፍሲ ወከፍ ከም ክኢላታት ኮምፑተር ናይ ምፍታን ሰንሰለታት ቢትኮይን ምጥቃም ክምሃር ኣለዎ።",
+        "signet_why": "ስለምንታይ?",
+        "signet_items": [
+          "ውሑስ ከባቢ",
+          "ናይ ሓቂ ገንዘብ የለን",
+          "ቅጽበታዊ ውዕሎታት"
+        ],
+        "lightning_tools_heading": "መሳርሒታት Lightning",
+        "lightning_tools_desc": "ጀሞቲ ምዕባለ Lightning ብኸመይ ከም ዝረኣይ ንምርኣይ ይሕግዞም።",
+        "lightning_tools_label": "መሳርሒታት:",
+        "additional_resources": "ተወሳኺ ጸጋታት"
+      }
+    },
+    "communities": {
+      "title": "ዓለምለኻዊ ግሩፓት ክኢላታት ኮምፑተር ቢትኮይን",
+      "bitcoin_core": {
+        "heading": "ግሩፕ ቢትኮይን Core",
+        "mailing_list": "ናይ ደብዳቤ ዝርዝር",
+        "bips_docs": "BIPs ን ሰነዳት",
+        "testing_guide": "መምርሒ ምፍታን/ክለሳ"
+      },
+      "other": {
+        "heading": "ካልኦት ግሩፓት",
+        "chaincode_link": "መምርሒ ምምሃር ናይ ቢትኮይን ፕሮቶኮል ምዕባለ →",
+        "summer_link": "Portal ናይ ምምልካትን ስርዓተ ትምህርትን →",
+        "base58_utxos": "ናብ UTXOs መእተዊ →",
+        "base58_pycoin": "Pycoin →",
+        "base58_script": "ቢትኮይን Script →",
+        "telegram_items": [
+          "ናይ ኣፍሪቃ ቢትኮይን Dev",
+          "ዓለምለኻዊ ቢትኮይን Dev",
+          "Rust-ቢትኮይን",
+          "Libsecp256k1"
+        ],
+        "spiral_link": "OSS ክኢላታት ኮምፑተር →",
+        "boltfun_hackathons": "Hackathons →",
+        "boltfun_community": "ናይ ክኢላታት ግሩፕ ኮምፑተር →",
+        "boltfun_projects": "ፕሮጀክታት LN →",
+        "bitcoinpp_link": "ብክኢላታት ኮምፑተር ዝዓለሙ ዋዕሎታት →",
+        "bitrust_link": "ናይ ክኢላታት ግሩፕ ኮምፑተር ቢትኮይን →"
+      }
+    },
+    "mining": {
+      "title": "ጸጋታት ማይኒንግ ቢትኮይን",
+      "intro_desc": "ንተምሃሮ ናይ ቢትኮይን ማይኒንግ ንምጽናዕን ንምምርምርን ዝሕግዙ ሓፈሻዊ ጸጋታት፣ መሳርሒታትን ግሩፓትን። ብዛዕባ ቴክኖሎጂ ማይኒንግ፣ ኣንፈታት ጸዓት፣ ተግባራዊ ፈተነታትን ምዕባለ ኢንዳስትሪን ተምሃር።",
+      "educational": "መምሃሪ ጸጋታትን ብዛዕባ ማይኒንግ ዝገልጹ ዌብሳይታትን",
+      "environment": "ኣከባብያዊ ጽልዋታትን ኣንፈታት ጸዓትን",
+      "hands_on": "ተግባራዊ ፈተነታት ማይኒንግ",
+      "experiment_ideas_label": "ሓሳባት ፈተነ:",
+      "experiment_ideas_items": [
+        "ብPython ቀሊል CPU miner ህነጽ",
+        "ናይ ምምዕርራይ ጸቕጢ ማይኒንግ ምምስሳል",
+        "ምምስሳሊ ናይ ማይኒንግ ዓቤት ፍጠር",
+        "ናይ Block headers ን nonces ምምርምር",
+        "ህንጸት Merkle tree ምጽናዕ",
+        "ምፍታን ብዝተፈላለዩ hashing algorithms"
+      ],
+      "tools_apis_heading": "🛠️ መሳርሒታት፣ APIታትን ምንጭታት ዳታን ንክኢላታት ኮምፑተር",
+      "pool_apis_heading": "APIታት ናይ ማይኒንግ ዓቤት",
+      "mining_stats_heading": "ስታቲስቲካት ናይ ማይኒንግን ትንተናን",
+      "hardware_data_heading": "ዳታ ናይ ሃርድዌር ማይኒንግ",
+      "block_explorer_apis_heading": "APIታት ናይ Block Explorer",
+      "industry_heading": "ናይ ሐዚ ምዕባለ ኢንዳስትሪን ገበያን",
+      "communities_heading": "👥 ግሩፓት ናይ ቢትኮይን ማይኒንግ",
+      "forums_heading": "ወግዓዊ ፎራምን ቦርዳት ዝርርብን",
+      "verified_pools_heading": "ናይ ምርግጋጽ ናይ ማይኒንግ ዓቤትታት"
+    }
+  },
+  "ui": {
+    "wantToTeach": "ክትምህር፣ ክፍለ ግዜታት ከተዳሉ ወይ ብፍቓድካ ከተገልግል ትደሊ ዲኻ?",
+    "joinMentoring": "ኣብ ምምካርን መምርሒ ምሃብን ተጸንበረና",
+    "developerMeetings": "ኣኼባታት ክኢላታት ኮምፑተር፣ ዓውደ መጽናዕትታትን ርክባትን",
+    "lightningHangout": "ናይ ላይትኒንግ ህነጽቲ ርክብ",
+    "lightningHangoutDate": "16 ለካቲት 2025",
+    "lightningHangoutDesc": "ንክኢላታት ኮምፑተር ላይትኒንግ ዝኸውን ወርሓዊ ናይ ኦንላይን ሕቶን መልስን ኣኼባ",
+    "kampalaMeetup": "ናይ ቢትኮይን Dev Kampala ኣኼባ",
+    "kampalaMeetupFreq": "ኣብ ነፍሲ ወከፍ ወርሒ ናይ መወዳእታ ዓርቢ",
+    "kampalaMeetupDesc": "ኣብ ኡጋንዳ ንክኢላታት ኮምፑተር ቢትኮይን ዝካየድ ናይ ከባቢ ኣኼባ",
+    "opportunitiesAfricans": "ንክኢላታት ኮምፑተር ኣፍሪቃውያን ዝቐርቡ ዕድላት",
+    "opportunities": [
+      { "name": "Summer of ቢትኮይን", "desc": "ንትምህርታዊ ልምምዳት ዝበለ ፕሮግራም" },
+      { "name": "Built with ቢትኮይን", "desc": "ፕሮግራማት ናይ ልምምዳት" },
+      { "name": "Bolt.Fun Bounties", "desc": "ሽልማታት Hackathon" },
+      { "name": "AfroቢትኮይንHack", "desc": "ሃካቶናት ንኣፍሪቃ ዝዓለሙ" },
+      { "name": "Africa ቢትኮይን Conference", "desc": "ናይ ክኢላታት ኮምፑተር ምንቅስቓሳት" },
+      { "name": "BitDevs Events", "desc": "ናይ ከባቢ ኣኼባታት ክኢላታት ኮምፑተር" }
+    ],
+    "buildPortfolio": "ናይ መጀመርታ ፕሮጀክት ፖርትፎሊዮኻ ህነጽ",
+    "portfolioDesc": "ብእዞም ሓሳባት ፕሮጀክት ተጠቒምካ ጀምር። መምርሒን ጸጋታትን ንህብ ኢና፣ ግን ብደረጃ ደረጃ ዝመርሑ መምህራዊ ትምህርትታት ኣይንህብን።",
+    "portfolioProjects": [
+      "ቀሊል ዋሌታ ቢትኮይን",
+      "ናይ Lightning Invoice Generator",
+      "መሳርሒ ናይ Seed Phrase ምሕዳስ",
+      "ናይ ቢትኮይን Address Parser",
+      "ኣናሊዘር Blockchain",
+      "ምስሊ UTXO",
+      "ምትዕዝዛብ Mempool",
+      "ህናጺ PSBT"
+    ],
+    "certificationPath": "መንገዲ ምርካብ ምስክር ወረቐት (ኣማራጺ)",
+    "certificationDesc": "ኣብ ናይ ክኢላታት ግሩፕ ኮምፑተር ቢትኮይን ዘለካ ተሳትፎ ብምርኣይ ምስክር ወረቐት ርኸብ።",
+    "followStarterGuide": "ነቲ መበገሲ መምርሒ ተኸተል",
+    "attendSessions": "ኣብ 2–3 ናይ ክኢላታት ኮምፑተር ክፍለ ግዜታት ተሳተፍ",
+    "buildToolOrArticle": "ንእሽቶ መሳርሒ ህነጽ ወይ ጽሑፍ ጽሓፍ",
+    "reviewSession": "ኣብ ክፍለ ግዜ ክለሳ ተሳተፍ",
+    "developerFAQs": "ብዛዕባ ክኢላታት ኮምፑተር ዝቐርቡ ልሙዳት ሕቶታት",
+    "faqCppQuestion": "ኣበርክቶ ንምግባር C++ ምፍላጥ የድልየኒ ድዩ?",
+    "faqCppAnswer": "ኣይፋልን! ቢትኮይን Core C++ ይጥቀም፣ ግን ብዙሓት ፕሮጀክትታት Python፣ Rust፣ JavaScriptን ካልኦት ቋንቋታት ፕሮግራሚንግን ይጥቀሙ። በቲ እትፈልጦ ጀምር።",
+    "faqPythonQuestion": "ብPython ክጅምር እኽእል ድየ?",
+    "faqPythonAnswer": "ብርግጽ! ብዙሓት መሳርሒትን ቤተ-መጻሕፍቲ ኮድን ቢትኮይን ብPython ዝተጻሕፉ እዮም። pycoin ን python-ቢትኮይንlibን ተመልከት።",
+    "faqTimeQuestion": "እዚ ክንደይ ግዜ ይወስድ?",
+    "faqTimeAnswer": "ውሱን ግዜ የለን። ኣብ ምምሃር መሰረታት ኣተኩር፣ ድሕሪኡ ኣብ ንኣሽቱ ጉዳያት ኣበርክቶ ምግባር ጀምር። ነፍሲ ወከፍ ኣበርክቶ ኣገዳሲ እዩ።",
+    "faqCoreExpertQuestion": "ቢትኮይን Core ንክኢላታት ጥራይ ድዩ?",
+    "faqCoreExpertAnswer": "ፈጺሙ ኣይኮነን! ብሰነዳት፣ ምፍታን ወይ ንኣሽቱ ጌጋታት ምእራም ጀምር። እቲ ግሩፕ ንሓደስቲ ኣባላት ክፉት እዩ።",
+    "faqMentorQuestion": "ኣማኻሪ ብኸመይ ክረክብ እኽእል?",
+    "faqMentorAnswer": "ኣብ ግሩፓት ክኢላታት ኮምፑተር ተጸንበር፣ ኣብ ኣኼባታት ተሳተፍ፣ ሕቶታት ካብ ምሕታት ኣይትተዓገስ። ብዙሓት ክኢላታት ኮምፑተር ክሕግዙ ፍቓደኛታት እዮም።",
+    "faqAskQuestion": "ሕቶታት ኣበይ ከቕርብ እኽእል?",
+    "mentorsTitle": "ኣማኸርቲ ን እንግዳ ክኢላታት ኮምፑተር",
+    "mentorsDesc": "ከም ኣማኸርቲ ን እንግዳ ክኢላታት ኮምፑተር ምሳና ንምስራሕ ድሉዋት ዝነበሩ ኣቐዲሞም ዝነጠፉ ክኢላታት ኮምፑተር ቢትኮይን ኣላሊ፣ ፍልጠቶም ብምካፋሉን ጉዕዞኻ ብምምርሑን።",
+    "mentorsLoading": "ግሩፕ ምምካር ይጽዕን ኣሎ…",
+    "mentorBadge": "ኣማካሪ",
+    "mentorsEmpty": "ቅድሚ ሐዚ ናይ ምምካር ፕሮፋይላት ዝቐረቡ የለዉን።",
+    "mentorsEmptySub": "ኣብ ምምካር ዝተጸንበሩ ሰባት ናብቲ ግሩፕ ምስ ዝወሰኹ ኣብዚ ይቐርቡ።",
+    "ctaReady": "ጉዕዞኻ ከም ኣማዓባሊ ክትጅምር ድሉው ዲኻ?",
+    "ctaSubtitle": "ምስ ግሩፕና ተጸንበር፣ ምስ ካልኦት ኣብ ኣፍሪቃ ዝርከቡ ክኢላታት ኮምፑተር ቢትኮይን ድማ ተራኸብ።",
+    "ctaJoinCommunity": "ኣብ ናይ ክኢላታት ኮምፑተር ግሩፕ ተጸንበር",
+    "ctaApply": "ኣብ ኣካዳሚና ኣመልክት"
+  }
+}

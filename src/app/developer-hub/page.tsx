@@ -8,6 +8,8 @@ import { AnimatedSection } from '@/components/AnimatedSection';
 import { AnimatedHeading } from '@/components/AnimatedHeading';
 import SplitText from '@/components/SplitText';
 import { AnimatedList } from '@/components/AnimatedList';
+import { useLanguage } from '@/hooks/useLanguage';
+import { getDeveloperHubCopy } from '@/lib/translations/developer-hub';
 
 interface DeveloperResource {
   id: string;
@@ -34,6 +36,7 @@ export default function DeveloperHubPage() {
   const [mentors, setMentors] = useState<any[]>([]);
   const [loadingMentors, setLoadingMentors] = useState(true);
 
+  const { t, isTi } = useLanguage(getDeveloperHubCopy);
   useEffect(() => {
     // TODO: Fetch resources and events from Supabase
     // For now, using placeholder data
@@ -82,23 +85,23 @@ export default function DeveloperHubPage() {
                 </div>
               </div>
               <AnimatedHeading as="h1" className="text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl lg:text-7xl">
-                <SplitText
-                  text="Developer Hub"
-                  tag="span"
-                  className="inline-block"
-                  delay={50}
-                  duration={1.25}
-                  ease="bounce.out"
-                  splitType="chars"
-                  from={{ opacity: 0, y: 40 }}
-                  to={{ opacity: 1, y: 0 }}
-                  threshold={0.1}
-                  rootMargin="-100px"
-                  textAlign="center"
-                />
+                                  <SplitText
+                    text={t.hero.heading}
+                    tag="span"
+                    className="inline-block"
+                    delay={50}
+                    duration={1.25}
+                    ease="bounce.out"
+                    splitType="chars"
+                    from={{ opacity: 0, y: 40 }}
+                    to={{ opacity: 1, y: 0 }}
+                    threshold={0.1}
+                    rootMargin="-100px"
+                    textAlign="center"
+                  />
               </AnimatedHeading>
               <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
-                Your roadmap to becoming a Bitcoin developer. Connect, learn, and contribute to the global Bitcoin ecosystem.
+                                {t.hero.subheading}
               </p>
             </div>
           </AnimatedSection>
@@ -110,44 +113,38 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-cyan-500/20 p-2">
                 <Rocket className="h-6 w-6 text-cyan-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Developer Path Overview</AnimatedHeading>
+                              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.sections.path_overview.title}</AnimatedHeading>
             </div>
             <div className="space-y-4 text-zinc-300">
               <p className="text-lg text-zinc-100">
-                <strong className="text-orange-400">You don't need to be an expert.</strong> If you know basic programming and want to join the global Bitcoin developer community, this page shows you the path.
+                <strong className="text-orange-400">{t.sections.path_overview.intro_bold}</strong>{t.sections.path_overview.intro_text}
               </p>
               
               <div className="mt-6 grid gap-6 md:grid-cols-3">
                 <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
-                  <AnimatedHeading as="h3" className="mb-2 font-semibold text-cyan-300">What Bitcoin Developers Do</AnimatedHeading>
+                  <AnimatedHeading as="h3" className="mb-2 font-semibold text-cyan-300">{t.sections.path_overview.what_developers_do.heading}</AnimatedHeading>
                   <ul className="space-y-1 text-sm text-zinc-400">
-                    <li>• Build wallets & LN apps</li>
-                    <li>• Contribute to Bitcoin Core</li>
-                    <li>• Write documentation</li>
-                    <li>• Review pull requests</li>
-                    <li>• Improve security & privacy</li>
+                    {t.sections.path_overview.what_developers_do.items.map((item, i) => (
+                      <li key={i}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
                 
                 <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
-                  <AnimatedHeading as="h3" className="mb-2 font-semibold text-orange-300">Skills Required</AnimatedHeading>
+                  <AnimatedHeading as="h3" className="mb-2 font-semibold text-orange-300">{t.sections.path_overview.skills_required.heading}</AnimatedHeading>
                   <ul className="space-y-1 text-sm text-zinc-400">
-                    <li>• Basic programming</li>
-                    <li>• Git version control</li>
-                    <li>• Linux command line</li>
-                    <li>• Problem-solving mindset</li>
-                    <li>• Willingness to learn</li>
+                    {t.sections.path_overview.skills_required.items.map((item, i) => (
+                      <li key={i}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
                 
                 <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
-                  <AnimatedHeading as="h3" className="mb-2 font-semibold text-purple-300">What You Can Contribute</AnimatedHeading>
+                  <AnimatedHeading as="h3" className="mb-2 font-semibold text-purple-300">{t.sections.path_overview.contribute.heading}</AnimatedHeading>
                   <ul className="space-y-1 text-sm text-zinc-400">
-                    <li>• Wallet development</li>
-                    <li>• Lightning Network apps</li>
-                    <li>• Documentation & guides</li>
-                    <li>• Code reviews & testing</li>
-                    <li>• Bug fixes & improvements</li>
+                    {t.sections.path_overview.contribute.items.map((item, i) => (
+                      <li key={i}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -162,13 +159,13 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-orange-500/20 p-2">
                 <BookOpen className="h-6 w-6 text-orange-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Beginner Developer Starter Guide</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.sections.starter_guide.title}</AnimatedHeading>
             </div>
 
             <div className="space-y-8">
               {/* 1. Bitcoin Intro */}
               <div id="dev-basics">
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-orange-300">1. Bitcoin Intro (For Developers)</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-orange-300">{t.sections.starter_guide.intro}</AnimatedHeading>
                 <div className="grid gap-3 md:grid-cols-2">
                   <a
                     href="https://bitcoin.org/en/developer-documentation"
@@ -220,7 +217,7 @@ export default function DeveloperHubPage() {
 
               {/* 2. Learn the Tools */}
               <div id="dev-internals">
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-cyan-300">2. Learn the Tools</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-cyan-300">{t.sections.starter_guide.learn_tools}</AnimatedHeading>
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Bitcoin Core */}
                   <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-5 flex flex-col h-full">
@@ -236,13 +233,12 @@ export default function DeveloperHubPage() {
                         <ExternalLink className="h-4 w-4" aria-hidden="true" />
                       </a>
                     </div>
-                    <p className="mb-3 text-sm text-zinc-300">The fundamental tool for any Bitcoin developer.</p>
-                    <p className="mb-3 text-sm font-medium text-orange-200">Why use it?</p>
+                    <p className="mb-3 text-sm text-zinc-300">{t.sections.starter_guide.tools.bitcoin_core_desc}</p>
+                    <p className="mb-3 text-sm font-medium text-orange-200">{t.sections.starter_guide.tools.why_use_it}</p>
                     <ul className="ml-4 space-y-1 text-sm text-zinc-400">
-                      <li>• Lets students run a full node</li>
-                      <li>• Explore blockchain data</li>
-                      <li>• Practice RPC commands</li>
-                      <li>• Learn how transactions & blocks work under the hood</li>
+                      {t.sections.starter_guide.tools.bitcoin_core_items.map((item, idx) => (
+                        <li key={idx}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
 
@@ -260,13 +256,12 @@ export default function DeveloperHubPage() {
                         <ExternalLink className="h-4 w-4" aria-hidden="true" />
                       </a>
                     </div>
-                    <p className="mb-3 text-sm text-zinc-300">One of the best educational tools for understanding UTXOs, signing, and PSBTs.</p>
-                    <p className="mb-3 text-sm font-medium text-cyan-200">Why use it?</p>
+                    <p className="mb-3 text-sm text-zinc-300">{t.sections.starter_guide.tools.sparrow_desc}</p>
+                    <p className="mb-3 text-sm font-medium text-cyan-200">{t.sections.starter_guide.tools.why_use_it}</p>
                     <ul className="ml-4 space-y-1 text-sm text-zinc-400">
-                      <li>• Shows UTXOs visually</li>
-                      <li>• Easy way to build, sign, and broadcast transactions</li>
-                      <li>• Teaches inputs, outputs, fees, script types</li>
-                      <li>• Supports testnet and signet</li>
+                      {t.sections.starter_guide.tools.sparrow_items.map((item, idx) => (
+                        <li key={idx}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
 
@@ -284,12 +279,12 @@ export default function DeveloperHubPage() {
                         <ExternalLink className="h-4 w-4" aria-hidden="true" />
                       </a>
                     </div>
-                    <p className="mb-3 text-sm text-zinc-300">This is what Bitcoin Core developers use daily.</p>
-                    <p className="mb-3 text-sm font-medium text-purple-200">Why use it?</p>
+                    <p className="mb-3 text-sm text-zinc-300">{t.sections.starter_guide.tools.cli_desc}</p>
+                    <p className="mb-3 text-sm font-medium text-purple-200">{t.sections.starter_guide.tools.why_use_it}</p>
                     <ul className="ml-4 space-y-1 text-sm text-zinc-400">
-                      <li>• Direct interaction with the node</li>
-                      <li>• Teaches JSON-RPC</li>
-                      <li>• Builds foundation for wallet programming</li>
+                      {t.sections.starter_guide.tools.cli_items.map((item, idx) => (
+                        <li key={idx}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
 
@@ -307,23 +302,22 @@ export default function DeveloperHubPage() {
                         <ExternalLink className="h-4 w-4" aria-hidden="true" />
                       </a>
                     </div>
-                    <p className="mb-3 text-sm text-zinc-300">Code your way through the mysteries of bitcoin.</p>
-                    <p className="mb-3 text-sm font-medium text-indigo-200">Why use it?</p>
+                    <p className="mb-3 text-sm text-zinc-300">{t.sections.starter_guide.tools.satoshi_desc}</p>
+                    <p className="mb-3 text-sm font-medium text-indigo-200">{t.sections.starter_guide.tools.why_use_it}</p>
                     <ul className="ml-4 space-y-1 text-sm text-zinc-400">
-                      <li>• Interactive coding challenges</li>
-                      <li>• Learn Bitcoin concepts through practice</li>
-                      <li>• Open-source production by the Bitcoin community</li>
-                      <li>• Build practical Bitcoin development skills</li>
+                      {t.sections.starter_guide.tools.satoshi_items.map((item, idx) => (
+                        <li key={idx}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
 
                   {/* Mempool Explorers & Block Explorers */}
                   <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-green-200">Mempool Explorers & Block Explorers</h4>
+                      <h4 className="text-lg font-semibold text-green-200">{t.sections.starter_guide.tools.mempool_heading}</h4>
                     </div>
-                    <p className="mb-3 text-sm text-zinc-300">Tools that help beginners see Bitcoin in action.</p>
-                    <p className="mb-3 text-sm font-medium text-green-200">Best Ones:</p>
+                    <p className="mb-3 text-sm text-zinc-300">{t.sections.starter_guide.tools.mempool_desc}</p>
+                    <p className="mb-3 text-sm font-medium text-green-200">{t.sections.starter_guide.tools.mempool_best}</p>
                     <div className="grid gap-2 md:grid-cols-2">
                       <a
                         href="https://mempool.space"
@@ -360,22 +354,22 @@ export default function DeveloperHubPage() {
                     <div className="mb-3 flex items-center justify-between">
                       <h4 className="text-lg font-semibold text-yellow-200">Signet & Testnet</h4>
                     </div>
-                    <p className="mb-3 text-sm text-zinc-300">Every developer must learn to use Bitcoin's testing chains.</p>
-                    <p className="mb-3 text-sm font-medium text-yellow-200">Why?</p>
+                    <p className="mb-3 text-sm text-zinc-300">{t.sections.starter_guide.tools.signet_desc}</p>
+                    <p className="mb-3 text-sm font-medium text-yellow-200">{t.sections.starter_guide.tools.signet_why}</p>
                     <ul className="ml-4 space-y-1 text-sm text-zinc-400">
-                      <li>• Safe environment</li>
-                      <li>• No real money</li>
-                      <li>• Instant transactions</li>
+                      {t.sections.starter_guide.tools.signet_items.map((item, idx) => (
+                        <li key={idx}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
 
                   {/* Lightning Tools */}
                   <div id="dev-lightning" className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-5 flex flex-col h-full">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-blue-200">Lightning Tools</h4>
+                      <h4 className="text-lg font-semibold text-blue-200">{t.sections.starter_guide.tools.lightning_tools_heading}</h4>
                     </div>
-                    <p className="mb-3 text-sm text-zinc-300">Let beginners see what Lightning development looks like.</p>
-                    <p className="mb-3 text-sm font-medium text-blue-200">Tools:</p>
+                    <p className="mb-3 text-sm text-zinc-300">{t.sections.starter_guide.tools.lightning_tools_desc}</p>
+                    <p className="mb-3 text-sm font-medium text-blue-200">{t.sections.starter_guide.tools.lightning_tools_label}</p>
                     <div className="space-y-2">
                       <a
                         href="https://github.com/lightningnetwork/lnd"
@@ -418,7 +412,7 @@ export default function DeveloperHubPage() {
 
                   {/* Additional Resources */}
                   <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-5 flex flex-col h-full">
-                    <h4 className="mb-3 text-lg font-semibold text-zinc-200">Additional Resources</h4>
+                    <h4 className="mb-3 text-lg font-semibold text-zinc-200">{t.sections.starter_guide.tools.additional_resources}</h4>
                     <div className="space-y-2">
                       <a
                         href="https://electrum.org"
@@ -454,22 +448,22 @@ export default function DeveloperHubPage() {
 
               {/* 3. Developer Roadmap */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">3. Developer Roadmap</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">{t.sections.starter_guide.developer_roadmap}</AnimatedHeading>
                 <div className="rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-500/10 to-black/20 p-6 sm:p-7 shadow-[0_0_30px_rgba(168,85,247,0.12)] ring-1 ring-purple-400/10">
                   <p className="mx-auto mb-6 max-w-2xl text-center text-sm leading-relaxed text-zinc-400">
-                    A practical path from zero to your first open-source contribution.
+                    {t.sections.starter_guide.roadmap_description}
                   </p>
 
                   <div className="relative mx-auto grid max-w-4xl gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {[
-                      { k: 'start', label: 'Start', tone: 'start' as const, href: '#developer-path-overview' },
-                      { k: 'basics', label: 'Learn Basics', tone: 'mid' as const, href: '/chapters' },
-                      { k: 'internals', label: 'Bitcoin Internals', tone: 'mid' as const, href: '#dev-basics' },
-                      { k: 'script', label: 'Explore Scripting', tone: 'mid' as const, href: '#dev-script' },
-                      { k: 'wallets', label: 'Learn Wallet Building', tone: 'mid' as const, href: '#dev-wallets' },
-                      { k: 'ln', label: 'Lightning Basics', tone: 'mid' as const, href: '#dev-lightning' },
-                      { k: 'oss', label: 'Join OSS', tone: 'mid' as const, href: '#dev-oss' },
-                      { k: 'first', label: 'First Contribution', tone: 'finish' as const, href: '#dev-contribution' },
+                      { k: 'start', label: t.sections.starter_guide.roadmap_steps.start, tone: 'start' as const, href: '#developer-path-overview' },
+                      { k: 'basics', label: t.sections.starter_guide.roadmap_steps.learn_basics, tone: 'mid' as const, href: '/chapters' },
+                      { k: 'internals', label: t.sections.starter_guide.roadmap_steps.bitcoin_internals, tone: 'mid' as const, href: '#dev-basics' },
+                      { k: 'script', label: t.sections.starter_guide.roadmap_steps.explore_scripting, tone: 'mid' as const, href: '#dev-script' },
+                      { k: 'wallets', label: t.sections.starter_guide.roadmap_steps.learn_wallet, tone: 'mid' as const, href: '#dev-wallets' },
+                      { k: 'ln', label: t.sections.starter_guide.roadmap_steps.lightning_basics, tone: 'mid' as const, href: '#dev-lightning' },
+                      { k: 'oss', label: t.sections.starter_guide.roadmap_steps.join_oss, tone: 'mid' as const, href: '#dev-oss' },
+                      { k: 'first', label: t.sections.starter_guide.roadmap_steps.first_contribution, tone: 'finish' as const, href: '#dev-contribution' },
                     ].map((s, i) => (
                       <Link
                         key={s.k}
@@ -507,7 +501,7 @@ export default function DeveloperHubPage() {
                       href="#dev-start"
                       className="inline-flex items-center justify-center rounded-xl border border-purple-400/30 bg-purple-500/10 px-5 py-3 text-sm font-semibold text-purple-200 transition hover:bg-purple-500/15 hover:border-purple-300/40"
                     >
-                      Explore the roadmap resources
+                      {t.sections.starter_guide.explore_button}
                     </Link>
                   </div>
                 </div>
@@ -523,13 +517,13 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-purple-500/20 p-2">
                 <Users className="h-6 w-6 text-purple-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Global Bitcoin Developer Communities</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.sections.communities.title}</AnimatedHeading>
             </div>
 
             <div className="space-y-6">
               {/* Bitcoin Core Community */}
               <div id="dev-contribution" className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-6">
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-orange-300">Bitcoin Core Community</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-orange-300">{t.sections.communities.bitcoin_core.heading}</AnimatedHeading>
                 <div className="grid gap-3 md:grid-cols-2">
                   <a
                     href="https://github.com/bitcoin/bitcoin"
@@ -547,7 +541,7 @@ export default function DeveloperHubPage() {
                     className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/50 p-3 transition hover:border-orange-500/50"
                   >
                     <Mail className="h-5 w-5 text-zinc-400" />
-                    <span className="text-zinc-300">Mailing List</span>
+                    <span className="text-zinc-300">{t.sections.communities.bitcoin_core.mailing_list}</span>
                   </a>
                   <a
                     href="https://developer.bitcoin.org/"
@@ -556,7 +550,7 @@ export default function DeveloperHubPage() {
                     className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/50 p-3 transition hover:border-orange-500/50"
                   >
                     <BookOpen className="h-5 w-5 text-zinc-400" />
-                    <span className="text-zinc-300">BIPs & Documentation</span>
+                    <span className="text-zinc-300">{t.sections.communities.bitcoin_core.bips_docs}</span>
                   </a>
                   <a
                     href="https://github.com/bitcoin/bitcoin/blob/master/CONTRIBUTING.md"
@@ -565,14 +559,14 @@ export default function DeveloperHubPage() {
                     className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/50 p-3 transition hover:border-orange-500/50"
                   >
                     <GitBranch className="h-5 w-5 text-zinc-400" />
-                    <span className="text-zinc-300">Testing/Review Guide</span>
+                    <span className="text-zinc-300">{t.sections.communities.bitcoin_core.testing_guide}</span>
                   </a>
                 </div>
               </div>
 
               {/* Other Communities */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">Other Communities</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">{t.sections.communities.other.heading}</AnimatedHeading>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
                     <h4 className="mb-3 font-semibold text-cyan-300">Chaincode Labs</h4>
@@ -582,7 +576,7 @@ export default function DeveloperHubPage() {
                     rel="noopener noreferrer"
                     className="text-sm text-zinc-400 hover:text-cyan-300"
                   >
-                    Bitcoin Protocol Development Learning Guide →
+                    {t.sections.communities.other.chaincode_link}
                   </a>
                 </div>
 
@@ -594,7 +588,7 @@ export default function DeveloperHubPage() {
                     rel="noopener noreferrer"
                     className="text-sm text-zinc-400 hover:text-orange-300"
                   >
-                    Application Portal & Curriculum →
+                    {t.sections.communities.other.summer_link}
                   </a>
                 </div>
 
@@ -602,13 +596,13 @@ export default function DeveloperHubPage() {
                   <h4 className="mb-3 font-semibold text-purple-300">Base58 Bitcoin School</h4>
                   <div className="space-y-2 text-sm text-zinc-400">
                     <a href="https://base58.info" target="_blank" rel="noopener noreferrer" className="block hover:text-purple-300">
-                      Intro to UTXOs →
+                      {t.sections.communities.other.base58_utxos}
                     </a>
                     <a href="https://github.com/richardkiss/pycoin" target="_blank" rel="noopener noreferrer" className="block hover:text-purple-300">
-                      Pycoin →
+                      {t.sections.communities.other.base58_pycoin}
                     </a>
                     <a href="https://base58.info/bitcoin-script" target="_blank" rel="noopener noreferrer" className="block hover:text-purple-300">
-                      Bitcoin Script →
+                      {t.sections.communities.other.base58_script}
                     </a>
                   </div>
                 </div>
@@ -616,10 +610,9 @@ export default function DeveloperHubPage() {
                 <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
                   <h4 className="mb-3 font-semibold text-green-300">Bitcoin Dev Telegram</h4>
                   <div className="space-y-1 text-sm text-zinc-400">
-                    <div>• Africa Bitcoin Dev</div>
-                    <div>• Global Bitcoin Dev</div>
-                    <div>• Rust-Bitcoin</div>
-                    <div>• Libsecp256k1</div>
+                    {t.sections.communities.other.telegram_items.map((item, idx) => (
+                      <div key={idx}>• {item}</div>
+                    ))}
                   </div>
                 </div>
 
@@ -627,7 +620,7 @@ export default function DeveloperHubPage() {
                   <h4 className="mb-3 font-semibold text-cyan-300">Spiral (Block)</h4>
                   <div className="space-y-2 text-sm text-zinc-400">
                     <a href="https://spiral.xyz/developers" target="_blank" rel="noopener noreferrer" className="block hover:text-cyan-300">
-                      OSS Developers →
+                      {t.sections.communities.other.spiral_link}
                     </a>
                   </div>
                 </div>
@@ -636,13 +629,13 @@ export default function DeveloperHubPage() {
                   <h4 className="mb-3 font-semibold text-orange-300">Bolt.fun</h4>
                   <div className="space-y-2 text-sm text-zinc-400">
                     <a href="https://bolt.fun" target="_blank" rel="noopener noreferrer" className="block hover:text-orange-300">
-                      Hackathons →
+                      {t.sections.communities.other.boltfun_hackathons}
                     </a>
                     <a href="https://bolt.fun/community" target="_blank" rel="noopener noreferrer" className="block hover:text-orange-300">
-                      Developer Community →
+                      {t.sections.communities.other.boltfun_community}
                     </a>
                     <a href="https://bolt.fun/projects" target="_blank" rel="noopener noreferrer" className="block hover:text-orange-300">
-                      LN Projects →
+                      {t.sections.communities.other.boltfun_projects}
                     </a>
                   </div>
                 </div>
@@ -655,7 +648,7 @@ export default function DeveloperHubPage() {
                     rel="noopener noreferrer"
                     className="text-sm text-zinc-400 hover:text-purple-300"
                   >
-                    Developer-Focused Conferences →
+                    {t.sections.communities.other.bitcoinpp_link}
                   </a>
                 </div>
 
@@ -667,7 +660,7 @@ export default function DeveloperHubPage() {
                     rel="noopener noreferrer"
                     className="text-sm text-zinc-400 hover:text-yellow-300"
                   >
-                    Bitcoin Developer Community →
+                    {t.sections.communities.other.bitrust_link}
                   </a>
                 </div>
               </div>
@@ -683,16 +676,16 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-orange-500/20 p-2">
                 <Zap className="h-6 w-6 text-orange-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Bitcoin Mining Resources</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.sections.mining.title}</AnimatedHeading>
             </div>
             <p className="mb-6 text-zinc-400">
-              Comprehensive resources, tools, and communities for students to study and research Bitcoin mining. Learn about mining technology, energy trends, practical experiments, and industry developments.
+              {t.sections.mining.intro_desc}
             </p>
 
             <div className="space-y-8">
               {/* 1. Educational Resources & About Sites */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-orange-300">Educational Resources & About Sites</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-orange-300">{t.sections.mining.educational}</AnimatedHeading>
                 <div className="grid gap-3 md:grid-cols-2">
                   <a
                     href="https://bitcoin.org/en/how-it-works"
@@ -744,7 +737,7 @@ export default function DeveloperHubPage() {
 
               {/* 2. Environmental & Energy Trends */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-green-300">Environmental & Energy Trends</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-green-300">{t.sections.mining.environment}</AnimatedHeading>
                 <div className="grid gap-3 md:grid-cols-2">
                   <a
                     href="https://bitcoinminingcouncil.com"
@@ -787,7 +780,7 @@ export default function DeveloperHubPage() {
 
               {/* 3. Practical Hands-On Mining Experiments */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">Practical Hands-On Mining Experiments</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">{t.sections.mining.hands_on}</AnimatedHeading>
                 <div className="grid gap-3 md:grid-cols-2">
                   <a
                     href="https://github.com/bitcoin/bitcoin/tree/master/src/miner"
@@ -836,26 +829,23 @@ export default function DeveloperHubPage() {
                   </a>
                 </div>
                 <div className="mt-4 rounded-lg border border-purple-500/30 bg-purple-500/10 p-4">
-                  <p className="mb-2 text-sm font-medium text-purple-200">Experiment Ideas:</p>
+                  <p className="mb-2 text-sm font-medium text-purple-200">{t.sections.mining.experiment_ideas_label}</p>
                   <ul className="ml-4 space-y-1 text-sm text-zinc-300">
-                    <li>• Build a simple CPU miner using Python</li>
-                    <li>• Simulate mining difficulty adjustments</li>
-                    <li>• Create a mining pool simulator</li>
-                    <li>• Analyze block headers and nonces</li>
-                    <li>• Study Merkle tree construction</li>
-                    <li>• Experiment with different hashing algorithms</li>
+                    {t.sections.mining.experiment_ideas_items.map((item, idx) => (
+                      <li key={idx}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
 
               {/* 4. Tools, APIs, and Data Sources for Developers */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-cyan-300">🛠️ Tools, APIs, and Data Sources for Developers</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-cyan-300">{t.sections.mining.tools_apis_heading}</AnimatedHeading>
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Mining Pool APIs */}
                   <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-cyan-200">Mining Pool APIs</h4>
+                      <h4 className="text-lg font-semibold text-cyan-200">{t.sections.mining.pool_apis_heading}</h4>
                       <Database className="h-5 w-5 text-cyan-300" />
                   </div>
                     <div className="space-y-2">
@@ -892,7 +882,7 @@ export default function DeveloperHubPage() {
                   {/* Mining Statistics & Analytics */}
                   <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-orange-200">Mining Statistics & Analytics</h4>
+                      <h4 className="text-lg font-semibold text-orange-200">{t.sections.mining.mining_stats_heading}</h4>
                       <TrendingUp className="h-5 w-5 text-orange-300" />
                     </div>
                     <div className="space-y-2">
@@ -929,7 +919,7 @@ export default function DeveloperHubPage() {
                   {/* Mining Hardware Data */}
                   <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-yellow-200">Mining Hardware Data</h4>
+                      <h4 className="text-lg font-semibold text-yellow-200">{t.sections.mining.hardware_data_heading}</h4>
                       <Zap className="h-5 w-5 text-yellow-300" />
                     </div>
                     <div className="space-y-2">
@@ -966,7 +956,7 @@ export default function DeveloperHubPage() {
                   {/* Block Explorer APIs */}
                   <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-green-200">Block Explorer APIs</h4>
+                      <h4 className="text-lg font-semibold text-green-200">{t.sections.mining.block_explorer_apis_heading}</h4>
                       <Code className="h-5 w-5 text-green-300" />
                     </div>
                     <div className="space-y-2">
@@ -1004,7 +994,7 @@ export default function DeveloperHubPage() {
 
               {/* 5. Current Industry & Market Developments */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-blue-300">Current Industry & Market Developments</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-blue-300">{t.sections.mining.industry_heading}</AnimatedHeading>
                 <div className="grid gap-3 md:grid-cols-2">
                   <a
                     href="https://www.miningpoolstats.stream/bitcoin"
@@ -1020,12 +1010,12 @@ export default function DeveloperHubPage() {
 
               {/* 6. Bitcoin Mining Communities */}
               <div>
-                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">👥 Bitcoin Mining Communities</AnimatedHeading>
+                <AnimatedHeading as="h3" className="mb-4 text-xl font-semibold text-purple-300">{t.sections.mining.communities_heading}</AnimatedHeading>
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Official Forums & Discussion Boards */}
                   <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-yellow-200">Official Forums & Discussion Boards</h4>
+                      <h4 className="text-lg font-semibold text-yellow-200">{t.sections.mining.forums_heading}</h4>
                       <Users className="h-5 w-5 text-yellow-300" />
                     </div>
                     <div className="space-y-2">
@@ -1053,7 +1043,7 @@ export default function DeveloperHubPage() {
                   {/* Verified Mining Pools */}
                   <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-green-200">Verified Mining Pools</h4>
+                      <h4 className="text-lg font-semibold text-green-200">{t.sections.mining.verified_pools_heading}</h4>
                       <Users className="h-5 w-5 text-green-300" />
                     </div>
                     <div className="space-y-2">
@@ -1108,14 +1098,14 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-cyan-500/20 p-2">
                 <Users className="h-6 w-6 text-cyan-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Mentors & Guest Developers</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.ui.mentorsTitle}</AnimatedHeading>
             </div>
             <p className="mb-6 text-zinc-400">
-              Meet the experienced Bitcoin developers who have been willing to work with us as mentors and guest developers, sharing their knowledge and guiding your journey.
+              {t.ui.mentorsDesc}
             </p>
             
             {loadingMentors ? (
-              <div className="text-center py-8 text-zinc-400">Loading mentoring community…</div>
+              <div className="text-center py-8 text-zinc-400">{t.ui.mentorsLoading}</div>
             ) : mentors.length > 0 ? (
               <AnimatedList animation="slideLeft" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {mentors.map((mentor, index) => (
@@ -1156,7 +1146,7 @@ export default function DeveloperHubPage() {
                       {mentor.type && (
                         <span className="rounded-full bg-orange-500/20 px-3 py-1 text-xs text-orange-300">{mentor.type}</span>
                       )}
-                  <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs text-cyan-300">Mentor</span>
+                  <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs text-cyan-300">{t.ui.mentorBadge}</span>
                 </div>
                     {(mentor.github || mentor.twitter) && (
                       <div className="flex items-center gap-3 pt-4 border-t border-zinc-700">
@@ -1186,25 +1176,25 @@ export default function DeveloperHubPage() {
                             </svg>
                           </a>
                         )}
-              </div>
+                      </div>
                     )}
-            </div>
+                  </div>
                 ))}
               </AnimatedList>
             ) : (
               <div className="text-center py-8 text-zinc-400">
-                <p>No mentoring profiles listed yet.</p>
+                <p>{t.ui.mentorsEmpty}</p>
                 <p className="mt-2 text-xs text-zinc-500">
-                  People who join us on mentoring appear here as they’re added to the community.
+                  {t.ui.mentorsEmptySub}
                 </p>
               </div>
             )}
             
             <div className="mt-8 rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-4 text-center">
               <p className="text-sm text-cyan-200">
-                Want to teach, host sessions, or volunteer?{' '}
+                {t.ui.wantToTeach}{' '}
                 <Link href="/mentorship" className="font-semibold underline hover:text-cyan-100">
-                  Join us on mentoring
+                  {t.ui.joinMentoring}
                 </Link>
                 .
               </p>
@@ -1219,23 +1209,23 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-orange-500/20 p-2">
                 <Calendar className="h-6 w-6 text-orange-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Developer Meetings, Workshops & Meetups</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.ui.developerMeetings}</AnimatedHeading>
             </div>
             <div className="space-y-4">
               {/* TODO: Events will be populated from Supabase Events table */}
               <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <AnimatedHeading as="h3" className="font-semibold text-zinc-100">Lightning Builder Hangout</AnimatedHeading>
-                  <span className="text-sm text-zinc-400">Feb 16, 2025</span>
+                  <AnimatedHeading as="h3" className="font-semibold text-zinc-100">{t.ui.lightningHangout}</AnimatedHeading>
+                  <span className="text-sm text-zinc-400">{t.ui.lightningHangoutDate}</span>
                 </div>
-                <p className="text-sm text-zinc-400">Monthly online Q&A session for Lightning developers</p>
+                <p className="text-sm text-zinc-400">{t.ui.lightningHangoutDesc}</p>
               </div>
               <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <AnimatedHeading as="h3" className="font-semibold text-zinc-100">Bitcoin Dev Kampala Meetup</AnimatedHeading>
-                  <span className="text-sm text-zinc-400">Last Friday of every month</span>
+                  <AnimatedHeading as="h3" className="font-semibold text-zinc-100">{t.ui.kampalaMeetup}</AnimatedHeading>
+                  <span className="text-sm text-zinc-400">{t.ui.kampalaMeetupFreq}</span>
                 </div>
-                <p className="text-sm text-zinc-400">Local meetup for Bitcoin developers in Uganda</p>
+                <p className="text-sm text-zinc-400">{t.ui.kampalaMeetupDesc}</p>
               </div>
             </div>
           </section>
@@ -1248,16 +1238,16 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-green-500/20 p-2">
                 <Award className="h-6 w-6 text-green-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Developer Opportunities for Africans</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.ui.opportunitiesAfricans}</AnimatedHeading>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {[
-                { name: 'Summer of Bitcoin', desc: 'Top programme for student internships', link: 'https://www.summerofbitcoin.org' },
-                { name: 'Built with Bitcoin', desc: 'Internship programs', link: 'https://builtwithbitcoin.org' },
-                { name: 'Bolt.Fun Bounties', desc: 'Hackathon bounties', link: 'https://bolt.fun' },
-                { name: 'AfroBitcoinHack', desc: 'Africa-focused hackathons', link: '#' },
-                { name: 'Africa Bitcoin Conference', desc: 'Developer tracks', link: '#' },
-                { name: 'BitDevs Events', desc: 'Local developer meetups', link: 'https://bitdevs.org' },
+                { name: t.ui.opportunities[0]?.name || 'Summer of Bitcoin', desc: t.ui.opportunities[0]?.desc, link: 'https://www.summerofbitcoin.org' },
+                { name: t.ui.opportunities[1]?.name || 'Built with Bitcoin', desc: t.ui.opportunities[1]?.desc, link: 'https://builtwithbitcoin.org' },
+                { name: t.ui.opportunities[2]?.name || 'Bolt.Fun Bounties', desc: t.ui.opportunities[2]?.desc, link: 'https://bolt.fun' },
+                { name: t.ui.opportunities[3]?.name || 'AfroBitcoinHack', desc: t.ui.opportunities[3]?.desc, link: '#' },
+                { name: t.ui.opportunities[4]?.name || 'Africa Bitcoin Conference', desc: t.ui.opportunities[4]?.desc, link: '#' },
+                { name: t.ui.opportunities[5]?.name || 'BitDevs Events', desc: t.ui.opportunities[5]?.desc, link: 'https://bitdevs.org' },
               ].map((opp, idx) => (
                 <a
                   key={idx}
@@ -1281,22 +1271,13 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-purple-500/20 p-2">
                 <Rocket className="h-6 w-6 text-purple-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Build Your First Portfolio Project</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.ui.buildPortfolio}</AnimatedHeading>
             </div>
             <p className="mb-6 text-zinc-400">
-              Get started with these project ideas. We provide guidance and resources, not step-by-step tutorials.
+              {t.ui.portfolioDesc}
             </p>
             <div className="grid gap-4 md:grid-cols-2">
-              {[
-                'Simple Bitcoin Wallet',
-                'Lightning Invoice Generator',
-                'Seed Phrase Backup Tool',
-                'Bitcoin Address Parser',
-                'Blockchain Analyzer',
-                'UTXO Visualizer',
-                'Mempool Monitor',
-                'PSBT Builder',
-              ].map((project, idx) => (
+              {t.ui.portfolioProjects.map((project, idx) => (
                 <div
                   key={idx}
                   className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50"
@@ -1315,17 +1296,17 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-yellow-500/20 p-2">
                 <Award className="h-6 w-6 text-yellow-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Certification Path (Optional)</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.ui.certificationPath}</AnimatedHeading>
             </div>
             <p className="mb-6 text-zinc-400">
-              Earn a certificate by demonstrating your involvement in the Bitcoin developer community.
+              {t.ui.certificationDesc}
             </p>
             <div className="space-y-3">
               {[
-                'Follow the starter guide',
-                'Attend 2–3 dev sessions',
-                'Build a small tool or write an article',
-                'Participate in a review session',
+                t.ui.followStarterGuide,
+                t.ui.attendSessions,
+                t.ui.buildToolOrArticle,
+                t.ui.reviewSession,
               ].map((req, idx) => (
                 <div key={idx} className="flex items-center gap-3 rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500/20 text-green-400">
@@ -1345,32 +1326,32 @@ export default function DeveloperHubPage() {
               <div className="rounded-lg bg-cyan-500/20 p-2">
                 <HelpCircle className="h-6 w-6 text-cyan-400" />
               </div>
-              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">Developer FAQs</AnimatedHeading>
+              <AnimatedHeading as="h2" className="text-2xl font-semibold text-zinc-50">{t.ui.developerFAQs}</AnimatedHeading>
             </div>
             <div className="space-y-4">
               {[
                 {
-                  q: 'Do I need to know C++ to contribute?',
-                  a: 'No! Bitcoin Core uses C++, but many projects use Python, Rust, JavaScript, and other languages. Start with what you know.',
+                  q: t.ui.faqCppQuestion,
+                  a: t.ui.faqCppAnswer,
                 },
                 {
-                  q: 'Can I start with Python?',
-                  a: 'Absolutely! Many Bitcoin tools and libraries are written in Python. Check out pycoin and python-bitcoinlib.',
+                  q: t.ui.faqPythonQuestion,
+                  a: t.ui.faqPythonAnswer,
                 },
                 {
-                  q: 'How long does it take?',
-                  a: 'There\'s no fixed timeline. Focus on learning fundamentals, then start contributing to small issues. Every contribution matters.',
+                  q: t.ui.faqTimeQuestion,
+                  a: t.ui.faqTimeAnswer,
                 },
                 {
-                  q: 'Is Bitcoin Core only for experts?',
-                  a: 'Not at all! Start with documentation, testing, or small bug fixes. The community is welcoming to newcomers.',
+                  q: t.ui.faqCoreExpertQuestion,
+                  a: t.ui.faqCoreExpertAnswer,
                 },
                 {
-                  q: 'How do I find a mentor?',
-                  a: 'Join developer communities, attend meetups, and don\'t hesitate to ask questions. Many developers are happy to help.',
+                  q: t.ui.faqMentorQuestion,
+                  a: t.ui.faqMentorAnswer,
                 },
                 {
-                  q: 'Where do I ask questions?',
+                  q: t.ui.faqAskQuestion,
                   a: (
                     <div className="space-y-2">
                       <p>Join our developer community:</p>
@@ -1397,9 +1378,9 @@ export default function DeveloperHubPage() {
           {/* CTA Section */}
           <AnimatedSection animation="slideUp">
             <section className="rounded-xl border border-orange-400/25 bg-gradient-to-r from-orange-500/10 to-cyan-500/10 p-8 text-center">
-            <AnimatedHeading as="h2" className="mb-4 text-2xl font-semibold text-zinc-50">Ready to Start Your Developer Journey?</AnimatedHeading>
+            <AnimatedHeading as="h2" className="mb-4 text-2xl font-semibold text-zinc-50">{t.ui.ctaReady}</AnimatedHeading>
             <p className="mb-6 text-zinc-400">
-              Join our community and connect with other Bitcoin developers in Africa.
+              {t.ui.ctaSubtitle}
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
@@ -1408,13 +1389,13 @@ export default function DeveloperHubPage() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-green-500 to-green-600 px-8 py-4 text-base font-semibold text-white transition hover:brightness-110"
               >
-                Join Developer Community
+                {t.ui.ctaJoinCommunity}
               </a>
               <Link
                 href="/apply"
                 className="inline-flex items-center justify-center rounded-lg border border-orange-400/30 bg-orange-400/10 px-8 py-4 text-base font-semibold text-orange-300 transition hover:bg-orange-400/20"
               >
-                Apply to Academy
+                {t.ui.ctaApply}
               </Link>
             </div>
           </section>

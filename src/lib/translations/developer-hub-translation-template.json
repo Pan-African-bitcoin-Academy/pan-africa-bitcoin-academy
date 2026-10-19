@@ -1,0 +1,53 @@
+{
+  "hero": {
+    "heading": "",
+    "subheading": ""
+  },
+  "sections": {
+    "path_overview": {
+      "title": "",
+      "what_developers_do": { "heading": "", "items": [] },
+      "skills_required": { "heading": "", "items": [] },
+      "contribute": { "heading": "", "items": [] }
+    },
+    "starter_guide": { "title": "", "intro": "", "learn_tools": "", "developer_roadmap": "", "explore_button": "" },
+    "communities": { "title": "", "bitcoin_core": { "heading": "" }, "other": { "heading": "" } },
+    "mining": { "title": "", "educational": "", "environment": "", "hands_on": "" }
+  },
+  "ui": {
+    "wantToTeach": "",
+    "joinMentoring": "",
+    "developerMeetings": "",
+    "lightningHangout": "",
+    "lightningHangoutDate": "",
+    "lightningHangoutDesc": "",
+    "kampalaMeetup": "",
+    "kampalaMeetupFreq": "",
+    "kampalaMeetupDesc": "",
+    "opportunitiesAfricans": "",
+    "buildPortfolio": "",
+    "portfolioDesc": "",
+    "certificationPath": "",
+    "certificationDesc": "",
+    "followStarterGuide": "",
+    "attendSessions": "",
+    "buildToolOrArticle": "",
+    "reviewSession": "",
+    "developerFAQs": "",
+    "faqCppQuestion": "",
+    "faqCppAnswer": "",
+    "faqPythonQuestion": "",
+    "faqPythonAnswer": "",
+    "faqTimeQuestion": "",
+    "faqTimeAnswer": "",
+    "faqCoreExpertQuestion": "",
+    "faqCoreExpertAnswer": "",
+    "faqMentorQuestion": "",
+    "faqMentorAnswer": "",
+    "faqAskQuestion": "",
+    "ctaReady": "",
+    "ctaSubtitle": "",
+    "ctaJoinCommunity": "",
+    "ctaApply": ""
+  }
+}

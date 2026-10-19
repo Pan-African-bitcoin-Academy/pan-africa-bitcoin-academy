@@ -1,0 +1,219 @@
+{
+  "hero": {
+    "heading": "Developer Hub",
+    "subheading": "Your roadmap to becoming a Bitcoin developer. Connect, learn, and contribute to the global Bitcoin ecosystem."
+  },
+  "sections": {
+    "path_overview": {
+      "title": "Developer Path Overview",
+      "intro_bold": "You don't need to be an expert.",
+      "intro_text": " If you know basic programming and want to join the global Bitcoin developer community, this page shows you the path.",
+      "what_developers_do": {
+        "heading": "What Bitcoin Developers Do",
+        "items": [
+          "Build wallets & LN apps",
+          "Contribute to Bitcoin Core",
+          "Write documentation",
+          "Review pull requests",
+          "Improve security & privacy"
+        ]
+      },
+      "skills_required": {
+        "heading": "Skills Required",
+        "items": [
+          "Basic programming",
+          "Git version control",
+          "Linux command line",
+          "Problem-solving mindset",
+          "Willingness to learn"
+        ]
+      },
+      "contribute": {
+        "heading": "What You Can Contribute",
+        "items": [
+          "Wallet development",
+          "Lightning Network apps",
+          "Documentation & guides",
+          "Code reviews & testing",
+          "Bug fixes & improvements"
+        ]
+      }
+    },
+    "starter_guide": {
+      "title": "Beginner Developer Starter Guide",
+      "intro": "1. Bitcoin Intro (For Developers)",
+      "learn_tools": "2. Learn the Tools",
+      "developer_roadmap": "3. Developer Roadmap",
+      "roadmap_description": "A practical path from zero to your first open-source contribution.",
+      "explore_button": "Explore the roadmap resources",
+      "roadmap_steps": {
+        "start": "Start",
+        "learn_basics": "Learn Basics",
+        "bitcoin_internals": "Bitcoin Internals",
+        "explore_scripting": "Explore Scripting",
+        "learn_wallet": "Learn Wallet Building",
+        "lightning_basics": "Lightning Basics",
+        "join_oss": "Join OSS",
+        "first_contribution": "First Contribution"
+      },
+      "tools": {
+        "bitcoin_core_desc": "The fundamental tool for any Bitcoin developer.",
+        "why_use_it": "Why use it?",
+        "bitcoin_core_items": [
+          "Lets students run a full node",
+          "Explore blockchain data",
+          "Practice RPC commands",
+          "Learn how transactions & blocks work under the hood"
+        ],
+        "sparrow_desc": "One of the best educational tools for understanding UTXOs, signing, and PSBTs.",
+        "sparrow_items": [
+          "Shows UTXOs visually",
+          "Easy way to build, sign, and broadcast transactions",
+          "Teaches inputs, outputs, fees, script types",
+          "Supports testnet and signet"
+        ],
+        "cli_desc": "This is what Bitcoin Core developers use daily.",
+        "cli_items": [
+          "Direct interaction with the node",
+          "Teaches JSON-RPC",
+          "Builds foundation for wallet programming"
+        ],
+        "satoshi_desc": "Code your way through the mysteries of bitcoin.",
+        "satoshi_items": [
+          "Interactive coding challenges",
+          "Learn Bitcoin concepts through practice",
+          "Open-source production by the Bitcoin community",
+          "Build practical Bitcoin development skills"
+        ],
+        "mempool_heading": "Mempool Explorers & Block Explorers",
+        "mempool_desc": "Tools that help beginners see Bitcoin in action.",
+        "mempool_best": "Best Ones:",
+        "signet_desc": "Every developer must learn to use Bitcoin's testing chains.",
+        "signet_why": "Why?",
+        "signet_items": [
+          "Safe environment",
+          "No real money",
+          "Instant transactions"
+        ],
+        "lightning_tools_heading": "Lightning Tools",
+        "lightning_tools_desc": "Let beginners see what Lightning development looks like.",
+        "lightning_tools_label": "Tools:",
+        "additional_resources": "Additional Resources"
+      }
+    },
+    "communities": {
+      "title": "Global Bitcoin Developer Communities",
+      "bitcoin_core": {
+        "heading": "Bitcoin Core Community",
+        "mailing_list": "Mailing List",
+        "bips_docs": "BIPs & Documentation",
+        "testing_guide": "Testing/Review Guide"
+      },
+      "other": {
+        "heading": "Other Communities",
+        "chaincode_link": "Bitcoin Protocol Development Learning Guide →",
+        "summer_link": "Application Portal & Curriculum →",
+        "base58_utxos": "Intro to UTXOs →",
+        "base58_pycoin": "Pycoin →",
+        "base58_script": "Bitcoin Script →",
+        "telegram_items": [
+          "Africa Bitcoin Dev",
+          "Global Bitcoin Dev",
+          "Rust-Bitcoin",
+          "Libsecp256k1"
+        ],
+        "spiral_link": "OSS Developers →",
+        "boltfun_hackathons": "Hackathons →",
+        "boltfun_community": "Developer Community →",
+        "boltfun_projects": "LN Projects →",
+        "bitcoinpp_link": "Developer-Focused Conferences →",
+        "bitrust_link": "Bitcoin Developer Community →"
+      }
+    },
+    "mining": {
+      "title": "Bitcoin Mining Resources",
+      "intro_desc": "Comprehensive resources, tools, and communities for students to study and research Bitcoin mining. Learn about mining technology, energy trends, practical experiments, and industry developments.",
+      "educational": "Educational Resources & About Sites",
+      "environment": "Environmental & Energy Trends",
+      "hands_on": "Practical Hands-On Mining Experiments",
+      "experiment_ideas_label": "Experiment Ideas:",
+      "experiment_ideas_items": [
+        "Build a simple CPU miner using Python",
+        "Simulate mining difficulty adjustments",
+        "Create a mining pool simulator",
+        "Analyze block headers and nonces",
+        "Study Merkle tree construction",
+        "Experiment with different hashing algorithms"
+      ],
+      "tools_apis_heading": "🛠️ Tools, APIs, and Data Sources for Developers",
+      "pool_apis_heading": "Mining Pool APIs",
+      "mining_stats_heading": "Mining Statistics & Analytics",
+      "hardware_data_heading": "Mining Hardware Data",
+      "block_explorer_apis_heading": "Block Explorer APIs",
+      "industry_heading": "Current Industry & Market Developments",
+      "communities_heading": "👥 Bitcoin Mining Communities",
+      "forums_heading": "Official Forums & Discussion Boards",
+      "verified_pools_heading": "Verified Mining Pools"
+    }
+  },
+  "ui": {
+    "wantToTeach": "Want to teach, host sessions, or volunteer?",
+    "joinMentoring": "Join us on mentoring",
+    "developerMeetings": "Developer Meetings, Workshops & Meetups",
+    "lightningHangout": "Lightning Builder Hangout",
+    "lightningHangoutDate": "Feb 16, 2025",
+    "lightningHangoutDesc": "Monthly online Q&A session for Lightning developers",
+    "kampalaMeetup": "Bitcoin Dev Kampala Meetup",
+    "kampalaMeetupFreq": "Last Friday of every month",
+    "kampalaMeetupDesc": "Local meetup for Bitcoin developers in Uganda",
+    "opportunitiesAfricans": "Developer Opportunities for Africans",
+    "opportunities": [
+      { "name": "Summer of Bitcoin", "desc": "Top programme for student internships" },
+      { "name": "Built with Bitcoin", "desc": "Internship programs" },
+      { "name": "Bolt.Fun Bounties", "desc": "Hackathon bounties" },
+      { "name": "AfroBitcoinHack", "desc": "Africa-focused hackathons" },
+      { "name": "Africa Bitcoin Conference", "desc": "Developer tracks" },
+      { "name": "BitDevs Events", "desc": "Local developer meetups" }
+    ],
+    "buildPortfolio": "Build Your First Portfolio Project",
+    "portfolioDesc": "Get started with these project ideas. We provide guidance and resources, not step-by-step tutorials.",
+    "portfolioProjects": [
+      "Simple Bitcoin Wallet",
+      "Lightning Invoice Generator",
+      "Seed Phrase Backup Tool",
+      "Bitcoin Address Parser",
+      "Blockchain Analyzer",
+      "UTXO Visualizer",
+      "Mempool Monitor",
+      "PSBT Builder"
+    ],
+    "certificationPath": "Certification Path (Optional)",
+    "certificationDesc": "Earn a certificate by demonstrating your involvement in the Bitcoin developer community.",
+    "followStarterGuide": "Follow the starter guide",
+    "attendSessions": "Attend 2–3 dev sessions",
+    "buildToolOrArticle": "Build a small tool or write an article",
+    "reviewSession": "Participate in a review session",
+    "developerFAQs": "Developer FAQs",
+    "faqCppQuestion": "Do I need to know C++ to contribute?",
+    "faqCppAnswer": "No! Bitcoin Core uses C++, but many projects use Python, Rust, JavaScript, and other languages. Start with what you know.",
+    "faqPythonQuestion": "Can I start with Python?",
+    "faqPythonAnswer": "Absolutely! Many Bitcoin tools and libraries are written in Python. Check out pycoin and python-bitcoinlib.",
+    "faqTimeQuestion": "How long does it take?",
+    "faqTimeAnswer": "There's no fixed timeline. Focus on learning fundamentals, then start contributing to small issues. Every contribution matters.",
+    "faqCoreExpertQuestion": "Is Bitcoin Core only for experts?",
+    "faqCoreExpertAnswer": "Not at all! Start with documentation, testing, or small bug fixes. The community is welcoming to newcomers.",
+    "faqMentorQuestion": "How do I find a mentor?",
+    "faqMentorAnswer": "Join developer communities, attend meetups, and don't hesitate to ask questions. Many developers are happy to help.",
+    "faqAskQuestion": "Where do I ask questions?",
+    "mentorsTitle": "Mentors & Guest Developers",
+    "mentorsDesc": "Meet the experienced Bitcoin developers who have been willing to work with us as mentors and guest developers, sharing their knowledge and guiding your journey.",
+    "mentorsLoading": "Loading mentoring community…",
+    "mentorBadge": "Mentor",
+    "mentorsEmpty": "No mentoring profiles listed yet.",
+    "mentorsEmptySub": "People who join us on mentoring appear here as they're added to the community.",
+    "ctaReady": "Ready to Start Your Developer Journey?",
+    "ctaSubtitle": "Join our community and connect with other Bitcoin developers in Africa.",
+    "ctaJoinCommunity": "Join Developer Community",
+    "ctaApply": "Apply to Academy"
+  }
+}
