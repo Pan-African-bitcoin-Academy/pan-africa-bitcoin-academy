@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import SplitText from "@/components/SplitText";
-import { BitcoinNetworkAnimation } from "@/components/BitcoinNetworkAnimation";
+import { BitcoinP2PNetworkAnimation } from "@/components/BitcoinP2PNetworkAnimation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getAboutCopy } from "@/lib/translations/about";
 
@@ -16,20 +16,15 @@ export default function AboutPage() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden bg-black text-zinc-100 selection:bg-orange-500/30 selection:text-orange-200">
       
-      {/* 1. Page-confined Dynamic Bitcoin Background Layer */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Live Canvas Bitcoin Blockchain & Nodes Animation */}
-        <div className="absolute inset-0 opacity-45 mix-blend-screen">
-          <BitcoinNetworkAnimation className="h-full w-full" />
-        </div>
-
-        {/* Ambient Radial Gradient Lights */}
-        <div className="absolute -top-40 left-1/2 h-[600px] w-full max-w-7xl -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-500/20 via-cyan-500/10 to-transparent blur-3xl opacity-80" />
-        <div className="absolute top-1/4 -left-32 h-[500px] w-[500px] rounded-full bg-cyan-600/15 blur-[140px]" />
-        <div className="absolute top-2/3 -right-32 h-[500px] w-[500px] rounded-full bg-orange-600/15 blur-[140px]" />
+      {/* 1. Dynamic Bitcoin P2P Network Background Canvas */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <BitcoinP2PNetworkAnimation className="h-full w-full" />
         
-        {/* Soft Vignette Overlay to guarantee high contrast and readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/85 to-black/95" />
+        {/* Soft Ambient Radial Lights */}
+        <div className="absolute -top-40 left-1/2 h-[500px] w-full max-w-7xl -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-500/15 via-cyan-500/10 to-transparent blur-3xl opacity-70" />
+
+        {/* Translucent dark shade over canvas to ensure text is crisp and readable */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60 backdrop-blur-[0.5px]" />
       </div>
 
       {/* 2. Main Page Content */}
