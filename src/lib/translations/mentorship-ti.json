@@ -5,7 +5,7 @@
   },
   "form": {
     
-    "description": "ከም ኣማኻሪ፣ ብፍቓድካ ዝተመርኮሰ ኣገልጋሊ ወይ ተዓዲምካ ዝትምህር መምህር ኮይንካ ተጸንበረና። ኣብ ኣፍሪቃ ትምህርቲ Bitcoin ንምስፋሕ ሓግዝ። ዝርዝር ሓበሬታኻ ኣካፍለና፣ ቀጺሉ እንታይ ከም እትገብር ክንሕብረካ ኢና።",
+    "description": "ከም ኣማኻሪ፣ ብፍቓድካ ዝተመርኮሰ ቀረባት ወይ ተዓዲምካ ክትምህር ተጸንበረና። ኣብ ኣፍሪቃ ትምህርቲ ቢትኮይን ንምስፋሕ ሓግዝ። ዝርዝር ሓበሬታኻ ኣካፍለና፣ ቀጺሉ እንታይ ከም እትገብር ክንሕብረካ ኢና።",
     "success_message": "የቐንየልና። እንኳዕ ብደሓን መጻእካ። ቀጺሉ እንታይ ከም እትገብር ክንሕብረካ ኢና።",
     "submit_error_default": "ምልኣኽ ኣይተኻእለን",
     "personal_details": {
@@ -15,7 +15,7 @@
       "email_label": "ኢመይል",
       "email_placeholder": "john@example.com",
       "country_label": "ሃገር",
-      "country_placeholder": "ንኣብነት፦ Nigeria፣ Kenya፣ Ghana",
+      "country_placeholder": "ንኣብነት፦ ኤርትራ፣ ከንያ፣ ዩጋንዳ",
       "contact_label": "WhatsApp / X / Nostr",
       "contact_placeholder": "ቁጽሪ ተሌፎን ወይ @ስም ተጠቃሚ",
       "initiative_label": "ተበግሶ / ግሩፕ",

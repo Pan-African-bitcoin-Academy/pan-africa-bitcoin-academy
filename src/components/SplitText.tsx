@@ -30,7 +30,7 @@ function splitTextIntoElements(
 ): HTMLElement[] {
   const text = el.textContent ?? '';
   el.innerHTML = '';
-  el.style.overflow = 'hidden';
+  el.style.overflow = 'visible';
 
   if (splitType.includes('chars') && !splitType.includes('words')) {
     const chars = text.split('').map((char) => (char === ' ' ? '\u00A0' : char));
@@ -202,8 +202,8 @@ const SplitText = ({
 
   const style: React.CSSProperties = {
     textAlign,
-    overflow: 'hidden',
-    display: 'inline-block',
+    overflow: 'visible',
+    display: 'block',
     whiteSpace: 'normal',
     wordWrap: 'break-word',
     willChange: 'transform, opacity',

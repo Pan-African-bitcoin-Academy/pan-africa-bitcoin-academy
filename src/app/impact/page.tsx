@@ -250,13 +250,13 @@ export default function ImpactPage() {
       <>
         <div className="relative min-h-screen w-full overflow-hidden bg-black">
           {/* Animated Bitcoin Network Background Canvas with full visibility */}
-          <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 z-0 h-full w-full">
             <BitcoinNetworkAnimation className="h-full w-full" />
           </div>
 
           {/* Radial ambient glow accents */}
-          <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-gradient-to-b from-orange-500/25 via-cyan-500/15 to-transparent blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-32 right-10 h-[350px] w-[350px] rounded-full bg-orange-600/15 blur-3xl" />
+          <div className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 h-[40vmax] w-[60vmax] max-h-[500px] max-w-[600px] rounded-full bg-gradient-to-b from-orange-500/25 via-cyan-500/15 to-transparent blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 right-0 h-[35vmax] w-[35vmax] max-h-[350px] max-w-[350px] rounded-full bg-orange-600/15 blur-3xl" />
 
           <div className="relative z-10 w-full">
             <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 text-center">
