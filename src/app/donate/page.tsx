@@ -7,11 +7,12 @@ import { AnimatedHeading } from "@/components/AnimatedHeading";
 import SplitText from "@/components/SplitText";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getDonateCopy } from "@/lib/translations/donate";
+import { DonateBitcoinAnimation } from "@/components/DonateBitcoinAnimation";
 
 const ONCHAIN_ADDRESS = 'bc1q4pg073ws86qdnxac3y8zhk4t8vtkg2vx529jrj';
-const ONCHAIN_QR_SRC = '/images/onchain-btc-qr.jpeg'; // Using provided JPEG QR image
+const ONCHAIN_QR_SRC = '/images/onchain-btc-qr.jpeg';
 const LIGHTNING_ADDRESS = 'panafricanbitcoin@blink.sv';
-const LNURL_QR_SRC = '/images/lunrl_qr.jpeg'; // Lightning QR code image
+const LNURL_QR_SRC = '/images/lunrl_qr.jpeg';
 
 export default function DonatePage() {
   const { language } = useLanguage();
@@ -33,19 +34,37 @@ export default function DonatePage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      <div className="relative z-10 w-full bg-black/95">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          {/* Hero Section */}
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#070b14] text-zinc-100 selection:bg-orange-500/30 selection:text-orange-200">
+
+      {/* ── Background ─────────────────────────────────────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <DonateBitcoinAnimation className="absolute inset-0 h-full w-full" />
+        <div className="absolute -top-40 left-1/4 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-orange-500/15 via-orange-500/5 to-transparent blur-3xl" />
+        <div className="absolute top-1/2 right-[-80px] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-cyan-500/10 via-cyan-500/4 to-transparent blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/65 via-[#070b14]/55 to-[#070b14]/75" />
+      </div>
+
+      {/* ── Content ────────────────────────────────────────────────────────── */}
+      <div className="relative z-10 w-full">
+        <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+
+          {/* ── Hero ───────────────────────────────────────────────────────── */}
           <AnimatedSection animation="slideUp">
-            <div className="mb-16 text-center">
-              <AnimatedHeading as="h1" className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+            <div className="mb-20 text-center">
+
+              {/* ₿ badge */}
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-orange-500/25 bg-orange-500/8 px-5 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-orange-400">
+                <span className="text-sm font-black">₿</span>
+                Bitcoin Only
+              </div>
+
+              <AnimatedHeading as="h1" className="text-4xl font-black tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
                 <SplitText
                   text={t.hero.title}
                   tag="span"
                   className="inline-block"
-                  delay={50}
-                  duration={1.25}
+                  delay={45}
+                  duration={1.2}
                   ease="bounce.out"
                   splitType="chars"
                   from={{ opacity: 0, y: 40 }}
@@ -55,208 +74,290 @@ export default function DonatePage() {
                   textAlign="center"
                 />
               </AnimatedHeading>
-              <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
+
+              <p className="mx-auto mt-6 max-w-2xl text-base text-zinc-400 sm:text-lg leading-relaxed">
                 {t.hero.subtitle}
               </p>
+
+              {/* Thin orange divider line */}
+              <div className="mt-10 mx-auto h-px w-24 bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
             </div>
           </AnimatedSection>
 
-          <div className="space-y-12">
-            {/* Why Donations Matter */}
+          <div className="space-y-10">
+
+            {/* ── Why Donations Matter ────────────────────────────────────── */}
             <AnimatedSection animation="slideRight">
-              <section className="space-y-4 rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
-                <AnimatedHeading as="h2" className="text-xl font-semibold text-orange-200">
-                  {t.why_donations_matter.heading}
-                </AnimatedHeading>
-                <p className="text-sm text-zinc-300 sm:text-base">
-                  {t.why_donations_matter.intro}
-                </p>
-                <ul className="mt-4 space-y-2 text-sm text-zinc-300 sm:text-base">
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-400">•</span>
-                    <span>{t.why_donations_matter.points.education}</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-400">•</span>
-                    <span>{t.why_donations_matter.points.rewards}</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-400">•</span>
-                    <span>{t.why_donations_matter.points.infrastructure}</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-400">•</span>
-                    <span>{t.why_donations_matter.points.reach}</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-400">•</span>
-                    <span>{t.why_donations_matter.points.mentors}</span>
-                  </li>
-                </ul>
+              <section className="rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-md overflow-hidden">
+                {/* Top accent bar */}
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
+
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-orange-500/30 bg-orange-500/10 text-sm font-black text-orange-400">
+                      ₿
+                    </div>
+                    <AnimatedHeading as="h2" className="text-base font-bold tracking-wide text-zinc-100 sm:text-lg">
+                      {t.why_donations_matter.heading}
+                    </AnimatedHeading>
+                  </div>
+
+                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">
+                    {t.why_donations_matter.intro}
+                  </p>
+
+                  <ul className="grid gap-2 sm:grid-cols-2">
+                    {[
+                      t.why_donations_matter.points.education,
+                      t.why_donations_matter.points.rewards,
+                      t.why_donations_matter.points.infrastructure,
+                      t.why_donations_matter.points.reach,
+                      t.why_donations_matter.points.mentors,
+                    ].map((text, i) => (
+                      <li key={i} className="flex items-start gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+                        <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500 ring-2 ring-orange-500/25" />
+                        <span className="text-sm text-zinc-300 leading-snug">{text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </section>
             </AnimatedSection>
 
-            {/* Payment Methods */}
+            {/* ── Payment Methods ─────────────────────────────────────────── */}
             <AnimatedSection animation="slideLeft">
-              <section className="space-y-6">
-                <AnimatedHeading as="h2" className="text-xl font-semibold text-zinc-50">
-                  {t.payment_methods.heading}
-                </AnimatedHeading>
-                <p className="text-sm text-zinc-400">
-                  {t.payment_methods.intro}
-                </p>
+              <section className="space-y-4">
+                <div className="mb-2">
+                  <AnimatedHeading as="h2" className="text-base font-bold tracking-wide text-zinc-100 sm:text-lg">
+                    {t.payment_methods.heading}
+                  </AnimatedHeading>
+                  <p className="mt-1 text-sm text-zinc-500">{t.payment_methods.intro}</p>
+                </div>
 
-                <div className="grid gap-6 sm:grid-cols-2">
-                  {/* Lightning Network */}
-                  <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
-                    <AnimatedHeading as="h3" className="mb-4 text-lg font-semibold text-cyan-200">
-                      {t.payment_methods.lightning.title}
-                    </AnimatedHeading>
-                    <div className="space-y-4">
-                      {/* Lightning QR Code */}
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="rounded-xl border border-cyan-400/30 bg-zinc-900/60 p-3">
+                <div className="grid gap-4 sm:grid-cols-2">
+
+                  {/* Lightning Card */}
+                  <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-cyan-500/15 bg-white/[0.03] backdrop-blur-md transition-all hover:border-cyan-500/30 hover:bg-white/[0.05]">
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+
+                    <div className="flex flex-col flex-1 p-5">
+                      {/* Card header */}
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg leading-none text-cyan-300">⚡</span>
+                          <AnimatedHeading as="h3" className="text-sm font-bold text-cyan-200 sm:text-base">
+                            {t.payment_methods.lightning.title}
+                          </AnimatedHeading>
+                        </div>
+                        <span className="rounded-md border border-cyan-500/20 bg-cyan-500/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-cyan-400">
+                          Instant
+                        </span>
+                      </div>
+
+                      {/* QR */}
+                      <div className="flex flex-col items-center gap-2 mb-5">
+                        <div className="rounded-xl border border-cyan-500/20 bg-zinc-950/80 p-3 transition-transform group-hover:scale-[1.015] shadow-[0_0_30px_rgba(34,211,238,0.06)]">
                           <img
                             src={LNURL_QR_SRC}
                             alt={t.payment_methods.lightning.qr_alt}
-                            className="h-48 w-48 rounded-lg object-contain"
+                            className="h-40 w-40 rounded-lg object-contain"
                           />
                         </div>
-                        <p className="text-xs text-zinc-400">{t.payment_methods.lightning.scan_text}</p>
+                        <p className="text-[11px] text-zinc-600 tracking-wide">{t.payment_methods.lightning.scan_text}</p>
                       </div>
 
-                      {/* Paycode section */}
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium text-zinc-400 text-center block">
+                      {/* Address + copy */}
+                      <div className="mt-auto space-y-2">
+                        <p className="text-center text-[10px] font-bold uppercase tracking-widest text-zinc-600">
                           {t.payment_methods.lightning.label}
-                        </label>
-                        <div className="rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-3 font-mono text-xs text-cyan-300 break-all text-center">
+                        </p>
+                        <div className="rounded-lg border border-cyan-500/10 bg-zinc-950/60 px-3 py-2 font-mono text-[11px] text-cyan-400 break-all text-center leading-relaxed">
                           {LIGHTNING_ADDRESS}
                         </div>
                         <button
                           onClick={handleCopyLightning}
-                          className="w-full rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
+                          className="group/btn relative w-full overflow-hidden rounded-xl bg-cyan-500/10 border border-cyan-500/20 px-4 py-2.5 text-sm font-bold text-cyan-300 transition-all hover:bg-cyan-500/20 hover:text-cyan-200 active:scale-95 flex items-center justify-center gap-2"
                         >
-                          {copiedLightning ? t.payment_methods.lightning.copied_button : t.payment_methods.lightning.copy_button}
+                          {copiedLightning ? (
+                            <>
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                              {t.payment_methods.lightning.copied_button}
+                            </>
+                          ) : (
+                            <>
+                              <span>⚡</span>
+                              {t.payment_methods.lightning.copy_button}
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  {/* On-Chain */}
-                  <div className="rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_30px_rgba(249,115,22,0.2)]">
-                    <AnimatedHeading as="h3" className="mb-4 text-lg font-semibold text-orange-200">
-                      {t.payment_methods.onchain.title}
-                    </AnimatedHeading>
-                    <div className="space-y-4">
-                      {/* QR Image */}
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="rounded-xl border border-orange-500/30 bg-zinc-900/60 p-3">
+                  {/* On-Chain Card */}
+                  <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-orange-500/15 bg-white/[0.03] backdrop-blur-md transition-all hover:border-orange-500/30 hover:bg-white/[0.05]">
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-orange-500/40 to-transparent" />
+
+                    <div className="flex flex-col flex-1 p-5">
+                      {/* Card header */}
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg leading-none font-black text-orange-400">₿</span>
+                          <AnimatedHeading as="h3" className="text-sm font-bold text-orange-200 sm:text-base">
+                            {t.payment_methods.onchain.title}
+                          </AnimatedHeading>
+                        </div>
+                        <span className="rounded-md border border-orange-500/20 bg-orange-500/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-orange-400">
+                          On-chain
+                        </span>
+                      </div>
+
+                      {/* QR */}
+                      <div className="flex flex-col items-center gap-2 mb-5">
+                        <div className="rounded-xl border border-orange-500/20 bg-zinc-950/80 p-3 transition-transform group-hover:scale-[1.015] shadow-[0_0_30px_rgba(249,115,22,0.06)]">
                           <img
                             src={ONCHAIN_QR_SRC}
                             alt={t.payment_methods.onchain.qr_alt}
-                            className="h-48 w-48 rounded-lg object-contain"
+                            className="h-40 w-40 rounded-lg object-contain"
                           />
                         </div>
-                        <p className="text-xs text-zinc-400">{t.payment_methods.onchain.scan_text}</p>
+                        <p className="text-[11px] text-zinc-600 tracking-wide">{t.payment_methods.onchain.scan_text}</p>
                       </div>
 
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium text-zinc-400 text-center block">
+                      {/* Address + copy */}
+                      <div className="mt-auto space-y-2">
+                        <p className="text-center text-[10px] font-bold uppercase tracking-widest text-zinc-600">
                           {t.payment_methods.onchain.label}
-                        </label>
-                        <div className="rounded-lg border border-orange-500/20 bg-zinc-900/50 p-3 font-mono text-xs text-orange-300 break-all text-center">
+                        </p>
+                        <div className="rounded-lg border border-orange-500/10 bg-zinc-950/60 px-3 py-2 font-mono text-[11px] text-orange-400 break-all text-center leading-relaxed">
                           {ONCHAIN_ADDRESS}
                         </div>
                         <button
                           onClick={handleCopyOnchain}
-                          className="w-full rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
+                          className="w-full rounded-xl bg-orange-500/10 border border-orange-500/20 px-4 py-2.5 text-sm font-bold text-orange-300 transition-all hover:bg-orange-500/20 hover:text-orange-200 active:scale-95 flex items-center justify-center gap-2"
                         >
-                          {copiedOnchain ? t.payment_methods.onchain.copied_button : t.payment_methods.onchain.copy_button}
+                          {copiedOnchain ? (
+                            <>
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                              {t.payment_methods.onchain.copied_button}
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-black">₿</span>
+                              {t.payment_methods.onchain.copy_button}
+                            </>
+                          )}
                         </button>
                       </div>
-                      <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
-                        <p className="text-xs text-zinc-400">
-                          <span className="font-semibold text-orange-300">{t.payment_methods.onchain.note_prefix}</span>{" "}
-                          {t.payment_methods.onchain.note_text}
-                        </p>
-                      </div>
+
+                      {/* Note */}
+                      <p className="mt-3 rounded-lg border border-orange-500/10 bg-orange-500/5 px-3 py-2 text-[11px] text-zinc-500 leading-relaxed">
+                        <span className="font-semibold text-orange-400">{t.payment_methods.onchain.note_prefix}</span>{' '}
+                        {t.payment_methods.onchain.note_text}
+                      </p>
                     </div>
+                  </div>
+
+                </div>
+              </section>
+            </AnimatedSection>
+
+            {/* ── Transparency ────────────────────────────────────────────── */}
+            <AnimatedSection animation="slideRight">
+              <section className="rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-md overflow-hidden">
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-purple-500/40 to-transparent" />
+
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    {/* Simple SVG icon — no emoji */}
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-purple-500/30 bg-purple-500/10">
+                      <svg className="h-4 w-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <AnimatedHeading as="h2" className="text-base font-bold tracking-wide text-zinc-100 sm:text-lg">
+                      {t.transparency.heading}
+                    </AnimatedHeading>
+                  </div>
+
+                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">
+                    {t.transparency.intro}
+                  </p>
+
+                  <ul className="grid gap-2 sm:grid-cols-2">
+                    {[
+                      { title: t.transparency.points.public_reporting_title, desc: t.transparency.points.public_reporting_desc },
+                      { title: t.transparency.points.student_rewards_title,  desc: t.transparency.points.student_rewards_desc  },
+                      { title: t.transparency.points.infrastructure_title,   desc: t.transparency.points.infrastructure_desc   },
+                      { title: t.transparency.points.growth_title,           desc: t.transparency.points.growth_desc           },
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+                        <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-500 ring-2 ring-purple-500/25" />
+                        <span className="text-sm text-zinc-300 leading-snug">
+                          <strong className="text-purple-300">{item.title}</strong>{' '}
+                          {item.desc}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-5 rounded-xl border border-purple-500/10 bg-purple-500/5 px-4 py-3">
+                    <p className="text-xs text-zinc-500">
+                      {t.transparency.dashboard_note_prefix}{' '}
+                      <Link href="/impact" className="font-semibold text-purple-400 hover:text-purple-300 underline underline-offset-2 transition-colors">
+                        {t.transparency.dashboard_link_text}
+                      </Link>{' '}
+                      {t.transparency.dashboard_note_suffix}
+                    </p>
                   </div>
                 </div>
               </section>
             </AnimatedSection>
 
-            {/* Transparency Plan */}
-            <AnimatedSection animation="slideRight">
-              <section className="space-y-4 rounded-xl border border-purple-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
-                <AnimatedHeading as="h2" className="text-xl font-semibold text-purple-200">
-                  {t.transparency.heading}
-                </AnimatedHeading>
-                <p className="text-sm text-zinc-300 sm:text-base">
-                  {t.transparency.intro}
-                </p>
-                <ul className="mt-4 space-y-3 text-sm text-zinc-300 sm:text-base">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">✓</span>
-                    <span>
-                      <strong className="text-purple-200">{t.transparency.points.public_reporting_title}</strong>{" "}
-                      {t.transparency.points.public_reporting_desc}
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">✓</span>
-                    <span>
-                      <strong className="text-purple-200">{t.transparency.points.student_rewards_title}</strong>{" "}
-                      {t.transparency.points.student_rewards_desc}
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">✓</span>
-                    <span>
-                      <strong className="text-purple-200">{t.transparency.points.infrastructure_title}</strong>{" "}
-                      {t.transparency.points.infrastructure_desc}
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-400">✓</span>
-                    <span>
-                      <strong className="text-purple-200">{t.transparency.points.growth_title}</strong>{" "}
-                      {t.transparency.points.growth_desc}
-                    </span>
-                  </li>
-                </ul>
-                <div className="mt-4 rounded-lg border border-purple-500/20 bg-purple-500/5 p-4">
-                  <p className="text-xs text-zinc-400">
-                    {t.transparency.dashboard_note_prefix}{" "}
-                    <Link href="/impact" className="font-semibold text-purple-300 hover:text-purple-200">
-                      {t.transparency.dashboard_link_text}
-                    </Link>{" "}
-                    {t.transparency.dashboard_note_suffix}
-                  </p>
-                </div>
-              </section>
-            </AnimatedSection>
-
-            {/* Thank You */}
+            {/* ── Thank You ───────────────────────────────────────────────── */}
             <AnimatedSection animation="slideUp">
-              <section className="text-center">
-                <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-                  <AnimatedHeading as="h2" className="text-2xl font-semibold text-cyan-200">
+              <section className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-md text-center p-8 sm:p-12">
+                {/* Faint ₿ watermark */}
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center select-none" aria-hidden="true">
+                  <span className="text-[220px] font-black leading-none text-orange-500/[0.025]">₿</span>
+                </div>
+
+                {/* Top glow line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+
+                <div className="relative space-y-4">
+                  {/* Icon ring */}
+                  <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full border border-cyan-500/20 bg-cyan-500/8 shadow-[0_0_30px_rgba(34,211,238,0.12)]">
+                    <svg className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </div>
+
+                  <AnimatedHeading as="h2" className="text-2xl font-black text-zinc-50 sm:text-3xl">
                     {t.thank_you.heading}
                   </AnimatedHeading>
-                  <p className="mt-4 text-sm text-zinc-300 sm:text-base">
+
+                  <p className="mx-auto max-w-lg text-sm text-zinc-400 sm:text-base leading-relaxed">
                     {t.thank_you.message}
                   </p>
-                  <p className="mt-2 text-xs text-zinc-400">
-                    {t.thank_you.questions_prefix}{" "}
-                    <a href="mailto:support@panafricanbitcoin.com" className="text-cyan-300 hover:text-cyan-200">
+
+                  <p className="text-xs text-zinc-600 pt-2">
+                    {t.thank_you.questions_prefix}{' '}
+                    <a
+                      href="mailto:support@panafricanbitcoin.com"
+                      className="text-cyan-500 hover:text-cyan-400 underline underline-offset-2 transition-colors"
+                    >
                       support@panafricanbitcoin.com
                     </a>
                   </p>
                 </div>
               </section>
             </AnimatedSection>
+
           </div>
         </div>
       </div>
