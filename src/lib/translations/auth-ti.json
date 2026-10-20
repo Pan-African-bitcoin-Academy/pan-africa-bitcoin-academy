@@ -1,0 +1,52 @@
+{
+  "signin": {
+    "title": "እንኳዕ ብደሓን ተመለስካ",
+    "subtitle": "ናይ ቢትኮይን ጉዕዞኻ ንምቕጻል እቶ",
+    "email_label": "ኣድራሻ ኢመይል",
+    "email_placeholder": "your@email.com",
+    "password_label": "መሕለፊ ኮድ",
+    "password_placeholder": "••••••••",
+    "remember_me": "ዘክሪዮ",
+    "forgot_password": "መሕለፊ ኮድካ ረሲዕካዮ ዲኻ?",
+    "submit_button": "እቶ",
+    "submitting_button": "ይኣቱ ኣሎ...",
+    "dont_have_account": "ሕሳብ የብልካን ድዩ? ",
+    "signup_link": "ሕሳብ ፍጠር"
+  },
+  "signup": {
+    "title": "ሕሳብ ፍጠር",
+    "subtitle": "ኣብ Pan-Africa ቢትኮይን Academy ተጸንበር",
+    "first_name_label": "ስም",
+    "first_name_placeholder": "ስም",
+    "last_name_label": "ስም ኣቦ",
+    "last_name_placeholder": "ስም ኣቦ",
+    "email_label": "ኣድራሻ ኢመይል",
+    "email_placeholder": "your@email.com",
+    "whatsapp_label": "ቁጽሪ WhatsApp",
+    "whatsapp_placeholder": "ንኣብነት፦ +291 7 123 4567",
+    "whatsapp_hint": "ኮድ ሃገርካ ኣካትት።",
+    "password_label": "መሕለፊ ኮድ",
+    "password_placeholder": "ጽቡቅ መሕለፊ ኮድ ኣእቱ",
+    "requirements_heading": "እቶም ከተማልኦም ዘለካ መስፈርታት",
+    "requirements": {
+      "min_length": "ብውሑዱ 8 ቁምፊታት ተጠቐም",
+      "uppercase": "ብውሑዱ ሓደ ዓቢ ፊደል ኣካትት (A–Z)",
+      "lowercase": "ብውሑዱ ሓደ ንእሽቶ ፊደል ኣካትት (a–z)",
+      "number": "ብውሑዱ ሓደ ቁጽሪ ኣካትት (0–9)",
+      "special": "ብውሑዱ ሓደ ፍሉይ ምልክት ካብዚ ኣካትት (!@#$%^&*_?><|)"
+    },
+    "confirm_password_label": "መሕለፊ ኮድካ ደጊምካ ጸሓፍ",
+    "confirm_password_placeholder": "••••••••",
+    "submit_button": "ሕሳብ ፍጠር",
+    "submitting_button": "ሕሳብ ይፍጠር ኣሎ...",
+    "already_have_account": "ቀዲሙ ዝተፈጥረ ሕሳብ ኣለካ ድዩ? ",
+    "signin_link": "እቶ"
+  },
+  "common": {
+    "account_created_title": "ሕሳብ ተፈጢሩ",
+    "account_created_desc": "ሕሳብካ ብዓወት ተፈጢሩ! ቅድሚ ምእታውካ ኣድራሻ ኢመይልካ ንምርግጋጽ ኢመይልካ ተመልከት።",
+    "ok_button": "ሕራይ",
+    "resend_verification": "ናይ መረጋገጺ ኢመይል እንደገና ስደድ",
+    "sending": "ይለኣኽ ኣሎ..."
+  }
+}

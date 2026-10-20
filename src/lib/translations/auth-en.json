@@ -1,0 +1,52 @@
+{
+  "signin": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to continue your Bitcoin journey",
+    "email_label": "Email Address",
+    "email_placeholder": "your@email.com",
+    "password_label": "Password",
+    "password_placeholder": "••••••••",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot password?",
+    "submit_button": "Sign In",
+    "submitting_button": "Signing in...",
+    "dont_have_account": "Don't have an account? ",
+    "signup_link": "Sign Up"
+  },
+  "signup": {
+    "title": "Create Account",
+    "subtitle": "Join the Pan-Africa Bitcoin Academy",
+    "first_name_label": "First Name",
+    "first_name_placeholder": "First name",
+    "last_name_label": "Last Name",
+    "last_name_placeholder": "Last name",
+    "email_label": "Email Address",
+    "email_placeholder": "your@email.com",
+    "whatsapp_label": "WhatsApp Number",
+    "whatsapp_placeholder": "e.g. +291 7 123 4567",
+    "whatsapp_hint": "Include country code.",
+    "password_label": "Password",
+    "password_placeholder": "Enter strong password",
+    "requirements_heading": "Requirements",
+    "requirements": {
+      "min_length": "Minimum 8 characters",
+      "uppercase": "At least 1 uppercase letter",
+      "lowercase": "At least 1 lowercase letter",
+      "number": "At least 1 number",
+      "special": "At least 1 special character (!@#$%^&*_?><|)"
+    },
+    "confirm_password_label": "Confirm Password",
+    "confirm_password_placeholder": "••••••••",
+    "submit_button": "Create Account",
+    "submitting_button": "Creating account...",
+    "already_have_account": "Already have an account? ",
+    "signin_link": "Sign In"
+  },
+  "common": {
+    "account_created_title": "Account created",
+    "account_created_desc": "Account created successfully! Please check your email to verify your address before logging in.",
+    "ok_button": "OK",
+    "resend_verification": "Resend Verification Email",
+    "sending": "Sending..."
+  }
+}

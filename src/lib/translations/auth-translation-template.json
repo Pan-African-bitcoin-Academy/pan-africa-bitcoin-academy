@@ -1,0 +1,52 @@
+{
+  "signin": {
+    "title": "",
+    "subtitle": "",
+    "email_label": "",
+    "email_placeholder": "",
+    "password_label": "",
+    "password_placeholder": "",
+    "remember_me": "",
+    "forgot_password": "",
+    "submit_button": "",
+    "submitting_button": "",
+    "dont_have_account": "",
+    "signup_link": ""
+  },
+  "signup": {
+    "title": "",
+    "subtitle": "",
+    "first_name_label": "",
+    "first_name_placeholder": "",
+    "last_name_label": "",
+    "last_name_placeholder": "",
+    "email_label": "",
+    "email_placeholder": "",
+    "whatsapp_label": "",
+    "whatsapp_placeholder": "",
+    "whatsapp_hint": "",
+    "password_label": "",
+    "password_placeholder": "",
+    "requirements_heading": "ከተማልኦም ዘለካ",
+    "requirements": {
+      "min_length": "ብውሑዱ 8 ቃላት ተጠቀም",
+      "uppercase": "ሓንቲ ካብ ፊደላት ግድነት ብዓቢ ጸሓፍ",
+      "lowercase": "ሓንቲ ካብተን ቃላት ግድነት ብንእሽተይ ጸሓፋ",
+      "number": "ግድነት ተወሓደ ሓንት ቁጽሪ ተጠቀም",
+      "special": "ብውሕዱ ሓንቲ ካብዚ ተጠተቐም (!@#$%^&*_?><|)"
+    },
+    "confirm_password_label": "ፓስዎርድ ኣረጋግጽ",
+    "confirm_password_placeholder": "",
+    "submit_button": "",
+    "submitting_button": "",
+    "already_have_account": "",
+    "signin_link": ""
+  },
+  "common": {
+    "account_created_title": "",
+    "account_created_desc": "",
+    "ok_button": "",
+    "resend_verification": "",
+    "sending": ""
+  }
+}

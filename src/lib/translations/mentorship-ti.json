@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "ኣብ ምምካርን ምምሃርን ተጸንበረና",
+    "subtitle": "ኣብ ኣፍሪቃ ትምህርቲ Bitcoinን ርእሰ-ምቁጽጻርን ንምህናጽ ተጸንበረና።"
+  },
+  "form": {
+    
+    "description": "ከም ኣማኻሪ፣ ብፍቓድካ ዝተመርኮሰ ኣገልጋሊ ወይ ተዓዲምካ ዝትምህር መምህር ኮይንካ ተጸንበረና። ኣብ ኣፍሪቃ ትምህርቲ Bitcoin ንምስፋሕ ሓግዝ። ዝርዝር ሓበሬታኻ ኣካፍለና፣ ቀጺሉ እንታይ ከም እትገብር ክንሕብረካ ኢና።",
+    "success_message": "የቐንየልና። እንኳዕ ብደሓን መጻእካ። ቀጺሉ እንታይ ከም እትገብር ክንሕብረካ ኢና።",
+    "submit_error_default": "ምልኣኽ ኣይተኻእለን",
+    "personal_details": {
+      "heading": "ዝርዝር ሓበሬታኻ",
+      "full_name_label": "ምሉእ ስም",
+      "full_name_placeholder": "John Doe",
+      "email_label": "ኢመይል",
+      "email_placeholder": "john@example.com",
+      "country_label": "ሃገር",
+      "country_placeholder": "ንኣብነት፦ Nigeria፣ Kenya፣ Ghana",
+      "contact_label": "WhatsApp / X / Nostr",
+      "contact_placeholder": "ቁጽሪ ተሌፎን ወይ @ስም ተጠቃሚ",
+      "initiative_label": "ተበግሶ / ግሩፕ",
+      "optional_label": "(ኣማራጺ)",
+      "initiative_placeholder": "ንኣብነት፦ BitDevs፣ ናይ ከባቢ ኣኼባ፣ ክለብ ዩኒቨርሲቲ"
+    },
+    "role_availability": {
+      "heading": "ተራ እትህቦ ግዜን",
+      "role_label": "ተራ",
+      "select_role_placeholder": "ተራ ምረጽ",
+      "hours_label": "ሰዓታት / ኣብ ወርሒ",
+      "hours_placeholder": "ንኣብነት፦ 8–12 ሰዓታት",
+      "notes_label": "ተወሳኺ ሓበሬታ",
+      "optional_label": "(ኣማራጺ)",
+      "notes_placeholder": "መላግቦታት፣ ክትምህሮም እትኽእል ኣርእስትታት፣ ናይ ሰዓት ክልልካ ወይ ክንፈልጦ ዘለና ካልእ ሓበሬታ።"
+    },
+    "onboarding_call_label": "ኣብ ሓጺር ናይ መእተዊ ዕላል ክትሳተፍ ፍቓደኛ ዲኻ?",
+    "submit_button": "ድሌተይ ልኣኽ",
+    "submitting_button": "ይጽንበር ኣለኹ...",
+    "submitted_button": "✓ ተጸንቢረ",
+    "required_hint_prefix": "በዚ ምልክት ዝተሓበሩ መስኮታት ",
+    "required_hint_suffix": " ምምላእ ግዴታ እዩ"
+  },
+  "roles_section": {
+    "heading": "ክትሳተፈሎም እትኽእል ተራታት",
+    "time_prefix": "ግዜ፦ ",
+    "btn_select": "ነዚ ተራ ምረጽ",
+    "btn_selected": "ተመሪጹ",
+    "roles": {
+      "mentor": {
+        "title": "ኣማኻሪ",
+        "description": "ኣብ ጉጅለታት ትምህርቲ ንተማሃሮ ደግፍ፣ ናይ ሕቶን መልስን ክፍለ ግዜታት ምራሕ፣ ዕማማት ኣብ ምግምጋም ሓግዝ፣ ብዛዕባ Bitcoin፣ Lightning ወይ ርእሰ-ምቁጽጻር ድማ መምርሒ ሃብ።",
+        "time": "1–3 ሰዓታት / ወርሒ"
+      },
+      "lecturer": {
+        "title": "ተዓዲምካ ዝትምህር መምህር",
+        "description": "ፍሉያት ክፍለ ትምህርትታት ምሃር፣ ንኣብነት፦ Lightning፣ mining፣ nodes፣ ብሕታውነትን ካልኦትን። ናይ ኢንዱስትሪ ወይ ቴክኒካዊ ተመኩሮኻ ኣካፍል፣ ኣብ ናይ ጉጅለ ዘተታት ድማ ተሳተፍ።",
+        "time": "ብመሰረት ዕድመ"
+      },
+      "volunteer": {
+        "title": "ብፍቓዱ ዘገልግል",
+        "description": "ኣብ ምምሕዳር ግሩፕ፣ ሓደስቲ ተማሃሮ ኣብ ምቕባል፣ ትሕዝቶ ኣብ ምፍጣር ወይ ምምሕዳራዊ ዕማማት ሓግዝ። ኣበርክቶኻ ዝተዓጻጸፈ ግዜ ዝፈቅድ እዩ።",
+        "time": "ብዝተዓጻጸፈ መንገዲ"
+      }
+    }
+  },
+  "why_matter": {
+    "heading": "ኣማኸርትን ብፍቓዶም ዘገልግሉን ስለምንታይ ኣገደስቲ እዮም?",
+    "p1": "ትምህርቲ Bitcoin ብግሩፕ እዩ ዝዓቢ፣ ብክፍሊ ትምህርቲ ጥራይ ኣይኮነን።",
+    "p2": "ኣማኸርትና፣ ብፍቓዶም ዘገልግሉን ተዓደምቲ መምህራንን ንቀጻሊ ወለዶ ኣማዕበልቲ Bitcoin ኣፍሪቃ ኣብ ምህናጽ ኣገዳሲ ኣበርክቶ ይገብሩ።",
+    "p3": "ራእይና ብዛዕባ ርእሰ-ምቁጽጻር፣ ናጽነትን ክፉት ፍልጠትን እንተትካፈል፣ ክትጽንበረና ንዕድመካ።"
+  },
+  "vetting": {
+    "heading": "ሂደት ምምራጽን ምግምጋምን",
+    "steps": [
+      {
+        "num": "1.",
+        "title": "ድሌትካ ምግምጋም",
+        "desc": "ኣብ ክእለታትካ፣ እትህቦ ግዜን ምስ ክብርታት ግሩፕና ዘለካ ምስምማዕን ተመርኲስና ንግምግም።"
+      },
+      {
+        "num": "2.",
+        "title": "ሓጺር ናይ ምልላይ ዕላል",
+        "desc": "ንሓድሕድና ንምፍላጥ ዝሕግዝ ሓጺር ዕላል።"
+      },
+      {
+        "num": "3.",
+        "title": "ናይ ፈተነ ሰሙን (ኣማራጺ)",
+        "desc": "ኣብ ግሩፕ ብኸመይ ከም እትሳተፍ ንርኢ።"
+      },
+      {
+        "num": "4.",
+        "title": "መእተዊ ስልጠና",
+        "desc": "መምርሒታት፣ ትጽቢታትን ሓላፍነታትን።"
+      },
+      {
+        "num": "5.",
+        "title": "ብወግዒ ምቕባል",
+        "desc": "ንግሩፕና ከነላልየካ ኢና (WhatsApp + X/Nostr)።"
+      }
+    ]
+  },
+  "community": {
+    "heading": "ኣማኸርትናን ኣበርከትትናን",
+    "subtitle_1": "እዛ ኣካዳሚ ዝተመስረተት ምሳና ክቖሙ ብዝመረጹ ሰባት ምኽንያት እያ።",
+    "subtitle_2": "ኣማኸርትና፣ ተዓደምቲ መምህራንናን ብፍቓዶም ዘገልግሉናን ግዜኦም፣ ፍልጠቶምን ጉልበቶምን ብምውፋይ ኣብ ኣፍሪቃ ትምህርቲ Bitcoin ንምህናጽ ይሕግዙ።",
+    "loading": "ግሩፕ ኣማኸርቲ ይጽዕን ኣሎ…",
+    "empty_title": "ገና ዝቐርብ መግለጺ ኣባላት ግሩፕ የለን።",
+    "empty_desc": "ሰባት ኣብ ምምካርን ብፍቓዶም ኣብ ምግልጋልን ክጽንበሩና ከለዉ፣ ኣብዚ ከነላልዮም ኢና።"
+  },
+  "cta": {
+    "heading": "ኣብ ምምሃርን ምምካርን ተጸንበረና",
+    "description": "ንቀጻሊ ወለዶ ኣማዕበልቲ Bitcoin ኣፍሪቃ ንምብርታዕ ሓግዝ።",
+    "button": "ሕጂ ጀምር"
+  }
+}

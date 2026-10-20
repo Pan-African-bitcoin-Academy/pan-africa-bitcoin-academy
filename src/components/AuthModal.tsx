@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import Image from 'next/image';
 import { Eye, EyeOff, Check, Circle, X } from 'lucide-react';
-import { validatePassword, getPasswordRequirementStatuses, PASSWORD_REQUIREMENTS_HEADING, PASSWORD_REQUIREMENTS_HEADING_TIGRINYA, CONFIRM_PASSWORD_LABEL, CONFIRM_PASSWORD_LABEL_TIGRINYA } from '@/lib/passwordValidation';
+import { validatePassword } from '@/lib/passwordValidation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getAuthCopy } from '@/lib/translations/auth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -15,6 +18,9 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAfterLogin }: AuthModalProps) {
+  const { language } = useLanguage();
+  const t = getAuthCopy(language);
+
   const [isSignIn, setIsSignIn] = useState(mode === 'signin');
   const [formData, setFormData] = useState({
     firstName: '',
@@ -305,7 +311,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                 </svg>
               </div>
             </div>
-            <h3 className="text-xl font-semibold text-zinc-100 mb-3">Account created</h3>
+            <h3 className="text-xl font-semibold text-zinc-100 mb-3">{t.common.account_created_title}</h3>
             <p className="text-zinc-300 text-sm leading-relaxed mb-8">
               {signupSuccessMessage}
             </p>
@@ -318,7 +324,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
               }}
               className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 font-semibold text-black transition hover:from-orange-400 hover:to-orange-500"
             >
-              OK
+              {t.common.ok_button}
             </button>
           </div>
         ) : (
@@ -348,18 +354,25 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
           <div className="mb-4 flex justify-center">
             <div className="relative flex h-16 w-16 items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-xl" />
-              <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 via-orange-400 to-orange-600">
-                <span className="text-2xl font-black text-black">B</span>
+              <div className="relative z-10 flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl">
+                <Image
+                  src="/images/logo_3.png"
+                  alt="Pan-African Bitcoin Academy Logo"
+                  width={56}
+                  height={56}
+                  className="h-full w-full object-contain brightness-110 contrast-125"
+                  priority
+                />
               </div>
             </div>
           </div>
           <h2 className="text-2xl font-bold text-zinc-100">
-            {isSignIn ? 'Welcome Back' : 'Create Account'}
+            {isSignIn ? t.signin.title : t.signup.title}
           </h2>
           <p className="mt-2 text-sm text-zinc-400">
             {isSignIn
-              ? 'Sign in to continue your Bitcoin journey'
-              : 'Join the Pan-Africa Bitcoin Academy'}
+              ? t.signin.subtitle
+              : t.signup.subtitle}
           </p>
         </div>
 
@@ -372,7 +385,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                   htmlFor="firstName"
                   className="mb-2 block text-sm font-medium text-zinc-300"
                 >
-                  First Name <span className="text-red-400">*</span>
+                  {t.signup.first_name_label} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -383,7 +396,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                   value={formData.firstName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
-                  placeholder="First name"
+                  placeholder={t.signup.first_name_placeholder}
                 />
                 {errors.firstName && (
                   <p className="mt-1 text-sm text-red-400">{errors.firstName}</p>
@@ -394,7 +407,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                   htmlFor="lastName"
                   className="mb-2 block text-sm font-medium text-zinc-300"
                 >
-                  Last Name <span className="text-red-400">*</span>
+                  {t.signup.last_name_label} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -405,7 +418,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                   value={formData.lastName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
-                  placeholder="Last name"
+                  placeholder={t.signup.last_name_placeholder}
                 />
                 {errors.lastName && (
                   <p className="mt-1 text-sm text-red-400">{errors.lastName}</p>
@@ -419,7 +432,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
               htmlFor="email"
               className="mb-2 block text-sm font-medium text-zinc-300"
             >
-              Email Address <span className="text-red-400">*</span>
+              {isSignIn ? t.signin.email_label : t.signup.email_label} <span className="text-red-400">*</span>
             </label>
             <input
               type="email"
@@ -429,7 +442,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
               value={formData.email}
               onChange={handleChange}
               className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
-              placeholder="your@email.com"
+              placeholder={isSignIn ? t.signin.email_placeholder : t.signup.email_placeholder}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-400">{errors.email}</p>
@@ -442,7 +455,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                 htmlFor="phone"
                 className="mb-2 block text-sm font-medium text-zinc-300"
               >
-                WhatsApp Number <span className="text-red-400">*</span>
+                {t.signup.whatsapp_label} <span className="text-red-400">*</span>
               </label>
               <input
                 type="tel"
@@ -453,9 +466,9 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                 value={formData.phone}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
-                placeholder="e.g. +291 7 123 4567"
+                placeholder={t.signup.whatsapp_placeholder}
               />
-              <p className="mt-1 text-xs text-zinc-500">Include country code.</p>
+              <p className="mt-1 text-xs text-zinc-500">{t.signup.whatsapp_hint}</p>
               {errors.phone && (
                 <p className="mt-1 text-sm text-red-400">{errors.phone}</p>
               )}
@@ -467,7 +480,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
               htmlFor="password"
               className="mb-2 block text-sm font-medium text-zinc-300"
             >
-              Password <span className="text-red-400">*</span>
+              {isSignIn ? t.signin.password_label : t.signup.password_label} <span className="text-red-400">*</span>
             </label>
             <div className="relative">
               <input
@@ -479,7 +492,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 pr-10 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
-                placeholder={isSignIn ? "••••••••" : "Enter strong password"}
+                placeholder={isSignIn ? t.signin.password_placeholder : t.signup.password_placeholder}
               />
               <button
                 type="button"
@@ -497,10 +510,16 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
             {!isSignIn && (
               <div className="mt-2">
                 <p className="mb-1.5 text-xs font-medium text-zinc-400">
-                  {PASSWORD_REQUIREMENTS_HEADING} / {PASSWORD_REQUIREMENTS_HEADING_TIGRINYA}
+                  {t.signup.requirements_heading}
                 </p>
                 <div className="space-y-1.5">
-                  {getPasswordRequirementStatuses(formData.password).map((req) => (
+                  {[
+                    { id: 'minLength', label: t.signup.requirements.min_length, met: formData.password.length >= 8 },
+                    { id: 'uppercase', label: t.signup.requirements.uppercase, met: /[A-Z]/.test(formData.password) },
+                    { id: 'lowercase', label: t.signup.requirements.lowercase, met: /[a-z]/.test(formData.password) },
+                    { id: 'number', label: t.signup.requirements.number, met: /[0-9]/.test(formData.password) },
+                    { id: 'special', label: t.signup.requirements.special, met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password) },
+                  ].map((req) => (
                     <div
                       key={req.id}
                       className={req.met ? 'text-green-400' : 'text-zinc-500'}
@@ -513,7 +532,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                           <Circle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-zinc-500" aria-hidden />
                         )}
                         <span className={req.met ? 'text-green-400/90' : 'text-zinc-500'}>
-                          {req.label} / {req.labelTigrinya}
+                          {req.label}
                         </span>
                       </span>
                     </div>
@@ -532,7 +551,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                 htmlFor="confirmPassword"
                 className="mb-2 block text-sm font-medium text-zinc-300"
               >
-                {CONFIRM_PASSWORD_LABEL} / {CONFIRM_PASSWORD_LABEL_TIGRINYA} <span className="text-red-400">*</span>
+                {t.signup.confirm_password_label} <span className="text-red-400">*</span>
               </label>
               <div className="relative">
                 <input
@@ -549,7 +568,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                         : 'border-red-500/70 focus:border-red-500 focus:ring-red-500/20'
                       : 'border-zinc-700 focus:border-orange-400/50 focus:ring-orange-400/20'
                   }`}
-                  placeholder="••••••••"
+                  placeholder={t.signup.confirm_password_placeholder}
                 />
                 {formData.confirmPassword.length > 0 && (
                   <span className="absolute right-14 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -590,7 +609,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="mr-2 rounded border-zinc-700 bg-zinc-900/50 text-orange-400 focus:ring-orange-400/20 cursor-pointer"
                 />
-                <span className="text-sm text-zinc-400">Remember me</span>
+                <span className="text-sm text-zinc-400">{t.signin.remember_me}</span>
               </label>
               <button
                 type="button"
@@ -605,7 +624,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                 }}
                 className="text-sm text-orange-400 hover:text-orange-300 transition cursor-pointer underline"
               >
-                Forgot password?
+                {t.signin.forgot_password}
               </button>
             </div>
           )}
@@ -615,7 +634,7 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
             disabled={loading}
             className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 font-semibold text-white transition hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400/50 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? (isSignIn ? 'Signing in...' : 'Creating account...') : isSignIn ? 'Sign In' : 'Create Account'}
+            {loading ? (isSignIn ? t.signin.submitting_button : t.signup.submitting_button) : isSignIn ? t.signin.submit_button : t.signup.submit_button}
           </button>
         </form>
 
@@ -654,10 +673,10 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
                 className="w-full rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {resendingVerification 
-                  ? 'Sending...' 
+                  ? t.common.sending 
                   : resendCountdown > 0 
-                    ? `Resend Verification Email (${resendCountdown}s)`
-                    : 'Resend Verification Email'}
+                    ? `${t.common.resend_verification} (${resendCountdown}s)`
+                    : t.common.resend_verification}
               </button>
             )}
           </div>
@@ -666,12 +685,12 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
         {/* Switch mode */}
         <div className="mt-6 text-center">
           <p className="text-sm text-zinc-400">
-            {isSignIn ? "Don't have an account? " : 'Already have an account? '}
+            {isSignIn ? t.signin.dont_have_account : t.signup.already_have_account}
             <button
               onClick={switchMode}
               className="font-semibold text-orange-400 hover:text-orange-300"
             >
-              {isSignIn ? 'Sign Up' : 'Sign In'}
+              {isSignIn ? t.signin.signup_link : t.signup.signin_link}
             </button>
           </p>
         </div>

@@ -15,6 +15,7 @@ import SplitText from "@/components/SplitText";
 import { chaptersList as chapters } from "@/content/chaptersListContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getChaptersCopy } from "@/lib/translations/chapters";
+import { ChaptersNetworkBackground } from "@/components/ChaptersNetworkBackground";
 import type { Metadata } from "next";
 
 // Note: Metadata cannot be exported from client components
@@ -315,8 +316,12 @@ export default function ChaptersPage() {
 
   return (
     <>
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      <div className="relative z-10 w-full bg-black/95">
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#070b14] text-zinc-100">
+      {/* Living Bitcoin Network Background */}
+      <ChaptersNetworkBackground />
+
+      {/* Main Content Layer */}
+      <div className="relative z-10 w-full">
         <div className="w-full px-4 py-12 sm:px-6 sm:py-16 sm:max-w-7xl sm:mx-auto lg:px-8 lg:py-20">
           {/* Hero Section */}
           <AnimatedSection animation="slideUp">

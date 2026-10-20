@@ -1,0 +1,95 @@
+{
+  "hero": {
+    "title": "ኣብ ትምህርትና ተጸንበር",
+    "subtitle_prefix": "ኣብ Pan-Africa Bitcoin Academy ንምጽንባር ኣመልክት፣ ከምኡውን ",
+        "subtitle_suffix": " ናብ ፋይናንሳዊ ርእሰ-ምቁጽጻር ዘብጽሓካ ጉዕዞኻ።",
+        "subtitle_bold": "ጀምር"
+  },
+  "form": {
+    "heading": "መመልከቲ ቅጥዒ",
+    "intro": "ብኸመይ ክትመሃር ከም እትደሊ ምረጽ፣ ድሕሪኡ ዝርዝር ሓበሬታኻ ምላእ። ኣብ ቀጥታዊ ጉጅለ ትምህርቲ ዝሳተፉ ተማሃሮ ብመደብ ግዜ ኣብ ዝካየድ ጉጅለ ይጽንበሩ። ብውልቆም ዝመሃሩ ተማሃሮ ድማ ነቲ ተመሳሳሊ መምሃሪ ትሕዝቶ ብመሰረት ዝመረጽዎ ግዜ ይጥቀሙሉ።",
+    "learning_pace": {
+      "label": "ነዚ ኮርስ ብኸመይ ክትመሃሮ ትደሊ?",
+      "live_cohort": "ቀጥታዊ ጉጅለ ትምህርቲ",
+      "self_paced": "ብውልቀይ ብዝመረጽክዎ ግዜ",
+      "self_paced_box_title": "ብውልቀይ ብዝመረጽክዎ ግዜ",
+      "self_paced_box_desc": "ነቲ መምሃሪ ትሕዝቶ ከተንብብን ኣብ ብዝመችኣካ ግዜ ክትቅጽልን ኢኻ። ኣብ ቀጥታዊ ጉጅለ ትምህርቲ ምስታፍ ወይ ዝተወሰነ መጀመርታ ዕለት ኣየድልየካን። ካብ ታሕቲ ደረጃ ተመኩሮኻ ምረጽ።"
+    },
+    "cohorts": {
+      "heading": "ኣብ ቀረባ ዝጅምሩ ጉጅለታት ትምህርቲ",
+      "subheading": "ሓደ ጉጅለ ትምህርቲ ምረጽ፣ ወይ ድማ ኣብ ድሒሩ ዝመጽእ ክፋል ናይቲ ቅጥዒ ካብቲ ዝርዝር ምረጽ።",
+      "loading": "ጉጅለታት ትምህርቲ ይጽዓኑ ኣለዉ…",
+      "empty": "ኣብዚ እዋን ኣብ ቀረባ ዝጅምሩ ጉጅለታት ትምህርቲ የለዉን። ድሒርካ ተመለስ ወይ ርኸበና።",
+      "status_completed": "ተዛዚሙ",
+      "status_active": "ኣብ ስራሕ ዘሎ",
+      "status_upcoming": "ኣብ ቀረባ ዝጅምር",
+      "sessions_suffix": "ክፍለ ግዜታት",
+      "seats_suffix": "ቦታታት",
+      "seats_available_suffix": "ክፉት ቦታታት",
+      "btn_full": "ምሉእ እዩ",
+      "btn_selected": "ተመሪጹ",
+      "btn_select": "ጉጅለ ትምህርቲ ምረጽ"
+    },
+    "personal_details": {
+      "first_name_label": "ስም",
+      "first_name_placeholder": "Michael",
+      "last_name_label": "ስም ኣቦ",
+      "last_name_placeholder": "Jordan",
+      "email_label": "ኢመይል",
+      "email_placeholder": "john@example.com",
+      "phone_label": "ቁጽሪ WhatsApp",
+      "phone_placeholder": "ንኣብነት፦ 712 345 678",
+      "phone_code_btn": "ኮድ",
+      "phone_code_search_placeholder": "ሃገር ድለ…",
+      "phone_valid": "ቅኑዕ ቁጽሪ WhatsApp",
+      "birth_date_label": "ዕለት ልደት",
+      "birth_date_placeholder": "ዕለት ልደትካ ምረጽ",
+      "preferred_language_label": "ዝመርጽካዮ ቋንቋ",
+      "select_language_placeholder": "ቋንቋ ምረጽ",
+      "language_english": "እንግሊዝኛ",
+      "language_tigrinya": "ትግርኛ (ትግርኛ)",
+      "country_label": "ሃገር",
+      "country_placeholder": "ሃገርካ ምረጽ",
+      "city_label": "ከተማ",
+      "optional_label": "(ኣማራጺ)",
+      "city_placeholder": "ኣስመራ"
+    },
+    "experience": {
+      "label": "ደረጃ ተመኩሮ",
+      "placeholder": "ደረጃኻ ምረጽ",
+      "beginner": "ጀማሪ — ብዛዕባ Bitcoin ሓድሽ ኣፍልጦ ዘለካ",
+      "intermediate": "ማእከላይ — ገለ ፍልጠት ዘለካ",
+      "advanced": "ምዕቡል — ተመኩሮ ዘለዎ ተጠቃሚ"
+    },
+    "preferred_cohort": {
+      "label": "ዝመረጽካዮ ጉጅለ ትምህርቲ",
+      "placeholder": "ጉጅለ ትምህርቲ ምረጽ",
+      "full": "ምሉእ እዩ",
+      "seats_available": "ክፉት ቦታታት"
+    },
+    "note": {
+      "prefix": "መዘኻኸሪ፦",
+      "text": " ንመመልከቲኻ ክንግምግም ኢና፣ ኣብ ውሽጢ 3–5 ናይ ስራሕ መዓልታት ድማ መልሲ ክንህበካ ኢና።"
+    },
+    "submit_button": "ተመዝገብ",
+    "submitting_button": "ይለኣኽ ኣሎ…",
+    "messages": {
+      "success_verification_email": "መመልከቲኻ ብዓወት ተላኢኹ! ኣድራሻ ኢመይልካ ንምርግጋጽ ኢመይልካ ተመልከት። መመልከቲኻ ክንግምግም ኢና፣ ኣብ ቀረባ ድማ መልሲ ክንህበካ ኢና።",
+      "success_default": "መመልከቲኻ ብዓወት ተላኢኹ! ክንግምግሞ ኢና፣ ኣብ ቀረባ ድማ መልሲ ክንህበካ ኢና።",
+      "error_existing_account": "በዚ ኢመይል ዝተመዝገበ ሕሳብ ቀዲሙ ኣሎ። ናብ ሕሳብካ ንምእታው በጃኻ እቶ። መሕለፊ ቃልካ እንተረሲዕካ፣ ነቲ «መሕለፊ ቃል ረሲዐ» ዝብል ኣማራጺ ተጠቐም።",
+      "error_already_approved": "መመልከቲኻ ቀዲሙ ጸዲቑ ኣሎ! ምዝገባኻ ንምዝዛም በጃኻ መሕለፊ ቃልካ ኣዳሉ።",
+      "error_default": "መመልከቲኻ ምልኣኽ ኣይተኻእለን። በጃኻ እንደገና ፈትን።",
+      "validation_country": "በጃኻ ሃገርካ ምረጽ።",
+      "validation_country_code": "በጃኻ ኮድ ሃገርካ ምረጽ።",
+      "validation_phone": "በጃኻ ቁጽሪ WhatsAppካ ኣእቱ።",
+      "validation_cohort_required": "ኣብ ቀጥታዊ ጉጅለ ትምህርቲ ንምምዝጋብ በጃኻ ሓደ ጉጅለ ትምህርቲ ምረጽ።",
+      "validation_cohort_full": "እዚ ጉጅለ ትምህርቲ ምሉእ እዩ። በጃኻ ካልእ ጉጅለ ምረጽ።"
+    },
+    "community_connect": {
+      "whatsapp_heading": "ኣብ ጉጅለ WhatsAppና ተጸንበር",
+      "whatsapp_subtext": "ሓደስቲ ሓበሬታታት ርኸብ፣ ሕቶታት ሕተት፣ ምስ ካልኦት ተማሃሮ ድማ ተራኸብ።",
+      "whatsapp_button": "ኣብ ጉጅለ WhatsApp ተጸንበር",
+      "social_heading": "ኣብ ማሕበራዊ ሚድያ ተኸታተለና"
+    }
+  }
+}

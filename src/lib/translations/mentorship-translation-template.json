@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "",
+    "subtitle": ""
+  },
+  "form": {
+    "heading": "",
+    "description": "",
+    "success_message": "",
+    "submit_error_default": "",
+    "personal_details": {
+      "heading": "",
+      "full_name_label": "",
+      "full_name_placeholder": "",
+      "email_label": "",
+      "email_placeholder": "",
+      "country_label": "",
+      "country_placeholder": "",
+      "contact_label": "",
+      "contact_placeholder": "",
+      "initiative_label": "",
+      "optional_label": "",
+      "initiative_placeholder": ""
+    },
+    "role_availability": {
+      "heading": "",
+      "role_label": "",
+      "select_role_placeholder": "",
+      "hours_label": "",
+      "hours_placeholder": "",
+      "notes_label": "",
+      "optional_label": "",
+      "notes_placeholder": ""
+    },
+    "onboarding_call_label": "",
+    "submit_button": "",
+    "submitting_button": "",
+    "submitted_button": "",
+    "required_hint_prefix": "",
+    "required_hint_suffix": ""
+  },
+  "roles_section": {
+    "heading": "",
+    "time_prefix": "",
+    "btn_select": "",
+    "btn_selected": "",
+    "roles": {
+      "mentor": {
+        "title": "",
+        "description": "",
+        "time": ""
+      },
+      "lecturer": {
+        "title": "",
+        "description": "",
+        "time": ""
+      },
+      "volunteer": {
+        "title": "",
+        "description": "",
+        "time": ""
+      }
+    }
+  },
+  "why_matter": {
+    "heading": "",
+    "p1": "",
+    "p2": "",
+    "p3": ""
+  },
+  "vetting": {
+    "heading": "",
+    "steps": [
+      {
+        "num": "1.",
+        "title": "",
+        "desc": ""
+      },
+      {
+        "num": "2.",
+        "title": "",
+        "desc": ""
+      },
+      {
+        "num": "3.",
+        "title": "",
+        "desc": ""
+      },
+      {
+        "num": "4.",
+        "title": "",
+        "desc": ""
+      },
+      {
+        "num": "5.",
+        "title": "",
+        "desc": ""
+      }
+    ]
+  },
+  "community": {
+    "heading": "",
+    "subtitle_1": "",
+    "subtitle_2": "",
+    "loading": "",
+    "empty_title": "",
+    "empty_desc": ""
+  },
+  "cta": {
+    "heading": "",
+    "description": "",
+    "button": ""
+  }
+}

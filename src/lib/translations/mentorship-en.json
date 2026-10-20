@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "Join us on mentoring",
+    "subtitle": "Join us in building Bitcoin education and sovereignty in Africa."
+  },
+  "form": {
+    "heading": "Join us on mentoring",
+    "description": "Join us on mentoring as a mentor, volunteer, or guest lecturer — help grow Bitcoin education across Africa. Share your details and we’ll reach out with next steps.",
+    "success_message": "Thank you — welcome aboard. We’ll reach out with next steps.",
+    "submit_error_default": "Failed to submit",
+    "personal_details": {
+      "heading": "Your details",
+      "full_name_label": "Full Name",
+      "full_name_placeholder": "John Doe",
+      "email_label": "Email",
+      "email_placeholder": "john@example.com",
+      "country_label": "Country",
+      "country_placeholder": "e.g., Nigeria, Kenya, Ghana",
+      "contact_label": "WhatsApp / X / Nostr",
+      "contact_placeholder": "Phone number or @username",
+      "initiative_label": "Initiative / Community",
+      "optional_label": "(optional)",
+      "initiative_placeholder": "e.g., BitDevs, local meetup, campus club"
+    },
+    "role_availability": {
+      "heading": "Role & Availability",
+      "role_label": "Role",
+      "select_role_placeholder": "Select a role",
+      "hours_label": "Hours / month",
+      "hours_placeholder": "e.g., 8-12 hours",
+      "notes_label": "Notes",
+      "optional_label": "(optional)",
+      "notes_placeholder": "Links, topics you can teach, timezone, or anything we should know."
+    },
+    "onboarding_call_label": "Are you open to participating in a short onboarding call?",
+    "submit_button": "Send my interest",
+    "submitting_button": "Joining...",
+    "submitted_button": "✓ Joined",
+    "required_hint_prefix": "Fields marked with ",
+    "required_hint_suffix": " are required"
+  },
+  "roles_section": {
+    "heading": "Roles You Can Join",
+    "time_prefix": "Time: ",
+    "btn_select": "Join this role",
+    "btn_selected": "Selected",
+    "roles": {
+      "mentor": {
+        "title": "Mentor",
+        "description": "Support students during cohorts, lead Q&A sessions, help review assignments, and provide guidance on Bitcoin, Lightning, or sovereignty.",
+        "time": "1–3 hours/month"
+      },
+      "lecturer": {
+        "title": "Guest Lecturer",
+        "description": "Teach specialized sessions (Lightning, mining, nodes, privacy, etc.), share industry or technical experience, and participate in panel discussions.",
+        "time": "Per invitation"
+      },
+      "volunteer": {
+        "title": "Volunteer",
+        "description": "Help with community moderation, student onboarding, content creation, or administrative tasks. Flexible time commitment.",
+        "time": "Flexible"
+      }
+    }
+  },
+  "why_matter": {
+    "heading": "Why mentoring & volunteers matter",
+    "p1": "Bitcoin education grows through community, not classrooms.",
+    "p2": "Our mentors, volunteers, and guest lecturers help shape the next generation of African Bitcoin talent.",
+    "p3": "If you share our mission of sovereignty, freedom, and open knowledge — we invite you to join us."
+  },
+  "vetting": {
+    "heading": "Our Vetting Process",
+    "steps": [
+      {
+        "num": "1.",
+        "title": "Interest review",
+        "desc": "Filter by skills, availability, and culture fit."
+      },
+      {
+        "num": "2.",
+        "title": "Quick Connect Call",
+        "desc": "A brief chat to get to know each other."
+      },
+      {
+        "num": "3.",
+        "title": "Trial Week (optional)",
+        "desc": "See how you interact in the community."
+      },
+      {
+        "num": "4.",
+        "title": "Onboarding",
+        "desc": "Guidelines, expectations, and responsibilities."
+      },
+      {
+        "num": "5.",
+        "title": "Public Welcome",
+        "desc": "Introduce you to the community (WhatsApp + X/Nostr)."
+      }
+    ]
+  },
+  "community": {
+    "heading": "Our Mentors & Contributors",
+    "subtitle_1": "This academy exists because of the people who choose to stand with us.",
+    "subtitle_2": "Our mentors, guest lecturers, and volunteers give their time, knowledge, and energy to build Bitcoin education in Africa.",
+    "loading": "Loading mentoring community…",
+    "empty_title": "No community highlights yet.",
+    "empty_desc": "As people join us on mentoring and volunteer, we’ll feature them here."
+  },
+  "cta": {
+    "heading": "Join us on mentoring",
+    "description": "Help empower the next generation of African Bitcoin talent.",
+    "button": "Get started"
+  }
+}

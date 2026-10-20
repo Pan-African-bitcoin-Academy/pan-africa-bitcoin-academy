@@ -1,0 +1,95 @@
+{
+  "hero": {
+    "title": "",
+    "subtitle_prefix": "",
+    "subtitle_bold": "",
+    "subtitle_suffix": ""
+  },
+  "form": {
+    "heading": "",
+    "intro": "",
+    "learning_pace": {
+      "label": "",
+      "live_cohort": "",
+      "self_paced": "",
+      "self_paced_box_title": "",
+      "self_paced_box_desc": ""
+    },
+    "cohorts": {
+      "heading": "",
+      "subheading": "",
+      "loading": "",
+      "empty": "",
+      "status_completed": "",
+      "status_active": "",
+      "status_upcoming": "",
+      "sessions_suffix": "",
+      "seats_suffix": "",
+      "seats_available_suffix": "",
+      "btn_full": "",
+      "btn_selected": "",
+      "btn_select": ""
+    },
+    "personal_details": {
+      "first_name_label": "",
+      "first_name_placeholder": "",
+      "last_name_label": "",
+      "last_name_placeholder": "",
+      "email_label": "",
+      "email_placeholder": "",
+      "phone_label": "",
+      "phone_placeholder": "",
+      "phone_code_btn": "",
+      "phone_code_search_placeholder": "",
+      "phone_valid": "",
+      "birth_date_label": "",
+      "birth_date_placeholder": "",
+      "preferred_language_label": "",
+      "select_language_placeholder": "",
+      "language_english": "",
+      "language_tigrinya": "",
+      "country_label": "",
+      "country_placeholder": "",
+      "city_label": "",
+      "optional_label": "",
+      "city_placeholder": ""
+    },
+    "experience": {
+      "label": "",
+      "placeholder": "",
+      "beginner": "",
+      "intermediate": "",
+      "advanced": ""
+    },
+    "preferred_cohort": {
+      "label": "",
+      "placeholder": "",
+      "full": "",
+      "seats_available": ""
+    },
+    "note": {
+      "prefix": "",
+      "text": ""
+    },
+    "submit_button": "",
+    "submitting_button": "",
+    "messages": {
+      "success_verification_email": "",
+      "success_default": "",
+      "error_existing_account": "",
+      "error_already_approved": "",
+      "error_default": "",
+      "validation_country": "",
+      "validation_country_code": "",
+      "validation_phone": "",
+      "validation_cohort_required": "",
+      "validation_cohort_full": ""
+    },
+    "community_connect": {
+      "whatsapp_heading": "",
+      "whatsapp_subtext": "",
+      "whatsapp_button": "",
+      "social_heading": ""
+    }
+  }
+}

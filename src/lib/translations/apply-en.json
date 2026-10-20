@@ -1,0 +1,95 @@
+{
+  "hero": {
+    "title": "Join our Program",
+    "subtitle_prefix": "Apply to join the Pan-Africa Bitcoin Academy and ",
+    "subtitle_bold": "start",
+    "subtitle_suffix": " your journey toward financial sovereignty."
+  },
+  "form": {
+    "heading": "Application Form",
+    "intro": "Choose how you want to learn, then complete your details. Live cohort students join a scheduled group; self-paced students use the same materials on their own schedule.",
+    "learning_pace": {
+      "label": "How do you want to take the course?",
+      "live_cohort": "Live cohort",
+      "self_paced": "Self-paced",
+      "self_paced_box_title": "Self-paced",
+      "self_paced_box_desc": "You will read the materials and progress on your own schedule. No live cohort or start date is required. Select your experience level below."
+    },
+    "cohorts": {
+      "heading": "Upcoming cohorts",
+      "subheading": "Pick a cohort (or use the dropdown later in the form).",
+      "loading": "Loading cohorts…",
+      "empty": "No upcoming cohorts at this time. Check back later or contact us.",
+      "status_completed": "Completed",
+      "status_active": "Active",
+      "status_upcoming": "Upcoming",
+      "sessions_suffix": "sessions",
+      "seats_suffix": "seats",
+      "seats_available_suffix": "seats available",
+      "btn_full": "Full",
+      "btn_selected": "Selected",
+      "btn_select": "Select cohort"
+    },
+    "personal_details": {
+      "first_name_label": "First Name",
+      "first_name_placeholder": "Michael",
+      "last_name_label": "Last Name",
+      "last_name_placeholder": "Jordan",
+      "email_label": "Email",
+      "email_placeholder": "john@example.com",
+      "phone_label": "WhatsApp Number",
+      "phone_placeholder": "e.g. 712 345 678",
+      "phone_code_btn": "Code",
+      "phone_code_search_placeholder": "Search country...",
+      "phone_valid": "Valid WhatsApp number",
+      "birth_date_label": "Birth Date",
+      "birth_date_placeholder": "Select your birth date",
+      "preferred_language_label": "Preferred Language",
+      "select_language_placeholder": "Select language",
+      "language_english": "English",
+      "language_tigrinya": "Tigrinya (ትግርኛ)",
+      "country_label": "Country",
+      "country_placeholder": "Select your country",
+      "city_label": "City",
+      "optional_label": "(optional)",
+      "city_placeholder": "Asmara"
+    },
+    "experience": {
+      "label": "Experience Level",
+      "placeholder": "Select your level",
+      "beginner": "Beginner - New to Bitcoin",
+      "intermediate": "Intermediate - Some knowledge",
+      "advanced": "Advanced - Experienced user"
+    },
+    "preferred_cohort": {
+      "label": "Preferred Cohort",
+      "placeholder": "Select a cohort",
+      "full": "Full",
+      "seats_available": "seats available"
+    },
+    "note": {
+      "prefix": "Note:",
+      "text": " We'll review and get back to you within 3-5 business days."
+    },
+    "submit_button": "Register",
+    "submitting_button": "Submitting...",
+    "messages": {
+      "success_verification_email": "Application submitted successfully! Please check your email to verify your address. We will review your application and get back to you soon.",
+      "success_default": "Application submitted successfully! We will review and get back to you soon.",
+      "error_existing_account": "An account with this email already exists. Please sign in to access your account. If you forgot your password, use the \"Forgot Password\" option.",
+      "error_already_approved": "Your application was already approved! Please set up your password to complete registration.",
+      "error_default": "Failed to submit application. Please try again.",
+      "validation_country": "Please select your country.",
+      "validation_country_code": "Please choose your country code.",
+      "validation_phone": "Please enter your WhatsApp number.",
+      "validation_cohort_required": "Please select a cohort for live cohort enrollment.",
+      "validation_cohort_full": "This cohort is full. Please select a different cohort."
+    },
+    "community_connect": {
+      "whatsapp_heading": "Join our WhatsApp group",
+      "whatsapp_subtext": "Get updates, ask questions, and connect with other learners.",
+      "whatsapp_button": "Join WhatsApp Group",
+      "social_heading": "Follow us on social media"
+    }
+  }
+}
