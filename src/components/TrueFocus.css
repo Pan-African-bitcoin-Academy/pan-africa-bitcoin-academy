@@ -72,3 +72,28 @@
   border-left: none;
   border-top: none;
 }
+
+/* Mobile: smaller focus-frame corners to avoid overflow */
+@media (max-width: 639px) {
+  .focus-frame .corner {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-width: 2px;
+  }
+  .focus-frame .corner.top-left,
+  .focus-frame .corner.bottom-left {
+    left: -6px;
+  }
+  .focus-frame .corner.top-right,
+  .focus-frame .corner.bottom-right {
+    right: -6px;
+  }
+  .focus-frame .corner.top-left,
+  .focus-frame .corner.top-right {
+    top: -6px;
+  }
+  .focus-frame .corner.bottom-left,
+  .focus-frame .corner.bottom-right {
+    bottom: -6px;
+  }
+}

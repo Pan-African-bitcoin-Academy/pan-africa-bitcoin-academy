@@ -43,11 +43,19 @@ export function BitcoinNetworkAnimation({ className = '' }: { className?: string
     let width = 0;
     let height = 0;
 
+    // Respect prefers-reduced-motion
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (motionQuery.matches) return;
+
     const resize = () => {
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
-      width = canvas.width = rect.width || window.innerWidth || 1000;
-      height = canvas.height = rect.height || window.innerHeight || 800;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width || window.innerWidth || 1000;
+      height = rect.height || window.innerHeight || 800;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     resize();

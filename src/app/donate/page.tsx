@@ -39,8 +39,8 @@ export default function DonatePage() {
       {/* ── Background ─────────────────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <DonateBitcoinAnimation className="absolute inset-0 h-full w-full" />
-        <div className="absolute -top-40 left-1/4 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-orange-500/15 via-orange-500/5 to-transparent blur-3xl" />
-        <div className="absolute top-1/2 right-[-80px] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-cyan-500/10 via-cyan-500/4 to-transparent blur-3xl" />
+        <div className="absolute -top-20 left-1/4 h-[50vmax] w-[50vmax] max-h-[600px] max-w-[600px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-orange-500/15 via-orange-500/5 to-transparent blur-3xl" />
+        <div className="absolute top-1/2 right-0 h-[40vmax] w-[40vmax] max-h-[500px] max-w-[500px] rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-cyan-500/10 via-cyan-500/4 to-transparent blur-3xl" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/65 via-[#070b14]/55 to-[#070b14]/75" />
       </div>
 

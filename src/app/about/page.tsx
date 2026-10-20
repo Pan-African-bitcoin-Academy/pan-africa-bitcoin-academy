@@ -21,7 +21,7 @@ export default function AboutPage() {
         <BitcoinP2PNetworkAnimation className="h-full w-full" />
         
         {/* Soft Ambient Radial Lights */}
-        <div className="absolute -top-40 left-1/2 h-[500px] w-full max-w-7xl -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-500/15 via-cyan-500/10 to-transparent blur-3xl opacity-70" />
+        <div className="absolute -top-20 left-1/2 h-[45vmax] w-full max-w-5xl max-h-[500px] -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-500/15 via-cyan-500/10 to-transparent blur-3xl opacity-70" />
 
         {/* Translucent dark shade over canvas to ensure text is crisp and readable */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60 backdrop-blur-[0.5px]" />

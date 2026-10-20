@@ -455,15 +455,15 @@ export function ChaptersNetworkBackground({ className = '' }: { className?: stri
     >
       {/* 1. Deep ambient radial glows behind the canvas */}
       <div
-        className="absolute -top-40 left-1/4 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-orange-500/15 via-orange-500/5 to-transparent blur-3xl opacity-75"
+        className="absolute -top-20 left-1/4 h-[50vmax] w-[50vmax] max-h-[600px] max-w-[600px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-orange-500/15 via-orange-500/5 to-transparent blur-3xl opacity-75"
         aria-hidden="true"
       />
       <div
-        className="absolute top-1/2 right-[-100px] h-[650px] w-[650px] rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-cyan-500/12 via-cyan-500/4 to-transparent blur-3xl opacity-70"
+        className="absolute top-1/2 right-[-5vw] h-[50vmax] w-[50vmax] max-h-[650px] max-w-[650px] rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-cyan-500/12 via-cyan-500/4 to-transparent blur-3xl opacity-70"
         aria-hidden="true"
       />
       <div
-        className="absolute bottom-[-100px] left-1/3 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-orange-500/10 via-transparent to-transparent blur-3xl opacity-60"
+        className="absolute bottom-[-5vw] left-1/3 h-[50vmax] w-[50vmax] max-h-[600px] max-w-[600px] rounded-full bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-orange-500/10 via-transparent to-transparent blur-3xl opacity-60"
         aria-hidden="true"
       />
 

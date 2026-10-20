@@ -17,6 +17,9 @@ export interface BlurTextProps {
 const BLUR_DISTANCE = 12;
 const ANIMATION_DURATION = 950;
 const STAGGER_MS = 130;
+const REDUCED_MOTION =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function BlurText({
   text,
@@ -32,6 +35,10 @@ export function BlurText({
   totalRef.current = units.length;
 
   useEffect(() => {
+    if (REDUCED_MOTION) {
+      setMounted(true);
+      return;
+    }
     const t = setTimeout(() => setMounted(true), delay);
     return () => clearTimeout(t);
   }, [delay]);
@@ -67,11 +74,13 @@ export function BlurText({
           key={i}
           className="inline-block overflow-hidden"
           style={{
-            transition: `filter ${ANIMATION_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1), transform ${ANIMATION_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1)`,
-            transitionDelay: mounted ? `${i * STAGGER_MS}ms` : '0ms',
-            filter: mounted ? 'blur(0)' : 'blur(8px)',
-            opacity: mounted ? 1 : 0.4,
-            transform: getTransform(i),
+            transition: REDUCED_MOTION
+              ? 'none'
+              : `filter ${ANIMATION_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1), transform ${ANIMATION_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+            transitionDelay: (mounted && !REDUCED_MOTION) ? `${i * STAGGER_MS}ms` : '0ms',
+            filter: mounted ? 'blur(0)' : (REDUCED_MOTION ? 'none' : 'blur(8px)'),
+            opacity: mounted ? 1 : (REDUCED_MOTION ? 1 : 0.4),
+            transform: REDUCED_MOTION ? 'none' : getTransform(i),
           }}
           onTransitionEnd={handleTransitionEnd(i)}
         >
