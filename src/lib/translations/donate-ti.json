@@ -21,8 +21,8 @@
       "title": "ላይትኒንግ መስመር",
       "scan_text": "ብላይትኒንግ ልግሲ ንምግባር ስካን ግበሩ",
       "qr_alt": "ናይ ላይትኒንግ መስመር ልግሲ QR ኮድ",
-      "label": "Paycode",
-      "copy_button": "Paycode ቅዳሕ",
+      "label": "ኣድራሻ",
+      "copy_button": "ኣድራሻ ቅዳሕ",
       "copied_button": "ተቐዲሑ!"
     },
     "onchain": {
