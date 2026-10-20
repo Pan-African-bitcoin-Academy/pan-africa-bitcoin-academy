@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "title": "",
+    "subtitle": ""
+  },
+  "why_donations_matter": {
+    "heading": "",
+    "intro": "",
+    "points": {
+      "education": "",
+      "rewards": "",
+      "infrastructure": "",
+      "reach": "",
+      "mentors": ""
+    }
+  },
+  "payment_methods": {
+    "heading": "",
+    "intro": "",
+    "lightning": {
+      "title": "",
+      "scan_text": "",
+      "qr_alt": "",
+      "label": "",
+      "copy_button": "",
+      "copied_button": ""
+    },
+    "onchain": {
+      "title": "",
+      "scan_text": "",
+      "qr_alt": "",
+      "label": "",
+      "copy_button": "",
+      "copied_button": "",
+      "note_prefix": "",
+      "note_text": ""
+    }
+  },
+  "transparency": {
+    "heading": "",
+    "intro": "",
+    "points": {
+      "public_reporting_title": "",
+      "public_reporting_desc": "",
+      "student_rewards_title": "",
+      "student_rewards_desc": "",
+      "infrastructure_title": "",
+      "infrastructure_desc": "",
+      "growth_title": "",
+      "growth_desc": ""
+    },
+    "dashboard_note_prefix": "",
+    "dashboard_link_text": "",
+    "dashboard_note_suffix": ""
+  },
+  "thank_you": {
+    "heading": "",
+    "message": "",
+    "questions_prefix": ""
+  }
+}

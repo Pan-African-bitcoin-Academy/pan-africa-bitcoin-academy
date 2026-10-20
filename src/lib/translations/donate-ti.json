@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "title": "ትምህርቲ ቢትኮይን ደግፉ",
+    "subtitle": "ኣብ ኣፍሪቃ ናይ ቢትኮይን ርእሰ-ምርኮሳን ትምህርትን ንምህናጽ ሓግዙና። ነፍሲ ወከፍ sat ኣገዳሲ እዩ።"
+  },
+  "why_donations_matter": {
+    "heading": "ልግሲ ስለምንታይ ኣገዳሲ እዩ?",
+    "intro": "ብዙሓት ፕሮጀክታት ቢትኮይን ብልግሲ እዮም ዝቕጽሉ። ደገፍኩም ኣብዚ ይሕግዘና፦",
+    "points": {
+      "education": "ንተማሃሮ ኣብ ምሉእ ኣፍሪቃ ብነጻን ብልዑል ጽፈት ትምህርቲ ቢትኮይን ምቕራብ",
+      "rewards": "ተማሃሮ ዕማማትን ፕሮጀክታትን ምስ ዛዘሙ ብsats ምሽላም",
+      "infrastructure": "ንመሃሪ ዘገልግሉ መሳርሒታትን መሰረተ-ልምዓትን ምክንኻን",
+      "reach": "ኣብ ተወሳኺ ሃገራትን ማሕበረሰባትን ንምብጻሕ ስራሕና ምስፋሕ",
+      "mentors": "ንመማህራን መምርሒን ንዕዱማት መምህራንን ምድጋፍ"
+    }
+  },
+  "payment_methods": {
+    "heading": "ብቢትኮይን ጥራይ ደግፉና",
+    "intro": "ብላይትኒንግ መስመርን ብቀጥታ ኣብ ቢትኮይን ብሎክቸይን (on-chain)ን ክፍሊታት ቢትኮይን ንቕበል። ዝመረጽኩምዎ ኣገባብ ምረጹ፦",
+    "lightning": {
+      "title": "ላይትኒንግ መስመር",
+      "scan_text": "ብላይትኒንግ ልግሲ ንምግባር ስካን ግበሩ",
+      "qr_alt": "ናይ ላይትኒንግ መስመር ልግሲ QR ኮድ",
+      "label": "Paycode",
+      "copy_button": "Paycode ቅዳሕ",
+      "copied_button": "ተቐዲሑ!"
+    },
+    "onchain": {
+      "title": "ኣድራሻ ቢትኮይን (On-Chain)",
+      "scan_text": "ብቀጥታ ቢትኮይን ንምልጋስ ስካን ግበሩ",
+      "qr_alt": "ናይ ቀጥታ ቢትኮይን ልግሲ QR ኮድ",
+      "label": "ኣድራሻ ቢትኮይን",
+      "copy_button": "ኣድራሻ ቅዳሕ",
+      "copied_button": "ተቐዲሑ!",
+      "note_prefix": "መተሓሳሰቢ፦",
+      "note_text": "ብቀጥታ ኣብ ብሎክቸይን ዝግበሩ ልውውጣት ንምርግጋጽ ዝያዳ ግዜ ክወስዱን ዝለዓለ ክፍሊት ክህልዎምን ይኽእል።"
+    }
+  },
+  "transparency": {
+    "heading": "መደብ ግሉጽነት",
+    "intro": "ብግሉጽነትን ተሓታትነትን ንኣምን። ልግሲ ብኸመይ ከም እንጥቀመሉ እንሆ፦",
+    "points": {
+      "public_reporting_title": "ህዝባዊ ሪፖርት፦",
+      "public_reporting_desc": "ልግሲ ብኸመይ ከም ዝውዕል ወርሓዊ ሪፖርታት",
+      "student_rewards_title": "ሽልማት ተማሃሮ፦",
+      "student_rewards_desc": "ልግሲ ብቐጥታ ንሽልማት ተማሃሮ ብsats ይውዕል",
+      "infrastructure_title": "መሰረተ-ልምዓት፦",
+      "infrastructure_desc": "ንመሳርሒታት፣ ሆስቲንግን መምሃሪ ትሕዝቶታት",
+      "growth_title": "ምስፋሕ፦",
+      "growth_desc": "ናብ ሓደስቲ ከባቢታትን ማሕበረሰባትን ንምስፋሕ"
+    },
+    "dashboard_note_prefix": "ን",
+    "dashboard_link_text": "ዳሽቦርድ ጽልዋና",
+    "dashboard_note_suffix": "ብምርኣይ ናይ ህሉው ግዜ መለክዒታትን ዝርዝር ሪፖርታትን ተኸታተሉ።"
+  },
+  "thank_you": {
+    "heading": "የቐንየልና",
+    "message": "ደገፍኩም ኣብ ኣፍሪቃ ናይ ቢትኮይን ርእሰ-ምርኮሳን ትምህርትን ንምህናጽ ይሕግዘና። ነፍሲ ወከፍ ኣበርክቶ፣ ዋላ ንእሽቶ እንተኾነ፣ ለውጢ የምጽእ።",
+    "questions_prefix": "ሕቶታት ኣለኩም? በዚ ኣድራሻ ርኸቡና፦"
+  }
+}

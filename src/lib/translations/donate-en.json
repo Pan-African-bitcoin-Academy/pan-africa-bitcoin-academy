@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "title": "Support Bitcoin Education",
+    "subtitle": "Help us build Bitcoin sovereignty and education in Africa. Every sat counts."
+  },
+  "why_donations_matter": {
+    "heading": "Why Donations Matter",
+    "intro": "Many Bitcoin projects survive on donations. Your support helps us:",
+    "points": {
+      "education": "Provide free, high-quality Bitcoin education to students across Africa",
+      "rewards": "Reward students with sats for completing assignments and projects",
+      "infrastructure": "Maintain infrastructure and tools for teaching",
+      "reach": "Expand our reach to more countries and communities",
+      "mentors": "Support mentors and guest lecturers"
+    }
+  },
+  "payment_methods": {
+    "heading": "Bitcoin-Only Support",
+    "intro": "We accept Bitcoin payments via Lightning Network and on-chain. Choose your preferred method:",
+    "lightning": {
+      "title": "Lightning Network",
+      "scan_text": "Scan to donate via Lightning",
+      "qr_alt": "Lightning Network donation QR code",
+      "label": "Paycode",
+      "copy_button": "Copy Paycode",
+      "copied_button": "Copied!"
+    },
+    "onchain": {
+      "title": "On-Chain Address",
+      "scan_text": "Scan to donate on-chain",
+      "qr_alt": "On-chain Bitcoin donation QR",
+      "label": "Bitcoin Address",
+      "copy_button": "Copy Address",
+      "copied_button": "Copied!",
+      "note_prefix": "Note:",
+      "note_text": "On-chain transactions may take longer to confirm and have higher fees."
+    }
+  },
+  "transparency": {
+    "heading": "Transparency Plan",
+    "intro": "We believe in transparency and accountability. Here's how we handle donations:",
+    "points": {
+      "public_reporting_title": "Public Reporting:",
+      "public_reporting_desc": "Monthly reports on how donations are used",
+      "student_rewards_title": "Student Rewards:",
+      "student_rewards_desc": "Donations go directly to student sats rewards",
+      "infrastructure_title": "Infrastructure:",
+      "infrastructure_desc": "For tools, hosting, and educational resources",
+      "growth_title": "Growth:",
+      "growth_desc": "For expanding to new regions and communities"
+    },
+    "dashboard_note_prefix": "View our",
+    "dashboard_link_text": "Impact Dashboard",
+    "dashboard_note_suffix": "for real-time metrics and detailed reports."
+  },
+  "thank_you": {
+    "heading": "Thank You",
+    "message": "Your support helps build Bitcoin sovereignty and education in Africa. Every contribution, no matter how small, makes a difference.",
+    "questions_prefix": "Questions? Contact us at"
+  }
+}
