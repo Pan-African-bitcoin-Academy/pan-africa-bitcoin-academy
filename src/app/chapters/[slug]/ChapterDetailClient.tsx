@@ -84,7 +84,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
       title={
         isWrapUpResources
           ? undefined
-          : `${chapter.number < 10 ? `Chapter ${chapter.number}` : `Chapter ${chapter.number}`} · ${chapter.title}`
+          : isTi ? `ምዕራፍ ${chapter.number} · ${chapter.title}` : `Chapter ${chapter.number} · ${chapter.title}`
       }
       subtitle={
         isWrapUpResources

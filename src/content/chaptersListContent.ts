@@ -67,6 +67,20 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ክፍሊ ምይይጥ", "ዕማም፡ ገንዘብ እንታይ እዩ?"],
     quiz: "ሕቶታት ብዛዕባ መሰረታት ገንዘብ",
   },
+  2: {
+    title: "ጉዕዞ ገንዘብ",
+    learnPoints: [
+      "ደረት ምልውዋጥን ምውሳኽ ገንዘብ ሸቐጣትን",
+      "ሳንቲም ከመይ ጌሩ ተንቀሳቓሲነትን ደረጃታትን ከም ዘመሓይሾ",
+      "ስለምንታይ ናይ ወረቐት ገንዘብ ንሓጺን ተኪኡ",
+      "ፊያት ናይ ምትእምማንን ዝቕባበን ምትሕውዋስ’ዩ።",
+      "ክሪፕቶግራፊክ ቅድመ-ኩነት ንቢትኮይን",
+    ],
+    activities: ["ናይ ታሪኽ ገንዘብ ዝርዝር"],
+    theory: ["ናይ ገንዘብ ምዕባለ ታሪኽ", "ካብ ባርተር ናብ ፊያት ምስግጋር", "ቅድሚ ቢትኮይን ዝነበሩ ሓደስቲ ሓሳባት"],
+    practice: ["ናይ ገንዘብ ታሪኽ ሰሌዳ ምድላው", "ዕማም፡ ናይ ታሪኽ ገንዘብ ዝርዝር"],
+    quiz: "ሕቶታት ብዛዕባ ምዕባለ ገንዘብ",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
