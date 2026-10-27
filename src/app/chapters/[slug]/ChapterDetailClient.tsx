@@ -789,53 +789,149 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                         ))}
                         </div>
                         <div>
-                          <h4 className="mb-4 text-base font-semibold text-cyan-200">Quality comparison: Bitcoin vs Gold vs Fiat / Cash</h4>
+                          <h4 className="mb-4 text-base font-semibold text-cyan-200">
+                            {isTi
+                              ? "ምውድዳር ብቅዓት ፡ ቢትኮይን ኣንጻር ወርቂ ኣንጻር ፊያት / ጥረ ገንዘብ"
+                              : "Quality comparison: Bitcoin vs Gold vs Fiat / Cash"}
+                          </h4>
                           <div className="overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
                             <table className="w-full border-collapse text-sm">
                               <thead>
                                 <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">Quality</th>
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">Bitcoin</th>
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">Gold</th>
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">Fiat / Cash</th>
+                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                    {isTi ? "ብቅዓት" : "Quality"}
+                                  </th>
+                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                    {isTi ? "ቢትኮይን" : "Bitcoin"}
+                                  </th>
+                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                    {isTi ? "ወርቂ" : "Gold"}
+                                  </th>
+                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                    {isTi ? "ፊያት / ጥረ ገንዘብ" : "Fiat / Cash"}
+                                  </th>
                                 </tr>
                               </thead>
                               <tbody className="text-zinc-300">
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">Verifiability</td>
-                                  <td className="px-4 py-3">Transactions publicly verifiable on blockchain</td>
-                                  <td className="px-4 py-3">Requires physical testing</td>
-                                  <td className="px-4 py-3">Depends on banks and financial institutions</td>
+                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                    {isTi ? "ምርግጋጽ" : "Verifiability"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ትራንዛክሽን ኣብቲ ብሎክቸይን ብህዝቢ ክረጋገጽ ይከኣል"
+                                      : "Transactions publicly verifiable on blockchain"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ኣካላዊ መርመራ የድሊ"
+                                      : "Requires physical testing"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ኣብ ባንክታትን ፋይናንሳዊ ትካላትን ይምርኮስ"
+                                      : "Depends on banks and financial institutions"}
+                                  </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">Scarcity</td>
-                                  <td className="px-4 py-3">21 Million coins (fixed Supply)</td>
-                                  <td className="px-4 py-3">Limited but new gold found</td>
-                                  <td className="px-4 py-3">Unlimited supply, central banks can print more</td>
+                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                    {isTi ? "ዋሕዲ" : "Scarcity"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "21 ሚልዮን ሳንቲም (ቀዋሚ ቀረብ)"
+                                      : "21 Million coins (fixed Supply)"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ውሱን ግን ከኣ ሓድሽ ወርቂ ይርከብ።"
+                                      : "Limited but new gold found"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ደረት ኣልቦ ቀረብ፡ ማእከላይ ባንክታት ዝያዳ ክሕትማ ይኽእላ እየን።"
+                                      : "Unlimited supply, central banks can print more"}
+                                  </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">Portability</td>
-                                  <td className="px-4 py-3">Digital, accessible on phone</td>
-                                  <td className="px-4 py-3">Heavy, physical asset</td>
-                                  <td className="px-4 py-3">Physical bills/coins are harder to move large amounts across borders</td>
+                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                    {isTi ? "ተንቀሳቓሲነት" : "Portability"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ዲጂታላዊ፡ ብተሌፎን ትጥቀመሉ"
+                                      : "Digital, accessible on phone"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ከቢድ፡ ኣካላዊ ንብረት"
+                                      : "Heavy, physical asset"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ኣካላዊ ሕሳብ/ሳንቲም ብብዝሒ ዶባት ንምንቅስቓስ ዝኸበደ እዩ"
+                                      : "Physical bills/coins are harder to move large amounts across borders"}
+                                  </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">Durability</td>
-                                  <td className="px-4 py-3">Digital, no wear or tear</td>
-                                  <td className="px-4 py-3">Physical can degrade over time</td>
-                                  <td className="px-4 py-3">Physical cash can get damaged, lost, or destroyed</td>
+                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                    {isTi ? "ጽንዓት" : "Durability"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ዲጂታል፣ ምብስባስ ወይ ምቅዳድ የለን"
+                                      : "Digital, no wear or tear"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ኣካላዊ ምስ ግዜ ክወርድ ይኽእል እዩ"
+                                      : "Physical can degrade over time"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ኣካላዊ ጥረ ገንዘብ ክጉዳእ፡ ክጠፍእ ወይ ክዓኑን ይኽእል።"
+                                      : "Physical cash can get damaged, lost, or destroyed"}
+                                  </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">Divisibility</td>
-                                  <td className="px-4 py-3">Fractional transactions possible</td>
-                                  <td className="px-4 py-3">Hard to divide without loss</td>
-                                  <td className="px-4 py-3">Limited divisibility (usually to cents)</td>
+                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                    {isTi ? "ምክፍፋል" : "Divisibility"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ደቀቅቲ ምስግጋራት ይከኣል እዩ።"
+                                      : "Fractional transactions possible"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ብዘይ ክሳራ ክትመቓቐል ከቢድ እዩ"
+                                      : "Hard to divide without loss"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ውሱን ምክፍፋል (መብዛሕትኡ ግዜ ናብ ሳንቲም)"
+                                      : "Limited divisibility (usually to cents)"}
+                                  </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">Acceptance</td>
-                                  <td className="px-4 py-3">Growing globally, especially in Africa</td>
-                                  <td className="px-4 py-3">Accepted worldwide historically</td>
-                                  <td className="px-4 py-3">Universally accepted by governments, businesses, and people</td>
+                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                    {isTi ? "ተቐባልነት" : "Acceptance"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ብዓለም ደረጃ ብፍላይ ኣብ ኣፍሪቃ እናዓበየ ይኸይድ ኣሎ"
+                                      : "Growing globally, especially in Africa"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ብታሪኽ ኣብ መላእ ዓለም ተቐባልነት ዘለዎ"
+                                      : "Accepted worldwide historically"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {isTi
+                                      ? "ብመንግስታትን ትካላት ንግድን ሰባትን ብዓለምለኻዊ ደረጃ ተቐባልነት ዘለዎ"
+                                      : "Universally accepted by governments, businesses, and people"}
+                                  </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -1000,7 +1096,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                           </div>
                         ))}
                       </div>
-                    ) : chapter.slug === "the-nature-of-money" && section.heading === "Introduction" && section.images.length >= 3 ? (
+                    ) : chapter.slug === "the-nature-of-money" && (section.heading === "Introduction" || section.heading === "መእተዊ") && section.images.length >= 3 ? (
                       // Chapter 1 intro: circular storyboard with directional arrows
                       <div className="mt-6 flex flex-col items-center">
                         {section.images.map((image, idx) => (
@@ -1083,14 +1179,14 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {/* Assignments */}
         <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-5 sm:p-6 shadow-inner">
           <h2 className="text-base font-semibold text-zinc-100 sm:text-lg mb-4">
-            Assignment
+            {isTi ? "ዕዮ" : "Assignment"}
           </h2>
           {chapter.slug === 'the-nature-of-money' ? (
             <ChapterAssignment
               assignmentId="11111111-1111-4111-8111-111111111111"
-              title="Assignment: &quot;What Is Money to Me?&quot;"
-              question="What problem does money solve in my community?"
-              description="Reflect on how money functions in your daily life and community."
+              title={isTi ? "ዕዮ፡ \"ገንዘብ ንዓኻ  እንታይ እዩ?\"" : "Assignment: \"What Is Money to Me?\""}
+              question={isTi ? "ገንዘብ ኣብ ማሕበረሰበይ እንታይ ጸገም ይፈትሕ?" : "What problem does money solve in my community?"}
+              description={isTi ? "ገንዘብ ኣብ መዓልታዊ ህይወትካን ማሕበረሰብካን ብኸመይ ከም ዝሰርሕ ተረዳአ።" : "Reflect on how money functions in your daily life and community."}
               points={10}
               rewardSats={50}
             />

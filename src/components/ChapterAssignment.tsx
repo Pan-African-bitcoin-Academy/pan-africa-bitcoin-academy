@@ -150,7 +150,7 @@ export function ChapterAssignment({
   if (!isAuthenticated && !isAdminAuth) {
     return (
       <div className="rounded-lg border border-zinc-800/60 bg-zinc-900/50 p-5">
-        <p className="text-zinc-400">{isTi ? "ነዚ ዕዮ ገዛ ንምርኣይን ንምፍጻምን ኣብ ውሽጢ ሕሳብኩም እተዉ።" : "Please log in to view and complete this assignment."}</p>
+        <p className="text-zinc-400">{isTi ? "ነዚ ዕዮ ገዛ ንምርኣይን ንምፍጻምን ።" : "Please log in to view and complete this assignment."}</p>
       </div>
     );
   }
@@ -232,7 +232,7 @@ export function ChapterAssignment({
                 }}
                 className="text-sm text-cyan-400 hover:text-cyan-300 underline px-2 py-1 min-h-[32px] touch-target"
               >
-                Resubmit Assignment
+                {isTi ? "ምደባ ዳግማይ ምቕራብ" : "Resubmit Assignment"}
               </button>
             )}
             {clientAutoGradedCanPractice(submissionStatus, phaseHint) && (
@@ -255,7 +255,7 @@ export function ChapterAssignment({
           )}
           <div>
               <label htmlFor="answer" className="block text-sm font-medium text-zinc-300 mb-2">
-                Your Response
+                {isTi ? "መልስኹም" : "Your Response"}
               </label>
               <textarea
                 id="answer"
