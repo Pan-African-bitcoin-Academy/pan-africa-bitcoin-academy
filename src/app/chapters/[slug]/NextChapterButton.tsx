@@ -146,7 +146,7 @@ export function NextChapterButton({
             <span className={`mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid ${
               variant === 'top' ? 'border-cyan-200 border-r-transparent' : 'border-orange-100 border-r-transparent'
             }`}></span>
-            Loading...
+            {isTi ? 'ይጽዕን ኣሎ...' : 'Loading...'}
           </>
         ) : (
           text

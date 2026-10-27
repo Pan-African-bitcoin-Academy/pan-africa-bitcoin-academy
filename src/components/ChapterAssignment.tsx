@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/hooks/useSession';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   clientAwaitingInstructorReview,
   clientAutoGradedCanPractice,
@@ -31,6 +32,8 @@ export function ChapterAssignment({
 }: ChapterAssignmentProps) {
   const { profile, isAuthenticated, loading: authLoading, sessionEmail } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   const studentEmail = profile?.email || sessionEmail || null;
   const [answer, setAnswer] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -147,7 +150,7 @@ export function ChapterAssignment({
   if (!isAuthenticated && !isAdminAuth) {
     return (
       <div className="rounded-lg border border-zinc-800/60 bg-zinc-900/50 p-5">
-        <p className="text-zinc-400">Please log in to view and complete this assignment.</p>
+        <p className="text-zinc-400">{isTi ? "ነዚ ዕዮ ገዛ ንምርኣይን ንምፍጻምን ኣብ ውሽጢ ሕሳብኩም እተዉ።" : "Please log in to view and complete this assignment."}</p>
       </div>
     );
   }
@@ -160,10 +163,10 @@ export function ChapterAssignment({
           <p className="text-sm text-zinc-400 mb-3">{description}</p>
         )}
         <div className="mb-4 p-4 bg-zinc-900/80 rounded-lg border border-zinc-800/50">
-          <p className="text-zinc-200 font-medium mb-2">Task:</p>
+          <p className="text-zinc-200 font-medium mb-2">{isTi ? "ዕዮ፥" : "Task:"}</p>
           <p className="text-zinc-300">{question}</p>
-          <p className="text-sm text-zinc-400 mt-2">Deliverable: Text submission</p>
-          <p className="text-sm text-zinc-400">Reward: {rewardSats} sats (awarded after instructor review)</p>
+          <p className="text-sm text-zinc-400 mt-2">{isTi ? "ክበጽሕ ዝኽእል: ጽሑፍ ምቕራብ" : "Deliverable: Text submission"}</p>
+          <p className="text-sm text-zinc-400">{isTi ? `ሽልማት፡ ${rewardSats} sats (ድሕሪ ገምጋም መምህር ዝሽለም)` : `Reward: ${rewardSats} sats (awarded after instructor review)`}</p>
         </div>
       </div>
 
@@ -215,7 +218,7 @@ export function ChapterAssignment({
             )}
           </div>
           <div className="p-4 bg-zinc-900/80 rounded-lg border border-zinc-800/50">
-            <p className="text-sm font-medium text-zinc-400 mb-2">Your Submission:</p>
+            <p className="text-sm font-medium text-zinc-400 mb-2">{isTi ? "ናትኩም ምቕራብ፤" : "Your Submission:"}</p>
             <p className="text-zinc-200 whitespace-pre-wrap">{submissionStatus.answer}</p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -260,7 +263,7 @@ export function ChapterAssignment({
                 onChange={(e) => setAnswer(e.target.value)}
                 rows={8}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition resize-none"
-                placeholder="Write your response..."
+                placeholder={isTi ? "መልስኹም ኣብዚ ጽሓፉ..." : "Write your response..."}
                 required
               />
           </div>
@@ -276,7 +279,7 @@ export function ChapterAssignment({
             disabled={submitting || !answer.trim()}
             className="w-full rounded-lg bg-gradient-to-r from-cyan-500 to-orange-500 px-6 py-3 min-h-[48px] font-semibold text-black transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
           >
-            {submitting ? 'Submitting...' : 'Submit Assignment'}
+            {submitting ? (isTi ? 'ምቕራብ...' : 'Submitting...') : (isTi ? 'ምደባ ምቕራብ' : 'Submit Assignment')}
           </button>
         </form>
       )}
