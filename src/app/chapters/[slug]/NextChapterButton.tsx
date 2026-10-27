@@ -3,6 +3,7 @@
 import { useState, useEffect, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 
 interface NextChapterButtonProps {
@@ -22,6 +23,8 @@ export function NextChapterButton({
 }: NextChapterButtonProps) {
   const router = useRouter();
   const { isAuthenticated, profile } = useAuth();
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   const [isPending, startTransition] = useTransition();
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
   const [isChapterCompleted, setIsChapterCompleted] = useState(false);
@@ -125,9 +128,9 @@ export function NextChapterButton({
     ? 'inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400/70 hover:bg-cyan-500/20'
     : 'inline-flex items-center justify-center rounded-lg border border-orange-400/50 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-100 transition hover:bg-orange-500/20';
 
-  const text = variant === 'top' 
-    ? `Chapter ${nextChapterNumber} →`
-    : `Next: Chapter ${nextChapterNumber} →`;
+  const text = variant === 'top'
+    ? (isTi ? `ምዕራፍ ${nextChapterNumber} →` : `Chapter ${nextChapterNumber} →`)
+    : (isTi ? `ዝቕጽል፡ ምዕራፍ ${nextChapterNumber} →` : `Next: Chapter ${nextChapterNumber} →`);
 
   return (
     <>

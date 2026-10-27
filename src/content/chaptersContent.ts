@@ -2556,7 +2556,15 @@ export const chaptersContent: ChapterContent[] = [
   },
 ];
 
-export const getChapterBySlug = (slug: string) =>
-  chaptersContent.find((chapter) => chapter.slug === slug);
+import { getChapterBySlugTi } from "./chaptersContentTi";
+import type { SiteLanguage } from "@/contexts/LanguageContext";
+
+export const getChapterBySlug = (slug: string, lang: SiteLanguage = "en"): ChapterContent | undefined => {
+  if (lang === "ti") {
+    const tiChapter = getChapterBySlugTi(slug);
+    if (tiChapter) return tiChapter;
+  }
+  return chaptersContent.find((chapter) => chapter.slug === slug);
+};
 
 
