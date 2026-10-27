@@ -50,3 +50,30 @@ const chapterListByTitle = new Map(chaptersList.map((c) => [c.title, c]));
 export function getChapterListByTitle(title: string): ChapterListItem | undefined {
   return chapterListByTitle.get(title);
 }
+
+import type { SiteLanguage } from "@/contexts/LanguageContext";
+
+export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> = {
+  1: {
+    title: "ባህሪ ገንዘብ",
+    learnPoints: [
+      "ገንዘብ  ስለምንታይ ገደብ ምልውዋጥ ንምፍታሕ ተኣታትዩ።",
+      "ማእከላይ መቀያየርን፣ መዕቆሪ ሃብቲ ፣ ክንቆጽረሉ ንኽእል መዕቀንን",
+      "ጠባያት ጥዕይ ገንዘብ ጽንዓት፡ ምንቅስቃስ ፡ ምምቕቓል፡ ምልላይ፡ ዋሕዲ",
+      "እምነት ከመይ ጌሩ ንዕዳጋን ገንዘብን ይድግፍ",
+    ],
+    activities: ["ናይ ክፍሊ ሕቶታት ብዛዕባ 'ገንዘብ እንታይ እዩ?'"],
+    theory: ["መእተዊ ገንዘብ", "ስለምንታይ ደቂ ሰባት ገንዘብ ፈጢሮም", "ጥቅምታትን ባህርያትን ገንዘብ"],
+    practice: ["ናይ ክፍሊ ምይይጥ", "ዕማም፡ ገንዘብ እንታይ እዩ?"],
+    quiz: "ሕቶታት ብዛዕባ መሰረታት ገንዘብ",
+  },
+};
+
+export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
+  if (lang !== "ti") return chaptersList;
+  return chaptersList.map((ch) => {
+    const override = chaptersListTi[ch.id];
+    if (!override) return ch;
+    return { ...ch, ...override };
+  });
+}

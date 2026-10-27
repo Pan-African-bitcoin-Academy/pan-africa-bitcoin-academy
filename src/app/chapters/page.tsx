@@ -12,7 +12,7 @@ import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { AnimatedList } from "@/components/AnimatedList";
 import { SyllabusModal } from "@/components/SyllabusModal";
 import SplitText from "@/components/SplitText";
-import { chaptersList as chapters } from "@/content/chaptersListContent";
+import { chaptersList, getChaptersList } from "@/content/chaptersListContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getChaptersCopy } from "@/lib/translations/chapters";
 import { ChaptersNetworkBackground } from "@/components/ChaptersNetworkBackground";
@@ -1172,7 +1172,7 @@ export default function ChaptersPage() {
                       {/* View Chapter Button */}
                       {((isAuthenticated && profile && isChapterUnlocked(chapter.number)) || (isAdminAuth && isChapterUnlocked(chapter.number))) ? (
                         <Link
-                          href={`/chapters/${generateSlug(chapter.title)}`}
+                          href={`/chapters/${generateSlug(chaptersList.find(c => c.id === chapter.id)?.title || chapter.title)}`}
                           className="block w-full rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-4 py-2 text-center text-sm font-semibold text-black transition hover:brightness-110"
                         >
                           {isChapterCompleted(chapter.number) ? t.chapter_card.cta_review : t.chapter_card.cta_view}
