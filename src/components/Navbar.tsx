@@ -119,7 +119,7 @@ export function Navbar() {
       >
       {/* Mobile-first: Full width on mobile, max-width only on larger screens */}
       <div className="flex w-full min-w-0 items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 sm:max-w-7xl sm:mx-auto lg:px-6">
-        <Link 
+        <Link prefetch={false} 
           href="/" 
           className="flex shrink-0 items-center gap-3 group"
           aria-label="Pan-African Bitcoin Academy - Home"
@@ -159,51 +159,51 @@ export function Navbar() {
         {/* Desktop: links centered toward the right; utilities (language, account, search) on the far right */}
         <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 xl:flex">
           <nav className="flex min-w-0 flex-wrap items-center justify-end gap-x-0 gap-y-0.5">
-            <Link
+            <Link prefetch={false}
               href="/chapters"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.chapters}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/blog"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.blog}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/developer-hub"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.developer_hub}
             </Link>
             {!isRegistered && (
-              <Link
+              <Link prefetch={false}
                 href="/apply"
                 className="rounded-full px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
               >
                 {t.navbar.apply}
               </Link>
             )}
-            <Link
+            <Link prefetch={false}
               href="/mentorship"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.mentorship}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/impact"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.impact}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/about"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.about}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/donate"
               className="rounded-full bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:from-orange-400/30 hover:to-cyan-400/30"
             >
@@ -243,7 +243,7 @@ export function Navbar() {
                       <div className="mb-1 border-b border-zinc-700 px-3 py-2 text-xs text-zinc-400">
                         {profile.email}
                       </div>
-                      <Link
+                      <Link prefetch={false}
                         href="/dashboard"
                         onClick={() => setAccountDropdownOpen(false)}
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
@@ -313,33 +313,33 @@ export function Navbar() {
         {/* Tablet: fewer links + language + account */}
         <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 lg:flex xl:hidden">
           <nav className="flex min-w-0 flex-wrap items-center justify-end gap-x-0 gap-y-0.5">
-            <Link
+            <Link prefetch={false}
               href="/chapters"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.chapters}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/developer-hub"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.developer_hub_short}
             </Link>
             {!isRegistered && (
-              <Link
+              <Link prefetch={false}
                 href="/apply"
                 className="rounded-full px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
               >
                 {t.navbar.apply}
               </Link>
             )}
-            <Link
+            <Link prefetch={false}
               href="/impact"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.impact}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/donate"
               className="rounded-full bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:from-orange-400/30 hover:to-cyan-400/30"
             >
@@ -379,7 +379,7 @@ export function Navbar() {
                       <div className="mb-1 border-b border-zinc-700 px-3 py-2 text-xs text-zinc-400">
                         {profile.email}
                       </div>
-                      <Link
+                      <Link prefetch={false}
                         href="/dashboard"
                         onClick={() => setAccountDropdownOpen(false)}
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
@@ -477,28 +477,28 @@ export function Navbar() {
                 <LanguageSwitcher compact />
               </div>
             </div>
-            <Link
+            <Link prefetch={false}
               href="/"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
               {t.navbar.home}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/chapters"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
               {t.navbar.chapters}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/blog"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
               {t.navbar.blog}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/developer-hub"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
@@ -506,7 +506,7 @@ export function Navbar() {
               {t.navbar.developer_hub}
             </Link>
             {!isRegistered && (
-            <Link
+            <Link prefetch={false}
               href="/apply"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:bg-orange-400/10 touch-target flex items-center"
@@ -514,28 +514,28 @@ export function Navbar() {
               {t.navbar.apply}
             </Link>
             )}
-            <Link
+            <Link prefetch={false}
               href="/mentorship"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
               {t.navbar.mentorship}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/impact"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
               {t.navbar.impact}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
               {t.navbar.about}
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/donate"
               onClick={() => setMobileMenuOpen(false)}
               className="block rounded-lg bg-gradient-to-r from-orange-400/20 to-cyan-400/20 px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:from-orange-400/30 active:to-cyan-400/30 touch-target flex items-center"
@@ -550,7 +550,7 @@ export function Navbar() {
                     <div className="text-xs text-zinc-500 mt-1 break-all">{adminEmail}</div>
                   )}
                 </div>
-                <Link
+                <Link prefetch={false}
                   href="/admin"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 rounded-lg bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:from-orange-500/30 active:to-cyan-500/30 touch-target"
@@ -578,7 +578,7 @@ export function Navbar() {
                   <div className="font-medium text-zinc-300">{profile.name}</div>
                   <div className="text-xs text-zinc-500 mt-1 break-all">{profile.email}</div>
                 </div>
-                <Link
+                <Link prefetch={false}
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 rounded-lg bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:from-orange-500/30 active:to-cyan-500/30 touch-target"
@@ -613,7 +613,7 @@ export function Navbar() {
                   Change Password
                 </button>
                 {isAdminAuth && (
-                  <Link
+                  <Link prefetch={false}
                     href="/admin"
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-3 rounded-lg bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:from-orange-500/30 active:to-cyan-500/30 touch-target"
@@ -645,7 +645,7 @@ export function Navbar() {
                     <div className="text-xs text-zinc-500 mt-1 break-all">{adminEmail}</div>
                   )}
                 </div>
-                <Link
+                <Link prefetch={false}
                   href="/admin"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 rounded-lg bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:from-orange-500/30 active:to-cyan-500/30 touch-target"

@@ -5,7 +5,7 @@ import { requireStudent, attachSessionRefresh } from '@/lib/session';
 export async function GET(req: NextRequest) {
   const session = requireStudent(req);
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ profile: null, authenticated: false }, { status: 200 });
   }
   
   // Fetch full profile data

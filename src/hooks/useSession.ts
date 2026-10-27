@@ -11,6 +11,12 @@ interface UseSessionOptions {
  * Unified session management hook for both admin and student
  * Handles inactivity tracking, cross-tab communication, and session expiration
  */
+// In-flight request deduplication map to prevent multiple components firing simultaneous requests
+const pendingSessionChecks: Record<string, Promise<{ ok: boolean; status: number; data: any }> | null> = {
+  student: null,
+  admin: null,
+};
+
 export function useSession(userType: UserType, options: UseSessionOptions = {}) {
   const { checkInterval = 60 * 1000 } = options; // Default: check every minute
   
@@ -66,19 +72,32 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
       setLoading(true);
       const endpoint = userType === 'admin' ? '/api/admin/me' : '/api/profile/me';
       
-      // Add timeout to prevent hanging
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      if (!pendingSessionChecks[userType]) {
+        pendingSessionChecks[userType] = (async () => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          try {
+            const response = await fetch(endpoint, {
+              signal: controller.signal,
+              cache: 'no-store',
+            });
+            clearTimeout(timeoutId);
+            const data = await response.json().catch(() => null);
+            return { ok: response.ok, status: response.status, data };
+          } catch (e) {
+            clearTimeout(timeoutId);
+            throw e;
+          } finally {
+            setTimeout(() => {
+              pendingSessionChecks[userType] = null;
+            }, 300);
+          }
+        })();
+      }
+
+      const { ok, status, data } = await pendingSessionChecks[userType];
       
-      const res = await fetch(endpoint, {
-        signal: controller.signal,
-        cache: 'no-store', // Prevent caching
-      });
-      
-      clearTimeout(timeoutId);
-      
-      if (res.ok) {
-        const data = await res.json();
+      if (ok && data) {
         const userEmail = userType === 'admin' ? data.admin?.email : data.profile?.email;
         const userRole = userType === 'admin' ? data.admin?.role : null;
         
@@ -87,14 +106,17 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
           setEmail(userEmail);
           setRole(userRole || null);
           setShowSessionExpired(false);
-          
-          // Initialize activity tracking
           markActivity(userType);
-          
           setLoading(false);
           return true;
+        } else {
+          setIsAuthenticated(false);
+          setEmail(null);
+          setRole(null);
+          setLoading(false);
+          return false;
         }
-      } else if (res.status === 401) {
+      } else if (status === 401) {
         // Session expired on server
         const hadActiveSession = localStorage.getItem(`sessionLastActivityAt_${userType}`) !== null;
         clearActivity(userType);
