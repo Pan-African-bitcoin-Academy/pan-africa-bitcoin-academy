@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/adminSession';
 import { supabaseAdmin } from '@/lib/supabase';
 import { validateUUID } from '@/lib/security-utils';
+import { ensureEventExists } from '@/lib/attendance-event-helper';
 
 type AttendanceUpdate = {
   studentId: string;
@@ -16,14 +17,29 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => null);
-    const sessionId = body?.sessionId as string | undefined;
+    const rawSessionId = (body?.sessionId as string | undefined)?.trim();
     const updates = (body?.updates || []) as AttendanceUpdate[];
 
-    if (!sessionId || !validateUUID(sessionId)) {
-      return NextResponse.json({ error: 'Invalid session ID' }, { status: 400 });
+    if (!rawSessionId) {
+      return NextResponse.json({ error: 'Session ID is required' }, { status: 400 });
+    }
+
+    const cleanSessionId = rawSessionId.replace(/^session-/, '').trim();
+
+    if (!validateUUID(cleanSessionId)) {
+      return NextResponse.json({ error: 'Invalid session ID format' }, { status: 400 });
     }
     if (!Array.isArray(updates) || updates.length === 0) {
       return NextResponse.json({ error: 'No updates provided' }, { status: 400 });
+    }
+
+    // Ensure corresponding event exists in `events` table to satisfy attendance_event_id_fkey
+    const eventResult = await ensureEventExists(cleanSessionId);
+    if (!eventResult.ok) {
+      return NextResponse.json(
+        { error: eventResult.error || 'Failed to locate or initialize event for attendance' },
+        { status: 404 }
+      );
     }
 
     const validUpdates = updates.filter(
@@ -49,7 +65,7 @@ export async function POST(req: NextRequest) {
         const profile = profileById.get(u.studentId);
         return {
           student_id: u.studentId,
-          event_id: sessionId,
+          event_id: cleanSessionId,
           email: profile?.email || null,
           name: profile?.name || null,
           // Minimal values to indicate attendance was manually marked.
@@ -74,7 +90,7 @@ export async function POST(req: NextRequest) {
       const { error: delErr } = await supabaseAdmin
         .from('attendance')
         .delete()
-        .eq('event_id', sessionId)
+        .eq('event_id', cleanSessionId)
         .in('student_id', toDeleteStudentIds);
       if (delErr) {
         return NextResponse.json({ error: `Failed to clear absent students: ${delErr.message}` }, { status: 500 });
@@ -91,4 +107,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 });
   }
 }
-
