@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DoneChapterButtonProps {
   chapterNumber: number;
@@ -12,6 +13,8 @@ interface DoneChapterButtonProps {
 export function DoneChapterButton({ chapterNumber, chapterSlug }: DoneChapterButtonProps) {
   const router = useRouter();
   const { isAuthenticated, profile } = useAuth();
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   const [submitting, setSubmitting] = useState(false);
 
   const handleDone = async () => {
@@ -43,7 +46,7 @@ export function DoneChapterButton({ chapterNumber, chapterSlug }: DoneChapterBut
       disabled={submitting}
       className="inline-flex items-center justify-center rounded-lg border border-emerald-400/50 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-500/25 disabled:cursor-not-allowed disabled:opacity-70"
     >
-      {submitting ? 'Saving...' : 'Done'}
+      {submitting ? (isTi ? 'ይዕቅብ ኣሎ...' : 'Saving...') : (isTi ? 'ተዛዚሙ' : 'Done')}
     </button>
   );
 }
