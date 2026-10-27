@@ -117,6 +117,17 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ዋይትፔፐር ጽሑፍ ምንባብ", "ዕማም: ናይ ዋይትፔፐር ትንተና"],
     quiz: "ሕቶታት ብዛዕባ ምጅማር ቢትኮይን",
   },
+  6: {
+    title: "መፍትሕን ትራንዛክሽንን",
+    learnPoints: [
+      "ህዝባዊ/ብሕታዊ መፍትሕን ዲጂታላዊ ፌርማን",
+      "ዋሕዚ ትራንዛክሽን ካብ ምፍጣር ክሳብ ምርግጋፅ",
+    ],
+    activities: ["ዕማም: ናይ ቢትኮይን ትራንዛክሽን ተራ-ምጽዋት"],
+    theory: ["ዲጂታላዊ ፌርማታት", "ህዝባዊ/ብሕታዊ መፍትሕታት", "ዋሕዚ ትራንዛክሽን"],
+    practice: ["ናይ ትራንዛክሽን ተራ-ምጽዋት", "ዕማም: ናይ ትራንዛክሽን ሲሙሌሽን"],
+    quiz: "ሕቶታት ብዛዕባ መፍትሕን ትራንዛክሽንን",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {

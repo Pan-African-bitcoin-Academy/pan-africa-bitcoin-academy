@@ -512,20 +512,20 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                   <div className="mt-6">
                     <LiveBlockchainData />
                   </div>
-                ) : section.heading === "6.1 Public/Private Keys Explained Simply" ? (
+                ) : (section.heading === "6.1 Public/Private Keys Explained Simply" || section.heading.startsWith("6.1")) ? (
                   // Special rendering for public/private key examples
                   <div className="mt-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Public Key Example */}
                       <div className="rounded-lg border border-cyan-400/30 bg-cyan-500/10 p-5">
-                        <h4 className="text-base font-semibold text-cyan-200 mb-3">Public Key Example</h4>
-                        <p className="text-xs text-cyan-300 mb-3">This is what others use to send you Bitcoin</p>
+                        <h4 className="text-base font-semibold text-cyan-200 mb-3">{isTi ? "ህዝባዊ ቁልፊ ኣብነት" : "Public Key Example"}</h4>
+                        <p className="text-xs text-cyan-300 mb-3">{isTi ? "ካልኦት ቢትኮይን ክሰዱልካ ዝጥቀሙሉ እዚ እዩ።" : "This is what others use to send you Bitcoin"}</p>
                         <div className="bg-zinc-900 rounded-lg p-4 border border-cyan-400/20">
                           <p className="text-xs text-cyan-100 font-mono break-all">
                             02a1633cafcc01ebfb6d78e39f687a1f0995c62fc95f51ead10a02ee0be551b5fb
                           </p>
                         </div>
-                        <p className="text-xs text-cyan-400 mt-2 italic">Or as a Bitcoin address:</p>
+                        <p className="text-xs text-cyan-400 mt-2 italic">{isTi ? "ወይ ድማ ከም ኣድራሻ ቢትኮይን፤" : "Or as a Bitcoin address:"}</p>
                         <div className="bg-zinc-900 rounded-lg p-4 border border-cyan-400/20 mt-2">
                           <p className="text-xs text-cyan-100 font-mono break-all">
                             1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
@@ -534,14 +534,14 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       </div>
                       {/* Private Key Example */}
                       <div className="rounded-lg border border-orange-400/30 bg-orange-500/10 p-5">
-                        <h4 className="text-base font-semibold text-orange-200 mb-3">Private Key Example</h4>
-                        <p className="text-xs text-orange-300 mb-3">Keep this secret and secure - never share it!</p>
+                        <h4 className="text-base font-semibold text-orange-200 mb-3">{isTi ? "ናይ ብሕቲ ቁልፊ ኣብነት" : "Private Key Example"}</h4>
+                        <p className="text-xs text-orange-300 mb-3">{isTi ? "ነዚ ምስጢርን ውሑስን ሓልዎ - ፈጺምካ ሼር ግበርዎ!" : "Keep this secret and secure - never share it!"}</p>
                         <div className="bg-zinc-900 rounded-lg p-4 border border-orange-400/20">
                           <p className="text-xs text-orange-100 font-mono break-all">
                             L5EZftvrYaSudiozVRzTqLcHLNDoVn7H5HSfM9BAN6tMJX8oTWz6
                           </p>
                         </div>
-                        <p className="text-xs text-orange-400 mt-2 italic">Or in hex format:</p>
+                        <p className="text-xs text-orange-400 mt-2 italic">{isTi ? "ወይ ድማ ብመልክዕ ሄክስ፤" : "Or in hex format:"}</p>
                         <div className="bg-zinc-900 rounded-lg p-4 border border-orange-400/20 mt-2">
                           <p className="text-xs text-orange-100 font-mono break-all">
                             e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -551,14 +551,14 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                     </div>
                     {/* Lightning Invoice Example */}
                     <div className="rounded-lg border border-purple-400/30 bg-purple-500/10 p-5">
-                      <h4 className="text-base font-semibold text-purple-200 mb-3">Lightning Network Invoice Example</h4>
-                      <p className="text-xs text-purple-300 mb-3">A Lightning invoice is a payment request for fast, low-fee Bitcoin transactions on the Lightning Network</p>
+                      <h4 className="text-base font-semibold text-purple-200 mb-3">{isTi ? "ላይትኒንግ መርበብ ፋክቱር ኣብነት" : "Lightning Network Invoice Example"}</h4>
+                      <p className="text-xs text-purple-300 mb-3">{isTi ? "ፋክቱር ላይትኒንግ ኣብ መርበብ ላይትኒንግ ንዝግበር ቅልጡፍን ትሑት ክፍሊትን ትራንዛክሽን ቢትኮይን ናይ ክፍሊት ሕቶ እዩ።" : "A Lightning invoice is a payment request for fast, low-fee Bitcoin transactions on the Lightning Network"}</p>
                       <div className="bg-zinc-900 rounded-lg p-4 border border-purple-400/20">
                         <p className="text-xs text-purple-100 font-mono break-all">
                           lnbc20u1p5cpmx0dqqpp5d5mzfqk3kjv46ujecwtkr0337gm7nlw43n69rlyd0uvlg8tx0sxqsp56wh3phhm0vkpxxtyhxt6u3fm0pfec5nvqy8qz4vp9y5lp0jz033s9qrsgqcqpjnp4q0plte0wjhr4t478uwp02wvl2gra39jamke83jfh8506kjd0dg0gyxqyz5vqrzjqt07ejxdllcugwyqydh5j3m3wgxlqew3ywmfgljfv0u99ssumtxuzqqqqqqqqqqqqgqqqqqqqqqqqqqqrcftdaunftydx463n9chlj6j3dd3hp570hz725nd773hmna2cq9q655djym8ph86wyvdqeta37p5lycaksk9xsfgs3rlnezwx7m8tfsqqq9a2mfy
                         </p>
                       </div>
-                      <p className="text-xs text-purple-400 mt-2 italic">Lightning invoices enable instant, low-cost payments and are used for everyday Bitcoin transactions</p>
+                      <p className="text-xs text-purple-400 mt-2 italic">{isTi ? "ላይትኒንግ ፋክቱራት ቅጽበታዊ፡ ትሑት ወጻኢታት ዘለዎ ክፍሊት ዘኽእል ኮይኑ፡ ንመዓልታዊ ትራንዛክሽን ቢትኮይን ዝውዕል እዩ።" : "Lightning invoices enable instant, low-cost payments and are used for everyday Bitcoin transactions"}</p>
                     </div>
                   </div>
                 ) : section.heading === "7.4 Why Blockchain Matters" ? (
@@ -1057,7 +1057,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                           </div>
                         ))}
                       </div>
-                    ) : section.heading === "6.2 Peer-to-Peer Transactions (P2P)" && section.images.length === 1 ? (
+                    ) : (section.heading === "6.2 Peer-to-Peer Transactions (P2P)" || section.heading.startsWith("6.2")) && section.images.length === 1 ? (
                       // P2P transaction flow diagram: one image with flow steps and caption
                       <div className="mt-6 flex flex-col items-center space-y-4">
                         <div className="w-full max-w-2xl rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-4 shadow-lg">
@@ -1068,7 +1068,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                             className="w-full rounded-lg object-contain"
                           />
                           <p className="mt-2 text-center text-xs text-zinc-400">
-                            Diagram showing the flow: Alice creates transaction → broadcasts → nodes verify → miners confirm
+                            {isTi ? "ኣሊስ ምስግጋር ትፈጥር → ትፍኖ → ኖድስ የረጋግጹ → ዕደናውያን የረጋግጹ" : "Diagram showing the flow: Alice creates transaction → broadcasts → nodes verify → miners confirm"}
                           </p>
                         </div>
                       </div>

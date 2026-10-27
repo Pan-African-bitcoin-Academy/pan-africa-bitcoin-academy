@@ -1,10 +1,15 @@
 "use client";
 
 import TextType from "@/components/TextType";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const KEYS_QUOTE_LINES = ["Not your keys, not your coins."];
+const KEYS_QUOTE_LINES_EN = ["Not your keys, not your coins."];
+const KEYS_QUOTE_LINES_TI = ["መፍትሕካ ኣይኮነን ሳንቲምካ ኣይኮነን።"];
 
 export function KeysChapterHeroQuote() {
+  const { language } = useLanguage();
+  const isTi = language === "ti";
+  const quoteLines = isTi ? KEYS_QUOTE_LINES_TI : KEYS_QUOTE_LINES_EN;
   return (
     <section
       className="relative overflow-hidden rounded-2xl border border-cyan-400/40 bg-zinc-950/95 px-4 py-4 sm:px-8 sm:py-5"
@@ -12,7 +17,7 @@ export function KeysChapterHeroQuote() {
         boxShadow:
           "0 0 48px rgba(34, 211, 238, 0.16), 0 0 100px rgba(168, 85, 247, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
       }}
-      aria-label='Quote: "Not your keys, not your coins."'
+      aria-label={isTi ? 'Quote: "መፍትሕካ ኣይኮነን ሳንቲምካ ኣይኮነን።"' : 'Quote: "Not your keys, not your coins."'}
     >
       <div
         className="pointer-events-none absolute -left-24 top-1/2 h-52 w-52 -translate-y-1/2 rounded-full bg-cyan-400/18 blur-3xl keys-quote-glow-a"
@@ -40,7 +45,7 @@ export function KeysChapterHeroQuote() {
 
         <div className="relative z-10 flex justify-center px-4 sm:px-10 md:px-14">
           <TextType
-            texts={KEYS_QUOTE_LINES}
+            texts={quoteLines}
             typingSpeed={75}
             pauseDuration={1800}
             deletingSpeed={50}

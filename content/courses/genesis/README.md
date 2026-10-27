@@ -10,7 +10,7 @@
 [Chapter 3: Problems with Traditional (Fiat) Money](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch03-fiat-problems.md) · [ትግርኛ (Tigrigna)](./chapters/ch03-fiat-problems-ti.md)
 [Chapter 4: From Crisis to Innovation](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch04-crisis-to-innovation.md) · [ትግርኛ (Tigrigna)](./chapters/ch04-crisis-to-innovation-ti.md)
 [Chapter 5: The Birth of Bitcoin](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch05-birth-of-bitcoin.md) · [ትግርኛ (Tigrigna)](./chapters/ch05-birth-of-bitcoin-ti.md)
-[Chapter 6: Keys and Transactions](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch06-keys-and-transactions.md)
+[Chapter 6: Keys and Transactions](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch06-keys-and-transactions.md) · [ትግርኛ (Tigrigna)](./chapters/ch06-keys-and-transactions-ti.md)
 [Chapter 7: Blockchain Basics](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch07-blockchain-basics.md)
 [Chapter 8: Exchange & Software Wallet](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch08-exchange-and-wallet.md)
 
