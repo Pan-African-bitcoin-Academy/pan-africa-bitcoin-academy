@@ -105,6 +105,18 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ምስትብሃል ዕማም", "ዕማም: ምስ ቅልውላው ዝተሓሓዝ ምስትብሃል"],
     quiz: "ሕቶታት ብዛዕባ ቅልውላው ምህዞን",
   },
+  5: {
+    title: "ቢትኮይን",
+    learnPoints: [
+      "ስለምንታይ ኣብ ውርሻ ፋይናንስ ዝነበረ እምነት ተበቲኹ",
+      "ጻዕዳ ወረቐትን ስሙ ዘይምጥቃስን ሳቶሺ",
+      "መዛኑ መዛኑ ኤሌክትሮኒካዊ ኣዕኑድ ጥረ ገንዘብ",
+    ],
+    activities: ["ዕማም: ቀሊል ዝኾነ ናይ ዋይትፔፐር ጽሑፍ ምንባብ"],
+    theory: ["ናይ 2008 ቅልውላው", "ናይ ሳቶሺ ራእይ", "መሰረታት ጻዕዳ ወረቐት ቢትኮይን"],
+    practice: ["ናይ ዋይትፔፐር ጽሑፍ ምንባብ", "ዕማም: ናይ ዋይትፔፐር ትንተና"],
+    quiz: "ሕቶታት ብዛዕባ ምጅማር ቢትኮይን",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {

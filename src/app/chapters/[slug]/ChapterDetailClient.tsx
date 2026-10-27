@@ -169,60 +169,64 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
           <div className="relative space-y-5">
             {chapter.sections.map((section, sectionIdx) => {
               const sectionId = `section-${sectionIdx}-${section.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
-              const comparisonSection = chapter.slug === "the-birth-of-bitcoin" && section.heading === "What Are Sats?" ? (
+              const comparisonSection = chapter.slug === "the-birth-of-bitcoin" && (section.heading === "What Are Sats?" || section.heading === "ሳት እንታይ እዮም?") ? (
                 <ChapterSectionAnimated key="bitcoin-gold-fiat-comparison" sectionId="section-bitcoin-gold-fiat-comparison" sectionIdx={chapter.sections.length}>
                   <div id="section-bitcoin-gold-fiat-comparison" className="chapter-section-inner scroll-mt-20 rounded-lg border border-zinc-800/60 bg-zinc-950 p-5 shadow-inner transition-shadow duration-300">
                     <h3 className="text-lg font-bold text-zinc-100 sm:text-xl mb-3 pb-2 border-b border-zinc-800/50">
-                      Bitcoin vs Gold vs Fiat/Cash Comparison
+                      {isTi ? "ምውድዳር ቢትኮይን ኣንጻር ወርቂ ኣንጻር ፊያት/ገንዘብ" : "Bitcoin vs Gold vs Fiat/Cash Comparison"}
                     </h3>
                     <div className="space-y-4 text-zinc-200 leading-relaxed">
                       <p>
-                        Gold and fiat currencies represent two major stages in the history of money. Gold gained acceptance because of its natural scarcity and durability, making it a reliable store of value for thousands of years. Fiat currencies later replaced gold-backed systems in many countries, allowing governments and central banks to issue and manage money more flexibly. While this made modern economies easier to operate, it also removed the natural supply limits that precious metals once imposed.
+                        {isTi
+                          ? "ወርቅን ፊያት ባጤራን ኣብ ታሪኽ ገንዘብ ክልተ ዓበይቲ መድረኻት ይውክሉ። ወርቂ ብሰንኪ ተፈጥሮኣዊ ዋሕዲን ጽንዓትን ተቐባልነት ረኺቡ፣ ንኣሽሓት ዓመታት ዘተኣማምን መኽዘን ዋጋ ኮይኑ። ድሒሩ ፊያት ባጤራታት ኣብ ብዙሓት ሃገራት ብወርቂ ዝድገፍ ስርዓታት ብምትካእ መንግስታትን ማእከላይ ባንክታትን ገንዘብ ብዝያዳ ተዓጻጻፊ መንገዲ ከውጽኡን ከመሓድሩን ኣኽኢልዎም። እዚ ድማ ዘመናዊ ቁጠባታት ብቐሊሉ ንኽሰርሓ ዝገብሮ እኳ እንተኾነ፡ ነቲ ኣብ ሓደ እዋን ክቡር ሓጺናት ዝገብርዎ ዝነበሩ ተፈጥሮኣዊ ገደብ ቀረብ እውን ኣወጊድዎ።"
+                          : "Gold and fiat currencies represent two major stages in the history of money. Gold gained acceptance because of its natural scarcity and durability, making it a reliable store of value for thousands of years. Fiat currencies later replaced gold-backed systems in many countries, allowing governments and central banks to issue and manage money more flexibly. While this made modern economies easier to operate, it also removed the natural supply limits that precious metals once imposed."}
                       </p>
                       <p>
-                        Bitcoin introduces a different model by combining digital technology with programmed scarcity. Unlike gold, which depends on physical mining, and fiat currencies, which can be expanded by central authorities, Bitcoin has a fixed supply of 21 million coins enforced by the protocol. This design attempts to preserve the scarcity that made gold valuable while improving portability and divisibility through a fully digital network.
+                        {isTi
+                          ? "ቢትኮይን ዲጂታላዊ ቴክኖሎጂ ምስ ፕሮግራም ዝተገብረሉ ሕጽረት ብምውህሃድ ዝተፈለየ ሞዴል የተኣታቱ። ዘይከምቲ ኣብ ኣካላዊ ዕደና ዝምርኮስ ወርቂን ብማእከላይ ሰበስልጣን ክሰፍሕ ዝኽእል ፊያት ባጤራታትን፡ ቢትኮይን በቲ ፕሮቶኮል ዝትግበር 21 ሚልዮን ሳንቲም ቀዋሚ ቀረብ ኣለዎ። እዚ ዲዛይን እዚ ነቲ ወርቂ ክቡር ዝገበሮ ዋሕዲ ንምዕቃብ ዝፍትን ኮይኑ፡ ብሙሉእ ዲጂታላዊ መርበብ ኣቢሉ ተንቀሳቓስን ምክፍፋልን ንምምሕያሽ ዝዓለመ እዩ።"
+                          : "Bitcoin introduces a different model by combining digital technology with programmed scarcity. Unlike gold, which depends on physical mining, and fiat currencies, which can be expanded by central authorities, Bitcoin has a fixed supply of 21 million coins enforced by the protocol. This design attempts to preserve the scarcity that made gold valuable while improving portability and divisibility through a fully digital network."}
                       </p>
                     </div>
                     <div className="mt-6 overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
                       <table className="w-full border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">Quality</th>
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">Bitcoin</th>
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">Gold</th>
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">Fiat / Cash</th>
+                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ብቅዓት" : "Quality"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ቢትኮይን" : "Bitcoin"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ወርቂ" : "Gold"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ፊያት / ጥረ ገንዘብ" : "Fiat / Cash"}</th>
                           </tr>
                         </thead>
                         <tbody className="text-zinc-300">
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">Scarcity</td>
-                            <td className="px-4 py-3">21 Million coins (fixed Supply)</td>
-                            <td className="px-4 py-3">Limited but new gold found</td>
-                            <td className="px-4 py-3">Unlimited supply, central banks can print more</td>
+                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ዋሕዲ" : "Scarcity"}</td>
+                            <td className="px-4 py-3">{isTi ? "21 ሚልዮን ሳንቲም (ቀዋሚ ቀረብ)" : "21 Million coins (fixed Supply)"}</td>
+                            <td className="px-4 py-3">{isTi ? "ውሱን ግን ከኣ ሓድሽ ወርቂ ይርከብ።" : "Limited but new gold found"}</td>
+                            <td className="px-4 py-3">{isTi ? "ደረት ኣልቦ ቀረብ፡ ማእከላይ ባንክታት ዝያዳ ክሕትማ ይኽእላ እየን።" : "Unlimited supply, central banks can print more"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">Portability</td>
-                            <td className="px-4 py-3">Digital, accessible on phone</td>
-                            <td className="px-4 py-3">Heavy, physical asset</td>
-                            <td className="px-4 py-3">Physical bills/coins are harder to move large amounts across borders</td>
+                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ተንቀሳቓሲነት" : "Portability"}</td>
+                            <td className="px-4 py-3">{isTi ? "ዲጂታላዊ፡ ብተሌፎን ትጥቀመሉ" : "Digital, accessible on phone"}</td>
+                            <td className="px-4 py-3">{isTi ? "ከቢድ፡ ኣካላዊ ንብረት" : "Heavy, physical asset"}</td>
+                            <td className="px-4 py-3">{isTi ? "ኣካላዊ ሕሳብ/ሳንቲም ብብዝሒ ዶባት ንምንቅስቓስ ዝኸበደ እዩ" : "Physical bills/coins are harder to move large amounts across borders"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">Durability</td>
-                            <td className="px-4 py-3">Digital, no wear or tear</td>
-                            <td className="px-4 py-3">Physical can degrade over time</td>
-                            <td className="px-4 py-3">Physical cash can get damaged, lost, or destroyed</td>
+                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ጽንዓት" : "Durability"}</td>
+                            <td className="px-4 py-3">{isTi ? "ዲጂታል፣ ምብስባስ ወይ ምቅዳድ የለን" : "Digital, no wear or tear"}</td>
+                            <td className="px-4 py-3">{isTi ? "ኣካላዊ ምስ ግዜ ክወርድ ይኽእል እዩ" : "Physical can degrade over time"}</td>
+                            <td className="px-4 py-3">{isTi ? "ኣካላዊ ጥረ ገንዘብ ክጉዳእ፡ ክጠፍእ ወይ ክዓኑን ይኽእል።" : "Physical cash can get damaged, lost, or destroyed"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">Divisibility</td>
-                            <td className="px-4 py-3">Fractional transactions possible</td>
-                            <td className="px-4 py-3">Hard to divide without loss</td>
-                            <td className="px-4 py-3">Limited divisibility (usually to cents)</td>
+                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ምክፍፋል" : "Divisibility"}</td>
+                            <td className="px-4 py-3">{isTi ? "ደቀቅቲ ምስግጋራት ይከኣል እዩ።" : "Fractional transactions possible"}</td>
+                            <td className="px-4 py-3">{isTi ? "ብዘይ ክሳራ ክትመቓቐል ከቢድ እዩ" : "Hard to divide without loss"}</td>
+                            <td className="px-4 py-3">{isTi ? "ውሱን ምክፍፋል (መብዛሕትኡ ግዜ ናብ ሳንቲም)" : "Limited divisibility (usually to cents)"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">Acceptance</td>
-                            <td className="px-4 py-3">Growing globally, especially in Africa</td>
-                            <td className="px-4 py-3">Accepted worldwide historically</td>
-                            <td className="px-4 py-3">Universally accepted by governments, businesses, and people</td>
+                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ተቐባልነት" : "Acceptance"}</td>
+                            <td className="px-4 py-3">{isTi ? "ብዓለም ደረጃ ብፍላይ ኣብ ኣፍሪቃ እናዓበየ ይኸይድ ኣሎ" : "Growing globally, especially in Africa"}</td>
+                            <td className="px-4 py-3">{isTi ? "ብታሪኽ ኣብ መላእ ዓለም ተቐባልነት ዘለዎ" : "Accepted worldwide historically"}</td>
+                            <td className="px-4 py-3">{isTi ? "ብመንግስታትን ትካላት ንግድን ሰባትን ብዓለምለኻዊ ደረጃ ተቐባልነት ዘለዎ" : "Universally accepted by governments, businesses, and people"}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -307,9 +311,12 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                 ) : null}
                 {!section.heading.startsWith("1.2") && section.paragraphs?.map((p, pIdx) => {
                   // Check if this paragraph is a subsection heading (exact match)
-                  const isSubHeading = p === "Decentralization Explained" || 
+                                    const isSubHeading = p === "Decentralization Explained" || 
                                        p === "Transparency Without Identity" || 
-                                       p === "Scarcity";
+                                       p === "Scarcity" ||
+                                       p === "ዘይማእከላዊ ምሕደራ ክግለጽ" ||
+                                       p === "ግሉጽነት ብዘይ መንነት" ||
+                                       p === "ዋሕዲ";
                   
                   if (isSubHeading) {
                     return (
@@ -364,16 +371,16 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                     </p>
                   );
                 })}
-                {section.heading === "What Are Sats?" ? (
+                {section.heading === "What Are Sats?" || section.heading === "ሳት እንታይ እዮም?" ? (
                   // Special rendering for sats conversion table and converter
                   <div className="mt-6 space-y-6">
                     <div>
-                      <h4 className="mb-4 text-base font-semibold text-cyan-200">Sats → BTC Conversion Examples</h4>
+                      <h4 className="mb-4 text-base font-semibold text-cyan-200">{isTi ? "Sats → BTC ምቕያር ኣብነታት" : "Sats → BTC Conversion Examples"}</h4>
                       <div className="overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
                         <table className="w-full border-collapse text-sm">
                           <thead>
                             <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
-                              <th className="px-4 py-3 text-left font-semibold text-cyan-200">Sats</th>
+                              <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ሳትስ (Sats)" : "Sats"}</th>
                               <th className="px-4 py-3 text-left font-semibold text-cyan-200">BTC</th>
                             </tr>
                           </thead>
