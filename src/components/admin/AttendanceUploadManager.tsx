@@ -433,6 +433,21 @@ export function AttendanceUploadManager({
         <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
 
+        {/* Merged Breadcrumb & Context Header */}
+        <div className="relative z-10 mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-4">
+          <nav className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+            <span className="text-zinc-500">Dashboard</span>
+            <span className="text-zinc-600">›</span>
+            <span className="text-zinc-400">Attendance</span>
+            <span className="text-zinc-600">›</span>
+            <span className="text-cyan-400 font-semibold">Upload Attendance</span>
+          </nav>
+          <div className="flex items-center gap-2 text-xs text-zinc-500">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-cyan-400"></span>
+            <span>Attendance Administration</span>
+          </div>
+        </div>
+
         <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-cyan-500/20 via-blue-500/20 to-purple-500/20 border border-cyan-500/30 text-cyan-300 shadow-inner">

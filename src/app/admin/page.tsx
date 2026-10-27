@@ -4675,7 +4675,8 @@ export default function AdminDashboardPage() {
 
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
-            {/* Breadcrumbs - Hidden on mobile */}
+            {/* Breadcrumbs - Hidden on mobile (merged into attendance upload) */}
+            {!(activeSection === 'attendance' && activeSubMenu === 'upload-attendance') && (
             <nav className="hidden sm:flex items-center gap-2 text-sm text-zinc-500 overflow-x-auto">
               {getBreadcrumbs().map((crumb, index) => (
                 <div key={index} className="flex items-center gap-2 flex-shrink-0">
@@ -4686,8 +4687,10 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </nav>
+            )}
             
-            {/* Page Header - Desktop only */}
+            {/* Page Header - Desktop only (merged into attendance upload) */}
+            {!(activeSection === 'attendance' && activeSubMenu === 'upload-attendance') && (
             <div className="hidden lg:flex items-center justify-between">
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-zinc-50">
@@ -4705,7 +4708,8 @@ export default function AdminDashboardPage() {
                   </p>
                 )}
               </div>
-        </div>
+            </div>
+            )}
 
         {error && (
           <div className="flex items-center justify-between rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
