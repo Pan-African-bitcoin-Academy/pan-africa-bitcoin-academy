@@ -77,7 +77,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+            value: 'camera=(), microphone=(), geolocation=()'
           },
           // HSTS - Force HTTPS (only in production)
           ...(process.env.NODE_ENV === 'production' ? [{
@@ -94,7 +94,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: https: blob:",
-              "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://vercel.live wss://vercel.live",
+              "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://vercel.live wss://vercel.live https://*.pusher.com wss://*.pusher.com",
               "frame-src 'self' https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",
