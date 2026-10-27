@@ -193,6 +193,7 @@ export default function ChaptersPage() {
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
   const { language } = useLanguage();
   const t = getChaptersCopy(language);
+  const chapters = getChaptersList(language);
   const router = useRouter();
 
   useEffect(() => {
@@ -248,7 +249,7 @@ export default function ChaptersPage() {
   const handleChapterClick = (chapterNumber: number, chapterTitle: string) => {
     // Admins can always access, so if admin is logged in and chapter is unlocked, navigate directly
     if (isAdminAuth && isChapterUnlocked(chapterNumber)) {
-      router.push(`/chapters/${generateSlug(chapterTitle)}`);
+      router.push(`/chapters/${generateSlug(chaptersList.find(c => c.number === chapterNumber)?.title || chapterTitle)}`);
       return;
     }
 
