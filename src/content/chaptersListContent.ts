@@ -81,6 +81,19 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ገንዘብ ታሪኽ ሰሌዳ ምድላው", "ዕማም፡ ናይ ታሪኽ ገንዘብ ዝርዝር"],
     quiz: "ሕቶታት ብዛዕባ ምዕባለ ገንዘብ",
   },
+  3: {
+    title: "ጸገማት ባህላዊ (ፊያት) ገንዘብ",
+    learnPoints: [
+      "ዋጋታት ንብረት ብኸመይ ንናይ ምዕዳግ ዓቕሚ የጉድሎ",
+      "ማእከላይ ቁጽጽር ኣብ ቀረብን ተበጻሕነትን ገንዘብ",
+      "ፋይናንሳዊ ምግላልን ዘይምዕሩይነትን",
+      "ስርዓት ምብስባስ ኣብ ቅልውላው",
+    ],
+    activities: ["ናይ ክፍሊ ምይይጥ: 'ንገንዘብና ንኣምኖ ዲና?'"],
+    theory: ["ናይ ፊያት ገንዘብ ጸገማት", "ናይ ዝቕባበ ኣሰራርሓ", "ናይ ማእከላይ ምቁጽጻር ሓደጋታት"],
+    practice: ["ናይ ክፍሊ ምይይጥ", "ዕማም፡ ኣብ ገንዘብ ዘሎ ምትእምማን"],
+    quiz: "ሕቶታት ብዛዕባ ጉዳያት ፊያት",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {

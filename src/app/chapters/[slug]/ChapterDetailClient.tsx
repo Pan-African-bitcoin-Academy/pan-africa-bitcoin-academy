@@ -434,7 +434,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                 ) : null}
                 {!section.heading.startsWith("1.2") && section.callouts?.map((callout, idx) => {
                   // Skip example callout for section 3.1 - it will be rendered after images
-                  if (section.heading === "3.1 Inflation and Loss of Purchasing Power" && callout.type === "example") {
+                  if ((section.heading === "3.1 Inflation and Loss of Purchasing Power" || section.heading.startsWith("3.1")) && callout.type === "example") {
                     return null;
                   }
                   return (
@@ -938,20 +938,20 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                           </div>
                         </div>
                       </div>
-                    ) : section.heading === "3.1 Inflation and Loss of Purchasing Power" && section.images.length >= 4 ? (
+                    ) : (section.heading === "3.1 Inflation and Loss of Purchasing Power" || section.heading.startsWith("3.1")) && section.images.length >= 4 ? (
                       // Special layout: first 3 images (animals, arrow, animals) in a row, then the 4th image below, then Zimbabwe images side by side
                       <div className="mt-6 space-y-6">
                         <div className="flex flex-col items-center mb-4">
-                          <p className="text-lg font-semibold text-orange-200">20 Years ago: 40,000 UGX → Now: 4,000,000 UGX</p>
+                          <p className="text-lg font-semibold text-orange-200">{isTi ? "ቅድሚ 20 ዓመት: 40,000 UGX → ሕጂ: 4,000,000 UGX" : "20 Years ago: 40,000 UGX → Now: 4,000,000 UGX"}</p>
                         </div>
                         <div className="flex flex-col md:flex-row items-center justify-center gap-8">
                           {section.images.slice(0, 3).map((image, idx) => (
                             <div key={idx} className="flex flex-col items-center">
                               {idx === 0 && (
-                                <p className="mb-2 text-base font-semibold text-orange-200">20 Years ago</p>
+                                <p className="mb-2 text-base font-semibold text-orange-200">{isTi ? "ቅድሚ 20 ዓመት" : "20 Years ago"}</p>
                               )}
                               {idx === 2 && (
-                                <p className="mb-2 text-base font-semibold text-orange-200">Now</p>
+                                <p className="mb-2 text-base font-semibold text-orange-200">{isTi ? "ሕጂ" : "Now"}</p>
                               )}
                               <ZoomableImage
                                 src={image.src}
@@ -966,7 +966,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                         {section.callouts?.find(c => c.type === "example") && (
                           <div className="rounded-lg border border-orange-400/30 bg-orange-500/10 p-3">
                             <div className="flex items-start gap-2">
-                              <span className="font-semibold text-orange-100">📖 Example:</span>
+                              <span className="font-semibold text-orange-100">{isTi ? "📖 ኣብነት፤" : "📖 Example:"}</span>
                               <p className="flex-1 text-sm text-orange-100">
                                 {section.callouts.find(c => c.type === "example")?.content}
                               </p>
