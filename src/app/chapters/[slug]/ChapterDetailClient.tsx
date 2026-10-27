@@ -453,12 +453,12 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                     <div className="flex items-start gap-2">
                       <span className="font-semibold">
                         {callout.type === "note"
-                          ? "📝 Note:"
+                          ? (isTi ? "📝 መተሓሳሰቢ፤" : "📝 Note:")
                           : callout.type === "tip"
-                          ? "💡 Tip:"
+                          ? (isTi ? "💡 ምኽሪ፤" : "💡 Tip:")
                           : callout.type === "warning"
-                          ? "⚠️ Warning:"
-                          : "📖 Example:"}
+                          ? (isTi ? "⚠️ መጠንቀቕታ፤" : "⚠️ Warning:")
+                          : (isTi ? "📖 ኣብነት፤" : "📖 Example:")}
                       </span>
                       <div className="flex-1 text-sm">
                         {(() => {

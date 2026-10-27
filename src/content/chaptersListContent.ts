@@ -94,6 +94,17 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ክፍሊ ምይይጥ", "ዕማም፡ ኣብ ገንዘብ ዘሎ ምትእምማን"],
     quiz: "ሕቶታት ብዛዕባ ጉዳያት ፊያት",
   },
+  4: {
+    title: "ካብ ቅልውላው ናብ ምህዞ",
+    learnPoints: [
+      "ስለምንታይ ሳይፈርፓንክስ ናይ ብሕቲ፡ ነጻ ገንዘብ ክደፍኡ",
+      "እቲ ኣብ 2008 ዝነበረ ቅልውላው ንቢትኮይን ብኸመይ ከም ዘበገሶ",
+    ],
+    activities: ["ናይ መጨረሻ-ምዕራፍ ምስትብሃል: ሳይፈርፓንክስ ብዛዕባ ብሕትውናን ናጽነትን ስለምንታይ ይግደሱ?"],
+    theory: ["ፍሽለታት ኣረጊት ስርዓት", "ምንቅስቓስ ሳይፈርፓንክ", "ቅድመ-ኩነት ቢትኮይን"],
+    practice: ["ናይ ምስትብሃል ዕማም", "ዕማም: ምስ ቅልውላው ዝተሓሓዝ ምስትብሃል"],
+    quiz: "ሕቶታት ብዛዕባ ቅልውላው ምህዞን",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
