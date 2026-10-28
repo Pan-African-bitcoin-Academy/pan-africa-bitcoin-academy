@@ -16,7 +16,7 @@
 
 ### Level II (Difficulty-Adjustment 1)
 [Chapter 9: UTXOs, Fees & Coin Control](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch09-utxos-fees.md) · [ትግርኛ (Tigrigna)](./chapters/ch09-utxos-fees-ti.md)
-[Chapter 10: Good Bitcoin Hygiene](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch10-hygiene.md)
+[Chapter 10: Good Bitcoin Hygiene](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch10-hygiene.md) · [ትግርኛ (Tigrigna)](./chapters/ch10-hygiene-ti.md)
 [Chapter 11: Hardware Signers](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch11-hardware-signers.md)
 [Chapter 12: Layer 2 & Sidechains](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch12-layer2-sidechains.md)
 [Chapter 13: Verify for Yourself — Block Explorers & Nodes](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch13-verify.md)

@@ -1266,9 +1266,9 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
           ) : chapter.slug === 'good-bitcoin-hygiene' ? (
             <ChapterAssignment
               assignmentId="10101010-1010-4101-8101-010101010101"
-              title="Assignment: Protect Your Future Self"
-              question="Why should you use a new receive address every time?"
-              description="Reflect on why using a new receive address every time is important for privacy and security."
+              title={isTi ? "ዕዮ፡ ናይ መጻኢ ርእስኻ ምዕቃብ" : "Assignment: Protect Your Future Self"}
+              question={isTi ? "ስለምንታይ ኢኻ ኣብ ነፍሲ ወከፍ ግዜ ሓድሽ ናይ መቐበሊ ኣድራሻ ክትጥቀም ዘለካ?" : "Why should you use a new receive address every time?"}
+              description={isTi ? "ኣብ ነፍሲ ወከፍ እዋን ሓድሽ መቐበሊ ኣድራሻ ምጥቃም ንብሕትውናን ድሕነትን ስለምንታይ ኣገዳሲ ምዃኑ ኣስተንትን።" : "Reflect on why using a new receive address every time is important for privacy and security."}
               points={10}
               rewardSats={100}
             />
