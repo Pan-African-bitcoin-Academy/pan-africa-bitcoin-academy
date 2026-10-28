@@ -153,6 +153,30 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ፖርተፊልዮ ምፍጣር", "ናይ ቴስትኔት ትራንዛክሽን", "ንጥፈት: ቴስትኔት መገሻ"],
     quiz: "ሕቶታት ብዛዕባ ፖርተፊልዮታትን ምልውዋጥን",
   },
+  9: {
+    title: "UTXOs, Fees & Coin Control",
+    learnPoints: [
+      "ሞዴል UTXO vs ሞዴል ኣካውንት።",
+      "ክፍሊት ኣብ መጠን (vbytes) እምበር ኣብ መጠን ኣይምርኮስን እዩ።",
+      "ምድልዳል መዓስን ስለምንታይን",
+    ],
+    activities: ["ካብ ናይ UTXO ስብስብ ወጻኢ ምምጻእ ምውጣን (ናይ ወረቐት ዕዮ)"],
+    theory: ["ሞዴል UTXO", "ስርዓት ክፍሊት", "ናይ ሳንቲም ቁጽጽር"],
+    practice: ["ናይ UTXO ውጥን", "ንጥፈት: ናይ UTXO ስብስብ ዕዮ"],
+    quiz: "ሕቶታት ብዛዕባ UTXOs",
+  },
+  10: {
+    title: "ጽቡቅ ኣተሓሕዛ ቢትኮይን",
+    learnPoints: [
+      "ሓድሽ ናይ መቀበሊ ኣድራሻ ተጠቐም እሞ ኣብ መሳሪሕኻ ከኣ ኣረጋግጽ",
+      "ንንጹርነት ትራንዛክሽን/UTXOs ዝብል ስያመ ምሃብ",
+      "ካብ ጎዳኢ ውህደትን ኣድራሻ ዳግማይ ምጥቃምን ኣወግድ",
+    ],
+    activities: ["ኣብ ናይ ፈተነ ዋለት ናይ ጽሬት መርማሪት-ዝርዝር ኦዲት ምግባር"],
+    theory: ["ናይ ብሕትውና ብሉጻት ልምድታት", "ምሕደራ ኣድራሻታት", "ምልክት ምግባር ትራንዛክሽን"],
+    practice: ["ናይ ጽሬት ኦዲት", "ንጥፈት: መርማሪት-ዝርዝር ኦዲት"],
+    quiz: "ሕቶታት ብዛዕባ ጽቡቕ ኣተሓሕዛ ቢትኮይን",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/hooks/useSession';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Lock } from 'lucide-react';
 import {
   clientAwaitingInstructorReview,
@@ -36,6 +37,8 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
   const { profile, isAuthenticated, loading: authLoading, sessionEmail } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
   const studentEmail = profile?.email || sessionEmail || null;
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   
   const [utxos, setUtxos] = useState<UTXO[]>(UTXOS);
   const [submitting, setSubmitting] = useState(false);
@@ -268,7 +271,7 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
   if (!isAuthenticated && !isAdminAuth) {
     return (
       <div className="rounded-lg border border-zinc-800/60 bg-zinc-900/50 p-5">
-        <p className="text-zinc-400">Please log in to view and complete this assignment.</p>
+        <p className="text-zinc-400">{isTi ? "ነዚ ዕዮ ንምርኣይን ንምዝዛምን በጃኹም እተዉ።" : "Please log in to view and complete this assignment."}</p>
       </div>
     );
   }
@@ -283,7 +286,7 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
   return (
     <div className="rounded-lg border border-zinc-800/60 bg-zinc-950 p-5 shadow-inner space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-zinc-100 mb-2">Assignment: Choose the Correct UTXOs</h3>
+        <h3 className="text-lg font-semibold text-zinc-100 mb-2">{isTi ? "ዕዮ፡ ቅኑዓት UTXOs ምምራጽ" : "Assignment: Choose the Correct UTXOs"}</h3>
         <p className="text-sm text-zinc-400 mb-4">
           Interactive exercise | Reward: TBD (after instructor review)
         </p>
@@ -291,12 +294,12 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
 
       {/* Scenario */}
       <div className="space-y-3 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-        <h4 className="text-base font-semibold text-zinc-200">Scenario</h4>
+        <h4 className="text-base font-semibold text-zinc-200">{isTi ? "ሁኔታ" : "Scenario"}</h4>
         <p className="text-sm text-zinc-300">
-          You have the following UTXOs in your wallet. You want to send <strong className="text-cyan-400">{SEND_AMOUNT} BTC</strong> to someone.
+          {isTi ? "ኣብ ቦርሳኻ ዝስዕቡ UTXOs ኣለዉካ። " : "You have the following UTXOs in your wallet. You want to send "}<strong className="text-cyan-400">{SEND_AMOUNT} BTC</strong>{isTi ? " ናብ ሓደ ሰብ ክትሰድድ ትደሊ ኢኻ።" : " to someone."}
         </p>
         <p className="text-xs text-zinc-400">
-          Transaction fee (simplified): <strong>{FEE_PER_INPUT} BTC</strong> per input
+          {isTi ? "ናይ ትራንዛክሽን ክፍሊት (ቀሊል): " : "Transaction fee (simplified): "}<strong>{FEE_PER_INPUT} BTC</strong>{isTi ? " ነፍሲ ወከፍ እታዎት" : " per input"}
         </p>
       </div>
 
@@ -400,7 +403,7 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
               {selectedAnswer && (
                 <div className="grid grid-cols-3 gap-4 p-3 bg-zinc-800/50 rounded border border-zinc-700/50">
                   <div>
-                    <p className="text-xs text-zinc-400 mb-1">Total Input</p>
+                    <p className="text-xs text-zinc-400 mb-1">{isTi ? "ጠቕላላ እታዎት" : "Total Input"}</p>
                     <p className="text-sm font-mono text-zinc-200">{totalInput.toFixed(4)} BTC</p>
                   </div>
                   <div>
@@ -422,7 +425,7 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
         <div className="space-y-6">
           {/* UTXO Selection */}
           <div className="space-y-4 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-            <h4 className="text-base font-semibold text-zinc-200">Your UTXOs (Click to Select)</h4>
+            <h4 className="text-base font-semibold text-zinc-200">{isTi ? "ናትካ UTXOs (ንምምራጽ ጠውቕ)" : "Your UTXOs (Click to Select)"}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {utxos.map((utxo) => (
                 <button
@@ -465,10 +468,10 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
           {/* Selection Summary */}
           {selectedUTXOs.length > 0 && (
             <div className="p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-              <h4 className="text-sm font-semibold text-zinc-300 mb-3">Selection Summary</h4>
+              <h4 className="text-sm font-semibold text-zinc-300 mb-3">{isTi ? "ጽማረ ምርጫ" : "Selection Summary"}</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <p className="text-xs text-zinc-400 mb-1">Selected UTXOs</p>
+                  <p className="text-xs text-zinc-400 mb-1">{isTi ? "ዝተመርጹ UTXOs" : "Selected UTXOs"}</p>
                   <p className="text-sm font-mono text-zinc-200">
                     {selectedUTXOs.map(u => u.id).join(' + ') || 'None'}
                   </p>
@@ -478,11 +481,11 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
                   <p className="text-sm font-mono text-zinc-200">{totalInput.toFixed(4)} BTC</p>
                 </div>
                 <div>
-                  <p className="text-xs text-zinc-400 mb-1">Fee ({selectedUTXOs.length} inputs)</p>
+                  <p className="text-xs text-zinc-400 mb-1">{isTi ? `ክፍሊት (${selectedUTXOs.length} እታዎታት)` : `Fee (${selectedUTXOs.length} inputs)`}</p>
                   <p className="text-sm font-mono text-zinc-200">{fee.toFixed(4)} BTC</p>
                 </div>
                 <div>
-                  <p className="text-xs text-zinc-400 mb-1">Change Output</p>
+                  <p className="text-xs text-zinc-400 mb-1">{isTi ? "ናይ ማልስ ውጽኢት" : "Change Output"}</p>
                   <p className={`text-sm font-mono ${
                     change > 0 ? 'text-yellow-400' : 'text-green-400'
                   }`}>
@@ -512,7 +515,7 @@ export function ChapterUTXOAssignment({ assignmentId }: ChapterUTXOAssignmentPro
             disabled={submitting || selectedUTXOs.length === 0 || (totalInput - fee < SEND_AMOUNT)}
             className="w-full rounded-lg bg-gradient-to-r from-cyan-500 to-orange-500 px-6 py-3 min-h-[48px] font-semibold text-black transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
           >
-            {submitting ? 'Submitting...' : 'Submit Assignment'}
+            {submitting ? (isTi ? 'ይለኣኽ ኣሎ...' : 'Submitting...') : (isTi ? 'ዕዮ ኣእቱ' : 'Submit Assignment')}
           </button>
         </div>
       )}

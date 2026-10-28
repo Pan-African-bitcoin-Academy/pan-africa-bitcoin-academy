@@ -15,7 +15,7 @@
 [Chapter 8: Exchange & Software Wallet](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch08-exchange-and-wallet.md) · [ትግርኛ (Tigrigna)](./chapters/ch08-exchange-and-wallet-ti.md)
 
 ### Level II (Difficulty-Adjustment 1)
-[Chapter 9: UTXOs, Fees & Coin Control](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch09-utxos-fees.md)
+[Chapter 9: UTXOs, Fees & Coin Control](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch09-utxos-fees.md) · [ትግርኛ (Tigrigna)](./chapters/ch09-utxos-fees-ti.md)
 [Chapter 10: Good Bitcoin Hygiene](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch10-hygiene.md)
 [Chapter 11: Hardware Signers](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch11-hardware-signers.md)
 [Chapter 12: Layer 2 & Sidechains](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch12-layer2-sidechains.md)
