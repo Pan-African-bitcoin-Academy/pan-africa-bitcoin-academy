@@ -1253,9 +1253,9 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
           ) : chapter.slug === 'hardware-signers' ? (
             <ChapterAssignment
               assignmentId="bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbbbb"
-              title="Assignment: Threat Model"
-              question="List 3 threats a hardware wallet protects against."
-              description="Understand the security benefits of hardware wallets."
+              title={isTi ? "ዕዮ፡ ናይ ስግኣት ሞዴል" : "Assignment: Threat Model"}
+              question={isTi ? "ሓደ ናይ ሃርድዌር ዋለት ዝከላኸሎም 3 ስግኣታት ዘርዝር።" : "List 3 threats a hardware wallet protects against."}
+              description={isTi ? "ናይ ሃርድዌር ቦርሳታት ዘለዎም ናይ ድሕነት ረብሓታት ምርዳእ።" : "Understand the security benefits of hardware wallets."}
               points={10}
               rewardSats={100}
             />

@@ -177,6 +177,18 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ጽሬት ኦዲት", "ንጥፈት: መርማሪት-ዝርዝር ኦዲት"],
     quiz: "ሕቶታት ብዛዕባ ጽቡቕ ኣተሓሕዛ ቢትኮይን",
   },
+  11: {
+    title: "ሃርድዌር መፈረሚ",
+    learnPoints: [
+      "ስግኣታት ሃርድዌር ምቅላል vs ናይ ኢንተርነት ቦርሳታት",
+      "ምድላው፣ ናይ መፍትሕ ቃላት/ምዕቃብን፣ መሰረታዊ ሓረግ ምሕላፍ",
+      "ኣሰራርሓ ምፍራም PSBTን ኣብ መሳርሒ ምርግጋጽንን።",
+    ],
+    activities: ["ናይ ምምላስ ፈተነ (ብዘይ ገንዘብ) + ናይ ቴስትኔት PSBT ምፍራም"],
+    theory: ["ናይ ሃርድዌር ዋለት ድሕነት", "ውዑይ ኣንጻር ዝሑል ምዕቃብ", "መሰረታት PSBT"],
+    practice: ["ናይ ሃርድዌር ምድላው", "ናይ ምምላስ ፈተነ", "ንጥፈት: ምፍራም PSBT"],
+    quiz: "ሕቶታት ብዛዕባ ሃርድዌር መፈረሚታት",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
