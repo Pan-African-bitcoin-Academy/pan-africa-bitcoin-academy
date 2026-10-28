@@ -4,6 +4,7 @@ import { requireAdmin, attachRefresh } from '@/lib/adminSession';
 import { validateUUID, secureEmailInput, secureTextInput } from '@/lib/security-utils';
 import { containsSQLInjection, containsXSS } from '@/lib/input-security';
 import { logAdminAction, AUDIT_ACTIONS } from '@/lib/audit-log';
+import { ensureEventExists } from '@/lib/attendance-event-helper';
 
 // CSV Upload endpoint for Google Meet attendance
 // Expected CSV format: Email, Name, Join Time, Leave Time, Duration (minutes)
@@ -23,17 +24,19 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
-    const eventId = formData.get('eventId') as string;
+    const rawEventId = (formData.get('eventId') as string | undefined)?.trim();
 
-    if (!file || !eventId) {
+    if (!file || !rawEventId) {
       return NextResponse.json(
         { error: 'File and eventId are required' },
         { status: 400 }
       );
     }
 
+    const cleanEventId = rawEventId.replace(/^session-/, '').trim();
+
     // Security: Validate eventId format (UUID)
-    if (!validateUUID(eventId)) {
+    if (!validateUUID(cleanEventId)) {
       return NextResponse.json(
         { error: 'Invalid event ID format' },
         { status: 400 }
@@ -68,19 +71,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify event exists
-    const { data: event, error: eventError } = await supabaseAdmin
-      .from('events')
-      .select('id, name, type, chapter_number, cohort_id')
-      .eq('id', eventId)
-      .single();
-
-    if (eventError || !event) {
+    // Verify event exists or bridge cohort session into events table
+    const ensureResult = await ensureEventExists(cleanEventId);
+    if (!ensureResult.ok || !ensureResult.event) {
       return NextResponse.json(
-        { error: 'Event not found' },
+        { error: ensureResult.error || 'Event or session not found' },
         { status: 404 }
       );
     }
+
+    const event = ensureResult.event;
+    const eventId = cleanEventId;
 
     // Parse CSV with security checks
     const text = await file.text();
@@ -316,12 +317,3 @@ function parseDateTime(value: string): string | null {
     return null;
   }
 }
-
-
-
-
-
-
-
-
-

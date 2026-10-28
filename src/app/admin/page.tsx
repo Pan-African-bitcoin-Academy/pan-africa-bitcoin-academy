@@ -14,6 +14,7 @@ import { AdminAccessManagement } from '@/components/admin/AdminAccessManagement'
 import { SecurityLoginHistory } from '@/components/admin/SecurityLoginHistory';
 import { SecurityAccountLockouts } from '@/components/admin/SecurityAccountLockouts';
 import { SecuritySessionManagement } from '@/components/admin/SecuritySessionManagement';
+import { AttendanceUploadManager } from '@/components/admin/AttendanceUploadManager';
 import { 
   Users, BookOpen, Book, Handshake, Mail, FileText, BarChart3, 
   CheckCircle2, AlertCircle, Trophy, DollarSign, Calendar as CalendarIcon, 
@@ -644,7 +645,6 @@ export default function AdminDashboardPage() {
   const [cohortAnalyticsStatusChips, setCohortAnalyticsStatusChips] = useState<string[]>([]);
   const [cohortAnalyticsLevelChips, setCohortAnalyticsLevelChips] = useState<string[]>([]);
   const [cohortAnalyticsTablePage, setCohortAnalyticsTablePage] = useState(1);
-  const [uploadingAttendance, setUploadingAttendance] = useState(false);
   const [regeneratingSessions, setRegeneratingSessions] = useState<string | null>(null);
   const [allSessions, setAllSessions] = useState<Session[]>([]);
   const [loadingSessions, setLoadingSessions] = useState(false);
@@ -662,13 +662,6 @@ export default function AdminDashboardPage() {
     status: 'scheduled' as 'scheduled' | 'completed' | 'cancelled' | 'rescheduled',
   });
   const [editSessionSubmitting, setEditSessionSubmitting] = useState(false);
-  const [selectedEventForUpload, setSelectedEventForUpload] = useState<string>('');
-  const [attendanceCohortId, setAttendanceCohortId] = useState<string>('');
-  const [attendanceSessionId, setAttendanceSessionId] = useState<string>('');
-  const [attendanceStudents, setAttendanceStudents] = useState<Array<{ id: string; name: string; email: string; attended: boolean }>>([]);
-  const [attendanceCohortAccordionOpen, setAttendanceCohortAccordionOpen] = useState<string | null>(null);
-  const [loadingAttendanceStudents, setLoadingAttendanceStudents] = useState(false);
-  const [savingManualAttendance, setSavingManualAttendance] = useState(false);
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [loadingAttendanceRecords, setLoadingAttendanceRecords] = useState(false);
   const [attendanceEventFilter, setAttendanceEventFilter] = useState<string>('all');
@@ -834,6 +827,8 @@ export default function AdminDashboardPage() {
   const [examRetakeRequests, setExamRetakeRequests] = useState<any[]>([]);
   const [loadingExamAccess, setLoadingExamAccess] = useState(false);
   const [resolvingRetakeRequestId, setResolvingRetakeRequestId] = useState<string | null>(null);
+  const [grantingExamAccessId, setGrantingExamAccessId] = useState<string | null>(null);
+  const [revokingExamAccessId, setRevokingExamAccessId] = useState<string | null>(null);
   const [examSubmissionDetailModal, setExamSubmissionDetailModal] = useState<{
     studentId: string;
     studentName: string | null;
@@ -3780,36 +3775,55 @@ export default function AdminDashboardPage() {
 
   const grantExamAccess = async (studentId: string) => {
     try {
+      setGrantingExamAccessId(studentId);
       const res = await fetchWithAuth('/api/admin/exam/grant-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId, adminId: admin?.email }),
+        body: JSON.stringify({ studentId, adminEmail: admin?.email }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to grant access');
-      alert(data.message || 'Exam access granted');
+      if (!res.ok) throw new Error(data.error || data.details || 'Failed to grant access');
+      setAckPopup({
+        title: 'Exam Access Granted',
+        message: data.message || 'Exam access granted successfully.',
+      });
       await fetchExamAccess();
     } catch (err: any) {
-      alert(err.message || 'Failed to grant exam access');
+      setAckPopup({
+        title: 'Failed to Grant Exam Access',
+        message: err.message || 'An error occurred while granting exam access.',
+      });
+    } finally {
+      setGrantingExamAccessId(null);
     }
   };
 
   const revokeExamAccess = (studentId: string) => {
     setConfirmPopup({
       title: 'Revoke exam access',
-      message: 'Are you sure you want to revoke exam access?',
+      message: 'Are you sure you want to revoke exam access for this student?',
       confirmLabel: 'Revoke',
       variant: 'danger',
       onConfirm: async () => {
-        const res = await fetchWithAuth('/api/admin/exam/revoke-access', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ studentId }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to revoke access');
-        setAckPopup({ title: 'Success', message: data.message || 'Exam access revoked.' });
-        await fetchExamAccess();
+        try {
+          setRevokingExamAccessId(studentId);
+          const res = await fetchWithAuth('/api/admin/exam/revoke-access', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ studentId }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || data.details || 'Failed to revoke access');
+          setAckPopup({ title: 'Success', message: data.message || 'Exam access revoked.' });
+          await fetchExamAccess();
+        } catch (err: any) {
+          setAckPopup({
+            title: 'Failed to Revoke Exam Access',
+            message: err.message || 'An error occurred while revoking exam access.',
+          });
+        } finally {
+          setRevokingExamAccessId(null);
+        }
       },
     });
   };
@@ -3971,131 +3985,8 @@ export default function AdminDashboardPage() {
   // Store in ref for useEffect (already defined above at line 2290)
   loadSectionDataRef.current = loadSectionData;
 
-  const handleAttendanceUpload = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fileInput = form.querySelector('input[type="file"]') as HTMLInputElement;
-    const file = fileInput?.files?.[0];
-
-    if (!file || !selectedEventForUpload) {
-      setError('Please select an event and CSV file');
-      return;
-    }
-
-    setUploadingAttendance(true);
-    setError(null);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('eventId', selectedEventForUpload);
-
-      const res = await fetchWithAuth('/api/admin/attendance/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to upload attendance');
-      }
-
-      alert(`Success! Processed ${data.processed} records, matched ${data.matched} students.${data.totalErrors > 0 ? ` ${data.totalErrors} errors.` : ''}`);
-      form.reset();
-      setSelectedEventForUpload('');
-      fetchProgress(); // Refresh progress data
-      // Refresh attendance records to show newly uploaded data
-      attendanceFetchedRef.current = false;
-      fetchAttendanceRecords();
-    } catch (err: any) {
-      setError(err.message || 'Failed to upload attendance');
-    } finally {
-      setUploadingAttendance(false);
-    }
-  };
-
-  const loadManualAttendanceStudents = async (cohortId: string, sessionId: string) => {
-    if (!cohortId || !sessionId) {
-      setAttendanceStudents([]);
-      return;
-    }
-
-    setLoadingAttendanceStudents(true);
-    try {
-      const [studentsRes, attendanceRes] = await Promise.all([
-        fetchWithAuth(`/api/admin/students/all?limit=5000&cohort_id=${encodeURIComponent(cohortId)}`),
-        fetchWithAuth(`/api/admin/attendance?event_id=${encodeURIComponent(sessionId)}&limit=5000`),
-      ]);
-
-      const studentsData = await studentsRes.json();
-      const attendanceData = await attendanceRes.json();
-
-      if (!studentsRes.ok) {
-        throw new Error(studentsData?.error || 'Failed to load students for cohort');
-      }
-      if (!attendanceRes.ok) {
-        throw new Error(attendanceData?.error || 'Failed to load attendance for session');
-      }
-
-      const attendedSet = new Set<string>(
-        ((attendanceData?.records || []) as Array<{ studentId?: string }>).map((r) => r.studentId).filter(Boolean) as string[]
-      );
-
-      const mapped = ((studentsData?.students || []) as any[]).map((student) => ({
-        id: String(student.id),
-        name: String(student.name || 'Unknown Student'),
-        email: String(student.email || ''),
-        attended: attendedSet.has(String(student.id)),
-      }));
-
-      setAttendanceStudents(mapped);
-    } catch (err: any) {
-      setAttendanceStudents([]);
-      setError(err?.message || 'Failed to load manual attendance students');
-    } finally {
-      setLoadingAttendanceStudents(false);
-    }
-  };
-
-  const saveManualAttendance = async () => {
-    if (!attendanceSessionId || !attendanceCohortId || attendanceStudents.length === 0) return;
-    setSavingManualAttendance(true);
-    setError(null);
-    try {
-      const updates = attendanceStudents.map((s) => ({ studentId: s.id, attended: !!s.attended }));
-      const res = await fetchWithAuth('/api/admin/attendance/manual', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: attendanceSessionId,
-          updates,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.error || 'Failed to save manual attendance');
-      }
-      alert(`Attendance saved (${data.attendedCount} attended, ${data.notAttendedCount} not attended).`);
-      attendanceFetchedRef.current = false;
-      fetchAttendanceRecords();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to save manual attendance');
-    } finally {
-      setSavingManualAttendance(false);
-    }
-  };
-
   const [loginLoading, setLoginLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    if (!attendanceCohortId || !attendanceSessionId) {
-      setAttendanceStudents([]);
-      return;
-    }
-    loadManualAttendanceStudents(attendanceCohortId, attendanceSessionId);
-  }, [attendanceCohortId, attendanceSessionId]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -4805,7 +4696,8 @@ export default function AdminDashboardPage() {
 
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
-            {/* Breadcrumbs - Hidden on mobile */}
+            {/* Breadcrumbs - Hidden on mobile (merged into attendance upload) */}
+            {!(activeSection === 'attendance' && activeSubMenu === 'upload-attendance') && (
             <nav className="hidden sm:flex items-center gap-2 text-sm text-zinc-500 overflow-x-auto">
               {getBreadcrumbs().map((crumb, index) => (
                 <div key={index} className="flex items-center gap-2 flex-shrink-0">
@@ -4816,8 +4708,10 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </nav>
+            )}
             
-            {/* Page Header - Desktop only */}
+            {/* Page Header - Desktop only (merged into attendance upload) */}
+            {!(activeSection === 'attendance' && activeSubMenu === 'upload-attendance') && (
             <div className="hidden lg:flex items-center justify-between">
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-zinc-50">
@@ -4835,11 +4729,22 @@ export default function AdminDashboardPage() {
                   </p>
                 )}
               </div>
-        </div>
+            </div>
+            )}
 
         {error && (
-          <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-200">
-            {error}
+          <div className="flex items-center justify-between rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
+              <span className="text-sm font-medium">{error}</span>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-400 hover:text-red-200 transition-colors p-1 rounded-lg hover:bg-red-500/20"
+              title="Dismiss alert"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
         )}
 
@@ -8541,18 +8446,20 @@ export default function AdminDashboardPage() {
                                   s.hasExamAccess ? (
                                     <button
                                       type="button"
+                                      disabled={revokingExamAccessId === s.id}
                                       onClick={() => revokeExamAccess(s.id)}
-                                      className="text-xs font-semibold text-amber-400 hover:text-amber-300"
+                                      className="text-xs font-semibold text-amber-400 hover:text-amber-300 disabled:opacity-50"
                                     >
-                                      Revoke access
+                                      {revokingExamAccessId === s.id ? 'Revoking...' : 'Revoke access'}
                                     </button>
                                   ) : (
                                     <button
                                       type="button"
+                                      disabled={grantingExamAccessId === s.id}
                                       onClick={() => grantExamAccess(s.id)}
-                                      className="text-xs font-semibold text-cyan-400 hover:text-cyan-300"
+                                      className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 disabled:opacity-50"
                                     >
-                                      Grant access
+                                      {grantingExamAccessId === s.id ? 'Granting...' : 'Grant access'}
                                     </button>
                                   )
                                 ) : (
@@ -11058,478 +10965,19 @@ export default function AdminDashboardPage() {
         <div className="space-y-6">
           {/* Upload Attendance */}
           {activeSubMenu === 'upload-attendance' && (
-            <>
-              <div className="w-full">
-                {/* Combined Header and Form Section */}
-                <div className="rounded-2xl border-2 border-zinc-800 bg-zinc-900/60 backdrop-blur-sm shadow-xl">
-                  {/* Header Section */}
-                  <div className="px-8 pt-8 pb-6 border-b-2 border-zinc-800">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-2 border-blue-500/30 flex items-center justify-center">
-                      <span className="text-3xl">📤</span>
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-3xl font-bold text-zinc-50 mb-3">Upload Attendance</h2>
-                      <p className="text-base text-zinc-400 leading-relaxed">
-                        Upload Google Meet CSV files to record student attendance for class sessions and events. 
-                        Select the event or session, then upload your CSV file with attendance data.
-                      </p>
-                    </div>
-                  </div>
-                  </div>
-
-                  {/* Upload Form */}
-                  <div className="p-8">
-                  <form onSubmit={handleAttendanceUpload} className="space-y-6">
-                  {/* Event Selection */}
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-base font-semibold text-zinc-200">
-                      <CalendarIcon className="h-5 w-5" />
-                      <span>Select Event or Session</span>
-                      <span className="text-red-400 text-sm">*</span>
-                    </label>
-                    <select
-                      value={selectedEventForUpload}
-                      onChange={(e) => setSelectedEventForUpload(e.target.value)}
-                      className="w-full rounded-lg border-2 border-zinc-700/50 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-50 focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all hover:border-zinc-600"
-                      required
-                    >
-                      <option value="">Choose event or session...</option>
-                      
-                      {/* All Sessions Grouped by Cohort */}
-                      {(() => {
-                        // Filter out cancelled sessions, but include all others (past and upcoming)
-                        const activeSessions = allSessions.filter((session: any) => {
-                          return session.status !== 'cancelled';
-                        });
-
-                        // Group sessions by cohort
-                        const sessionsByCohort: Record<string, typeof allSessions> = {};
-                        activeSessions.forEach((session: any) => {
-                          const cohortId = session.cohort_id;
-                          const cohortName = session.cohorts?.name || `Cohort ${cohortId?.substring(0, 8)}` || 'Unknown Cohort';
-                          const key = `${cohortId || 'no-cohort'}|${cohortName}`;
-                          
-                          if (!sessionsByCohort[key]) {
-                            sessionsByCohort[key] = [];
-                          }
-                          sessionsByCohort[key].push(session);
-                        });
-
-                        // Sort sessions within each cohort by session number
-                        Object.keys(sessionsByCohort).forEach((key) => {
-                          sessionsByCohort[key].sort((a: any, b: any) => {
-                            const numA = a.session_number || 0;
-                            const numB = b.session_number || 0;
-                            return numA - numB; // Session 1, 2, 3...
-                          });
-                        });
-
-                        // Sort cohorts alphabetically
-                        const sortedCohortKeys = Object.keys(sessionsByCohort).sort((a, b) => {
-                          const nameA = a.split('|')[1];
-                          const nameB = b.split('|')[1];
-                          return nameA.localeCompare(nameB);
-                        });
-
-                        if (sortedCohortKeys.length > 0) {
-                          return sortedCohortKeys.map((key) => {
-                            const [cohortId, cohortName] = key.split('|');
-                            const sessions = sessionsByCohort[key];
-                            
-                            return (
-                              <optgroup key={key} label={`${cohortName} - Sessions`}>
-                                {sessions.map((session: any) => {
-                                  const sessionDate = session.session_date 
-                                    ? new Date(session.session_date).toLocaleDateString('en-US', { 
-                                        month: 'short', 
-                                        day: 'numeric', 
-                                        year: 'numeric' 
-                                      })
-                                    : '';
-                                  const sessionLabel = `Session ${session.session_number || ''}${session.topic ? `: ${session.topic}` : ''} ${sessionDate ? `(${sessionDate})` : ''}`;
-                                  
-                                  // Use session ID with a prefix to identify it as a session
-                                  return (
-                                    <option key={`session-${session.id}`} value={`session-${session.id}`}>
-                                      {sessionLabel}
-                                    </option>
-                                  );
-                                })}
-                              </optgroup>
-                            );
-                          });
-                        }
-                        return null;
-                      })()}
-
-                      {/* Other Events Grouped by Type */}
-                      {(() => {
-                        // Group events by type
-                        const groupedEvents: Record<string, typeof liveClassEvents> = {};
-                        liveClassEvents.forEach((e) => {
-                          const eventType = e.type || 'other';
-                          if (!groupedEvents[eventType]) {
-                            groupedEvents[eventType] = [];
-                          }
-                          groupedEvents[eventType].push(e);
-                        });
-
-                        // Sort events within each group by start time (newest first)
-                        Object.keys(groupedEvents).forEach((type) => {
-                          groupedEvents[type].sort((a, b) => {
-                            const timeA = a.start_time ? new Date(a.start_time).getTime() : 0;
-                            const timeB = b.start_time ? new Date(b.start_time).getTime() : 0;
-                            return timeB - timeA; // Newest first
-                          });
-                        });
-
-                        // Render grouped events
-                        const typeLabels: Record<string, string> = {
-                          'live-class': 'Live Class Events',
-                          'workshop': 'Workshops',
-                          'assignment': 'Assignments',
-                          'quiz': 'Quizzes',
-                          'community': 'Community Events',
-                          'deadline': 'Deadlines',
-                          'cohort': 'Cohort Events',
-                          'other': 'Other Events',
-                        };
-
-                        return Object.keys(groupedEvents)
-                          .sort()
-                          .map((type) => {
-                            const events = groupedEvents[type];
-                            if (events.length === 0) return null;
-                            
-                            return (
-                              <optgroup key={type} label={typeLabels[type] || type}>
-                                {events.map((e) => (
-                                  <option key={e.id} value={e.id}>
-                                    {e.name} {e.start_time ? `(${new Date(e.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})` : ''}
-                                  </option>
-                                ))}
-                              </optgroup>
-                            );
-                          });
-                      })()}
-                    </select>
-                  </div>
-
-                  {/* File Upload */}
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-semibold text-zinc-300">
-                      <span className="text-purple-400">📄</span>
-                      <span>CSV File</span>
-                      <span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept=".csv"
-                        className="w-full rounded-lg border-2 border-zinc-700/50 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-50 file:mr-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-blue-600 file:to-purple-600 file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-white file:cursor-pointer hover:file:from-blue-700 hover:file:to-purple-700 transition-all focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10"
-                        required
-                      />
-                    </div>
-                    <p className="text-xs text-zinc-500 mt-1">
-                      Select a CSV file exported from Google Meet
-                    </p>
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="pt-4 border-t border-zinc-800">
-                    <button
-                      type="submit"
-                      disabled={uploadingAttendance}
-                      className="w-full md:w-auto rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3.5 text-sm font-semibold text-white hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 flex items-center justify-center gap-2"
-                    >
-                      {uploadingAttendance ? (
-                        <>
-                          <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                          <span>Uploading Attendance...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>📤</span>
-                          <span>Upload Attendance</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-                  </div>
-                </div>
-              </div>
-
-              {/* Manual Attendance by Cohort */}
-              <div className="mt-6 rounded-2xl border-2 border-zinc-800 bg-zinc-900/60 p-6 shadow-xl">
-                <div className="mb-5">
-                  <h3 className="text-xl font-bold text-zinc-100">Manual Attendance by Cohort</h3>
-                  <p className="mt-1 text-sm text-zinc-400">
-                    Select a cohort, choose a session, then tick students who attended.
-                  </p>
-                </div>
-
-                {(() => {
-                  const activeSessions = allSessions.filter((session: any) => session.status !== 'cancelled');
-                  const cohortMap = new Map<string, { cohortId: string; cohortName: string; sessions: any[] }>();
-
-                  activeSessions.forEach((session: any) => {
-                    const cohortId = String(session.cohort_id || '');
-                    if (!cohortId) return;
-                    const cohortName =
-                      session.cohorts?.name ||
-                      cohorts.find((c) => c.id === cohortId)?.name ||
-                      `Cohort ${cohortId.slice(0, 8)}`;
-
-                    if (!cohortMap.has(cohortId)) {
-                      cohortMap.set(cohortId, { cohortId, cohortName, sessions: [] });
-                    }
-                    cohortMap.get(cohortId)!.sessions.push(session);
-                  });
-
-                  const cohortsWithSessions = Array.from(cohortMap.values()).sort((a, b) =>
-                    a.cohortName.localeCompare(b.cohortName)
-                  );
-
-                  if (cohortsWithSessions.length === 0) {
-                    return (
-                      <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-4 text-sm text-zinc-400">
-                        No cohorts with sessions available.
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div className="space-y-3">
-                      {cohortsWithSessions.map(({ cohortId, cohortName, sessions }) => {
-                        const isOpen = attendanceCohortAccordionOpen === cohortId;
-                        const sortedSessions = [...sessions].sort((a: any, b: any) => {
-                          const aNum = Number(a.session_number || 0);
-                          const bNum = Number(b.session_number || 0);
-                          if (aNum !== bNum) return aNum - bNum;
-                          const aDate = a.session_date ? new Date(a.session_date).getTime() : 0;
-                          const bDate = b.session_date ? new Date(b.session_date).getTime() : 0;
-                          return aDate - bDate;
-                        });
-
-                        return (
-                          <div key={cohortId} className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/30">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setAttendanceCohortAccordionOpen((prev) => (prev === cohortId ? null : cohortId));
-                                if (attendanceCohortId !== cohortId) {
-                                  setAttendanceCohortId(cohortId);
-                                  setAttendanceSessionId('');
-                                  setAttendanceStudents([]);
-                                }
-                              }}
-                              className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-zinc-800/40"
-                            >
-                              <div className="min-w-0">
-                                <p className="truncate text-sm font-semibold text-zinc-100">{cohortName}</p>
-                                <p className="mt-0.5 text-xs text-zinc-500">
-                                  {sortedSessions.length} session{sortedSessions.length === 1 ? '' : 's'}
-                                </p>
-                              </div>
-                              <ChevronDown
-                                className={`h-5 w-5 shrink-0 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                                aria-hidden
-                              />
-                            </button>
-
-                            {isOpen && (
-                              <div className="border-t border-zinc-800 bg-zinc-950/50 p-4">
-                                <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-end">
-                                  <div>
-                                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                                      Session
-                                    </label>
-                                    <select
-                                      value={attendanceCohortId === cohortId ? attendanceSessionId : ''}
-                                      onChange={(e) => {
-                                        setAttendanceCohortId(cohortId);
-                                        setAttendanceSessionId(e.target.value);
-                                      }}
-                                      className="w-full rounded-lg border border-zinc-700/60 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-cyan-500/50 focus:outline-none"
-                                    >
-                                      <option value="">Select session...</option>
-                                      {sortedSessions.map((session: any) => {
-                                        const dateLabel = session.session_date
-                                          ? new Date(session.session_date).toLocaleDateString('en-US', {
-                                              month: 'short',
-                                              day: 'numeric',
-                                              year: 'numeric',
-                                            })
-                                          : '';
-                                        const sessionLabel = `Session ${session.session_number || ''}${session.topic ? `: ${session.topic}` : ''}${dateLabel ? ` (${dateLabel})` : ''}`;
-                                        return (
-                                          <option key={session.id} value={String(session.id)}>
-                                            {sessionLabel}
-                                          </option>
-                                        );
-                                      })}
-                                    </select>
-                                  </div>
-
-                                  <button
-                                    type="button"
-                                    disabled={!attendanceSessionId || attendanceCohortId !== cohortId || attendanceStudents.length === 0}
-                                    onClick={() => {
-                                      if (attendanceCohortId !== cohortId) return;
-                                      setAttendanceStudents((prev) => prev.map((s) => ({ ...s, attended: true })));
-                                    }}
-                                    className="rounded-lg border border-green-600/40 bg-green-500/10 px-3 py-2 text-xs font-semibold text-green-300 transition hover:bg-green-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-                                  >
-                                    Tick all
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    disabled={!attendanceSessionId || attendanceCohortId !== cohortId || attendanceStudents.length === 0}
-                                    onClick={() => {
-                                      if (attendanceCohortId !== cohortId) return;
-                                      setAttendanceStudents((prev) => prev.map((s) => ({ ...s, attended: false })));
-                                    }}
-                                    className="rounded-lg border border-zinc-700 bg-zinc-800/60 px-3 py-2 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
-                                  >
-                                    Untick all
-                                  </button>
-                                </div>
-
-                                {attendanceCohortId === cohortId && attendanceSessionId ? (
-                                  loadingAttendanceStudents ? (
-                                    <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 text-sm text-zinc-400">
-                                      Loading students...
-                                    </div>
-                                  ) : attendanceStudents.length === 0 ? (
-                                    <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 text-sm text-zinc-400">
-                                      No students found for this cohort/session.
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <div className="mb-3 flex items-center justify-between text-xs text-zinc-400">
-                                        <span>{attendanceStudents.length} students</span>
-                                        <span>
-                                          Attended:{' '}
-                                          <strong className="text-zinc-200">
-                                            {attendanceStudents.filter((s) => s.attended).length}
-                                          </strong>
-                                        </span>
-                                      </div>
-                                      <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
-                                        {attendanceStudents.map((student) => (
-                                          <label
-                                            key={student.id}
-                                            className="flex cursor-pointer items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 transition hover:bg-zinc-800/60"
-                                          >
-                                            <div className="min-w-0">
-                                              <p className="truncate text-sm font-medium text-zinc-100">{student.name}</p>
-                                              <p className="truncate text-xs text-zinc-500">{student.email}</p>
-                                            </div>
-                                            <input
-                                              type="checkbox"
-                                              checked={student.attended}
-                                              onChange={(e) => {
-                                                const checked = e.target.checked;
-                                                setAttendanceStudents((prev) =>
-                                                  prev.map((s) =>
-                                                    s.id === student.id ? { ...s, attended: checked } : s
-                                                  )
-                                                );
-                                              }}
-                                              className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-cyan-400 focus:ring-cyan-500/40"
-                                            />
-                                          </label>
-                                        ))}
-                                      </div>
-
-                                      <div className="mt-4 flex justify-end">
-                                        <button
-                                          type="button"
-                                          onClick={saveManualAttendance}
-                                          disabled={savingManualAttendance}
-                                          className="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-5 py-2 text-sm font-semibold text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                                        >
-                                          {savingManualAttendance ? 'Saving...' : 'Save attendance'}
-                                        </button>
-                                      </div>
-                                    </>
-                                  )
-                                ) : (
-                                  <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 text-sm text-zinc-400">
-                                    Select a session to load students.
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* CSV Format Guide */}
-              <div className="mt-6 rounded-2xl border-2 border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-900/30 p-8 shadow-lg">
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-500/20 border-2 border-blue-500/30 flex items-center justify-center">
-                    <Info className="h-6 w-6" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-zinc-200 mb-2">CSV Format Requirements</h3>
-                    <p className="text-sm text-zinc-400">
-                      Your CSV file should include the following columns (column names are case-insensitive):
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/60 border-2 border-green-500/20 hover:border-green-500/40 transition">
-                    <span className="text-2xl">✓</span>
-                    <div>
-                      <span className="text-sm font-bold text-zinc-200">Email</span>
-                      <span className="text-xs text-red-400 ml-2 font-medium">(required)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/60 border-2 border-zinc-800/50 hover:border-zinc-700/50 transition">
-                    <User className="h-6 w-6" />
-                    <div>
-                      <span className="text-sm font-bold text-zinc-200">Name</span>
-                      <span className="text-xs text-zinc-500 ml-2">(optional)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/60 border-2 border-zinc-800/50 hover:border-zinc-700/50 transition">
-                    <Clock className="h-6 w-6" />
-                    <div>
-                      <span className="text-sm font-bold text-zinc-200">Join Time</span>
-                      <span className="text-xs text-zinc-500 ml-2">(optional)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/60 border-2 border-zinc-800/50 hover:border-zinc-700/50 transition">
-                    <Clock className="h-6 w-6" />
-                    <div>
-                      <span className="text-sm font-bold text-zinc-200">Leave Time</span>
-                      <span className="text-xs text-zinc-500 ml-2">(optional)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/60 border-2 border-zinc-800/50 hover:border-zinc-700/50 transition md:col-span-2">
-                    <span className="text-2xl">⏳</span>
-                    <div>
-                      <span className="text-sm font-bold text-zinc-200">Duration (minutes)</span>
-                      <span className="text-xs text-zinc-500 ml-2">(optional)</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-2 border-blue-500/20">
-                  <p className="text-sm text-blue-200 leading-relaxed">
-                    <span className="font-bold text-blue-300">💡 Tip:</span> The system will automatically match students by email address. 
-                    Make sure the email addresses in your CSV match the student emails in the database.
-                  </p>
-                </div>
-              </div>
-            </>
+            <AttendanceUploadManager
+              allSessions={allSessions}
+              liveClassEvents={liveClassEvents}
+              cohorts={cohorts}
+              attendanceRecordsCount={attendanceRecords.length}
+              onViewRecords={() => setActiveSubMenu('attendance-records')}
+              fetchWithAuth={fetchWithAuth}
+              onAttendanceUpdated={() => {
+                attendanceFetchedRef.current = false;
+                fetchAttendanceRecords();
+                fetchProgress();
+              }}
+            />
           )}
 
           {/* Attendance Records */}
