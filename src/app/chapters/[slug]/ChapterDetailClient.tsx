@@ -53,7 +53,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         title={`Chapter: ${titleFromSlug}`}
         subtitle="This chapter is part of the Pan-Africa Bitcoin Academy curriculum. Full content coming soon."
       >
-        <div className="space-y-8 text-sm text-zinc-100 sm:text-base">
+        <div className="space-y-6 sm:space-y-8 text-sm text-zinc-100 sm:text-base w-full min-w-0">
           <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-4 sm:p-5 shadow-inner">
             <h2 className="text-sm font-semibold text-zinc-100 sm:text-base">
               Chapter Content
@@ -101,7 +101,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
           </div>
         ) : (
         /* Hero */
-        <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-5 sm:p-6 shadow-inner">
+        <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-3.5 sm:p-6 shadow-inner w-full min-w-0">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.12em] text-cyan-300/90">
@@ -119,7 +119,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                 {chapter.hook}
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               {previousChapter ? (
                 <Link
                   href={`/chapters/${previousChapter.slug}`}
@@ -146,7 +146,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {chapter.slug === "blockchain-basics" ? <BlockchainBasicsHeroQuote /> : null}
 
         {!isWrapUpResources ? (
-        <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-5 sm:p-6 shadow-inner">
+        <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-3.5 sm:p-6 shadow-inner w-full min-w-0">
           <h2 className="text-base font-semibold text-zinc-100 sm:text-lg">
             What You Will Learn
           </h2>
@@ -161,7 +161,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {isWrapUpResources ? (
         <WrapUpResourcesContent />
         ) : (
-        <section className="relative space-y-4 rounded-xl border border-zinc-800/50 bg-zinc-950 p-5 sm:p-6 shadow-inner">
+        <section className="relative space-y-4 rounded-xl border border-zinc-800/50 bg-zinc-950 p-3 sm:p-6 shadow-inner w-full min-w-0 overflow-hidden">
           <ChapterTechVectors />
           <h2 className="relative text-base font-semibold text-zinc-100 sm:text-lg">
             Main Lesson Content
@@ -171,7 +171,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               const sectionId = `section-${sectionIdx}-${section.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
               const comparisonSection = chapter.slug === "the-birth-of-bitcoin" && (section.heading === "What Are Sats?" || section.heading === "ሳት እንታይ እዮም?") ? (
                 <ChapterSectionAnimated key="bitcoin-gold-fiat-comparison" sectionId="section-bitcoin-gold-fiat-comparison" sectionIdx={chapter.sections.length}>
-                  <div id="section-bitcoin-gold-fiat-comparison" className="chapter-section-inner scroll-mt-20 rounded-lg border border-zinc-800/60 bg-zinc-950 p-5 shadow-inner transition-shadow duration-300">
+                  <div id="section-bitcoin-gold-fiat-comparison" className="chapter-section-inner scroll-mt-20 rounded-lg border border-zinc-800/60 bg-zinc-950 p-3.5 sm:p-5 shadow-inner transition-shadow duration-300 w-full min-w-0 overflow-hidden">
                     <h3 className="text-lg font-bold text-zinc-100 sm:text-xl mb-3 pb-2 border-b border-zinc-800/50">
                       {isTi ? "ምውድዳር ቢትኮይን ኣንጻር ወርቂ ኣንጻር ፊያት/ገንዘብ" : "Bitcoin vs Gold vs Fiat/Cash Comparison"}
                     </h3>
@@ -188,45 +188,45 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       </p>
                     </div>
                     <div className="mt-6 overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
-                      <table className="w-full border-collapse text-sm">
+                      <table className="w-full min-w-[480px] border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ብቅዓት" : "Quality"}</th>
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ቢትኮይን" : "Bitcoin"}</th>
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ወርቂ" : "Gold"}</th>
-                            <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ፊያት / ጥረ ገንዘብ" : "Fiat / Cash"}</th>
+                            <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">{isTi ? "ብቅዓት" : "Quality"}</th>
+                            <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">{isTi ? "ቢትኮይን" : "Bitcoin"}</th>
+                            <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">{isTi ? "ወርቂ" : "Gold"}</th>
+                            <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">{isTi ? "ፊያት / ጥረ ገንዘብ" : "Fiat / Cash"}</th>
                           </tr>
                         </thead>
                         <tbody className="text-zinc-300">
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ዋሕዲ" : "Scarcity"}</td>
-                            <td className="px-4 py-3">{isTi ? "21 ሚልዮን ሳንቲም (ቀዋሚ ቀረብ)" : "21 Million coins (fixed Supply)"}</td>
-                            <td className="px-4 py-3">{isTi ? "ውሱን ግን ከኣ ሓድሽ ወርቂ ይርከብ።" : "Limited but new gold found"}</td>
-                            <td className="px-4 py-3">{isTi ? "ደረት ኣልቦ ቀረብ፡ ማእከላይ ባንክታት ዝያዳ ክሕትማ ይኽእላ እየን።" : "Unlimited supply, central banks can print more"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">{isTi ? "ዋሕዲ" : "Scarcity"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "21 ሚልዮን ሳንቲም (ቀዋሚ ቀረብ)" : "21 Million coins (fixed Supply)"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ውሱን ግን ከኣ ሓድሽ ወርቂ ይርከብ።" : "Limited but new gold found"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ደረት ኣልቦ ቀረብ፡ ማእከላይ ባንክታት ዝያዳ ክሕትማ ይኽእላ እየን።" : "Unlimited supply, central banks can print more"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ተንቀሳቓሲነት" : "Portability"}</td>
-                            <td className="px-4 py-3">{isTi ? "ዲጂታላዊ፡ ብተሌፎን ትጥቀመሉ" : "Digital, accessible on phone"}</td>
-                            <td className="px-4 py-3">{isTi ? "ከቢድ፡ ኣካላዊ ንብረት" : "Heavy, physical asset"}</td>
-                            <td className="px-4 py-3">{isTi ? "ኣካላዊ ሕሳብ/ሳንቲም ብብዝሒ ዶባት ንምንቅስቓስ ዝኸበደ እዩ" : "Physical bills/coins are harder to move large amounts across borders"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">{isTi ? "ተንቀሳቓሲነት" : "Portability"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ዲጂታላዊ፡ ብተሌፎን ትጥቀመሉ" : "Digital, accessible on phone"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ከቢድ፡ ኣካላዊ ንብረት" : "Heavy, physical asset"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ኣካላዊ ሕሳብ/ሳንቲም ብብዝሒ ዶባት ንምንቅስቓስ ዝኸበደ እዩ" : "Physical bills/coins are harder to move large amounts across borders"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ጽንዓት" : "Durability"}</td>
-                            <td className="px-4 py-3">{isTi ? "ዲጂታል፣ ምብስባስ ወይ ምቅዳድ የለን" : "Digital, no wear or tear"}</td>
-                            <td className="px-4 py-3">{isTi ? "ኣካላዊ ምስ ግዜ ክወርድ ይኽእል እዩ" : "Physical can degrade over time"}</td>
-                            <td className="px-4 py-3">{isTi ? "ኣካላዊ ጥረ ገንዘብ ክጉዳእ፡ ክጠፍእ ወይ ክዓኑን ይኽእል።" : "Physical cash can get damaged, lost, or destroyed"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">{isTi ? "ጽንዓት" : "Durability"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ዲጂታል፣ ምብስባስ ወይ ምቅዳድ የለን" : "Digital, no wear or tear"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ኣካላዊ ምስ ግዜ ክወርድ ይኽእል እዩ" : "Physical can degrade over time"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ኣካላዊ ጥረ ገንዘብ ክጉዳእ፡ ክጠፍእ ወይ ክዓኑን ይኽእል።" : "Physical cash can get damaged, lost, or destroyed"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ምክፍፋል" : "Divisibility"}</td>
-                            <td className="px-4 py-3">{isTi ? "ደቀቅቲ ምስግጋራት ይከኣል እዩ።" : "Fractional transactions possible"}</td>
-                            <td className="px-4 py-3">{isTi ? "ብዘይ ክሳራ ክትመቓቐል ከቢድ እዩ" : "Hard to divide without loss"}</td>
-                            <td className="px-4 py-3">{isTi ? "ውሱን ምክፍፋል (መብዛሕትኡ ግዜ ናብ ሳንቲም)" : "Limited divisibility (usually to cents)"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">{isTi ? "ምክፍፋል" : "Divisibility"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ደቀቅቲ ምስግጋራት ይከኣል እዩ።" : "Fractional transactions possible"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ብዘይ ክሳራ ክትመቓቐል ከቢድ እዩ" : "Hard to divide without loss"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ውሱን ምክፍፋል (መብዛሕትኡ ግዜ ናብ ሳንቲም)" : "Limited divisibility (usually to cents)"}</td>
                           </tr>
                           <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                            <td className="px-4 py-3 font-semibold text-cyan-200">{isTi ? "ተቐባልነት" : "Acceptance"}</td>
-                            <td className="px-4 py-3">{isTi ? "ብዓለም ደረጃ ብፍላይ ኣብ ኣፍሪቃ እናዓበየ ይኸይድ ኣሎ" : "Growing globally, especially in Africa"}</td>
-                            <td className="px-4 py-3">{isTi ? "ብታሪኽ ኣብ መላእ ዓለም ተቐባልነት ዘለዎ" : "Accepted worldwide historically"}</td>
-                            <td className="px-4 py-3">{isTi ? "ብመንግስታትን ትካላት ንግድን ሰባትን ብዓለምለኻዊ ደረጃ ተቐባልነት ዘለዎ" : "Universally accepted by governments, businesses, and people"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">{isTi ? "ተቐባልነት" : "Acceptance"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ብዓለም ደረጃ ብፍላይ ኣብ ኣፍሪቃ እናዓበየ ይኸይድ ኣሎ" : "Growing globally, especially in Africa"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ብታሪኽ ኣብ መላእ ዓለም ተቐባልነት ዘለዎ" : "Accepted worldwide historically"}</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">{isTi ? "ብመንግስታትን ትካላት ንግድን ሰባትን ብዓለምለኻዊ ደረጃ ተቐባልነት ዘለዎ" : "Universally accepted by governments, businesses, and people"}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -238,7 +238,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               <React.Fragment key={section.heading}>
                 {comparisonSection}
               <ChapterSectionAnimated sectionId={sectionId} sectionIdx={sectionIdx}>
-              <div id={sectionId} className="chapter-section-inner scroll-mt-20 rounded-lg border border-zinc-800/60 bg-zinc-950 p-5 shadow-inner transition-shadow duration-300">
+              <div id={sectionId} className="chapter-section-inner scroll-mt-20 rounded-lg border border-zinc-800/60 bg-zinc-950 p-3.5 sm:p-5 shadow-inner transition-shadow duration-300 w-full min-w-0 overflow-hidden">
                 <h3 className="text-lg font-bold text-zinc-100 sm:text-xl mb-3 pb-2 border-b border-zinc-800/50">
                   {section.heading}
                 </h3>
@@ -377,11 +377,11 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                     <div>
                       <h4 className="mb-4 text-base font-semibold text-cyan-200">{isTi ? "Sats → BTC ምቕያር ኣብነታት" : "Sats → BTC Conversion Examples"}</h4>
                       <div className="overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
-                        <table className="w-full border-collapse text-sm">
+                        <table className="w-full min-w-[480px] border-collapse text-sm">
                           <thead>
                             <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
-                              <th className="px-4 py-3 text-left font-semibold text-cyan-200">{isTi ? "ሳትስ (Sats)" : "Sats"}</th>
-                              <th className="px-4 py-3 text-left font-semibold text-cyan-200">BTC</th>
+                              <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">{isTi ? "ሳትስ (Sats)" : "Sats"}</th>
+                              <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">BTC</th>
                             </tr>
                           </thead>
                           <tbody className="text-zinc-300">
@@ -507,7 +507,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                     </div>
                   );
                 })}
-                {section.heading === "7.0 What Is a Block?" ? (
+                {(section.heading === "7.0 What Is a Block?" || section.heading.startsWith("7.0")) ? (
                   // Special rendering for live blockchain data
                   <div className="mt-6">
                     <LiveBlockchainData />
@@ -588,7 +588,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                   // Special rendering for halving periods table
                   <div className="mt-6">
                     <div className="overflow-x-auto rounded-lg border border-purple-400/25 bg-zinc-950/70">
-                      <table className="w-full border-collapse text-sm">
+                      <table className="w-full min-w-[480px] border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-purple-400/30 bg-purple-500/10">
                             <th className="px-4 py-3 text-left font-semibold text-purple-200">Period Start Date</th>
@@ -601,64 +601,64 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                         </thead>
                         <tbody className="text-zinc-300">
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">2009-01-03</td>
-                            <td className="px-4 py-3">2012-11-28</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2009-01-03</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2012-11-28</td>
                             <td className="px-4 py-3 font-mono text-xs">0 – 209,999</td>
                             <td className="px-4 py-3 font-mono">50.00000000</td>
                             <td className="px-4 py-3 font-mono">10,500,000.00000000</td>
                             <td className="px-4 py-3 font-mono">10,500,000.00000000</td>
                           </tr>
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">2012-11-28</td>
-                            <td className="px-4 py-3">2016-07-09</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2012-11-28</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2016-07-09</td>
                             <td className="px-4 py-3 font-mono text-xs">210,000 – 419,999</td>
                             <td className="px-4 py-3 font-mono">25.00000000</td>
                             <td className="px-4 py-3 font-mono">5,250,000.00000000</td>
                             <td className="px-4 py-3 font-mono">15,750,000.00000000</td>
                           </tr>
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">2016-07-09</td>
-                            <td className="px-4 py-3">2020-05-11</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2016-07-09</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2020-05-11</td>
                             <td className="px-4 py-3 font-mono text-xs">420,000 – 629,999</td>
                             <td className="px-4 py-3 font-mono">12.50000000</td>
                             <td className="px-4 py-3 font-mono">2,625,000.00000000</td>
                             <td className="px-4 py-3 font-mono">18,375,000.00000000</td>
                           </tr>
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">2020-05-11</td>
-                            <td className="px-4 py-3">2024-04-20</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2020-05-11</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2024-04-20</td>
                             <td className="px-4 py-3 font-mono text-xs">630,000 – 839,999</td>
                             <td className="px-4 py-3 font-mono">6.25000000</td>
                             <td className="px-4 py-3 font-mono">1,312,500.00000000</td>
                             <td className="px-4 py-3 font-mono">19,687,500.00000000</td>
                           </tr>
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">2024-04-20</td>
-                            <td className="px-4 py-3">~2028-03</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">2024-04-20</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">~2028-03</td>
                             <td className="px-4 py-3 font-mono text-xs">840,000 – 1,049,999</td>
                             <td className="px-4 py-3 font-mono">3.12500000</td>
                             <td className="px-4 py-3 font-mono">656,250.00000000</td>
                             <td className="px-4 py-3 font-mono">20,343,750.00000000</td>
                           </tr>
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">~2028-03</td>
-                            <td className="px-4 py-3">~2032-02</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">~2028-03</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">~2032-02</td>
                             <td className="px-4 py-3 font-mono text-xs">1,050,000 – 1,259,999</td>
                             <td className="px-4 py-3 font-mono">1.56250000</td>
                             <td className="px-4 py-3 font-mono">328,125.00000000</td>
                             <td className="px-4 py-3 font-mono">20,671,875.00000000</td>
                           </tr>
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">~2032-02</td>
-                            <td className="px-4 py-3">~2036-01</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">~2032-02</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">~2036-01</td>
                             <td className="px-4 py-3 font-mono text-xs">1,260,000 – 1,469,999</td>
                             <td className="px-4 py-3 font-mono">0.78125000</td>
                             <td className="px-4 py-3 font-mono">164,062.50000000</td>
                             <td className="px-4 py-3 font-mono">20,835,937.50000000</td>
                           </tr>
                           <tr className="border-b border-purple-400/10 hover:bg-purple-500/5">
-                            <td className="px-4 py-3">~2036-01</td>
-                            <td className="px-4 py-3">~2040-01</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">~2036-01</td>
+                            <td className="px-3 py-2.5 sm:px-4 sm:py-3">~2040-01</td>
                             <td className="px-4 py-3 font-mono text-xs">1,470,000 – 1,679,999</td>
                             <td className="px-4 py-3 font-mono">0.39062500</td>
                             <td className="px-4 py-3 font-mono">82,031.25000000</td>
@@ -802,139 +802,139 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                               : "Quality comparison: Bitcoin vs Gold vs Fiat / Cash"}
                           </h4>
                           <div className="overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
-                            <table className="w-full border-collapse text-sm">
+                            <table className="w-full min-w-[480px] border-collapse text-sm">
                               <thead>
                                 <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                  <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">
                                     {isTi ? "ብቅዓት" : "Quality"}
                                   </th>
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                  <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">
                                     {isTi ? "ቢትኮይን" : "Bitcoin"}
                                   </th>
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                  <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">
                                     {isTi ? "ወርቂ" : "Gold"}
                                   </th>
-                                  <th className="px-4 py-3 text-left font-semibold text-cyan-200">
+                                  <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">
                                     {isTi ? "ፊያት / ጥረ ገንዘብ" : "Fiat / Cash"}
                                   </th>
                                 </tr>
                               </thead>
                               <tbody className="text-zinc-300">
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">
                                     {isTi ? "ምርግጋጽ" : "Verifiability"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ትራንዛክሽን ኣብቲ ብሎክቸይን ብህዝቢ ክረጋገጽ ይከኣል"
                                       : "Transactions publicly verifiable on blockchain"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ኣካላዊ መርመራ የድሊ"
                                       : "Requires physical testing"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ኣብ ባንክታትን ፋይናንሳዊ ትካላትን ይምርኮስ"
                                       : "Depends on banks and financial institutions"}
                                   </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">
                                     {isTi ? "ዋሕዲ" : "Scarcity"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "21 ሚልዮን ሳንቲም (ቀዋሚ ቀረብ)"
                                       : "21 Million coins (fixed Supply)"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ውሱን ግን ከኣ ሓድሽ ወርቂ ይርከብ።"
                                       : "Limited but new gold found"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ደረት ኣልቦ ቀረብ፡ ማእከላይ ባንክታት ዝያዳ ክሕትማ ይኽእላ እየን።"
                                       : "Unlimited supply, central banks can print more"}
                                   </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">
                                     {isTi ? "ተንቀሳቓሲነት" : "Portability"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ዲጂታላዊ፡ ብተሌፎን ትጥቀመሉ"
                                       : "Digital, accessible on phone"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ከቢድ፡ ኣካላዊ ንብረት"
                                       : "Heavy, physical asset"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ኣካላዊ ሕሳብ/ሳንቲም ብብዝሒ ዶባት ንምንቅስቓስ ዝኸበደ እዩ"
                                       : "Physical bills/coins are harder to move large amounts across borders"}
                                   </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">
                                     {isTi ? "ጽንዓት" : "Durability"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ዲጂታል፣ ምብስባስ ወይ ምቅዳድ የለን"
                                       : "Digital, no wear or tear"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ኣካላዊ ምስ ግዜ ክወርድ ይኽእል እዩ"
                                       : "Physical can degrade over time"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ኣካላዊ ጥረ ገንዘብ ክጉዳእ፡ ክጠፍእ ወይ ክዓኑን ይኽእል።"
                                       : "Physical cash can get damaged, lost, or destroyed"}
                                   </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">
                                     {isTi ? "ምክፍፋል" : "Divisibility"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ደቀቅቲ ምስግጋራት ይከኣል እዩ።"
                                       : "Fractional transactions possible"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ብዘይ ክሳራ ክትመቓቐል ከቢድ እዩ"
                                       : "Hard to divide without loss"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ውሱን ምክፍፋል (መብዛሕትኡ ግዜ ናብ ሳንቲም)"
                                       : "Limited divisibility (usually to cents)"}
                                   </td>
                                 </tr>
                                 <tr className="border-b border-cyan-400/10 hover:bg-cyan-500/5">
-                                  <td className="px-4 py-3 font-semibold text-cyan-200">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-cyan-200">
                                     {isTi ? "ተቐባልነት" : "Acceptance"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ብዓለም ደረጃ ብፍላይ ኣብ ኣፍሪቃ እናዓበየ ይኸይድ ኣሎ"
                                       : "Growing globally, especially in Africa"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ብታሪኽ ኣብ መላእ ዓለም ተቐባልነት ዘለዎ"
                                       : "Accepted worldwide historically"}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-3 py-2.5 sm:px-4 sm:py-3">
                                     {isTi
                                       ? "ብመንግስታትን ትካላት ንግድን ሰባትን ብዓለምለኻዊ ደረጃ ተቐባልነት ዘለዎ"
                                       : "Universally accepted by governments, businesses, and people"}
@@ -1047,7 +1047,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       // 4.1 Cypherpunks: images at half size
                       <div className="mt-6 flex flex-col items-center space-y-4">
                         {section.images.map((image, idx) => (
-                          <div key={idx} className="flex flex-col items-center w-full max-w-[50%] min-w-0">
+                          <div key={idx} className="flex flex-col items-center w-full max-w-sm sm:max-w-[50%] min-w-0">
                             <ZoomableImage
                               src={image.src}
                               alt={image.alt}
@@ -1184,7 +1184,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {!isWrapUpResources ? (
         <>
         {/* Assignments */}
-        <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-5 sm:p-6 shadow-inner">
+        <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-3.5 sm:p-6 shadow-inner w-full min-w-0">
           <h2 className="text-base font-semibold text-zinc-100 sm:text-lg mb-4">
             {isTi ? "ዕዮ" : "Assignment"}
           </h2>
@@ -1303,7 +1303,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {!isWrapUpResources ? (
         <>
         {/* Summary */}
-        <section className="rounded-xl border border-green-400/25 bg-black/70 p-5 sm:p-6">
+        <section className="rounded-xl border border-green-400/25 bg-black/70 p-3.5 sm:p-6 w-full min-w-0">
           <h2 className="text-base font-semibold text-green-200 sm:text-lg">
             Summary / Key Takeaways
           </h2>
@@ -1315,7 +1315,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         </section>
 
         {/* Key terms */}
-        <section className="rounded-xl border border-cyan-400/20 bg-zinc-950/70 p-5 sm:p-6">
+        <section className="rounded-xl border border-cyan-400/20 bg-zinc-950/70 p-3.5 sm:p-6 w-full min-w-0">
           <h2 className="text-base font-semibold text-cyan-200 sm:text-lg">
             Key Terms
           </h2>
@@ -1360,7 +1360,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         ) : null}
 
         {/* Navigation CTA */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 w-full pt-2">
           {previousChapter ? (
             <Link
               href={`/chapters/${previousChapter.slug}`}

@@ -1,10 +1,16 @@
 "use client";
 
 import TextType from "@/components/TextType";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const BLOCKCHAIN_QUOTE_LINES = ["Don't trust, verify."];
+const BLOCKCHAIN_QUOTE_LINES_EN = ["Don't trust, verify."];
+const BLOCKCHAIN_QUOTE_LINES_TI = ["ኣይትእመን ኣረጋግጽ።"];
 
 export function BlockchainBasicsHeroQuote() {
+  const { language } = useLanguage();
+  const isTi = language === "ti";
+  const quoteLines = isTi ? BLOCKCHAIN_QUOTE_LINES_TI : BLOCKCHAIN_QUOTE_LINES_EN;
+
   return (
     <section
       className="relative overflow-hidden rounded-2xl border border-purple-400/40 bg-zinc-950/95 px-4 py-4 sm:px-8 sm:py-5"
@@ -12,7 +18,7 @@ export function BlockchainBasicsHeroQuote() {
         boxShadow:
           "0 0 48px rgba(168, 85, 247, 0.16), 0 0 100px rgba(34, 211, 238, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
       }}
-      aria-label='Quote: Do not trust, verify.'
+      aria-label={isTi ? 'Quote: "ኣይትእመን ኣረጋግጽ።"' : 'Quote: "Don\'t trust, verify."'}
     >
       <div
         className="pointer-events-none absolute -left-24 top-1/2 h-52 w-52 -translate-y-1/2 rounded-full bg-purple-500/20 blur-3xl bc-quote-glow-a"
@@ -40,7 +46,7 @@ export function BlockchainBasicsHeroQuote() {
 
         <div className="relative z-10 flex justify-center px-4 sm:px-10 md:px-14">
           <TextType
-            texts={BLOCKCHAIN_QUOTE_LINES}
+            texts={quoteLines}
             typingSpeed={75}
             pauseDuration={1800}
             deletingSpeed={50}
@@ -69,56 +75,38 @@ export function BlockchainBasicsHeroQuote() {
             transform: scale(1.08) translate(6px, -4px);
           }
         }
-        @keyframes bc-quote-shimmer-move {
+
+        @keyframes bc-quote-shimmer-pass {
           0% {
-            opacity: 0.35;
-            transform: translateX(-30%);
+            transform: translateX(-100%);
+            opacity: 0;
           }
           50% {
             opacity: 0.85;
-            transform: translateX(30%);
           }
           100% {
-            opacity: 0.35;
-            transform: translateX(-30%);
+            transform: translateX(100%);
+            opacity: 0;
           }
         }
-        @keyframes bc-quote-mark-pulse {
-          0%,
-          100% {
-            opacity: 0.55;
-            filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.4));
-          }
-          50% {
-            opacity: 0.9;
-            filter: drop-shadow(0 0 22px rgba(34, 211, 238, 0.45));
-          }
-        }
+
         .bc-quote-glow-a {
-          animation: bc-quote-glow-move 7s ease-in-out infinite;
+          animation: bc-quote-glow-move 8s ease-in-out infinite alternate;
         }
+
         .bc-quote-glow-b {
-          animation: bc-quote-glow-move 8.5s ease-in-out infinite;
-          animation-delay: 1.2s;
+          animation: bc-quote-glow-move 10s ease-in-out infinite alternate-reverse;
         }
+
         .bc-quote-shimmer {
-          animation: bc-quote-shimmer-move 10s ease-in-out infinite;
+          animation: bc-quote-shimmer-pass 6s ease-in-out infinite;
         }
-        .bc-quote-mark-left {
-          animation: bc-quote-mark-pulse 5s ease-in-out infinite;
-        }
-        .bc-quote-mark-right {
-          animation: bc-quote-mark-pulse 5.2s ease-in-out infinite;
-          animation-delay: 0.4s;
-        }
+
         @media (prefers-reduced-motion: reduce) {
           .bc-quote-glow-a,
           .bc-quote-glow-b,
-          .bc-quote-shimmer,
-          .bc-quote-mark-left,
-          .bc-quote-mark-right {
-            animation: none !important;
-            opacity: 0.65;
+          .bc-quote-shimmer {
+            animation: none;
           }
         }
       `}</style>

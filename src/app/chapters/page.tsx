@@ -323,7 +323,7 @@ export default function ChaptersPage() {
 
       {/* Main Content Layer */}
       <div className="relative z-10 w-full">
-        <div className="w-full px-4 py-12 sm:px-6 sm:py-16 sm:max-w-7xl sm:mx-auto lg:px-8 lg:py-20">
+        <div className="w-full px-2.5 py-8 sm:px-6 sm:py-16 sm:max-w-7xl sm:mx-auto lg:px-8 lg:py-20">
           {/* Hero Section */}
           <AnimatedSection animation="slideUp">
             <div className="mb-16 text-center">
@@ -372,7 +372,7 @@ export default function ChaptersPage() {
 
           {/* Learning Path Progress Bar */}
           <AnimatedSection animation="slideRight">
-            <div className="mb-16 rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
+            <div className="mb-16 rounded-xl border border-cyan-400/25 bg-black/80 p-3.5 sm:p-6 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
             <AnimatedHeading as="h2" className="mb-6 text-center text-xl font-semibold text-cyan-200">
               {t.progress_bar.heading}
             </AnimatedHeading>
@@ -1049,7 +1049,7 @@ export default function ChaptersPage() {
                   {levelChapters.map((chapter) => (
                     <div
                       key={chapter.id}
-                      className="group relative rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+                      className="group relative rounded-xl border border-cyan-400/25 bg-black/80 p-4 sm:p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
                     >
                       {/* Chapter Header */}
                       <div className="mb-4 flex items-start justify-between">

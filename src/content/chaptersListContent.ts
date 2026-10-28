@@ -128,6 +128,18 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ትራንዛክሽን ተራ-ምጽዋት", "ዕማም: ናይ ትራንዛክሽን ሲሙሌሽን"],
     quiz: "ሕቶታት ብዛዕባ መፍትሕን ትራንዛክሽንን",
   },
+  7: {
+    title: "መሰረታዊ ብሎክቸይን",
+    learnPoints: [
+      "ብሎክ፡ ሃሽ፡ ሰንሰለት።",
+      "ዘይምልዋጥን ምትዕንቓፍን-መርትዖ",
+      "ተራ ዕደናውያንን መርትዖ ስራሕን።",
+    ],
+    activities: ["ናይ ወረቐት ብሎክቸይን ምህናጽ (ናይ ሃሽ-መላግቦ መርኣያ)"],
+    theory: ["ናይ ብሎክ ቅርጺ", "ስለምንታይ ሃሽ ኣገዳሲ ምዃኑ", "ዘይቅየር ታሪኽ"],
+    practice: ["መስተጋብራዊ ብሎክቸይን ዲሞ", "ዕማም፡ ሓደ ብሎክ ምርዳእ"],
+    quiz: "ሕቶታት ብዛዕባ መሰረታዊ ብሎክቸይን",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
