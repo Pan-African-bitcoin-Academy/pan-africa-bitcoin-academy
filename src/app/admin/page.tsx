@@ -827,6 +827,8 @@ export default function AdminDashboardPage() {
   const [examRetakeRequests, setExamRetakeRequests] = useState<any[]>([]);
   const [loadingExamAccess, setLoadingExamAccess] = useState(false);
   const [resolvingRetakeRequestId, setResolvingRetakeRequestId] = useState<string | null>(null);
+  const [grantingExamAccessId, setGrantingExamAccessId] = useState<string | null>(null);
+  const [revokingExamAccessId, setRevokingExamAccessId] = useState<string | null>(null);
   const [examSubmissionDetailModal, setExamSubmissionDetailModal] = useState<{
     studentId: string;
     studentName: string | null;
@@ -3773,36 +3775,55 @@ export default function AdminDashboardPage() {
 
   const grantExamAccess = async (studentId: string) => {
     try {
+      setGrantingExamAccessId(studentId);
       const res = await fetchWithAuth('/api/admin/exam/grant-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId, adminId: admin?.email }),
+        body: JSON.stringify({ studentId, adminEmail: admin?.email }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to grant access');
-      alert(data.message || 'Exam access granted');
+      if (!res.ok) throw new Error(data.error || data.details || 'Failed to grant access');
+      setAckPopup({
+        title: 'Exam Access Granted',
+        message: data.message || 'Exam access granted successfully.',
+      });
       await fetchExamAccess();
     } catch (err: any) {
-      alert(err.message || 'Failed to grant exam access');
+      setAckPopup({
+        title: 'Failed to Grant Exam Access',
+        message: err.message || 'An error occurred while granting exam access.',
+      });
+    } finally {
+      setGrantingExamAccessId(null);
     }
   };
 
   const revokeExamAccess = (studentId: string) => {
     setConfirmPopup({
       title: 'Revoke exam access',
-      message: 'Are you sure you want to revoke exam access?',
+      message: 'Are you sure you want to revoke exam access for this student?',
       confirmLabel: 'Revoke',
       variant: 'danger',
       onConfirm: async () => {
-        const res = await fetchWithAuth('/api/admin/exam/revoke-access', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ studentId }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to revoke access');
-        setAckPopup({ title: 'Success', message: data.message || 'Exam access revoked.' });
-        await fetchExamAccess();
+        try {
+          setRevokingExamAccessId(studentId);
+          const res = await fetchWithAuth('/api/admin/exam/revoke-access', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ studentId }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || data.details || 'Failed to revoke access');
+          setAckPopup({ title: 'Success', message: data.message || 'Exam access revoked.' });
+          await fetchExamAccess();
+        } catch (err: any) {
+          setAckPopup({
+            title: 'Failed to Revoke Exam Access',
+            message: err.message || 'An error occurred while revoking exam access.',
+          });
+        } finally {
+          setRevokingExamAccessId(null);
+        }
       },
     });
   };
@@ -8425,18 +8446,20 @@ export default function AdminDashboardPage() {
                                   s.hasExamAccess ? (
                                     <button
                                       type="button"
+                                      disabled={revokingExamAccessId === s.id}
                                       onClick={() => revokeExamAccess(s.id)}
-                                      className="text-xs font-semibold text-amber-400 hover:text-amber-300"
+                                      className="text-xs font-semibold text-amber-400 hover:text-amber-300 disabled:opacity-50"
                                     >
-                                      Revoke access
+                                      {revokingExamAccessId === s.id ? 'Revoking...' : 'Revoke access'}
                                     </button>
                                   ) : (
                                     <button
                                       type="button"
+                                      disabled={grantingExamAccessId === s.id}
                                       onClick={() => grantExamAccess(s.id)}
-                                      className="text-xs font-semibold text-cyan-400 hover:text-cyan-300"
+                                      className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 disabled:opacity-50"
                                     >
-                                      Grant access
+                                      {grantingExamAccessId === s.id ? 'Granting...' : 'Grant access'}
                                     </button>
                                   )
                                 ) : (

@@ -1,21 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireAdmin } from '@/lib/adminSession';
+import { validateUUID } from '@/lib/security-utils';
 
 /**
  * Admin endpoint to grant exam access to a student
  */
 export async function POST(req: NextRequest) {
   try {
-    const { studentId, adminId } = await req.json();
+    const session = requireAdmin(req);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!studentId) {
+    const body = await req.json().catch(() => ({}));
+    const { studentId, adminId, adminEmail } = body;
+
+    if (!studentId || !validateUUID(studentId)) {
       return NextResponse.json(
-        { error: 'Student ID is required' },
+        { error: 'Valid student ID is required' },
         { status: 400 }
       );
     }
 
-    // Check if student exists
+    // Check if student exists in profiles
     const { data: student, error: studentError } = await supabaseAdmin
       .from('profiles')
       .select('id, email, name')
@@ -30,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if access already granted
-    const { data: existingAccess, error: checkError } = await supabaseAdmin
+    const { data: existingAccess } = await supabaseAdmin
       .from('exam_access')
       .select('id')
       .eq('student_id', studentId)
@@ -39,9 +47,39 @@ export async function POST(req: NextRequest) {
     if (existingAccess) {
       return NextResponse.json({
         success: true,
-        message: 'Exam access already granted',
+        message: `Exam access is already granted for ${student.name || student.email}`,
         alreadyGranted: true,
       });
+    }
+
+    // Determine granted_by (must be a valid UUID existing in profiles.id, or null to satisfy FK constraint)
+    let grantedByProfileId: string | null = null;
+
+    if (adminId && typeof adminId === 'string' && validateUUID(adminId)) {
+      const { data: prof } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('id', adminId)
+        .maybeSingle();
+      if (prof?.id) {
+        grantedByProfileId = prof.id;
+      }
+    }
+
+    const emailToLookup =
+      session.email ||
+      adminEmail ||
+      (typeof adminId === 'string' && adminId.includes('@') ? adminId : null);
+
+    if (!grantedByProfileId && emailToLookup) {
+      const { data: prof } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', emailToLookup.toLowerCase().trim())
+        .maybeSingle();
+      if (prof?.id) {
+        grantedByProfileId = prof.id;
+      }
     }
 
     // Grant access
@@ -49,7 +87,7 @@ export async function POST(req: NextRequest) {
       .from('exam_access')
       .insert({
         student_id: studentId,
-        granted_by: adminId || null,
+        granted_by: grantedByProfileId,
       })
       .select()
       .single();
@@ -62,6 +100,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Reset timer on profile so the student has an active exam window
+    await supabaseAdmin
+      .from('profiles')
+      .update({ exam_timer_reset_at: new Date().toISOString() })
+      .eq('id', studentId);
+
     return NextResponse.json({
       success: true,
       message: `Exam access granted to ${student.name || student.email}`,
@@ -72,7 +116,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: 'Failed to grant exam access',
-        details: error.message,
+        details: error?.message || 'Internal server error',
       },
       { status: 500 }
     );

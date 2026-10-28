@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireAdmin } from '@/lib/adminSession';
 
 /**
  * Admin endpoint to get list of students with exam access status
  */
 export async function GET(req: NextRequest) {
   try {
+    const session = requireAdmin(req);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // Get all students with their exam access status
     const { data: students, error: studentsError } = await supabaseAdmin
       .from('profiles')
@@ -31,17 +37,17 @@ export async function GET(req: NextRequest) {
     }
 
     // Get exam access records
-    const { data: examAccess, error: accessError } = await supabaseAdmin
+    const { data: examAccess } = await supabaseAdmin
       .from('exam_access')
       .select('student_id, granted_at, granted_by');
 
     // Get exam results
-    const { data: examResults, error: resultsError } = await supabaseAdmin
+    const { data: examResults } = await supabaseAdmin
       .from('exam_results')
       .select('student_id, score, submitted_at, total_questions');
 
     // Get chapter 21 completion status
-    const { data: chapter21Progress, error: chapterError } = await supabaseAdmin
+    const { data: chapter21Progress } = await supabaseAdmin
       .from('chapter_progress')
       .select('student_id, is_completed')
       .eq('chapter_number', 21);
