@@ -20,6 +20,9 @@ import {
   Info,
   ChevronDown,
   Filter,
+  GraduationCap,
+  ArrowUpRight,
+  ClipboardList,
 } from 'lucide-react';
 
 interface Cohort {
@@ -32,6 +35,8 @@ interface AttendanceUploadManagerProps {
   allSessions: any[];
   liveClassEvents: any[];
   cohorts: Cohort[];
+  attendanceRecordsCount?: number;
+  onViewRecords?: () => void;
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>;
   onAttendanceUpdated: () => void;
 }
@@ -47,6 +52,8 @@ export function AttendanceUploadManager({
   allSessions,
   liveClassEvents,
   cohorts,
+  attendanceRecordsCount = 0,
+  onViewRecords,
   fetchWithAuth,
   onAttendanceUpdated,
 }: AttendanceUploadManagerProps) {
@@ -416,6 +423,23 @@ export function AttendanceUploadManager({
     );
   }, [rosterStudents, rosterSearch]);
 
+  // Session completion stats
+  const completedSessionsCount = useMemo(() => {
+    const now = new Date();
+    return activeSessions.filter((s: any) => {
+      if (s.status === 'completed') return true;
+      if (s.session_date) {
+        const d = new Date(s.session_date);
+        return !isNaN(d.getTime()) && d < now;
+      }
+      return false;
+    }).length;
+  }, [activeSessions]);
+
+  const upcomingSessionsCount = useMemo(() => {
+    return Math.max(0, activeSessions.length - completedSessionsCount);
+  }, [activeSessions, completedSessionsCount]);
+
   // Attendance stats for manual mode
   const rosterStats = useMemo(() => {
     const total = rosterStudents.length;
@@ -427,26 +451,156 @@ export function AttendanceUploadManager({
 
   return (
     <div className="w-full space-y-6">
+      {/* Executive Attendance Header & KPI Metric Strip (occupies former empty space) */}
+      <div className="space-y-4">
+        {/* Top Breadcrumb & Executive Title Bar */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <nav className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+              <span className="text-zinc-500">Dashboard</span>
+              <span className="text-zinc-600">›</span>
+              <span className="text-zinc-400">Attendance</span>
+              <span className="text-zinc-600">›</span>
+              <span className="text-cyan-400 font-semibold">Upload Attendance</span>
+            </nav>
+            <div className="flex items-center gap-3 pt-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-50">
+                Attendance Management
+              </h1>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live Tracking
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl">
+              Track student engagement across cohorts, process Google Meet CSV exports, or take live session roll call.
+            </p>
+          </div>
+
+          {/* Quick Action Navigation Buttons */}
+          <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
+            {onViewRecords && (
+              <button
+                type="button"
+                onClick={onViewRecords}
+                className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-2 text-xs font-semibold text-zinc-200 hover:border-zinc-700 hover:bg-zinc-800 transition shadow-sm"
+              >
+                <ClipboardList className="h-4 w-4 text-cyan-400" />
+                <span>Attendance Records</span>
+                {attendanceRecordsCount > 0 && (
+                  <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
+                    {attendanceRecordsCount}
+                  </span>
+                )}
+                <ArrowUpRight className="h-3.5 w-3.5 text-zinc-500" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleDownloadSampleCsv}
+              className="flex items-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 transition shadow-sm"
+              title="Download pre-formatted Google Meet CSV template"
+            >
+              <Download className="h-4 w-4" />
+              <span>Sample CSV</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 4-KPI Metric Stat Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {/* Card 1: Active Cohorts */}
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/50 p-4 sm:p-5 backdrop-blur-sm hover:border-zinc-700/80 transition shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Active Cohorts
+              </span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-purple-500/30 bg-purple-500/10 text-purple-400">
+                <GraduationCap className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-extrabold text-zinc-50">
+                {cohorts.length}
+              </span>
+              <span className="text-xs text-zinc-500">enrolled</span>
+            </div>
+            <p className="mt-1 text-xs text-zinc-400 truncate">
+              {cohorts.map((c) => c.name).slice(0, 2).join(', ') || 'No cohorts registered'}
+              {cohorts.length > 2 ? ` +${cohorts.length - 2} more` : ''}
+            </p>
+          </div>
+
+          {/* Card 2: Cohort Sessions */}
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/50 p-4 sm:p-5 backdrop-blur-sm hover:border-zinc-700/80 transition shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Cohort Sessions
+              </span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+                <Calendar className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-extrabold text-zinc-50">
+                {activeSessions.length}
+              </span>
+              <span className="text-xs text-cyan-400 font-medium">sessions</span>
+            </div>
+            <p className="mt-1 text-xs text-zinc-400">
+              {completedSessionsCount} completed • {upcomingSessionsCount} scheduled
+            </p>
+          </div>
+
+          {/* Card 3: Logged Records */}
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/50 p-4 sm:p-5 backdrop-blur-sm hover:border-zinc-700/80 transition shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Logged Records
+              </span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-extrabold text-zinc-50">
+                {attendanceRecordsCount}
+              </span>
+              <span className="text-xs text-emerald-400 font-medium">logs</span>
+            </div>
+            <p className="mt-1 text-xs text-zinc-400">
+              Audited Google Meet & roll records
+            </p>
+          </div>
+
+          {/* Card 4: Academy Events */}
+          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/50 p-4 sm:p-5 backdrop-blur-sm hover:border-zinc-700/80 transition shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Academy Events
+              </span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400">
+                <Sparkles className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-extrabold text-zinc-50">
+                {liveClassEvents.length}
+              </span>
+              <span className="text-xs text-amber-400 font-medium">events</span>
+            </div>
+            <p className="mt-1 text-xs text-zinc-400">
+              Live classes, workshops & quizzes
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Top Banner & Mode Switcher */}
       <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-zinc-900/90 via-zinc-900/50 to-zinc-950 p-6 md:p-8 shadow-2xl backdrop-blur-xl">
         {/* Glow ambient background */}
         <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
-
-        {/* Merged Breadcrumb & Context Header */}
-        <div className="relative z-10 mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-4">
-          <nav className="flex items-center gap-2 text-xs font-medium text-zinc-400">
-            <span className="text-zinc-500">Dashboard</span>
-            <span className="text-zinc-600">›</span>
-            <span className="text-zinc-400">Attendance</span>
-            <span className="text-zinc-600">›</span>
-            <span className="text-cyan-400 font-semibold">Upload Attendance</span>
-          </nav>
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-cyan-400"></span>
-            <span>Attendance Administration</span>
-          </div>
-        </div>
 
         <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-4">

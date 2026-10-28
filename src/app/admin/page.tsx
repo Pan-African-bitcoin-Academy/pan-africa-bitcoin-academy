@@ -10946,6 +10946,8 @@ export default function AdminDashboardPage() {
               allSessions={allSessions}
               liveClassEvents={liveClassEvents}
               cohorts={cohorts}
+              attendanceRecordsCount={attendanceRecords.length}
+              onViewRecords={() => setActiveSubMenu('attendance-records')}
               fetchWithAuth={fetchWithAuth}
               onAttendanceUpdated={() => {
                 attendanceFetchedRef.current = false;
