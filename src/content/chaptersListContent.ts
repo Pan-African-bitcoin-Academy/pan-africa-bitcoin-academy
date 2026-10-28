@@ -140,6 +140,19 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["መስተጋብራዊ ብሎክቸይን ዲሞ", "ዕማም፡ ሓደ ብሎክ ምርዳእ"],
     quiz: "ሕቶታት ብዛዕባ መሰረታዊ ብሎክቸይን",
   },
+  8: {
+    title: "ሶፍትዌር ዋለተ & ኤክስቸንጅ",
+    learnPoints: [
+      "ምልውዋጥ ብኸመይ ይሰርሕን ስለምንታይ ተውጽኦን",
+      "ሶፍትዌር ዋለተ ፈጢርካ ነቲ ሲድ ዓቅብ",
+      "ቀዳማይ ትራንዛክሽን ምልኣኽ/ምቕባል፤ መሰረታዊ ነገራት ክፍሊት",
+      "ጀመርቲ ብሕትውና: ኣድራሻ ዳግመ-ምጥቃም, VPN, local-first",
+    ],
+    activities: ["ቴስትኔት መገሻ — ዘይሓቀኛ ሳትስ 'ግዛእ' → ናብ ናይ ክፍሊ ፖርተፊልዮታት ስደድ"],
+    theory: ["ሓፈሻዊ ትሕዝቶ ምልውዋጥ", "መሰረታት ፖርተፊልዮ", "መሰረታት ብሕትውና"],
+    practice: ["ፖርተፊልዮ ምፍጣር", "ናይ ቴስትኔት ትራንዛክሽን", "ንጥፈት: ቴስትኔት መገሻ"],
+    quiz: "ሕቶታት ብዛዕባ ፖርተፊልዮታትን ምልውዋጥን",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {

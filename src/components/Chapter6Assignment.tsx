@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/hooks/useSession';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   clientAwaitingInstructorReview,
   clientAutoGradedCanPractice,
@@ -57,6 +58,8 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
   const { profile, isAuthenticated, loading: authLoading, sessionEmail } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
   const studentEmail = profile?.email || sessionEmail || null;
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   
   // Part A (formerly Part B) - Address Validation
   const [validationOnChain, setValidationOnChain] = useState('');
@@ -225,7 +228,7 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
   if (!isAuthenticated && !isAdminAuth) {
     return (
       <div className="rounded-lg border border-zinc-800/60 bg-zinc-900/50 p-5">
-        <p className="text-zinc-400">Please log in to view and complete this assignment.</p>
+        <p className="text-zinc-400">{isTi ? "ነዚ ዕዮ ንምርኣይን ንምዝዛምን በጃኹም እተዉ።" : "Please log in to view and complete this assignment."}</p>
       </div>
     );
   }
@@ -233,8 +236,8 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
   return (
     <div className="rounded-lg border border-zinc-800/60 bg-zinc-950 p-5 shadow-inner space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-zinc-100 mb-2">Assignment: Create & Validate Bitcoin Addresses</h3>
-        <p className="text-sm text-zinc-400 mb-4">Deliverable: Valid addresses + reflection | Reward: TBD (after instructor review)</p>
+        <h3 className="text-lg font-semibold text-zinc-100 mb-2">{isTi ? "ዕዮ፡ ናይ ቢትኮይን ኣድራሻታት ምፍጣርን ምርግጋጽን" : "Assignment: Create & Validate Bitcoin Addresses"}</h3>
+        <p className="text-sm text-zinc-400 mb-4">{isTi ? "ዝቐርብ፡ ቅኑዓት ኣድራሻታት + ሓሳባት | ዓስቢ፡ ብመምህር ድሕሪ ምግምጋም ዝውሰን" : "Deliverable: Valid addresses + reflection | Reward: TBD (after instructor review)"}</p>
       </div>
 
       {submitted && submissionStatus && (
@@ -290,7 +293,7 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
                 }}
                 className="text-sm text-cyan-400 hover:text-cyan-300 underline px-2 py-1 min-h-[32px] touch-target"
               >
-                Resubmit Assignment
+                {isTi ? "ዕዮ ዳግማይ ኣእቱ" : "Resubmit Assignment"}
               </button>
             )}
             {clientAutoGradedCanPractice(submissionStatus, phaseHint) && (
@@ -299,7 +302,7 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
                 onClick={() => setPracticeMode(true)}
                 className="rounded-lg border border-green-500/40 bg-green-500/10 px-3 py-1.5 text-sm font-medium text-green-200"
               >
-                Practice again
+                {isTi ? "ዳግማይ ተላመድ" : "Practice again"}
               </button>
             )}
           </div>
@@ -310,12 +313,12 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Part A - Address Validation */}
           <div className="space-y-4 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-            <h4 className="text-base font-semibold text-zinc-200">Part A — Address Validation</h4>
-            <p className="text-sm text-zinc-400">Paste valid addresses in each field. Addresses will be validated when you submit.</p>
+            <h4 className="text-base font-semibold text-zinc-200">{isTi ? "ክፋል ሀ — ምርግጋጽ ኣድራሻ" : "Part A — Address Validation"}</h4>
+            <p className="text-sm text-zinc-400">{isTi ? "ኣብ ነፍሲ ወከፍ ዓውዲ ቅኑዓት ኣድራሻታት ለጥፉ። ኣድራሻታት ኣብ እትሰድድሉ እዋን ይረጋገጹ።" : "Paste valid addresses in each field. Addresses will be validated when you submit."}</p>
             
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Input 1: On-chain address field
+                {isTi ? "እታው 1: ናይ ኦን-ቸይን (On-chain) ኣድራሻ ዓውዲ" : "Input 1: On-chain address field"}
               </label>
               <textarea
                 value={validationOnChain}
@@ -332,20 +335,20 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
                     ? 'border-green-500/50 bg-green-900/20 focus:border-green-500 focus:ring-green-500/20'
                     : 'border-zinc-700 bg-zinc-900 focus:border-cyan-500/50 focus:ring-cyan-500/20'
                 }`}
-                placeholder="Paste a valid Bitcoin on-chain address (starts with 1, 3, or bc1)"
+                placeholder={isTi ? "ቅኑዕ ናይ ቢትኮይን ኦን-ቸይን ኣድራሻ ለጥፍ (ብ 1, 3, ወይ bc1 ዝጅምር)" : "Paste a valid Bitcoin on-chain address (starts with 1, 3, or bc1)"}
                 required
               />
               {onChainError && (
                 <p className="mt-1 text-xs text-red-400">{onChainError}</p>
               )}
               {validationOnChain.trim() && !onChainError && isValidBitcoinAddress(validationOnChain) && (
-                <p className="mt-1 text-xs text-green-400">✓ Valid Bitcoin address</p>
+                <p className="mt-1 text-xs text-green-400">{isTi ? "✓ ቅኑዕ ናይ ቢትኮይን ኣድራሻ" : "✓ Valid Bitcoin address"}</p>
               )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Input 2: Lightning address / invoice field
+                {isTi ? "እታው 2: ናይ ላይትኒንግ ኣድራሻ / ኢንቮይስ ዓውዲ" : "Input 2: Lightning address / invoice field"}
               </label>
               <textarea
                 value={validationLightning}
@@ -362,14 +365,14 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
                     ? 'border-green-500/50 bg-green-900/20 focus:border-green-500 focus:ring-green-500/20'
                     : 'border-zinc-700 bg-zinc-900 focus:border-cyan-500/50 focus:ring-cyan-500/20'
                 }`}
-                placeholder="Paste a valid Lightning invoice (lnbc...) or Lightning address (user@domain.com)"
+                placeholder={isTi ? "ቅኑዕ ናይ ላይትኒንግ ኢንቮይስ (lnbc...) ወይ ላይትኒንግ ኣድራሻ (user@domain.com) ለጥፍ" : "Paste a valid Lightning invoice (lnbc...) or Lightning address (user@domain.com)"}
                 required
               />
               {lightningError && (
                 <p className="mt-1 text-xs text-red-400">{lightningError}</p>
               )}
               {validationLightning.trim() && !lightningError && isValidLightningInvoice(validationLightning) && (
-                <p className="mt-1 text-xs text-green-400">✓ Valid Lightning invoice/address</p>
+                <p className="mt-1 text-xs text-green-400">{isTi ? "✓ ቅኑዕ ናይ ላይትኒንግ ኢንቮይስ/ኣድራሻ" : "✓ Valid Lightning invoice/address"}</p>
               )}
             </div>
           </div>
@@ -384,7 +387,7 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
               onChange={(e) => setReflection(e.target.value)}
               rows={4}
               className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition resize-none"
-              placeholder="Write your reflection (optional)..."
+              placeholder={isTi ? "ሓሳባትካ ጽሓፍ (ኣማራጺ)..." : "Write your reflection (optional)..."}
             />
           </div>
 
@@ -399,7 +402,7 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
             disabled={submitting}
             className="w-full rounded-lg bg-gradient-to-r from-cyan-500 to-orange-500 px-6 py-3 min-h-[48px] font-semibold text-black transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
           >
-            {submitting ? 'Submitting...' : 'Submit Assignment'}
+            {submitting ? (isTi ? 'ይለኣኽ ኣሎ...' : 'Submitting...') : (isTi ? 'ዕዮ ኣእቱ' : 'Submit Assignment')}
           </button>
         </form>
       )}
