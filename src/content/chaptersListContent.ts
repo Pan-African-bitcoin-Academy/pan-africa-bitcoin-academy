@@ -216,6 +216,21 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     LiveSession: "ዓዳንቲ ተገሊጹ",
   },
 
+  14: {
+    title: "ምዕራፍ 14 · ዕደና ቢትኮይን",
+    learnPoints: [
+      "ናይ ክብደት ምትዕርራይ መካኒክስ",
+      "ናይ ዕደና ፑል፣ ናይ ክፍሊት መደባት፣ ናይ ሳንሱር ሓደጋ",
+      "ናይ ጸጥታ ባጀት፡ ድጎማ ኣንጻር ክፍሊት",
+      "ASIC ቀረብ ሰንሰለትን ጂኦፖለቲካዊ ሓደጋታትን",
+    ],
+    theory: ["ምትዕርራይ ክብደት", "ናይ ዕደና ፑል", "ናይ ጸጥታ ባጀት", "ASIC ሰንሰለት ቀረብ"],
+    practice: ["ናይ ዕደናዊ ፑል ዝርዝር ትንታነ"],
+    activities: ["ናይ ዕደና ቁጠባ ትንታነ ዕዮ"],
+    quiz: "ሕቶታት ዝምልከቱ ዕደና ቢትኮይን",
+    LiveSession: "ናይ ዕደና ቁጠባ ተገሊጹ",
+  },
+
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
