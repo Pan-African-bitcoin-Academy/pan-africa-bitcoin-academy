@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Languages } from "lucide-react";
+import { ArrowLeftRight, ChevronDown } from "lucide-react";
 import { useLanguage, type SiteLanguage } from "@/contexts/LanguageContext";
 
 const OPTIONS: { value: SiteLanguage; short: string; label: string }[] = [
@@ -21,6 +21,8 @@ export function LanguageSwitcher({
 }: LanguageSwitcherProps) {
   const { language, setLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const translatingRef = useRef<ReturnType<typeof setTimeout>>();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,7 +35,21 @@ export function LanguageSwitcher({
     return () => document.removeEventListener("mousedown", handle);
   }, []);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => clearTimeout(translatingRef.current);
+  }, []);
+
   const current = OPTIONS.find((o) => o.value === language) ?? OPTIONS[0];
+
+  const handleLanguageSelect = (lang: SiteLanguage) => {
+    setOpen(false);
+    if (lang === language) return;
+    setIsTranslating(true);
+    setLanguage(lang);
+    clearTimeout(translatingRef.current);
+    translatingRef.current = setTimeout(() => setIsTranslating(false), 500);
+  };
 
   return (
     <div className={`relative ${className}`} ref={ref}>
@@ -44,15 +60,24 @@ export function LanguageSwitcher({
           compact
             ? "gap-1.5 border-cyan-400/25 bg-cyan-400/5 px-2.5 py-2 text-sm"
             : "gap-1 border-cyan-400/20 bg-transparent px-2 py-1.5 text-sm leading-none"
-        }`}
+        } ${isTranslating ? "border-cyan-400/50 bg-cyan-400/10" : ""}`}
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label="Select language"
       >
-        <Languages
-          className={`shrink-0 text-cyan-300/90 ${compact ? "h-5 w-5" : "h-3.5 w-3.5"}`}
+        {/* Animated icon: spins during language switch */}
+        <ArrowLeftRight
+          className={`shrink-0 text-cyan-300/90 ${compact ? "h-5 w-5" : "h-3.5 w-3.5"} ${
+            isTranslating ? "lang-switching-icon" : ""
+          }`}
         />
-        <span className="font-medium tabular-nums">{current.short}</span>
+        {/* Label fades in when language changes (key re-mounts the span) */}
+        <span
+          key={language}
+          className={`font-medium tabular-nums lang-label-enter`}
+        >
+          {current.short}
+        </span>
         <ChevronDown
           className={`shrink-0 text-zinc-400 transition ${open ? "rotate-180" : ""} ${compact ? "h-4 w-4" : "h-3 w-3"}`}
         />
@@ -68,10 +93,7 @@ export function LanguageSwitcher({
               type="button"
               role="option"
               aria-selected={language === opt.value}
-              onClick={() => {
-                setOpen(false);
-                setLanguage(opt.value);
-              }}
+              onClick={() => handleLanguageSelect(opt.value)}
               className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition hover:bg-cyan-400/10 ${
                 language === opt.value ? "text-cyan-200 font-semibold" : "text-zinc-300"
               }`}
