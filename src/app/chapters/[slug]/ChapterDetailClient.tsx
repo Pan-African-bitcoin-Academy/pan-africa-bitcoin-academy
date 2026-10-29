@@ -188,7 +188,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       </p>
                     </div>
                     <div className="mt-6 overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
-                      <table className="w-full min-w-[480px] border-collapse text-sm">
+                      <table className="w-full min-w-[640px] border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
                             <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">{isTi ? "ብቅዓት" : "Quality"}</th>
@@ -377,7 +377,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                     <div>
                       <h4 className="mb-4 text-base font-semibold text-cyan-200">{isTi ? "Sats → BTC ምቕያር ኣብነታት" : "Sats → BTC Conversion Examples"}</h4>
                       <div className="overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
-                        <table className="w-full min-w-[480px] border-collapse text-sm">
+                        <table className="w-full min-w-[680px] border-collapse text-sm">
                           <thead>
                             <tr className="border-b border-cyan-400/30 bg-cyan-500/10">
                               <th className="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-cyan-200">{isTi ? "ሳትስ (Sats)" : "Sats"}</th>
@@ -584,19 +584,19 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       </p>
                     </div>
                   </div>
-                ) : section.heading === "13.2 Halving Schedule and Fixed Supply (Declining Inflation)" ? (
+                ) : (section.heading.startsWith("13.2") || section.heading === "13.2 Halving Schedule and Fixed Supply (Declining Inflation)") ? (
                   // Special rendering for halving periods table
                   <div className="mt-6">
                     <div className="overflow-x-auto rounded-lg border border-purple-400/25 bg-zinc-950/70">
                       <table className="w-full min-w-[480px] border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-purple-400/30 bg-purple-500/10">
-                            <th className="px-4 py-3 text-left font-semibold text-purple-200">Period Start Date</th>
-                            <th className="px-4 py-3 text-left font-semibold text-purple-200">Period End Date</th>
-                            <th className="px-4 py-3 text-left font-semibold text-purple-200">Block Height Range</th>
-                            <th className="px-4 py-3 text-left font-semibold text-purple-200">Subsidy per Block (BTC)</th>
-                            <th className="px-4 py-3 text-left font-semibold text-purple-200">BTC Created in Period</th>
-                            <th className="px-4 py-3 text-left font-semibold text-purple-200">Total BTC Issued at End</th>
+                            <th className="px-4 py-3 text-left font-semibold text-purple-200">{isTi ? "ናይ ግዜ ምጅማር ዕለት" : "Period Start Date"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-purple-200">{isTi ? "ናይ ግዜ መወዳእታ ዕለት" : "Period End Date"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-purple-200">{isTi ? "ብሎክ ቁመት ደረጃ" : "Block Height Range"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-purple-200">{isTi ? "ክፍሊት ንሓደ ብሎክ (BTC)" : "Subsidy per Block (BTC)"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-purple-200">{isTi ? "BTC ኣብ Period ዝተፈጥረ" : "BTC Created in Period"}</th>
+                            <th className="px-4 py-3 text-left font-semibold text-purple-200">{isTi ? "ጠቕላላ BTC ኣብ መወዳእታ ዝወጸ" : "Total BTC Issued at End"}</th>
                           </tr>
                         </thead>
                         <tbody className="text-zinc-300">
@@ -668,14 +668,14 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       </table>
                     </div>
                     <p className="mt-4 text-xs text-zinc-400 italic">
-                      (Issuance continues with the same halving logic until the subsidy reaches 0 satoshis around the year 2140.)
+                      {isTi ? "(እቲ ክፍሊት ኣብ ከባቢ ዓመት 2140 0 ሳቶሺ ክሳብ ዝበጽሕ ብተመሳሳሊ ናይ ፍርቂ ምጉዳል ስነ-መጎት ምውጻእ ይቕጽል።)" : "(Issuance continues with the same halving logic until the subsidy reaches 0 satoshis around the year 2140.)"}
                     </p>
                     <div className="mt-4 rounded-lg border border-orange-400/30 bg-orange-500/10 p-4">
-                      <h4 className="mb-2 text-sm font-semibold text-orange-200">Warning: Important Precision Notes</h4>
+                      <h4 className="mb-2 text-sm font-semibold text-orange-200">{isTi ? "መጠንቀቕታ፡ ኣገደስቲ መተሓሳሰቢታት" : "Warning: Important Precision Notes"}</h4>
                       <div className="space-y-2 text-sm text-orange-100">
-                        <p>Blocks define supply, not dates.</p>
-                        <p>Dates are an observation. Block height is the law.</p>
-                        <p>Every number above can be verified by multiplying: blocks in period × subsidy per block = BTC created in period.</p>
+                        <p>{isTi ? "ብሎኮታት ንቐረብ እምበር ዕለታት ኣይገልጹን።" : "Blocks define supply, not dates."}</p>
+                        <p>{isTi ? "ዕለታት ትዕዝብቲ እዩ። መስርዕ ብሎክ ሕጊ እዩ።" : "Dates are an observation. Block height is the law."}</p>
+                        <p>{isTi ? "ኩሉ ኣብ ላዕሊ ዘሎ ቁጽሪ ብምባዛሕ ክረጋገጽ ይከኣል፡ ብሎኮታት ኣብ ፒሪድ × ክፍሊት ኣብ ሓደ ብሎክ = ኣብ ፒሪድ ዝተፈጥረ BTC።" : "Every number above can be verified by multiplying: blocks in period × subsidy per block = BTC created in period."}</p>
                       </div>
                     </div>
                   </div>
