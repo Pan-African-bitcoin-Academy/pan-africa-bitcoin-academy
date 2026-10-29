@@ -19,7 +19,7 @@
 [Chapter 10: Good Bitcoin Hygiene](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch10-hygiene.md) · [ትግርኛ (Tigrigna)](./chapters/ch10-hygiene-ti.md)
 [Chapter 11: Hardware Signers](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch11-hardware-signers.md) · [ትግርኛ (Tigrigna)](./chapters/ch11-hardware-signers-ti.md)
 [Chapter 12: Layer 2 & Sidechains](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch12-layer2-sidechains.md)
-[Chapter 13: Verify for Yourself — Block Explorers & Nodes](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch13-verify.md)
+[Chapter 13: Verify for Yourself — Block Explorers & Nodes](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch13-verify.md) · [ትግርኛ (Tigrigna)](./chapters/ch13-verify-ti.md)
 [Chapter 14: Proof of Work and Block Rewards](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch14-pow-rewards.md)
 [Chapter 15: Mining in Practice](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch15-mining-practice.md)
 

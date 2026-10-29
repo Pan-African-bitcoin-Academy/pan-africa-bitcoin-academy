@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/hooks/useSession';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ExternalLink, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { inferPhaseFromPartial, phaseHintFromRow } from '@/lib/assignmentReview';
 
@@ -29,6 +30,8 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
   const { profile, isAuthenticated, loading: authLoading, sessionEmail } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
   const studentEmail = profile?.email || sessionEmail || null;
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   const [assignment, setAssignment] = useState<any>(null);
   const [answer, setAnswer] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -167,7 +170,7 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
           <span>📋 Explorer Scavenger Hunt Assignment</span>
         </div>
         <p className="mt-3 text-sm text-zinc-400">
-          Please log in to view and submit this assignment.
+          {isTi ? "ነዚ ዕዮ ንምርኣይን ንምዝዛምን በጃኹም እተዉ።" : "Please log in to view and submit this assignment."}
         </p>
       </div>
     );
@@ -206,14 +209,14 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
 
       <div className="space-y-4">
         <div className="rounded-xl border border-zinc-700/60 bg-zinc-950/70 p-4 sm:p-5">
-          <h3 className="mb-2 text-sm font-semibold tracking-wide text-zinc-100">Question</h3>
+          <h3 className="mb-2 text-sm font-semibold tracking-wide text-zinc-100">{isTi ? "ሕቶ" : "Question"}</h3>
           <p className="text-sm leading-relaxed text-zinc-300 break-words [overflow-wrap:anywhere] sm:text-base">
             {assignment.question}
           </p>
 
           {assignment.searchAddress && (
             <div className="mt-4 rounded-xl border border-cyan-400/35 bg-cyan-500/10 p-3.5 sm:p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-cyan-300">Search Address</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-cyan-300">{isTi ? "ዝድለ ኣድራሻ" : "Search Address"}</p>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <code className="w-full min-w-0 rounded-lg border border-cyan-400/20 bg-zinc-900/70 px-3 py-2 text-xs font-mono leading-relaxed text-cyan-100 break-all sm:text-[13px]">
                   {assignment.searchAddress}
@@ -229,7 +232,7 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
                 </a>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-zinc-400 sm:text-sm">
-                Use a block explorer to search for this txid, then submit what you found. An instructor will review your answer.
+                {isTi ? "ነዚ txid ንምድላይ ብሎክ ኤክስፕሎረር ተጠቐም፣ ድሕሪኡ ዝረኸብካዮ ኣእቱ። መምህር መልስኻ ክግምግሞ እዩ።" : "Use a block explorer to search for this txid, then submit what you found. An instructor will review your answer."}
               </p>
             </div>
           )}
@@ -239,7 +242,7 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
           <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-4 flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-green-300">Assignment Completed!</p>
+              <p className="text-sm font-medium text-green-300">{isTi ? "ዕዮ ተዛዚሙ!" : "Assignment Completed!"}</p>
               <p className="text-xs text-green-400/80 mt-1">
                 {statusMessage ||
                   `You earned ${assignment.submission?.pointsEarned || assignment.points} points.`}
@@ -257,10 +260,10 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
           <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-4 flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-cyan-300 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-cyan-200">Answer submitted!</p>
+              <p className="text-sm font-medium text-cyan-200">{isTi ? "መልሲ ተላኢኹ!" : "Answer submitted!"}</p>
               <p className="text-xs text-cyan-400/80 mt-1">
                 {statusMessage ||
-                  'Your answer has been sent to an instructor for review. You cannot submit again until it is approved or returned for revision.'}
+                  (isTi ? "መልስኻ ንምግምጋም ናብ መምህር ተላኢኹ ኣሎ። ክሳብ ዝጸድቕ ወይ ንምእራም ዝምለስ ዳግማይ ከተእቱ ኣይትኽእልን ኢኻ።" : "Your answer has been sent to an instructor for review. You cannot submit again until it is approved or returned for revision.")}
               </p>
               {displayedAnswer && (
                 <p className="text-xs text-zinc-400 mt-2">
@@ -275,9 +278,9 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
           <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 flex items-start gap-3">
             <XCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-yellow-300">Incorrect or needs revision</p>
+              <p className="text-sm font-medium text-yellow-300">{isTi ? "ጌጋ ወይ ምእራም ዘድልዮ" : "Incorrect or needs revision"}</p>
               <p className="text-xs text-yellow-400/80 mt-1">
-                Please try again. Review the block explorer and make sure you found the correct information.
+                {isTi ? "በጃኹም ደጊምኩም ፈትኑ። ነቲ ብሎክ ኤክስፕሎረር መርምሩ እሞ ቅኑዕ ሓበሬታ ከም ዝረኸብኩም ኣረጋግጹ።" : "Please try again. Review the block explorer and make sure you found the correct information."}
               </p>
               {assignment.submission?.feedback && (
                 <p className="text-xs text-zinc-300 mt-2">{assignment.submission.feedback}</p>
@@ -290,7 +293,7 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="answer" className="block text-sm font-medium text-zinc-300 mb-2">
-                Your Answer <span className="text-red-400">*</span>
+                {isTi ? "መልስኻ " : "Your Answer "}<span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -300,7 +303,7 @@ export function ChapterExplorerAssignment({ chapterSlug }: ChapterExplorerAssign
                 disabled={formLocked}
                 readOnly={formLocked}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="What does this txid belong to?"
+                placeholder={isTi ? "እዚ txid ናይ ምንታይ እዩ?" : "What does this txid belong to?"}
                 required
               />
             </div>

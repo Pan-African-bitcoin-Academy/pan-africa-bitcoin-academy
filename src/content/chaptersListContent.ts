@@ -189,6 +189,18 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ናይ ሃርድዌር ምድላው", "ናይ ምምላስ ፈተነ", "ንጥፈት: ምፍራም PSBT"],
     quiz: "ሕቶታት ብዛዕባ ሃርድዌር መፈረሚታት",
   },
+  12: {
+    title: "ባዕልኻ ኣረጋግጽ — Block Explorers & Nodes",
+    learnPoints: [
+      "ንtxids, ምርግጋጽ, ክፍሊት ዳህሰስቲ ተጠቐም",
+      "መርክል መንገዲ ምትእትታው (ኣምር)",
+      "ንምንታይ ኖድ ምጉያይ፤ mempool ርኡይነት፤ መሰረታዊ ፖሊሲ/ሪለይ",
+    ],
+    activities: ["ናይ ብሎክ ዳህሳሲ ሃድን (Scavenger Hunt)"],
+    theory: ["ብሎክ ዳህሰስቲ", "ኣገዳስነት ኖድ", "ናይ ምርግጋጽ ሜላታት"],
+    practice: ["ምጥቃም ዳህሳሲ", "ንጥፈት: ናይ ዳህሳሲ ሃድን"],
+    quiz: "ሕቶታት ብዛዕባ ምርግጋጽን ኖድስን",
+  },
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
