@@ -22,7 +22,7 @@ export function LanguageSwitcher({
   const { language, setLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
-  const translatingRef = useRef<ReturnType<typeof setTimeout>>();
+  const translatingRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
