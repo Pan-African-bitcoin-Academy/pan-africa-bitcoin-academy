@@ -201,6 +201,21 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ምጥቃም ዳህሳሲ", "ንጥፈት: ናይ ዳህሳሲ ሃድን"],
     quiz: "ሕቶታት ብዛዕባ ምርግጋጽን ኖድስን",
   },
+  13: {
+    title: "ምዕራፍ 13 · መርትዖ ስራሕን ናይ ብሎክ ሽልማትን",
+    learnPoints: [
+      "ዘይምምጥጣን (PoW asymmetry)",
+      "ሽልማት ዓዳንቲ & ብሎክ — ኣብዚ እዋን ሽልማት 3.125 BTC",
+      "ፍርቂ ምጉዳል መደብ ስራሕን ናይ ገንዘብ ዋጋ ምቕናስን",
+      "ናይ ክፍሊት ግዜ ገደብ — 2140 መወዳእታ ናይ ሓደሽቲ ቀረብ",
+    ],
+    theory: ["መርትዖ ስራሕ", "ሽልማት ዓደንቲ", "ፍርቂ ምጉዳል መደብ"],
+    practice: ["ጸወታ PoW", "ዕዮ: መርትዖ ስራሕ ብኢድ"],
+    activities: ["ናይ \'PoW ብኢድ\' ጸወታ ኣብ ክፍሊ"],
+    quiz: "ሕቶታት ዝምልከቱ PoW",
+    LiveSession: "ዓዳንቲ ተገሊጹ",
+  },
+
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {

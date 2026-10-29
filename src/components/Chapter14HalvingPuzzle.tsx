@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/hooks/useSession';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Chapter14HalvingPuzzleProps {
   assignmentId: string;
@@ -28,6 +29,8 @@ function shuffleArray<T>(array: T[]): T[] {
 export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleProps) {
   const { profile, isAuthenticated, loading: authLoading, sessionEmail } = useAuth();
   const studentEmail = profile?.email || sessionEmail || null;
+  const { language } = useLanguage();
+  const isTi = language === 'ti';
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
 
   const [availableTiles, setAvailableTiles] = useState<string[]>([]);
@@ -105,7 +108,7 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
 
     const emptySlotIndex = timelineSlots.findIndex((slot) => slot === null);
     if (emptySlotIndex === -1) {
-      setError('All slots are filled. Remove a tile first or submit your answer.');
+      setError(isTi ? 'ኩሎም ቦታታት ምሉኣት እዮም። ቀዳሚ ቀጻሊ ኣልዕልዎ ወይ ምላሽካ ቕረብ።' : 'All slots are filled. Remove a tile first or submit your answer.');
       return;
     }
 
@@ -138,12 +141,12 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
     e.preventDefault();
     const email = isAdminAuth && adminEmail ? adminEmail : studentEmail;
     if ((!isAuthenticated && !isAdminAuth) || !email) {
-      setError('Please log in to submit your assignment.');
+      setError(isTi ? 'ዕዮኻ ንምቕራብ በጃኻ እቶ።' : 'Please log in to submit your assignment.');
       return;
     }
 
     if (timelineSlots.some((slot) => slot === null)) {
-      setError('Please fill all slots before submitting.');
+      setError(isTi ? 'ቅድሚ ምቕራብ ኩሎም ቦታታት ምልኣኦም።' : 'Please fill all slots before submitting.');
       return;
     }
 
@@ -212,7 +215,7 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
   if (!isAuthenticated && !isAdminAuth) {
     return (
       <div className="rounded-lg border border-zinc-800/60 bg-zinc-900/50 p-5">
-        <p className="text-zinc-400">Please log in to view and complete this assignment.</p>
+        <p className="text-zinc-400">{isTi ? 'ነዚ ዕዮ ንምርኣይን ምዝዛምን በጃኻ እቶ።' : 'Please log in to view and complete this assignment.'}</p>
       </div>
     );
   }
@@ -222,15 +225,15 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
   return (
     <div className="rounded-lg border border-zinc-800/60 bg-zinc-950 p-4 sm:p-5 shadow-inner space-y-4 sm:space-y-6">
       <div>
-        <h3 className="text-base sm:text-lg font-semibold text-zinc-100 mb-2">🧩 The Halving Timeline Puzzle</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-zinc-100 mb-2">{isTi ? '🧩 እቲ ፍርቂ ናይ ግዜ መስመር ሕንቅልሕንቅሊተይ' : '🧩 The Halving Timeline Puzzle'}</h3>
         <p className="text-sm text-zinc-400 mb-3 sm:mb-4">
-          Interactive exercise | Reward: TBD (after instructor review)
+          {isTi ? 'መስተጋብራዊ ልምምድ | ሽልማት፡ TBD (ድሕሪ ገምጋም መምህር)' : 'Interactive exercise | Reward: TBD (after instructor review)'}
         </p>
         {!submitted && (
           <div className="p-3 sm:p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg mb-3 sm:mb-4">
             <p className="text-sm text-orange-200 font-medium mb-2">Core rule (shown to students):</p>
             <p className="text-sm text-orange-100 leading-relaxed">
-              Bitcoin&apos;s block reward does not decrease smoothly. It drops suddenly — like stairs, not a ramp.
+              {isTi ? 'ናይ ቢትኮይን ብሎክ ሽልማት ቀስ ኢሉ ኣይንኪን እዩ። ሃንደበት ይወድቕ — ከም መደያይቦ እምበር ከም ራምፕ ኣይኮነን።' : "Bitcoin's block reward does not decrease smoothly. It drops suddenly — like stairs, not a ramp."}
             </p>
           </div>
         )}
@@ -244,13 +247,13 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
         <div className="space-y-6">
           <div className="space-y-3 sm:space-y-4">
             <h4 className="text-sm sm:text-base font-semibold text-zinc-200 leading-tight">
-              Timeline (Place tiles from left to right in chronological order)
+              {isTi ? 'መስመር ግዜ (ካብ ጸጋም ናብ የማን ብመስርዕ ግዜ ኣቐምጦም)' : 'Timeline (Place tiles from left to right in chronological order)'}
             </h4>
             <div className="relative">
               <div className="flex items-center justify-between mb-2 sm:mb-3">
-                <div className="text-xs sm:text-sm text-zinc-300 font-medium">[ Genesis ]</div>
+                <div className="text-xs sm:text-sm text-zinc-300 font-medium">{isTi ? '[ ዘፍጥረት ]' : '[ Genesis ]'}</div>
                 <div className="flex-1"></div>
-                <div className="text-xs sm:text-sm text-zinc-300 font-medium">[ Today ]</div>
+                <div className="text-xs sm:text-sm text-zinc-300 font-medium">{isTi ? '[ ሎሚ ]' : '[ Today ]'}</div>
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2 border-2 border-zinc-700 rounded-lg p-2 sm:p-4 bg-zinc-900/50 overflow-x-auto scrollbar-hide">
@@ -269,23 +272,23 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
                         <div className="text-sm sm:text-lg font-mono font-bold bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent mb-1">
                           {tile}
                         </div>
-                        {index === 0 && <div className="text-[10px] sm:text-xs text-purple-300 font-medium">Genesis</div>}
-                        {index === 4 && <div className="text-[10px] sm:text-xs text-pink-300 font-medium">Today</div>}
+                        {index === 0 && <div className="text-[10px] sm:text-xs text-purple-300 font-medium">{isTi ? 'ዘፍጥረት' : 'Genesis'}</div>}
+                        {index === 4 && <div className="text-[10px] sm:text-xs text-pink-300 font-medium">{isTi ? 'ሎሚ' : 'Today'}</div>}
                       </>
                     ) : (
-                      <div className="text-center text-zinc-500 text-[10px] sm:text-xs">Empty</div>
+                      <div className="text-center text-zinc-500 text-[10px] sm:text-xs">{isTi ? 'ባዶ' : 'Empty'}</div>
                     )}
                   </div>
                 ))}
               </div>
               <p className="text-xs text-zinc-400 mt-2 text-center leading-relaxed">
-                Tap a slot to remove a tile and place it elsewhere
+                {isTi ? 'ሓደ ቦታ ንምጽጋዕ ንምልጋብ ቆጽሊ ናብ ካሊእ ቦታ ኣቐምጦ' : 'Tap a slot to remove a tile and place it elsewhere'}
               </p>
             </div>
           </div>
 
           <div className="space-y-3 sm:space-y-4">
-            <h4 className="text-sm sm:text-base font-semibold text-zinc-200">Available Tiles (Tap to Place)</h4>
+            <h4 className="text-sm sm:text-base font-semibold text-zinc-200">{isTi ? 'ዝርከቡ ቀጻሊታት (ንምቕማጥ ተጫወት)' : 'Available Tiles (Tap to Place)'}</h4>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {availableTiles.map((tile, index) => (
                 <button
@@ -298,7 +301,7 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
               ))}
             </div>
             {availableTiles.length === 0 && (
-              <p className="text-sm text-zinc-400 italic">All tiles have been placed on the timeline.</p>
+              <p className="text-sm text-zinc-400 italic">{isTi ? 'ኩሎም ቀጻሊታት ኣብ መስመር ግዜ ተቐሚጦም።' : 'All tiles have been placed on the timeline.'}</p>
             )}
           </div>
 
@@ -333,7 +336,7 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
                   : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
               }`}
             >
-              {submitting ? 'Submitting...' : 'Submit Answer'}
+              {submitting ? (isTi ? 'ኣቕርብ...' : 'Submitting...') : (isTi ? 'ምላሽ ቕረብ' : 'Submit Answer')}
             </button>
             <button
               type="button"
@@ -341,7 +344,7 @@ export function Chapter14HalvingPuzzle({ assignmentId }: Chapter14HalvingPuzzleP
               disabled={submitting}
               className="flex-1 sm:flex-initial min-h-[48px] px-6 py-3 rounded-lg text-base font-medium bg-gradient-to-r from-slate-600 via-zinc-600 to-slate-700 text-white active:from-slate-500 active:via-zinc-500 active:to-slate-600 active:scale-95 transition-all touch-target cursor-pointer disabled:cursor-not-allowed"
             >
-              Reset
+              {isTi ? 'ካብ መጀምርያ ጀምር' : 'Reset'}
             </button>
           </div>
         </div>
