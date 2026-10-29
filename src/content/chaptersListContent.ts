@@ -246,6 +246,20 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     LiveSession: "ላይትኒንግ ተገሊጹ",
   },
 
+  16: {
+    title: "ምዕራፍ 16 · ምሉእ መስመር & ምኽፋት ላይትኒንግ ቻነል",
+    learnPoints: [
+      "ኖድ ስታክ ምምራጽ፤ ምኽርታት ብሕታዊነት",
+      "ምኽፋት/ምዕጻው ቻነላት ላይትኒንግ፤ መሰረታዊ ትምህርቲ መስመር (routing)",
+      "ምትሕብባርን ግምብታት ምሕላውን",
+    ],
+    theory: ["ኖድ ስታክ", "ቻነላት ላይትኒንግ", "መሰረታዊ ናይ ሮውቲንግ"],
+    practice: ["ስራሕቲ ቻነል", "ዕዮ: ሲሙሌሽን ቻነል"],
+    activities: ["ሲሙሌሽን ምኽፋት/ምዕጻው ቻነል (regtest/testnet)"],
+    quiz: "ሕቶታት ብዛዕባ ኖድታትን ቻነላትን",
+    LiveSession: "ምድላው ኖድን ላይትኒንግን",
+  },
+
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
