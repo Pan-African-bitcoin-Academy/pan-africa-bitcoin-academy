@@ -672,15 +672,9 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
 .lang-ov-bg-enter { animation: lang-ov-bg-in  0.22s ease-out forwards; }
 .lang-ov-bg-exit  { animation: lang-ov-bg-out 0.38s ease-in  forwards; }
 
-/* --- Card --- */
-@keyframes lang-ov-card-in {
-  from { opacity: 0; transform: scale(0.72) translateY(28px); }
-  to   { opacity: 1; transform: scale(1)    translateY(0); }
-}
-@keyframes lang-ov-card-out {
-  from { opacity: 1; transform: scale(1)    translateY(0); }
-  to   { opacity: 0; transform: scale(1.06) translateY(-12px); }
-}
+/* --- Card (simple fade — no spring bounce) --- */
+@keyframes lang-ov-card-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lang-ov-card-out { from { opacity: 1; } to { opacity: 0; } }
 
 .lang-ov-card {
   position: relative;
@@ -690,17 +684,10 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
   gap: 1.25rem;
   padding: 3rem 4rem;
   border-radius: 1.75rem;
-  border: 1px solid rgba(249, 118, 2, 0.3);
-  background: rgba(9, 9, 11, 0.96);
-  box-shadow:
-    0 0 0 1px rgba(249, 118, 2, 0.06) inset,
-    0 0 80px  rgba(249, 118, 2, 0.14),
-    0 0 160px rgba(249, 118, 2, 0.07),
-    0 24px 64px rgba(0, 0, 0, 0.65);
-  overflow: hidden;
+  background: transparent;
 }
-.lang-ov-card-enter { animation: lang-ov-card-in  0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-.lang-ov-card-exit  { animation: lang-ov-card-out 0.32s ease-in forwards; }
+.lang-ov-card-enter { animation: lang-ov-card-in  0.3s ease-out forwards; }
+.lang-ov-card-exit  { animation: lang-ov-card-out 0.3s ease-in  forwards; }
 
 /* --- Orange halo ring --- */
 @keyframes lang-ov-halo-pulse {
@@ -718,47 +705,6 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
     inset 0 0 32px rgba(249, 118, 2, 0.1);
   animation: lang-ov-halo-pulse 1.5s ease-in-out infinite;
   pointer-events: none;
-}
-
-/* --- Orbiting particles --- */
-.lang-ov-particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-/* Each arm rotates 0→360deg; negative delay positions it at frac of the orbit */
-@keyframes lang-ov-orbit {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.lang-ov-arm {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  transform-origin: 0 0;
-  animation: lang-ov-orbit var(--dur) linear
-    calc(-1 * var(--dur) * var(--frac)) infinite;
-}
-
-/* Dot sits at distance --r along the arm, pulses in opacity + scale */
-@keyframes lang-ov-dot-pulse {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.7); }
-}
-.lang-ov-dot {
-  display: block;
-  position: absolute;
-  left: var(--r);
-  top: calc(var(--size) / -2);
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
-  background: #F97602;
-  box-shadow: 0 0 8px #F97602, 0 0 16px rgba(249, 118, 2, 0.55);
-  animation: lang-ov-dot-pulse 1.6s ease-in-out infinite;
 }
 
 /* --- ₿ symbol: 3-D coin flip + orange glow --- */
@@ -798,7 +744,7 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
     lang-ov-btc-glow 1.6s ease-in-out infinite;
 }
 
-/* --- Direction row: ENG → TIG --- */
+/* --- Direction row: ENG → TIG (delay 0.28s) --- */
 @keyframes lang-ov-slide-up {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -807,7 +753,7 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  animation: lang-ov-slide-up 0.4s ease-out 0.18s both;
+  animation: lang-ov-slide-up 0.4s ease-out 0.28s both;
 }
 .lang-ov-lang {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -821,28 +767,17 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
   color: rgba(249, 118, 2, 0.5);
 }
 
-/* --- Status text --- */
-.lang-ov-status {
-  font-size: 0.8125rem;
-  color: rgba(161, 161, 170, 0.75);
-  letter-spacing: 0.06em;
-  animation: lang-ov-slide-up 0.4s ease-out 0.28s both;
-}
-
 /* --- Accessibility: honour reduced-motion preference --- */
 @media (prefers-reduced-motion: reduce) {
   .lang-switching-icon,
   .lang-label-enter,
   .lang-ov-btc,
-  .lang-ov-arm,
-  .lang-ov-dot,
   .lang-ov-halo,
   .lang-ov-bg-enter,
   .lang-ov-bg-exit,
   .lang-ov-card-enter,
   .lang-ov-card-exit,
-  .lang-ov-direction,
-  .lang-ov-status {
+  .lang-ov-direction {
     animation: none !important;
     transition: none !important;
   }
