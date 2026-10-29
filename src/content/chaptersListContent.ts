@@ -231,6 +231,21 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     LiveSession: "ናይ ዕደና ቁጠባ ተገሊጹ",
   },
 
+  15: {
+    title: "ምዕራፍ 15 · ቀጸላ2 & ጎናዊ ሰንሰለታት ኣብ መዓልታዊ ህይወት",
+    learnPoints: [
+      "መሰረታዊ ነገራት ላይትኒንግ ምትሕውዋስ ምውርራድን",
+      "ምእሳር ኣንጻር ዘይመእሰሪ በርቂ",
+      "ጎናዊ ሰንሰለታት (ንኣብነት ፈሳሲ)ን ፌደራላዊ እምነትንን",
+      "ኣብ sats ዝተመርኮሱ ቁጠባታት",
+    ],
+    theory: ["ላይትኒንግ ኔትወርክ", "መፍትሒታት ቀጸላ 2", "ጎድናዊ ሰንሰለታት"],
+    practice: ["ክፍሊት ላይትኒንግ", "ዕዮ: ብቀጥታ ዝግበር መርኣያ"],
+    activities: ["ብቀጥታ ዝግበር ናይ ላይትኒንግ ክፍሊት መርኣያ"],
+    quiz: "ሕቶታት ብዛዕባ ላይትኒንግ",
+    LiveSession: "ላይትኒንግ ተገሊጹ",
+  },
+
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {

@@ -22,6 +22,7 @@
 [Chapter 13: Verify for Yourself — Block Explorers & Nodes](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch13-verify.md) · [ትግርኛ (Tigrigna)](./chapters/ch13-verify-ti.md)
 - [Chapter 13: Proof of Work and Block Rewards](./chapters/ch13-proof-of-work.md) | [ምዕራፍ 13: መርትዖ ስራሕን ናይ ብሎክ ሽልማትን](./chapters/ch13-proof-of-work-ti.md)
 - [Chapter 14: Mining in Practice](./chapters/ch14-mining-in-practice.md) | [ምዕራፍ 14: ዕደና ቢትኮይን](./chapters/ch14-mining-in-practice-ti.md)
+- [Chapter 15: Layer 2 & Sidechains in Daily Life](./chapters/ch15-layer2-sidechains.md) | [ምዕራፍ 15: ቀጸላ2 & ጎናዊ ሰንሰለታት ኣብ መዓልታዊ ህይወት](./chapters/ch15-layer2-sidechains-ti.md)
 [Chapter 14: Proof of Work and Block Rewards](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch14-pow-rewards.md)
 [Chapter 15: Mining in Practice](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch15-mining-practice.md)
 
