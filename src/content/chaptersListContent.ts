@@ -202,7 +202,7 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     quiz: "ሕቶታት ብዛዕባ ምርግጋጽን ኖድስን",
   },
   13: {
-    title: "ምዕራፍ 13 · መርትዖ ስራሕን ናይ ብሎክ ሽልማትን",
+    title: "መርትዖ ስራሕን ናይ ብሎክ ሽልማትን",
     learnPoints: [
       "ዘይምምጥጣን (PoW asymmetry)",
       "ሽልማት ዓዳንቲ & ብሎክ — ኣብዚ እዋን ሽልማት 3.125 BTC",
@@ -217,7 +217,7 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
   },
 
   14: {
-    title: "ምዕራፍ 14 · ዕደና ቢትኮይን",
+    title: "ዕደና ቢትኮይን",
     learnPoints: [
       "ናይ ክብደት ምትዕርራይ መካኒክስ",
       "ናይ ዕደና ፑል፣ ናይ ክፍሊት መደባት፣ ናይ ሳንሱር ሓደጋ",
@@ -232,7 +232,7 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
   },
 
   15: {
-    title: "ምዕራፍ 15 · ቀጸላ2 & ጎናዊ ሰንሰለታት ኣብ መዓልታዊ ህይወት",
+    title: "ቀጸላ2 & ጎናዊ ሰንሰለታት ኣብ መዓልታዊ ህይወት",
     learnPoints: [
       "መሰረታዊ ነገራት ላይትኒንግ ምትሕውዋስ ምውርራድን",
       "ምእሳር ኣንጻር ዘይመእሰሪ ላይትኒንግ",
@@ -247,7 +247,7 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
   },
 
   16: {
-    title: "ምዕራፍ 16 · ምሉእ መስመር & ምኽፋት ላይትኒንግ ቻነል",
+    title: "ምሉእ መስመር & ምኽፋት ላይትኒንግ ቻነል",
     learnPoints: [
       "ኖድ ስታክ ምምራጽ፤ ምኽርታት ብሕታዊነት",
       "ምኽፋት/ምዕጻው ቻነላት ላይትኒንግ፤ መሰረታዊ ትምህርቲ መስመር (routing)",
