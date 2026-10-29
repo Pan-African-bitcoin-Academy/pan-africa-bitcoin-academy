@@ -6,7 +6,7 @@
 **Type:** Practice · **ዓይነት:** ልምምድ
 
 > Lightning and sidechains make Bitcoin faster and more flexible—with trade-offs.
-> በርቂን ጎድናዊ ሰንሰለትን ንቢትኮይን ዝቐልጠፈን ተዓጻጻፍን ይገብርዎ-ምስ ምትሕውዋስ።
+> ላይትኒንግን ጎድናዊ ሰንሰለትን ንቢትኮይን ዝቐልጠፈን ተዓጻጻፍን ይገብርዎ-ምስ ምትሕውዋስ።
 
 [← Chapter 14](https://panafricanbitcoin.com/chapters/mining-in-practice) | [Chapter 16 →](https://panafricanbitcoin.com/chapters/full-node-opening-a-lightning-channel)
 
@@ -15,7 +15,7 @@
 ## What You Will Learn | እንታይ ክትመሃር ኢኻ።
 
 - Lightning basics and settlement trade-offs | መሰረታዊ ነገራት ላይትኒንግ ምትሕውዋስ ምውርራድን
-- Custodial vs non-custodial Lightning | ምእሳር ኣንጻር ዘይመእሰሪ በርቂ
+- Custodial vs non-custodial Lightning | ምእሳር ኣንጻር ዘይመእሰሪ ላይትኒንግ
 - Sidechains (e.g., Liquid) and federated trust | ጎናዊ ሰንሰለታት (ንኣብነት ፈሳሲ)ን ፌደራላዊ እምነትንን
 - Circular economies running on sats | ኣብ sats ዝተመርኮሱ ቁጠባታት
 

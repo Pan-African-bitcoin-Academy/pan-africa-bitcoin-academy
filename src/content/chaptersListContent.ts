@@ -235,7 +235,7 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     title: "ምዕራፍ 15 · ቀጸላ2 & ጎናዊ ሰንሰለታት ኣብ መዓልታዊ ህይወት",
     learnPoints: [
       "መሰረታዊ ነገራት ላይትኒንግ ምትሕውዋስ ምውርራድን",
-      "ምእሳር ኣንጻር ዘይመእሰሪ በርቂ",
+      "ምእሳር ኣንጻር ዘይመእሰሪ ላይትኒንግ",
       "ጎናዊ ሰንሰለታት (ንኣብነት ፈሳሲ)ን ፌደራላዊ እምነትንን",
       "ኣብ sats ዝተመርኮሱ ቁጠባታት",
     ],
