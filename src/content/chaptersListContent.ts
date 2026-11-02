@@ -317,6 +317,20 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     LiveSession: "ፍልስፍና ቢትኮይን",
     quiz: "ሕቶታት ብዛዕባ ፍልስፍና",
   },
+  21: {
+    title: "መደምደምታን ጠቐምቲ ምንጭታትን",
+    time: "40 ደቓይቕ",
+    learnPoints: [
+      "ቀንዲ ቃላት ቢትኮይን ምርዳእ",
+      "ንባዕልኻ እትቆጻጸሮም መሳርሕታትን ምንጭታትን ምርካብ",
+      "ድሕነት ዘለዎ መሰረታዊ ልምድታት ምምዕባል",
+    ],
+    activities: ["ኣስተንትኖ፡ ካብ ዝተዳኸመ ፊያት ናብ ልኡላዊ ቢትኮይን"],
+    theory: ["ሓፈሻዊ ጽማቕ ኮርስ", "ጸጋታት", "ቀጻሊ ስጉምትታት"],
+    practice: ["ናይ መወዳእታ ኣስተንትኖ", "ንጥፈት፡ ልምምድ ኣስተንትኖ"],
+    LiveSession: "መደምደምታ ኮርስ",
+    quiz: "ናይ መወዳእታ ገምጋም",
+  },
 
 };
 

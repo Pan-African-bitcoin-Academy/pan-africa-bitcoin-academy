@@ -33,7 +33,7 @@
 [Chapter 18: Intro to Bitcoin Script](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch18-bitcoin-script.md) · [ትግርኛ (Tigrigna)](./chapters/ch18-bitcoin-script-ti.md)
 [Chapter 19: UTXO Consolidation & Privacy Risks](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch19-consolidation-privacy.md) · [ትግርኛ (Tigrigna)](./chapters/ch19-consolidation-privacy-ti.md)
 [Chapter 20: Why Bitcoin? Philosophy & Adoption](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch20-philosophy.md) · [ትግርኛ (Tigrigna)](./chapters/ch20-philosophy-ti.md)
-[Chapter 21: Wrap-Up & Resources](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch21-wrap-up.md)
+[Chapter 21: Wrap-Up & Resources](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch21-wrap-up.md) · [ትግርኛ (Tigrigna)](./chapters/ch21-wrap-up-ti.md)
 
 ## Structure
 - `toc.yaml` – ordered table of contents

@@ -165,7 +165,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         ) : null}
 
         {isWrapUpResources ? (
-        <WrapUpResourcesContent />
+        <WrapUpResourcesContent isTi={isTi} />
         ) : (
         <section className="relative space-y-4 rounded-xl border border-zinc-800/50 bg-zinc-950 p-3 sm:p-6 shadow-inner w-full min-w-0 overflow-hidden">
           <ChapterTechVectors />

@@ -1,6 +1,81 @@
 import type { ReactNode } from "react";
 import { WRAP_UP_GLOSSARY } from "@/content/wrapUpGlossary";
 
+const TEXT_TI: Record<string, string> = {
+  "Course wrap-up": "መደምደምታ ኮርስ",
+  "Now that you have learned about Bitcoin, what’s next?": "ብዛዕባ ቢትኮይን ምስ ተማሃርካ፡ ቀጺሉ እንታይ ክትገብር ትኽእል?",
+  "Bitcoin gives you full control—but also full responsibility.": "ቢትኮይን ምሉእ ቁጽጽር ይህበካ — ግን ምሉእ ሓላፍነት እውን የሰንየካ።",
+  "What You Can Do Now (Action Layer)": "ሕጂ ክትገብሮ እትኽእል (ተግባራዊ ስጉምትታት)",
+  "Install a wallet (non-custodial)": "ቁልፊ ባዕልኻ እትቆጻጸረሉ ቦርሳ ጽዓን",
+  "Back up seed phrase (offline)": "ሓረግ ዘርኢ ካብ መስመር ወጻኢ ባክኣፕ ግበር",
+  "Receive a small amount": "ንእሽቶ መጠን ተቐበል",
+  "Send a small transaction": "ንእሽቶ ትራንዛክሽን ስደድ",
+  "Try a Lightning payment": "ናይ ላይትኒንግ ክፍሊት ፈትን",
+  "Safety Checklist": "ዝርዝር መፈተሺ ድሕነት",
+  "Never share seed phrase": "ፈጺምካ ሓረግ ዘርኢ ኣይትካፈል",
+  "Always verify addresses": "ኩሉ ግዜ ኣድራሻታት ኣረጋግጽ",
+  "Use test amounts first": "መጀመርታ ንኣሽቱ መጠናት ፈትን",
+  "Avoid unknown apps/websites": "ዘይትፈልጦም ኣፕስን ዌብሳይታትን ኣወግድ",
+  "Keep backups in separate locations": "ባክኣፕታት ኣብ ዝተፈላለዩ ቦታታት ኣቐምጥ",
+  "Wallet options and custody models": "ቦርሳታትን ኣገባባት ምሕላው ገንዘብን",
+  "Choose wallet tools based on who controls the keys and the custody model. On phone, use App Store / Google Play; on desktop, use the official website and download link. Verify URLs match the official domain; start with small amounts.":
+    "ኣብ ምርጫ ቦርሳ፡ መን መፍትሕ ከም ዝቆጻጸርን ኣገባብ ምሕላው ገንዘቡን ኣረጋግጽ። ኣብ ተሌፎን ወግዓዊ App Store ወይ Google Play ተጠቐም፤ ኣብ ኮምፒዩተር ድማ ካብ ወግዓዊ መርበብን መራገፊ ሊንክን ተጠቐም። URL ምስ ወግዓዊ ዓውዲ ከም ዝሰማማዕ ኣረጋግጽ፣ ብንእሽቶ መጠን ድማ ጀምር።",
+  "Offline supporting wallets": "ካብ መስመር ወጻኢ ዝሕግዙ ቦርሳታት",
+  "Options that can work with limited connectivity or community setups—understand the custody model before using.":
+    "ብውሱን ምትእስሳር ወይ ኣብ ማሕበረሰባዊ ኣጠቓቕማ ክሰርሑ ዝኽእሉ ኣማራጺታት። ቅድሚ ምጥቃምካ ኣገባብ ምሕላው ገንዘብ ተረዳእ።",
+  "Fedimint-based community app—federated custody model (different trade-offs vs self-custody singlesig). Read how it works before using.":
+    "ኣፕ ማሕበረሰብ ኣብ Fedimint ዝተመርኮሰ እዩ፤ ብሓባር ዝተመሓደረ ምሕላው ገንዘብ ይጥቀም (ካብ ባዕልኻ ቁልፊ እትቆጻጸረሉ ንጽል ፊርማ ዝተፈልየ ምትሕውዋስ ኣለዎ)። ቅድሚ ምጥቃምካ ኣገባቡ ኣንብብ።",
+  "Mobile (beginner-friendly)": "ተሌፎን (ንጀመርቲ ቀሊል)",
+  "Friendly mobile wallets for everyday sends and receives—always install from official store listings or the vendor site.":
+    "ንመዓልታዊ ምልኣኽን ምቕባልን ዝምችኡ ቦርሳታት። ኩሉ ግዜ ካብ ወግዓዊ ኣፕ ስቶር ወይ መርበብ ኣቕራቢ ጥራይ ጽዓን።",
+  "Simple non-custodial Lightning wallet.": "ቀሊል ናይ ላይትኒንግ ቦርሳ፤ ቁልፊ ተጠቃሚ ይቆጻጸሮ።",
+  "Lightning + POS-style features.": "ላይትኒንግን ከም ናይ መሸጣ ቦታ (POS) ዝኣመሰሉ ባህርያትን።",
+  "Hybrid on-chain + Lightning; easy UX.": "ኣብ ብሎክቸይንን ላይትኒንግን ዝሰርሕ ድቃላዊ ቦርሳ፤ ቀሊል ኣጠቓቕማ።",
+  "Good starter: on-chain + optional Lightning.": "ንጀመርቲ ዝምችእ፤ ኣብ ብሎክቸይንን ብኣማራጺ ላይትኒንግን ይሰርሕ።",
+  "Desktop (more control)": "ኮምፒዩተር (ዝያዳ ቁጽጽር)",
+  "Full-featured desktop clients—strong for UTXO labels, coin control, and verifying transactions yourself. Download only from official domains.":
+    "ምሉእ ባህርያት ዘለዎም ናይ ኮምፒዩተር ፕሮግራማት፤ UTXOታት ንምምልካት፡ ምቁጽጻር ሳንቲምን ትራንዛክሽናት ባዕልኻ ንምርግጋጽን ይጠቕሙ። ካብ ወግዓዊ ዓውዲ ጥራይ ኣውርድ።",
+  "Strong for learning UTXOs and coin control.": "UTXOታትን ምቁጽጻር ሳንቲምን ንምምሃር ዝሕግዝ።",
+  "Lightweight; advanced options.": "ቀሊል ፕሮግራም፤ ምዕቡላት ኣማራጺታት ኣለዉዎ።",
+  "Hardware (best security)": "ሃርድዌር (ዝሓሸ ድሕነት)",
+  "Sign transactions on a dedicated device—buy from the manufacturer or trusted resellers; verify packaging and setup carefully.":
+    "ትራንዛክሽናት ኣብ ፍሉይ መሳርሒ ፈርም። ካብ ኣፍራዪ ወይ ዝተኣመኑ ሸየጥቲ ግዛእ፤ መዐሸጊኡን ምትካሉን ብጥንቃቐ ኣረጋግጽ።",
+  "Bitcoin-only; very security-focused.": "ንቢትኮይን ጥራይ፤ ኣብ ድሕነት ዘተኮረ።",
+  "Popular; relatively approachable setup.": "ልሙድ መሳርሒ፤ ኣቀማምጣኡ ብኣንጻር ቀሊል እዩ።",
+  "Widely used; supports many assets (not Bitcoin-only).": "ብብዙሓት ዝጥቀሙሉ፤ ብዙሓት ንብረታት ይድግፍ፡ ንቢትኮይን ጥራይ ኣይኮነን።",
+  "Open-source Bitcoin hardware wallet; often used with Blockstream Green.": "ክፉት ምንጪ ዘለዎ ናይ ቢትኮይን ሃርድዌር ቦርሳ፤ ብዙሕ ግዜ ምስ Blockstream Green ይጥቀሙሉ።",
+  "Getting Bitcoin (without traditional KYC)": "ቢትኮይን ምርካብ (ብዘይ ባህላዊ KYC)",
+  "Peer-to-peer routes reduce central custody and can improve privacy. They require more care: reputation, escrow, and clear process.":
+    "ካብ ሰብ ናብ ሰብ ዝግበር ምልውዋጥ ማእከላይ ምሕላው ገንዘብ ይንክይን ብሕትውና ከመሓይሽ ይኽእልን። ግን መልእኽቲ ምትእምማን፡ ኤስክሮውን ንጹር መስርሕን ብጥንቃቐ ምርመራ የድሊ።",
+  "1. Peer-to-Peer (P2P)": "1. ካብ ሰብ ናብ ሰብ (P2P)",
+  "Decentralized desktop P2P; no KYC by design.": "P2P ኣብ ኮምፒዩተር ዝሰርሕ ዘይተማእከለ ኣገባብ፤ ብዲዛይን KYC ኣየድልን።",
+  "Simple P2P with Lightning (often used via Tor / web client).": "ቀሊል P2P ምስ ላይትኒንግ፤ ብዙሕ ግዜ ብTor ወይ ዌብ ክላይንት ይጥቀሙሉ።",
+  "P2P with multisig escrow.": "P2P ምስ ብዙሕ ፊርማ ዘለዎ ኤስክሮው።",
+  "No central custody of funds during the trade (protocol-dependent)": "ኣብ እዋን ምልውዋጥ ገንዘብ ብማእከላይ ወገን ኣይሕዝን (ኣብ ፕሮቶኮል ይምርኮስ)",
+  "Often more private than centralized exchanges": "ብዙሕ ግዜ ካብ ማእከላዊ ምልውዋጥ ዝያዳ ብሕትውና ኣለዎ",
+  "Requires care: escrow flow, counterparty reputation, and local legal context": "ጥንቃቐ የድሊ፦ ኣገባብ ኤስክሮው፡ ስም ኣካል ምልውዋጥን ናይ ከባቢ ሕግን",
+  "African-focused Bitcoin access": "ኣብ ኣፍሪቃ ዝተመርኮሱ ኣገባባት ምብጻሕ ቢትኮይን",
+  "Tools shaped for connectivity, feature phones, and community usage—always verify the latest product pages before installing.":
+    "ንምትእስሳር፡ ስማርትፎን ዘይብሎም ተሌፎናትን ኣጠቓቕማ ማሕበረሰብን ዝተዳለዉ መሳርሕታት። ቅድሚ ምትካልካ ሓደስቲ ወግዓዊ ገጻት ፈትሽ።",
+  "No smartphone required; USSD access in supported regions.": "ስማርትፎን ኣየድልን፤ ኣብ ዝድገፉ ከባቢታት ብUSSD ይሰርሕ።",
+  "Uganda-focused OTC and bitcoin access.": "ኣብ ኡጋንዳ ዘተኮረ OTCን ምብጻሕ ቢትኮይንን።",
+  "Kenya-based; spend Lightning bitcoin in everyday contexts where supported.": "ኣብ ኬንያ ዝመሰረተ፤ ኣብ ዝድገፈሉ ናይ መዓልታዊ ኩነታት ቢትኮይን ላይትኒንግ ንምኽፋል።",
+  "Glossary": "መዝገበ-ቃላት",
+  "Quick definitions for terms used across the course. Scroll the page like other chapters; terms are highlighted.":
+    "እዚ ክፍሊ ኣብ ምሉእ ኮርስ ንዝተጠቕሙ ቃላት ሓጺር መግለጺታት ይህብ። ስሞምን መግለጺኦምን ኣብዚ እትርእዮም እትርጉማት እንግሊዝኛ እዮም።",
+  Website: "መርበብ ሓበሬታ",
+  "Desktop download": "ኣውርድ ንኮምፒዩተር",
+  Download: "ምውራድ",
+  "Docs & shop": "ሰነዳትን ድኳንን",
+  "Trezor Suite (desktop)": "Trezor Suite (ኮምፒዩተር)",
+  "Web client": "ዌብ ክላይንት",
+  "Download hub": "ማእከል ምውራድ",
+};
+
+function localize(text: string, isTi: boolean): string {
+  return isTi ? TEXT_TI[text] ?? text : text;
+}
+
 function IconWallet({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -57,6 +132,7 @@ type LinkRowProps = {
   /** Desktop installer, web client, or other non-store download */
   downloadHref?: string;
   downloadLabel?: string;
+  isTi: boolean;
 };
 
 type WalletCategoryTone = "teal" | "cyan" | "orange" | "purple";
@@ -104,20 +180,22 @@ function WalletCategoryBlock({
   title,
   description,
   children,
+  isTi,
 }: {
   tone: WalletCategoryTone;
   title: string;
   description: string;
   children: ReactNode;
+  isTi: boolean;
 }) {
   const s = WALLET_CATEGORY_STYLES[tone];
   return (
     <div className={s.shell}>
       <div className="mb-3 flex items-center gap-2">
         <span className={s.dot} aria-hidden />
-        <h4 className={s.title}>{title}</h4>
+        <h4 className={s.title}>{localize(title, isTi)}</h4>
       </div>
-      <p className={s.desc}>{description}</p>
+      <p className={s.desc}>{localize(description, isTi)}</p>
       <div className={s.inner}>{children}</div>
     </div>
   );
@@ -132,14 +210,15 @@ function LinkRow({
   androidHref,
   downloadHref,
   downloadLabel,
+  isTi,
 }: LinkRowProps) {
-  const extraLabel = downloadLabel ?? "Download";
+  const extraLabel = localize(downloadLabel ?? "Download", isTi);
   return (
     <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 px-3 py-2.5 sm:px-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <span className="font-semibold text-zinc-100">{name}</span>
-          {note ? <p className="mt-0.5 text-xs text-zinc-500">{note}</p> : null}
+          {note ? <p className="mt-0.5 text-xs text-zinc-500">{localize(note, isTi)}</p> : null}
         </div>
         <div className="flex flex-shrink-0 flex-wrap gap-2">
           <a
@@ -148,7 +227,7 @@ function LinkRow({
             rel="noopener noreferrer"
             className="rounded-md border border-cyan-500/35 bg-cyan-500/10 px-2.5 py-1 text-xs font-medium text-cyan-200 hover:bg-cyan-500/20"
           >
-            {websiteLabel}
+            {localize(websiteLabel, isTi)}
           </a>
           {iosHref ? (
             <a
@@ -202,18 +281,18 @@ const SAFETY_ITEMS = [
   "Keep backups in separate locations",
 ] as const;
 
-export function WrapUpResourcesContent() {
+export function WrapUpResourcesContent({ isTi }: { isTi: boolean }) {
   return (
     <div className="space-y-8 sm:space-y-10">
       {/* Intro */}
       <section className="rounded-2xl border border-cyan-500/25 bg-gradient-to-br from-cyan-950/40 via-zinc-950 to-orange-950/30 p-5 sm:p-8 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
-        <p className="text-sm font-medium uppercase tracking-wider text-cyan-400/90">Course wrap-up</p>
+        <p className="text-sm font-medium uppercase tracking-wider text-cyan-400/90">{localize("Course wrap-up", isTi)}</p>
         <h2 className="mt-2 text-xl font-bold text-zinc-50 sm:text-2xl lg:text-3xl">
-          Now that you have learned about Bitcoin, what&apos;s next?
+          {localize("Now that you have learned about Bitcoin, what’s next?", isTi)}
         </h2>
         <blockquote className="mt-6 border-l-4 border-orange-400/70 bg-orange-500/5 py-4 pl-4 pr-3 sm:mt-8 sm:py-5 sm:pl-6">
           <p className="text-lg font-serif italic leading-snug text-orange-50 sm:text-2xl sm:leading-snug lg:text-3xl">
-            &ldquo;Bitcoin gives you full control—but also full responsibility.&rdquo;
+            &ldquo;{localize("Bitcoin gives you full control—but also full responsibility.", isTi)}&rdquo;
           </p>
         </blockquote>
       </section>
@@ -221,14 +300,14 @@ export function WrapUpResourcesContent() {
       {/* Action + Safety */}
       <section className="grid gap-6 lg:grid-cols-2 lg:gap-8">
         <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 sm:p-6">
-          <h3 className="text-lg font-bold text-cyan-200 sm:text-xl">What You Can Do Now (Action Layer)</h3>
+          <h3 className="text-lg font-bold text-cyan-200 sm:text-xl">{localize("What You Can Do Now (Action Layer)", isTi)}</h3>
           <ul className="mt-4 space-y-3">
             {ACTION_ITEMS.map(({ text, Icon }) => (
               <li key={text} className="flex items-start gap-3 rounded-xl border border-zinc-800/60 bg-zinc-900/50 px-3 py-3 sm:px-4">
                 <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 text-cyan-300">
                   <Icon className="h-5 w-5" />
                 </span>
-                <span className="pt-1.5 text-sm font-medium text-zinc-200 sm:text-base">{text}</span>
+                <span className="pt-1.5 text-sm font-medium text-zinc-200 sm:text-base">{localize(text, isTi)}</span>
               </li>
             ))}
           </ul>
@@ -236,7 +315,7 @@ export function WrapUpResourcesContent() {
         <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 sm:p-6">
           <div className="flex items-center gap-2">
             <IconShield className="h-6 w-6 text-amber-400" />
-            <h3 className="text-lg font-bold text-amber-200 sm:text-xl">Safety Checklist</h3>
+            <h3 className="text-lg font-bold text-amber-200 sm:text-xl">{localize("Safety Checklist", isTi)}</h3>
           </div>
           <ul className="mt-4 space-y-2.5">
             {SAFETY_ITEMS.map((item) => (
@@ -245,7 +324,7 @@ export function WrapUpResourcesContent() {
                 className="flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-sm text-amber-50/95"
               >
                 <span className="mt-0.5 text-amber-400">✓</span>
-                <span>{item}</span>
+                <span>{localize(item, isTi)}</span>
               </li>
             ))}
           </ul>
@@ -254,10 +333,9 @@ export function WrapUpResourcesContent() {
 
       {/* Wallets */}
       <section className="rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 sm:p-8">
-        <h3 className="text-lg font-bold text-zinc-100 sm:text-xl">Wallets (No KYC — you control keys)</h3>
+        <h3 className="text-lg font-bold text-zinc-100 sm:text-xl">{localize("Wallet options and custody models", isTi)}</h3>
         <p className="mt-2 max-w-3xl text-sm text-zinc-400">
-          Non-custodial options so you hold your keys. On phone, use App Store / Google Play; on desktop, use Website and the
-          desktop download link. Verify URLs match the official domain; start with small amounts.
+          {localize("Choose wallet tools based on who controls the keys and the custody model. On phone, use App Store / Google Play; on desktop, use the official website and download link. Verify URLs match the official domain; start with small amounts.", isTi)}
         </p>
 
         <div className="mt-6 space-y-6">
@@ -265,6 +343,7 @@ export function WrapUpResourcesContent() {
             tone="teal"
             title="Offline supporting wallets"
             description="Options that can work with limited connectivity or community setups—understand the custody model before using."
+            isTi={isTi}
           >
             <LinkRow
               name="Fedi"
@@ -272,6 +351,7 @@ export function WrapUpResourcesContent() {
               href="https://www.fedi.xyz"
               iosHref="https://apps.apple.com/us/app/fedi/id6448916281"
               androidHref="https://play.google.com/store/apps/details?id=com.fedi"
+              isTi={isTi}
             />
           </WalletCategoryBlock>
 
@@ -279,6 +359,7 @@ export function WrapUpResourcesContent() {
             tone="cyan"
             title="Mobile (beginner-friendly)"
             description="Friendly mobile wallets for everyday sends and receives—always install from official store listings or the vendor site."
+            isTi={isTi}
           >
             <LinkRow
               name="Phoenix"
@@ -286,6 +367,7 @@ export function WrapUpResourcesContent() {
               href="https://phoenix.acinq.co"
               iosHref="https://apps.apple.com/us/app/phoenix-wallet/id1544097028"
               androidHref="https://play.google.com/store/apps/details?id=fr.acinq.phoenix.mainnet"
+              isTi={isTi}
             />
             <LinkRow
               name="Breez"
@@ -293,6 +375,7 @@ export function WrapUpResourcesContent() {
               href="https://breez.technology"
               iosHref="https://apps.apple.com/us/app/breez-lightning-client-pos/id1463604142"
               androidHref="https://play.google.com/store/apps/details?id=com.breez.client"
+              isTi={isTi}
             />
             <LinkRow
               name="Muun"
@@ -300,6 +383,7 @@ export function WrapUpResourcesContent() {
               href="https://muun.com"
               iosHref="https://apps.apple.com/us/app/muun-wallet/id1482037683"
               androidHref="https://play.google.com/store/apps/details?id=io.muun.apollo"
+              isTi={isTi}
             />
             <LinkRow
               name="BlueWallet"
@@ -307,6 +391,7 @@ export function WrapUpResourcesContent() {
               href="https://bluewallet.io"
               iosHref="https://apps.apple.com/us/app/bluewallet-bitcoin-wallet/id1376878040"
               androidHref="https://play.google.com/store/apps/details?id=io.bluewallet.bluewallet"
+              isTi={isTi}
             />
           </WalletCategoryBlock>
 
@@ -314,6 +399,7 @@ export function WrapUpResourcesContent() {
             tone="orange"
             title="Desktop (more control)"
             description="Full-featured desktop clients—strong for UTXO labels, coin control, and verifying transactions yourself. Download only from official domains."
+            isTi={isTi}
           >
             <LinkRow
               name="Sparrow"
@@ -321,6 +407,7 @@ export function WrapUpResourcesContent() {
               href="https://sparrowwallet.com"
               downloadHref="https://sparrowwallet.com/download/"
               downloadLabel="Desktop download"
+              isTi={isTi}
             />
             <LinkRow
               name="Electrum"
@@ -328,6 +415,7 @@ export function WrapUpResourcesContent() {
               href="https://electrum.org"
               downloadHref="https://electrum.org/#download"
               downloadLabel="Desktop download"
+              isTi={isTi}
             />
           </WalletCategoryBlock>
 
@@ -335,6 +423,7 @@ export function WrapUpResourcesContent() {
             tone="purple"
             title="Hardware (best security)"
             description="Sign transactions on a dedicated device—buy from the manufacturer or trusted resellers; verify packaging and setup carefully."
+            isTi={isTi}
           >
             <LinkRow
               name="Coldcard"
@@ -342,6 +431,7 @@ export function WrapUpResourcesContent() {
               href="https://coldcard.com"
               downloadHref="https://coldcard.com/docs/"
               downloadLabel="Docs & shop"
+              isTi={isTi}
             />
             <LinkRow
               name="Trezor"
@@ -351,6 +441,7 @@ export function WrapUpResourcesContent() {
               androidHref="https://play.google.com/store/apps/details?id=io.trezor.suite"
               downloadHref="https://trezor.io/trezor-suite"
               downloadLabel="Trezor Suite (desktop)"
+              isTi={isTi}
             />
             <LinkRow
               name="Ledger"
@@ -358,11 +449,13 @@ export function WrapUpResourcesContent() {
               href="https://www.ledger.com"
               iosHref="https://apps.apple.com/us/app/ledger-live-crypto-wallet/id1361671700"
               androidHref="https://play.google.com/store/apps/details?id=com.ledger.live"
+              isTi={isTi}
             />
             <LinkRow
               name="Blockstream Jade"
               note="Open-source Bitcoin hardware wallet; often used with Blockstream Green."
               href="https://blockstream.com/jade/"
+              isTi={isTi}
             />
           </WalletCategoryBlock>
         </div>
@@ -370,12 +463,11 @@ export function WrapUpResourcesContent() {
 
       {/* P2P */}
       <section className="rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 sm:p-8">
-        <h3 className="text-lg font-bold text-zinc-100 sm:text-xl">Getting Bitcoin (without traditional KYC)</h3>
+        <h3 className="text-lg font-bold text-zinc-100 sm:text-xl">{localize("Getting Bitcoin (without traditional KYC)", isTi)}</h3>
         <p className="mt-2 text-sm text-zinc-400">
-          Peer-to-peer routes reduce central custody and can improve privacy. They require more care: reputation, escrow, and
-          clear process.
+          {localize("Peer-to-peer routes reduce central custody and can improve privacy. They require more care: reputation, escrow, and clear process.", isTi)}
         </p>
-        <h4 className="mt-6 text-sm font-semibold text-cyan-300">1. Peer-to-Peer (P2P)</h4>
+        <h4 className="mt-6 text-sm font-semibold text-cyan-300">{localize("1. Peer-to-Peer (P2P)", isTi)}</h4>
         <div className="mt-3 space-y-2">
           <LinkRow
             name="Bisq"
@@ -383,6 +475,7 @@ export function WrapUpResourcesContent() {
             href="https://bisq.network"
             downloadHref="https://bisq.network/downloads/"
             downloadLabel="Desktop download"
+            isTi={isTi}
           />
           <LinkRow
             name="RoboSats"
@@ -390,28 +483,28 @@ export function WrapUpResourcesContent() {
             href="https://robosats.org"
             downloadHref="https://unsafe.robosats.org"
             downloadLabel="Web client"
+            isTi={isTi}
           />
-          <LinkRow name="Hodl Hodl" note="P2P with multisig escrow." href="https://hodlhodl.com" />
+          <LinkRow name="Hodl Hodl" note="P2P with multisig escrow." href="https://hodlhodl.com" isTi={isTi} />
         </div>
         <ul className="mt-4 space-y-1 text-sm text-zinc-300">
           <li>
-            <span className="text-emerald-400">✔</span> No central custody of funds during the trade (protocol-dependent)
+            <span className="text-emerald-400">✔</span> {localize("No central custody of funds during the trade (protocol-dependent)", isTi)}
           </li>
           <li>
-            <span className="text-emerald-400">✔</span> Often more private than centralized exchanges
+            <span className="text-emerald-400">✔</span> {localize("Often more private than centralized exchanges", isTi)}
           </li>
           <li>
-            <span className="text-amber-400">✖</span> Requires care: escrow flow, counterparty reputation, and local legal context
+            <span className="text-amber-400">✖</span> {localize("Requires care: escrow flow, counterparty reputation, and local legal context", isTi)}
           </li>
         </ul>
       </section>
 
       {/* African-focused */}
       <section className="rounded-2xl border border-emerald-500/25 bg-emerald-950/20 p-5 sm:p-8">
-        <h3 className="text-lg font-bold text-emerald-200 sm:text-xl">African-focused Bitcoin access</h3>
+        <h3 className="text-lg font-bold text-emerald-200 sm:text-xl">{localize("African-focused Bitcoin access", isTi)}</h3>
         <p className="mt-2 text-sm text-zinc-400">
-          Tools shaped for connectivity, feature phones, and community usage—always verify the latest product pages before
-          installing.
+          {localize("Tools shaped for connectivity, feature phones, and community usage—always verify the latest product pages before installing.", isTi)}
         </p>
         <div className="mt-5 space-y-3">
           <LinkRow
@@ -419,11 +512,13 @@ export function WrapUpResourcesContent() {
             note="No smartphone required; USSD access in supported regions."
             href="https://8333.mobi"
             websiteLabel="8333.mobi"
+            isTi={isTi}
           />
           <LinkRow
             name="Gorilla Sats OTC"
             note="Uganda-focused OTC and bitcoin access."
             href="https://otc.gorilla-sats.com/"
+            isTi={isTi}
           />
           <LinkRow
             name="Tando"
@@ -433,15 +528,16 @@ export function WrapUpResourcesContent() {
             androidHref="https://play.google.com/store/apps/details?id=me.tando.tandoapp"
             downloadHref="https://tando.me/download/"
             downloadLabel="Download hub"
+            isTi={isTi}
           />
         </div>
       </section>
 
       {/* Glossary */}
       <section className="rounded-2xl border border-zinc-800/80 bg-zinc-950/90 p-5 sm:p-8" id="wrap-up-glossary">
-        <h3 className="text-xl font-bold text-zinc-50 sm:text-2xl">Glossary</h3>
+        <h3 className="text-xl font-bold text-zinc-50 sm:text-2xl">{localize("Glossary", isTi)}</h3>
         <p className="mt-2 text-sm text-zinc-500">
-          Quick definitions for terms used across the course. Scroll the page like other chapters; terms are highlighted.
+          {localize("Quick definitions for terms used across the course. Scroll the page like other chapters; terms are highlighted.", isTi)}
         </p>
         <div className="mt-6 space-y-1 rounded-xl border border-zinc-800/60 bg-black/30 p-4 sm:p-5">
           {WRAP_UP_GLOSSARY.map(({ term, definition }) => (
