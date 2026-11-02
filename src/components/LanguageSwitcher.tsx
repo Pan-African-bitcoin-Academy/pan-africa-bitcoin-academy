@@ -76,24 +76,15 @@ export function LanguageSwitcher({
             compact
               ? "gap-1.5 border-cyan-400/25 bg-cyan-400/5 px-2.5 py-2 text-sm"
               : "gap-1 border-cyan-400/20 bg-transparent px-2 py-1.5 text-sm leading-none"
-          } ${isTranslating ? "border-cyan-400/50 bg-cyan-400/10" : ""}`}
+          }`}
           aria-expanded={open}
           aria-haspopup="listbox"
           aria-label="Select language"
         >
-          {/* Icon spins briefly when switching */}
           <ArrowLeftRight
-            className={`shrink-0 text-cyan-300/90 ${compact ? "h-5 w-5" : "h-3.5 w-3.5"} ${
-              isTranslating ? "lang-switching-icon" : ""
-            }`}
+            className={`shrink-0 text-cyan-300/90 ${compact ? "h-5 w-5" : "h-3.5 w-3.5"}`}
           />
-          {/* key forces re-mount → triggers fade-in animation */}
-          <span
-            key={language}
-            className="font-medium tabular-nums lang-label-enter"
-          >
-            {current.short}
-          </span>
+          <span className="font-medium tabular-nums">{current.short}</span>
           <ChevronDown
             className={`shrink-0 text-zinc-400 transition ${open ? "rotate-180" : ""} ${compact ? "h-4 w-4" : "h-3 w-3"}`}
           />

@@ -90,7 +90,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         isWrapUpResources
           ? undefined
           : isTi
-          ? `${chapter.level} · ${chapter.duration} · ${chapter.type === "Theory" ? "ቲዮሪ" : chapter.type === "Practice" ? "ተግባራዊ" : chapter.type}`
+          ? `${chapter.level} · ${chapter.duration} · ${chapter.type === "Theory" ? "ቲዮሪ" : chapter.type === "Practice" ? "ልምምድ" : "ተሓዋዊ"}`
           : `${chapter.level} · ${chapter.duration} · ${chapter.type}`
       }
     >
@@ -109,7 +109,13 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                   {chapter.level}
                 </span>
                 <span className="rounded-full border border-orange-400/40 px-2 py-0.5">
-                  {chapter.type}
+                  {isTi
+                    ? chapter.type === "Practice"
+                      ? "ልምምድ"
+                      : chapter.type === "Theory"
+                        ? "ክልሰ-ሓሳብ"
+                        : "ተሓዋዊ"
+                    : chapter.type}
                 </span>
                 <span className="rounded-full border border-purple-400/40 px-2 py-0.5">
                   {chapter.duration}
@@ -148,7 +154,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {!isWrapUpResources ? (
         <section className="rounded-xl border border-zinc-800/50 bg-zinc-950 p-3.5 sm:p-6 shadow-inner w-full min-w-0">
           <h2 className="text-base font-semibold text-zinc-100 sm:text-lg">
-            What You Will Learn
+            {isTi ? "እንታይ ክትመሃር ኢኻ።" : "What You Will Learn"}
           </h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-zinc-200">
             {chapter.learn.map((item) => (
@@ -164,7 +170,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         <section className="relative space-y-4 rounded-xl border border-zinc-800/50 bg-zinc-950 p-3 sm:p-6 shadow-inner w-full min-w-0 overflow-hidden">
           <ChapterTechVectors />
           <h2 className="relative text-base font-semibold text-zinc-100 sm:text-lg">
-            Main Lesson Content
+            {isTi ? "ቀንዲ ትሕዝቶ ትምህርቲ" : "Main Lesson Content"}
           </h2>
           <div className="relative space-y-5">
             {chapter.sections.map((section, sectionIdx) => {
@@ -1072,12 +1078,16 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                           </p>
                         </div>
                       </div>
-                    ) : section.heading === "17.1 Multi-Sig Designs and Flows (M-of-N; Coordinator vs Coordinator-Less)" && section.images.length >= 1 ? (
+                    ) : section.heading.startsWith("17.1") && section.images.length >= 1 ? (
                       <div className="mt-6 space-y-6">
                         <p className="text-center text-lg font-semibold text-cyan-200">
-                          Different multi-sig designs balance security and redundancy
+                          {isTi
+                            ? "ዝተፈላለዩ ማልቲ-ሲግ ዲዛይናት ንድሕነትን ተወሳኺ ኣማራጺን ኣብ ሚዛን የእትዉ"
+                            : "Different multi-sig designs balance security and redundancy"}
                         </p>
-                        <p className="text-center text-sm text-zinc-400">Click any image to zoom</p>
+                        <p className="text-center text-sm text-zinc-400">
+                          {isTi ? "ስእሊ ንምዕባይ ጠውቕ" : "Click any image to zoom"}
+                        </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                           {section.images.map((image, idx) => (
                             <ZoomableImage
@@ -1305,7 +1315,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {/* Summary */}
         <section className="rounded-xl border border-green-400/25 bg-black/70 p-3.5 sm:p-6 w-full min-w-0">
           <h2 className="text-base font-semibold text-green-200 sm:text-lg">
-            Summary / Key Takeaways
+            {isTi ? "ሓፈሻዊ ሓሳባት / ቀንዲ ነጥብታት" : "Summary / Key Takeaways"}
           </h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-zinc-200">
             {chapter.summary.map((s) => (
@@ -1317,7 +1327,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         {/* Key terms */}
         <section className="rounded-xl border border-cyan-400/20 bg-zinc-950/70 p-3.5 sm:p-6 w-full min-w-0">
           <h2 className="text-base font-semibold text-cyan-200 sm:text-lg">
-            Key Terms
+            {isTi ? "ቁልፊ ቃላት" : "Key Terms"}
           </h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {chapter.keyTerms.map((term) => {

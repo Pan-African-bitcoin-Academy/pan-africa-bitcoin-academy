@@ -315,6 +315,20 @@ export default function ChaptersPage() {
     }
   };
 
+  const getTypeLabel = (type: string) => {
+    if (language !== "ti") return type;
+    switch (type) {
+      case "theory":
+        return "ቲዮሪ";
+      case "practice":
+        return "ልምምድ";
+      case "lightning":
+        return "ላይትኒንግ";
+      default:
+        return type;
+    }
+  };
+
   return (
     <>
     <div className="relative min-h-screen w-full overflow-x-hidden bg-[#070b14] text-zinc-100">
@@ -1082,7 +1096,7 @@ export default function ChaptersPage() {
                         <span>⏱ {chapter.time}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                          <span className="text-cyan-400">{getTypeIcon(chapter.type)}</span> {chapter.type}
+                          <span className="text-cyan-400">{getTypeIcon(chapter.type)}</span> {getTypeLabel(chapter.type)}
                         </span>
                       </div>
 

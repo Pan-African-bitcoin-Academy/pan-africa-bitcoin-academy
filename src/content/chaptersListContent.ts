@@ -260,6 +260,21 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     LiveSession: "ምድላው ኖድን ላይትኒንግን",
   },
 
+  17: {
+    title: "ማልቲ-ሲግ (ናይ ሓባር ምእላይ)",
+    time: "60–75 ደቓይቕ",
+    learnPoints: [
+      "ስለምንታይ multi-sig ንስድራቤት፣ ትካላትን ውርሻን",
+      "M-of-N ዲዛይናት፤ ኣወሃሃዲ ዘለዎ ወይ ኣተሓባባሪ ዘይብሉ",
+      "ስትራተጂታት ምትሕብባርን ስርሒታዊ መጽሓፍቲ ጸወታን",
+    ],
+    activities: ["ናይ 2-of-3 መደብ ምሕላው ገንዘብ ስድራቤት ንድፊ"],
+    theory: ["መሰረታት ማልቲ-ሲግ", "ዲዛይናት M-of-N", "ስትራተጂታት ምሕላው ገንዘብ"],
+    practice: ["ማልቲ-ሲግ ምድላው", "ንጥፈት፡ ናይ ስድራቤት ምሕላው ገንዘብ መደብ"],
+    LiveSession: "ማልቲ-ሲግ ተገሊጹ",
+    quiz: "ሕቶታት ብዛዕባ ማልቲ-ሲግ",
+  },
+
 };
 
 export function getChaptersList(lang: SiteLanguage = "en"): ChapterListItem[] {
