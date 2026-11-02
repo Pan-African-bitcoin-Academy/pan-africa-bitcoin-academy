@@ -551,6 +551,13 @@ export default function DcaExperience() {
   }, [loadMarket, marketDays]);
 
   useEffect(() => {
+    const requestedSection = new URLSearchParams(window.location.search).get('section');
+    if (requestedSection === 'learn' || requestedSection === 'dashboard') {
+      setSection(requestedSection);
+    }
+  }, []);
+
+  useEffect(() => {
     if (section === 'simulator' && !historicalPrices.length && !historicalPriceError) {
       void loadHistoricalPrices();
     }
@@ -947,7 +954,8 @@ export default function DcaExperience() {
   }, [authLoading, isAuthenticated, section]);
 
   return (
-    <main className="relative isolate mx-auto min-h-screen w-full max-w-[1600px] px-3 pb-16 pt-6 before:fixed before:inset-0 before:-z-10 before:bg-slate-950/45 before:content-[''] sm:px-5 lg:px-8 lg:pt-10">
+    <main className="min-h-screen w-full bg-slate-950/60">
+      <div className="mx-auto w-full max-w-[1600px] px-3 pb-16 pt-6 sm:px-5 lg:px-8 lg:pt-10">
       <header className="mb-6 flex flex-col gap-5 lg:mb-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-orange-400/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-orange-200">
@@ -1610,6 +1618,7 @@ export default function DcaExperience() {
         }}
         initialEmail={forgotPasswordEmail}
       />
+      </div>
     </main>
   );
 }

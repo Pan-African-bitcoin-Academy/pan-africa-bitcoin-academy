@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { chaptersContent } from '@/content/chaptersContent';
 import { Download, Book, FileText, Calendar as CalendarIcon, Video, FileCheck, Users, GraduationCap, Clock, ExternalLink, TrendingDown, RotateCcw, X, BookOpen } from 'lucide-react';
 import { toLocalCalendarDate } from '@/lib/calendarDate';
+import { DcaAccumulationWidget } from '@/components/DcaAccumulationWidget';
 // Lazy load heavy components
 const Calendar = lazy(() => import('./Calendar').then(mod => ({ default: mod.Calendar })));
 const CertificateImageSection = lazy(() => import('./CertificateImageSection').then(mod => ({ default: mod.CertificateImageSection })));
@@ -1495,6 +1496,7 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
 
         {activeTab === 'overview' && (
           <div className="space-y-8">
+            <DcaAccumulationWidget />
             {/* Layout: Next Action + Calendar on top */}
             <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
               {/* Left side: Next Action Block + Progress Overview + Achievements & Sats */}
@@ -2597,4 +2599,3 @@ function ProfileModal({
     </div>
   );
 }
-
