@@ -198,8 +198,8 @@ function BarterSimulation({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Explore 01 · Barter", ti: "ምርምር 01 · ባርተር" }}
-      title={{ en: "Can you trade your way to bread?", ti: "ክሳብ ባኒ ብምልውዋጥ ክትበጽሕ ትኽእል?" }}
+      eyebrow={{ en: "01", ti: "01" }}
+      title={{ en: "Barter", ti: "ባርተር" }}
       description={{
         en: "You have bananas and want bread. Choose a trader and offer what you currently hold. A direct barter succeeds only when each side wants what the other offers.",
         ti: "ባናና ኣለካ፣ ባኒ ድማ ትደሊ። ነቲ እትሕዞ ዘለኻ ነገር ኣቕርብ። ቀጥታዊ ምልውዋጥ ክልቲኦም ወገናት ነቲ እቲ ካልእ ዘቕርቦ ምስ ዝደልዩ ጥራይ ይሳለጥ።",
@@ -324,11 +324,11 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Explore 02 · Functions", ti: "ምርምር 02 · ተግባራት" }}
-      title={{ en: "Three jobs money can do", ti: "ገንዘብ ዝፍጽሞም ሰለስተ ተግባራት" }}
+      eyebrow={{ en: "02", ti: "02" }}
+      title={{ en: "Functions of money", ti: "ተግባራት ገንዘብ" }}
       description={{
-        en: "A thing may serve one monetary function well and another less well. Explore each function and decide what it helps people do.",
-        ti: "ሓደ ነገር ሓደ ተግባር ገንዘብ ብጽቡቕ ክፍጽም እንከሎ ካልእ ድማ ብውሑድ ክፍጽም ይኽእል። ነፍሲ ወከፍ ተግባር መርምር።",
+        en: "Money can make exchanges, hold purchasing power for later, and provide a common way to compare prices. A form of money may perform these functions to different degrees.",
+        ti: "ገንዘብ ንምልውዋጥ፣ ንመጻኢ ናይ ምግዛእ ዓቕሚ ንምዕቃብን ዋጋታት ብሓደ መለክዒ ንምውድዳርን ይጠቅም። ዝተፈላለዩ ዓይነታት ገንዘብ ነዞም ተግባራት ብዝተፈላለየ ደረጃ ክፍጽሙ ይኽእሉ።",
       }}
       isTi={isTi}
     >
@@ -554,8 +554,8 @@ function MoneyProperties({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Experiment 03 · Properties", ti: "ፈተነ 03 · ባህርያት" }}
-      title={{ en: "What makes something useful as money?", ti: "ሓደ ነገር ከም ገንዘብ ጠቓሚ ዝገብሮ እንታይ እዩ?" }}
+      eyebrow={{ en: "03", ti: "03" }}
+      title={{ en: "Properties of money", ti: "ባህርያት ገንዘብ" }}
       description={{
         en: "Choose an item and inspect its trade-offs. These are qualities to compare, not a pass/fail checklist: usefulness depends on the community, technology, and situation.",
         ti: "ኣቕሓ ምረጽካ ንዘለዎ ምትዕርራይ መርምር። እዚኦም ንምውድዳር ዝሕግዙ ባህርያት እዮም እምበር ፈተና ሓለፈ/ወደቐ ኣይኮኑን።",
@@ -693,11 +693,11 @@ function MonetaryComparison({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Compare 04 · Monetary forms", ti: "ኣወዳድር 04 · ዓይነታት ገንዘብ" }}
-      title={{ en: "Compare trade-offs, not winners", ti: "ምትዕርራይ ኣወዳድር፣ ኣሸነፍቲ ኣይኮነን" }}
+      eyebrow={{ en: "04", ti: "04" }}
+      title={{ en: "Compare money", ti: "ገንዘብ ኣወዳድር" }}
       description={{
-        en: "Select a property to compare Bitcoin, gold, and fiat currency. Each description includes limits and dependencies; no form performs identically in every place or situation.",
-        ti: "ንቢትኮይን፣ ወርቅን ፊያት ባጤራን ንምውድዳር ባህሪ ምረጽ። ነፍሲ ወከፍ መግለጺ ገደብን ምርኮሳን ይጠቅስ።",
+        en: "Select a property to see how Bitcoin, gold, and fiat money differ. Each has strengths and limitations; the comparison depends on the property and context.",
+        ti: "ቢትኮይን፣ ወርቅን ፊያት ገንዘብን ብኸመይ ከም ዝፈላለዩ ንምርኣይ ባህሪ ምረጽ። ነፍሲ ወከፎም ጥንካረን ድኽመትን ኣለዎም፤ ውድድር ብባህሪን ኩነታትን ይምርኮስ።",
       }}
       isTi={isTi}
     >
@@ -750,6 +750,8 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
   const [priceRise, setPriceRise] = useState(20);
   const [alternative, setAlternative] = useState<ExchangeAlternative>("cash");
   const acceptingTraders = Math.round((confidence / 100) * 5);
+  const basketPrice = 10 * (1 + priceRise / 100);
+  const basketsPurchasable = 50 / basketPrice;
   const alternatives: { id: ExchangeAlternative; label: Localized; note: Localized }[] = [
     { id: "cash", label: { en: "Cash", ti: "ጥረ ገንዘብ" }, note: { en: "People accept it when they expect others to accept it and trust the rules and issuer.", ti: "ሰባት ካልኦት ክቕበልዎ እዮም ኢሎም ምስ ዝኣምኑ ይቕበልዎ።" } },
     { id: "barter", label: { en: "Barter", ti: "ባርተር" }, note: { en: "Can work for a direct match, but both sides need compatible goods and wants.", ti: "ቀጥታዊ ምልውዋጥ ይከኣል፤ ክልቲኦም ወገናት ዝሰማማዕ ኣቕሓን ድሌትን ግን የድሊ።" } },
@@ -759,18 +761,18 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Investigate 05 · Trust", ti: "መርምር 05 · እምነት" }}
-      title={{ en: "Trust changes what people are willing to accept", ti: "እምነት ሰባት ክቕበልዎ ዝደልዩ ይጸልው" }}
+      eyebrow={{ en: "05", ti: "05" }}
+      title={{ en: "Trust", ti: "እምነት" }}
       description={{
-        en: "Adjust confidence in this simplified scenario. The acceptance indicator and price-level control are separate on purpose: confidence can affect willingness to trade, but it does not mechanically set purchasing power.",
-        ti: "ኣብዚ ቀሊል ምሳሌ እምነት ቀይር። መለክዒ ተቐባልነትን ዋጋን ብፍላይ ተፈላልዮም ኣለዉ፤ እምነት ፍቓድ ምልውዋጥ ክጸልው ይኽእል፣ ብቐጥታ ናይ ምግዛእ ዓቕሚ ግን ኣይውስንን።",
+        en: "This example shows two different ideas: whether people are willing to accept a currency, and how much a fixed amount can buy. Change each control to see its effect. The example does not calculate that one causes the other.",
+        ti: "እዚ ምሳሌ ክልተ ዝተፈላለዩ ሓሳባት የርኢ፦ ሰባት ነታ ባጤራ ክቕበሉ ድሉዋት ምዃኖምን፣ ውሱን መጠን ገንዘብ ክንደይ ክገዝእ ከም ዝኽእልን። ውጽኢቱ ንምርኣይ ነፍሲ ወከፍ መቆጻጸሪ ቀይር። እቲ ምሳሌ ሓደ ካልእ ከም ዘስዕብ ኣየርእን።",
       }}
       isTi={isTi}
     >
       <div className="grid gap-4 lg:grid-cols-2">
         <div className={cardClass}>
           <label htmlFor="chapter1-confidence" className="font-semibold text-zinc-100">
-            {isTi ? "እምነት ኣብ እቲ ባጤራ" : "Confidence in this currency"}
+            {isTi ? "ሰባት ኣብዛ ባጤራ ዘለዎም እምነት" : "People's confidence in this currency"}
           </label>
           <input
             id="chapter1-confidence"
@@ -784,25 +786,40 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
             aria-valuetext={`${confidence}%`}
           />
           <div className="flex justify-between text-xs text-zinc-500"><span>0%</span><span>100%</span></div>
-          <div className="mt-4 flex gap-2" aria-label={isTi ? "ኣብነታዊ ሸረኽቲ" : "Illustrative traders"}>
+          <p className="mt-2 text-sm text-zinc-300">
+            {isTi
+              ? "እዚ መቆጻጸሪ ኣብ ሓሳባዊ ጉጅለ 5 ነጋዶ ክንደይ ነታ ባጤራ ክቕበሉ ድሉዋት ከም ዝኾኑ ይጸልው።"
+              : "This control changes how many of five example merchants are willing to accept the currency."}
+          </p>
+          <p className="mt-4 text-sm font-semibold text-zinc-100" aria-live="polite">
+            {isTi
+              ? `${acceptingTraders} ካብ 5 ነጋዶ ኣብዚ ምሳሌ ክቕበሉ ድሉዋት እዮም።`
+              : `${acceptingTraders} of 5 example merchants are willing to accept it.`}
+          </p>
+          <div className="mt-2 flex gap-2" aria-label={isTi ? "ውጽኢት ናይቶም 5 ነጋዶ" : "Acceptance among five example merchants"}>
             {Array.from({ length: 5 }, (_, index) => (
               <div
                 key={index}
-                className={`flex h-11 flex-1 items-center justify-center rounded-lg border text-xs font-semibold ${index < acceptingTraders ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-200" : "border-zinc-700 bg-zinc-900 text-zinc-500"}`}
-                aria-label={index < acceptingTraders ? (isTi ? "ዝቕበል" : "Willing to accept") : (isTi ? "ዘይቕበል" : "Not accepting in this scenario")}
+                className={`flex h-9 flex-1 items-center justify-center rounded-md border text-xs font-medium ${index < acceptingTraders ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-200" : "border-zinc-700 bg-zinc-900 text-zinc-500"}`}
+                aria-label={isTi ? `ነጋዳይ ${index + 1}፡ ${index < acceptingTraders ? "ክቕበል ድሉው" : "ኣይቅበልን"}` : `Merchant ${index + 1}: ${index < acceptingTraders ? "willing to accept" : "not willing to accept"}`}
               >
-                {index < acceptingTraders ? (isTi ? "ይቕበል" : "Accepts") : (isTi ? "ይጽበ" : "Waits")}
+                {isTi ? `ነጋዳይ ${index + 1}` : `Merchant ${index + 1}`}
               </div>
             ))}
           </div>
           <p className="mt-2 text-xs text-zinc-500">
-            {isTi ? "ምሳሌ ጥራይ፦ እዚ ቁጽሪ ተጽእኖ እምነት የርኢ እምበር ናይ ገለ ዕዳጋ ግምት ኣይኮነን።" : "Illustrative only: this index shows a possible effect, not a prediction about a real market."}
+            {isTi ? "ምሳሌ ጥራይ እዩ፤ ናይ ሓቀኛ ዕዳጋ ግምት ወይ ትንበያ ኣይኮነን።" : "Illustrative only; this is not a measurement or prediction of a real market."}
           </p>
         </div>
         <div className={cardClass}>
           <label htmlFor="chapter1-trust-prices" className="font-semibold text-zinc-100">
-            {isTi ? "ኣብቲ ምሳሌ ዋጋ መሶብ ምግቢ" : "Example food-basket price"}
+            {isTi ? "ኣብነታዊ ዋጋ መሶብ ምግቢ" : "Hypothetical food-basket price"}
           </label>
+          <p className="mt-1 text-sm text-zinc-300">
+            {isTi
+              ? "50 ናቕፋ ከም ዘለካ ግምት። እቲ መሶብ ኣብ መጀመርታ 10 ናቕፋ እዩ።"
+              : "Assume you hold 50 Nakfa. The basket starts at 10 Nakfa."}
+          </p>
           <input
             id="chapter1-trust-prices"
             type="range"
@@ -815,29 +832,36 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
             aria-valuetext={`${priceRise}%`}
           />
           <p className="mt-2 text-sm text-zinc-300">
-            {isTi ? "ምሳሌ ዋጋ ካብ 10 ናቕፋ ናብ" : "Illustrative basket price: 10 Nakfa →"}{" "}
-            Nakfa {(10 * (1 + priceRise / 100)).toLocaleString()}
+            {isTi ? "ዋጋ መሶብ ኣብዚ ምሳሌ፦" : "Basket price in this example:"}{" "}
+            Nakfa {basketPrice.toLocaleString()}
           </p>
           <p className="mt-3 text-sm text-zinc-300">
-            {isTi ? "ናይ ምግዛእ ዓቕሚ ብናይ ኣቕሑ ዋጋን መጠን ገንዘብን ይምልከት። እምነት ብዘይ ተወሳኺ ሓበሬታ ኣብ ባዕሉ ኣይውስኖን።" : "Purchasing power depends on prices and the amount held. Confidence alone does not determine it."}
+            {isTi
+              ? `ብ50 ናቕፋ ኣስታት ${basketsPurchasable.toFixed(1)} መሶብ ክትገዝእ ትኽእል።`
+              : `At this price, 50 Nakfa buys about ${basketsPurchasable.toFixed(1)} baskets.`}
           </p>
         </div>
       </div>
+      <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+        {isTi
+          ? "እዞም ክልተ መቆጻጸሪታት ብፍላይ ተፈላልዮም ኣለዉ፦ ሓደ ፍቓድ ምቕባል ይቕይር፣ እቲ ካልእ ድማ ዋጋ መሶብ ይቕይር። ኣብ ሓቀኛ ቁጠባ፡ እምነት ንሕቶ ገንዘብን ምንዛረ ሸርፊን ክጸልው ይኽእል፤ ግን ውጽኢቱ ብዙሓት ኩነታት ይውስንዎ።"
+          : "The controls are separate on purpose: one changes willingness to accept the currency; the other changes the basket's price. In real economies, confidence can influence demand for money and exchange rates, but the outcome depends on many factors."}
+      </p>
       <div className="mt-4">
-        <h4 className="font-semibold text-zinc-100">{isTi ? "እምነት ኣብ እንታይ እዩ?" : "What kind of trust is involved?"}</h4>
+        <h4 className="font-semibold text-zinc-100">{isTi ? "ዓይነታት እምነት ኣብ ስርዓት ገንዘብ" : "Different kinds of trust in a monetary system"}</h4>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
           {[
-            { en: "Institutional trust: confidence in rules, courts, or public institutions.", ti: "እምነት ትካል፦ ኣብ ሕግታት፣ ቤት ፍርዲ ወይ ህዝባዊ ትካላት ዘሎ እምነት።" },
-            { en: "Issuer trust: confidence in the organization responsible for a currency or claim.", ti: "እምነት ኣውጻኢ፦ ኣብ እቲ ባጤራ ወይ ጠለብ ዘውጽእ ትካል ዘሎ እምነት።" },
-            { en: "Counterparty confidence: expecting other people to accept the payment or honor a promise.", ti: "እምነት ኣብ ተጻራሪ ወገን፦ ካልኦት ክፍሊት ክቕበሉ ወይ ተስፋ ክፍጽሙ ምጽባይ።" },
-            { en: "Verification: checking a payment or claim rather than relying only on another person's word.", ti: "ምርግጋጽ፦ ኣብ ቃል ካልእ ሰብ ጥራይ ከይተመርኮስካ ክፍሊት ወይ ጠለብ ምምርማር።" },
+            { en: "Institutional trust: confidence that laws and public institutions apply rules predictably.", ti: "እምነት ትካል፦ ሕግታትን ህዝባዊ ትካላትን ሕግታት ብትኽክል ከም ዘተግብሩ ዘሎ እምነት።" },
+            { en: "Issuer trust: confidence that the organization responsible for money or a promise will meet its obligations.", ti: "እምነት ኣውጻኢ፦ እቲ ገንዘብ ወይ ተስፋ ዘውጽእ ትካል ግዴታታቱ ከም ዝፍጽም ዘሎ እምነት።" },
+            { en: "Trust in other people: expecting a buyer or seller to accept payment or keep a promise.", ti: "ኣብ ካልኦት ሰባት ዘሎ እምነት፦ ዓዳጊ ወይ ሸያጢ ክፍሊት ክቕበል ወይ ተስፋኡ ክፍጽም ምጽባይ።" },
+            { en: "Verification: checking evidence about a payment or claim instead of relying only on someone's word.", ti: "ምርግጋጽ፦ ኣብ ቃል ካልእ ሰብ ጥራይ ከይተመርኮስካ፡ ብዛዕባ ክፍሊት ወይ ጠለብ ዘሎ መርትዖ ምምርማር።" },
           ].map((note) => (
             <p key={note.en} className={`${cardClass} text-sm leading-relaxed text-zinc-300`}>{isTi ? note.ti : note.en}</p>
           ))}
         </div>
       </div>
       <div className="mt-4">
-        <h4 className="font-semibold text-zinc-100">{isTi ? "ኣማራጺ መንገዲ ምልውዋጥ ምረጽ" : "Explore an alternative exchange method"}</h4>
+        <h4 className="font-semibold text-zinc-100">{isTi ? "ኣማራጺ ኣገባባት ምልውዋጥ" : "Other ways people exchange value"}</h4>
         <div className="mt-2 flex flex-wrap gap-2">
           {alternatives.map((item) => (
             <button type="button" key={item.id} aria-pressed={alternative === item.id} className={alternative === item.id ? selectedButtonClass : buttonClass} onClick={() => setAlternative(item.id)}>
@@ -916,8 +940,8 @@ function EverydayMoney({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Apply 06 · Everyday money", ti: "ተግባር 06 · ገንዘብ ኣብ መዓልታዊ ህይወት" }}
-      title={{ en: "Spot money's function in everyday life", ti: "ተግባር ገንዘብ ኣብ መዓልታዊ ህይወት ፍለጥ" }}
+      eyebrow={{ en: "06", ti: "06" }}
+      title={{ en: "Money in daily life", ti: "ገንዘብ ኣብ መዓልታዊ ህይወት" }}
       description={{
         en: "Choose an East African everyday scenario. The same payment can serve more than one function, but focus on the role described in each prompt.",
         ti: "ኣብ ምስራቕ ኣፍሪቃ ዘሎ መዓልታዊ ኩነታት ምረጽ። ሓደ ክፍሊት ካብ ሓደ ንላዕሊ ተግባር ክፍጽም ይኽእል፤ ኣብቲ ሕቶ ዝተገልጸ ተግባር ግን ኣተኩር።",
@@ -1099,8 +1123,8 @@ function FinalAssessment({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Reflect 07 · Final assessment", ti: "ኣስተንትን 07 · መወዳእታ ገምጋም" }}
-      title={{ en: "Show how you would reason through it", ti: "ብኸመይ ከም እትሓስብ ኣርኢ" }}
+      eyebrow={{ en: "07", ti: "07" }}
+      title={{ en: "Assessment", ti: "ገምጋም" }}
       description={{
         en: "Six short scenarios check understanding, not memorized definitions. Each answer includes an explanation; your results highlight topics to revisit.",
         ti: "ሽዱሽተ ሓጸርቲ ኩነታት ምርዳእ ይምርምሩ እምበር ትርጉማት ምዝካር ኣይኮኑን። ነፍሲ ወከፍ መልሲ መብርሂ ኣለዎ።",

@@ -700,105 +700,25 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                   </div>
                 ) : !section.heading.startsWith("1.2") && section.images && section.images.length > 0 && (
                   (section.heading === "Introduction" || section.heading === "መእተዊ") && section.images.length === 5 ? (
-                    // Circular layout for Introduction section with 5 images
-                    <div className="mt-16 sm:mt-24 lg:mt-12 mb-40 sm:mb-56 lg:mb-24 flex items-center justify-center w-full overflow-hidden lg:overflow-visible">
-                      <div className="relative w-full sm:max-w-3xl lg:max-w-lg aspect-square overflow-visible rounded-3xl border border-zinc-700/40 bg-zinc-950/60 shadow-[0_0_25px_rgba(0,0,0,0.6)]">
-                        {/* Futuristic arrows showing the flow: Left (banana) → Right (banana→shoes) → Bottom (shoes→bread) */}
-                        <svg className="absolute inset-0 w-full h-full pointer-events-none z-5" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
-                          <defs>
-                            {/* Glow filter for futuristic effect */}
-                            <filter id="glow">
-                              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                              <feMerge>
-                                <feMergeNode in="coloredBlur"/>
-                                <feMergeNode in="SourceGraphic"/>
-                              </feMerge>
-                            </filter>
-                            {/* Futuristic arrowhead */}
-                            <marker id="arrowhead-futuristic" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
-                              <path d="M 0 0 L 12 6 L 0 12 L 3 6 Z" fill="#f97316" filter="url(#glow)" />
-                            </marker>
-                            {/* Animated gradient */}
-                            <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="#f97316" stopOpacity="0.8" />
-                              <stop offset="50%" stopColor="#fb923c" stopOpacity="1" />
-                              <stop offset="100%" stopColor="#f97316" stopOpacity="0.8" />
-                            </linearGradient>
-                          </defs>
-                          {/* Arrow from Left (banana) to Right (banana→shoes) */}
-                          <path
-                            d="M 5 50 L 95 50"
-                            stroke="url(#arrowGradient)"
-                            strokeWidth="4"
-                            fill="none"
-                            markerEnd="url(#arrowhead-futuristic)"
-                            filter="url(#glow)"
-                            className="drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
-                          />
-                          {/* Arrow from Right (banana→shoes) to Bottom (shoes→bread) */}
-                          <path
-                            d="M 50 50 L 50 98"
-                            stroke="url(#arrowGradient)"
-                            strokeWidth="4"
-                            fill="none"
-                            markerEnd="url(#arrowhead-futuristic)"
-                            filter="url(#glow)"
-                            className="drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
-                          />
-                        </svg>
-
-                        {/* Center image (barter system) */}
-                        <div className="absolute top-[42%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-[14rem] sm:w-[18rem] lg:w-[10rem]">
+                    <ol className="mt-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {section.images.map((image, idx) => (
+                        <li
+                          key={image.src}
+                          className="min-w-0 rounded-xl border border-zinc-800 bg-zinc-900/60 p-3"
+                        >
+                          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-orange-300">
+                            {isTi ? `ደረጃ ${idx + 1}` : `Step ${idx + 1}`}
+                          </p>
                           <ZoomableImage
-                            src={section.images[3].src}
-                            alt={section.images[3].alt}
-                            caption={section.images[3].caption}
-                            className="w-full rounded-lg"
-                            thumbnailClassName="max-h-full"
+                            src={image.src}
+                            alt={image.alt}
+                            caption={image.caption}
+                            className="rounded-lg"
+                            thumbnailClassName="aspect-[4/3] w-full"
                           />
-                        </div>
-                        {/* Top image - lifted higher to clear center image */}
-                        <div className="absolute -top-28 sm:-top-32 lg:top-[-6%] left-1/2 transform -translate-x-1/2 lg:-translate-y-1/3 w-[10rem] sm:w-[14rem] lg:w-[11rem] z-20">
-                          <ZoomableImage
-                            src={section.images[0].src}
-                            alt={section.images[0].alt}
-                            caption={section.images[0].caption}
-                            className="w-full rounded-lg"
-                            thumbnailClassName="max-h-full"
-                          />
-                        </div>
-                        {/* Right image */}
-                        <div className="absolute top-1/2 -right-16 sm:-right-20 lg:right-[2%] transform -translate-y-1/2 translate-x-full w-[9rem] sm:w-[12rem] lg:w-[9rem] z-20">
-                          <ZoomableImage
-                            src={section.images[1].src}
-                            alt={section.images[1].alt}
-                            caption={section.images[1].caption}
-                            className="w-full rounded-lg"
-                            thumbnailClassName="max-h-full"
-                          />
-                        </div>
-                        {/* Bottom image */}
-                        <div className="absolute -bottom-24 sm:-bottom-32 lg:bottom-[3%] left-1/2 transform -translate-x-1/2 lg:translate-y-1/3 w-[8rem] sm:w-[11rem] lg:w-[8rem] z-20">
-                          <ZoomableImage
-                            src={section.images[4].src}
-                            alt={section.images[4].alt}
-                            caption={section.images[4].caption}
-                            className="w-full rounded-lg"
-                            thumbnailClassName="max-h-full"
-                          />
-                        </div>
-                        {/* Left image */}
-                        <div className="absolute top-1/2 -left-16 sm:-left-20 lg:left-[2%] transform -translate-y-1/2 -translate-x-full w-[9rem] sm:w-[12rem] lg:w-[9rem] z-20">
-                          <ZoomableImage
-                            src={section.images[2].src}
-                            alt={section.images[2].alt}
-                            caption={section.images[2].caption}
-                            className="w-full rounded-lg"
-                            thumbnailClassName="max-h-full"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                        </li>
+                      ))}
+                    </ol>
                   ) : (
                     // Default layout for other sections
                     section.heading.startsWith("1.3") && section.images.length > 1 ? (
@@ -1127,29 +1047,25 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                         ))}
                       </div>
                     ) : chapter.slug === "the-nature-of-money" && (section.heading === "Introduction" || section.heading === "መእተዊ") && section.images.length >= 3 ? (
-                      // Chapter 1 intro: circular storyboard with directional arrows
-                      <div className="mt-6 flex flex-col items-center">
+                      <ol className="mt-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {section.images.map((image, idx) => (
-                          <div key={idx} className="flex w-full flex-col items-center">
-                            <div className="w-[220px] sm:w-[240px]">
-                              <div className="aspect-square overflow-hidden rounded-full border border-orange-400/30 bg-zinc-900/40 p-2 shadow-lg">
-                                <ZoomableImage
-                                  src={image.src}
-                                  alt={image.alt}
-                                  caption={image.caption}
-                                  className="h-full w-full rounded-full object-cover"
-                                  thumbnailClassName="h-full max-h-none w-full"
-                                />
-                              </div>
-                            </div>
-                            {idx < (section.images?.length ?? 0) - 1 && (
-                              <div className="my-2 flex h-8 w-8 items-center justify-center rounded-full border border-orange-400/30 bg-orange-500/10 text-lg text-orange-300">
-                                ↓
-                              </div>
-                            )}
-                          </div>
+                          <li
+                            key={image.src}
+                            className="min-w-0 rounded-xl border border-zinc-800 bg-zinc-900/60 p-3"
+                          >
+                            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-orange-300">
+                              {isTi ? `ደረጃ ${idx + 1}` : `Step ${idx + 1}`}
+                            </p>
+                            <ZoomableImage
+                              src={image.src}
+                              alt={image.alt}
+                              caption={image.caption}
+                              className="rounded-lg"
+                              thumbnailClassName="aspect-[4/3] w-full"
+                            />
+                          </li>
                         ))}
-                      </div>
+                      </ol>
                     ) : section.images.length === 2 ? (
                       // Side by side layout for sections with exactly 2 images
                       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
