@@ -289,6 +289,20 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     LiveSession: "መሰረታት ስክሪፕት",
     quiz: "ሕቶታት ብዛዕባ ስክሪፕት",
   },
+  19: {
+    title: "UTXO ምድልዳልን ሓደጋታት ብሕትውናን",
+    time: "45–60 ደቓይቕ",
+    learnPoints: [
+      "መዓስ ምድልዳል ከም ዘድሊ (መስኮታት ክፍሊት፣ ኩነታት mempool)",
+      "ካብ ምውህሃድ UTXOታት ዝመጽእ ምጉዳል ብሕትውና",
+      "ንዋጋን ብሕትውናን ዝምጥን መጻኢ ወጻኢታት ምውጣን",
+    ],
+    activities: ["ናይ ምድልዳል መደብ ምንዳፍ"],
+    theory: ["ስትራተጂታት ምድልዳል", "ሓደጋታት ብሕትውና", "ምቁጽጻር ሳንቲም"],
+    practice: ["ምውጣን ምድልዳል", "ንጥፈት፡ ናይ ምድልዳል መደብ ምንዳፍ"],
+    LiveSession: "ብሕትውናን ምድልዳልን",
+    quiz: "ሕቶታት ብዛዕባ ምድልዳል",
+  },
 
 };
 
