@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/PageContainer";
 import { getChapterBySlug, chaptersContent } from "@/content/chaptersContent";
@@ -29,6 +30,18 @@ import { ZoomableImage } from "@/components/ZoomableImage";
 import { KeysChapterHeroQuote } from "@/components/chapters/KeysChapterHeroQuote";
 import { BlockchainBasicsHeroQuote } from "@/components/chapters/BlockchainBasicsHeroQuote";
 import type { Metadata } from "next";
+
+const Chapter1InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter1InteractiveLesson").then((module) => module.Chapter1InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 1 learning activities…
+      </p>
+    ),
+  }
+);
 
 type ChapterDetailClientProps = {
   slug: string;
@@ -1184,9 +1197,26 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                 )}
               </div>
               </ChapterSectionAnimated>
+              {chapter.slug === "the-nature-of-money" && sectionIdx === 0 ? (
+                <Chapter1InteractiveLesson module="barter" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-nature-of-money" && sectionIdx === 1 ? (
+                <Chapter1InteractiveLesson module="functions" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-nature-of-money" && sectionIdx === 2 ? (
+                <Chapter1InteractiveLesson module="properties" isTi={isTi} />
+              ) : null}
               </React.Fragment>
               );
             })}
+            {chapter.slug === "the-nature-of-money" ? (
+              <>
+                <Chapter1InteractiveLesson module="comparison" isTi={isTi} />
+                <Chapter1InteractiveLesson module="trust" isTi={isTi} />
+                <Chapter1InteractiveLesson module="everyday" isTi={isTi} />
+                <Chapter1InteractiveLesson module="assessment" isTi={isTi} />
+              </>
+            ) : null}
           </div>
         </section>
         )}

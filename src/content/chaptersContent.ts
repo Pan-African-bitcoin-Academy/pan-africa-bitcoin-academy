@@ -51,7 +51,7 @@ export const chaptersContent: ChapterContent[] = [
     level: "Beginner",
     duration: "45–60 min",
     type: "Theory",
-    hook: "Money fixes barter’s double coincidence of wants, turning local swaps into markets.",
+    hook: "Money can ease barter’s double coincidence of wants, helping exchanges move beyond direct swaps.",
     learn: [
       "Why money emerged to solve barter limits",
       "Medium of exchange, store of value, unit of account",
@@ -64,7 +64,7 @@ export const chaptersContent: ChapterContent[] = [
         paragraphs: [
           "Imagine waking up in a world without money. You have bananas, but you're craving bread. You walk to the baker and offer him your bananas. The baker frowns and says, 'I don't want bananas today, I want shoes.'",
           "Now you're stuck. To get bread, you must first find a shoemaker who wants bananas, trade with him, and then go back to the baker with shoes. This back-and-forth feels exhausting and uncertain. This problem has a name: the 'double coincidence of wants.' Both sides must want exactly what the other has, at the same time, in the correct quantity.",
-          "This is why humans invented money. Not because they admired shiny coins or pretty paper, but because cash solved the headache of trade. Money became the bridge — a universal tool that allowed people to exchange value without endless searching or awkward swaps.",
+          "Money did not emerge everywhere through one simple sequence, and barter was not its only historical origin. In different societies, trade, credit and debt, accounting systems, commodities, and state institutions all shaped monetary practices. This banana-and-bread story is a teaching model for one friction money can reduce: the need to find a direct trading partner with matching wants.",
         ],
         images: [
           {
@@ -167,7 +167,7 @@ export const chaptersContent: ChapterContent[] = [
       "• In your own words: What is money to you?",
     ],
     summary: [
-      "Money solves the 'double coincidence of wants' problem that makes barter inefficient.",
+      "Money can reduce the matching problem that can make direct barter costly or inconvenient.",
       "Money has three essential functions: medium of exchange, store of value, and unit of account.",
       "Sound money must be durable, portable, divisible, recognizable, and scarce.",
       "Trust is the foundation of any monetary system — without it, money fails.",
@@ -2566,5 +2566,3 @@ export const getChapterBySlug = (slug: string, lang: SiteLanguage = "en"): Chapt
   }
   return chaptersContent.find((chapter) => chapter.slug === slug);
 };
-
-

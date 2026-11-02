@@ -1,7 +1,7 @@
 # Chapter 1: The Nature of Money / ምዕራፍ 1፡ ባህሪ ገንዘብ
 
-Money fixes barter’s double coincidence of wants, turning local swaps into markets.  
-ገንዘብ ነቲ ናይ ድሌታት ምግርጫው የዐርዮ፣ ንናይ ውሽጢ ዓዲ ምልውዋጥ ናብ ዕዳጋ ይቕይሮ።
+Money can ease barter’s double coincidence of wants, helping exchanges move beyond direct swaps.
+ገንዘብ ነቲ ድርብ ምግጥጣም ድሌታት ክቕንሶ ይኽእል፣ ምልውዋጥ ድማ ካብ ቀጥታዊ ምቅያር ንላዕሊ ክዓቢ ይሕግዝ።
 
 ---
 
@@ -26,8 +26,8 @@ Imagine waking up in a world without money. You have bananas, but you're craving
 Now you're stuck. To get bread, you must first find a shoemaker who wants bananas, trade with him, and then go back to the baker with shoes. This back-and-forth feels exhausting and uncertain. This problem has a name: the 'double coincidence of wants.' Both sides must want exactly what the other has, at the same time, in the correct quantity.  
 እንታይ ክትግብር ጠፊእካ’ዶ ። እንጀራ ንምርካብ፡ መጀመርታ ባናና ዝደሊ ሰራሕ ጫማ ረኺብካ ምስኡ ክትነግድ፡ ድሕሪኡ ጫማ ሒዝካ ናብቲ ዳፈርኖ ክትምለስ ኣለካ። እዚ ንቕድሚትን ንድሕሪትን ዝግበር ኣድካምን ርግጸኛ ዘይኮነን ኮይኑ ይስምዓካ። እዚ ጸገም እዚ ስም ኣለዎ፡ ‘ድርብ ናይ ምግጣም ድሌታት’። ክልቲኦም ወገናት ልክዕ ከምቲ እቲ ካልእ ዘለዎ ክደልዩ ኣለዎም፣ ኣብ ተመሳሳሊ እዋን፣ ብትኽክለኛ ብዝሒ።
 
-This is why humans invented money. Not because they admired shiny coins or pretty paper, but because cash solved the headache of trade. Money became the bridge — a universal tool that allowed people to exchange value without endless searching or awkward swaps.  
-ነዚ እዩ ድማ ደቂ ሰባት ገንዘብ ዝመሃዙ። ነጸብራቕ ሳንቲም ወይ ጽቡቕ ወረቐት ስለ ዘድንቑ ዘይኮነስ፡ ጥረ ገንዘብ ንሕማም ርእሲ ንግዲ ስለ ዝፈትሖ እዩ። ገንዘብ ድልድል ኮይኑ - ሰባት ብዘይ መወዳእታ ዘይብሉ ምድላይ ወይ ኣጨናቂ ምልውዋጥ ዋጋ ክለዋወጡ ዘኽእሎም ኣድማሳዊ መሳርሒ።
+Money did not emerge everywhere through one simple sequence, and barter was not its only historical origin. In different societies, trade, credit and debt, accounting systems, commodities, and state institutions all shaped monetary practices. This banana-and-bread story is a teaching model for one friction money can reduce: the need to find a direct trading partner with matching wants.
+ገንዘብ ኣብ ኩሉ ቦታ ብሓደ ቀሊል ቅደም-ተኸተል ኣይተፈጥረን፣ ባርተር እውን እንኮ ታሪኻዊ መበገሲ ኣይኮነን። ኣብ ዝተፈላለዩ ሕብረተሰባት፣ ንግዲ፣ ልቓሕን ዕዳን፣ ስርዓታት ሕሳብ፣ ኣቕሑ፣ ትካላት መንግስቲን ንስርዓታት ገንዘብ ብዝተፈላለየ መንገዲ ቅርጺ ሂቦም። እዚ ታሪኽ ባናናን ባኒን እቲ ገንዘብ ክቕንሶ ዝኽእል ሓደ ጸገም ንምምሃር ዝተዳለወ ምሳሌ እዩ፦ ተመሳሳሊ ድሌት ዘለዎ ቀጥታዊ መሻርኽቲ ምድላይ።
 
 #### Visual Flow / ስእላዊ መግለጺታት
 - **The barter system requires a double coincidence of wants**  
