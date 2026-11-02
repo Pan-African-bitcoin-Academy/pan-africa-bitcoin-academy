@@ -37,7 +37,7 @@ export const chaptersList: ChapterListItem[] = [
   { id: 15, level: 2, number: 15, title: "Layer 2 & Sidechains in Daily Life", difficulty: "Intermediate", time: "70 min", icon: "⚡", type: "practice", activities: ["Live Lightning Payment Demo"], learnPoints: ["Lightning Basics (fast payments; settlement trade-offs)", "Receive and Spend via Lightning (custodial vs non-custodial)", "Sidechains Overview (e.g., Liquid — federated trade-offs)", "Circular Economies — markets that run on sats"], theory: ["Lightning Network", "Layer 2 solutions", "Sidechains"], practice: ["Lightning payment", "Activity: Live demo"], LiveSession: "Lightning explained", quiz: "questions on Lightning" },
   { id: 16, level: 3, number: 16, title: "Full Node & Opening a Lightning Channel", difficulty: "Advanced", time: "80 min", icon: "🛠", type: "practice", activities: ["Simulated channel open/close (regtest/testnet)"], learnPoints: ["Choosing a Node Stack; privacy tips", "Open/Close a Channel; routing basics", "Backups/watchtowers"], theory: ["Node stacks", "Lightning channels", "Routing basics"], practice: ["Channel operations", "Activity: Channel simulation"], LiveSession: "Node and Lightning setup", quiz: " questions on nodes and channels" },
   { id: 17, level: 3, number: 17, title: "Multi-Sig (Collaborative Custody)", difficulty: "Advanced", time: "70 min", icon: "🛠", type: "practice", activities: ["Design a 2-of-3 Family Custody Plan"], learnPoints: ["Why Multi-Sig (family/orgs/inheritance)", "M-of-N Designs; coordinator vs coordinator-less flows", "Backup Strategies and Operational Playbooks"], theory: ["Multi-sig concepts", "M-of-N designs", "Custody strategies"], practice: ["Multi-sig setup", "Activity: Family custody plan"], LiveSession: "Multi-sig explained", quiz: "questions on multi-sig" },
-  { id: 18, level: 3, number: 18, title: "Intro to Bitcoin Script (Optional Track)", difficulty: "Advanced", time: "65 min", icon: "📘", type: "theory", activities: [], learnPoints: ["Locking & Unlocking Conditions (P2PKH → P2WPKH)", "Timelocks & Simple Policies (high-level)", "Where Script Appears in Real Wallets"], theory: ["Bitcoin Script", "Locking conditions", "Timelocks"], practice: ["Script examples", "Policy design"], LiveSession: "Script basics", quiz: "questions on Script" },
+  { id: 18, level: 3, number: 18, title: "Intro to Bitcoin Script (Optional Track)", difficulty: "Advanced", time: "65 min", icon: "📘", type: "mixed", activities: [], learnPoints: ["Locking & Unlocking Conditions (P2PKH → P2WPKH)", "Timelocks & Simple Policies (high-level)", "Where Script Appears in Real Wallets"], theory: ["Bitcoin Script", "Locking conditions", "Timelocks"], practice: ["Script examples", "Policy design"], LiveSession: "Script basics", quiz: "questions on Script" },
   { id: 19, level: 3, number: 19, title: "UTXO Consolidation & Privacy Risks", difficulty: "Advanced", time: "60 min", icon: "🛠", type: "practice", activities: ["Draft a Consolidation Plan for a Noisy UTXO Set"], learnPoints: ["When to Consolidate (fee windows; mempool conditions)", "Privacy Erosion Risks & Coin-Control Discipline", "Spend Plans for Future Fees and Privacy"], theory: ["Consolidation strategies", "Privacy risks", "Coin control"], practice: ["Consolidation planning", "Activity: Draft plan"], LiveSession: "Privacy and consolidation", quiz: "questions on consolidation" },
   { id: 20, level: 3, number: 20, title: "Why Bitcoin? Philosophy & Adoption", difficulty: "Advanced", time: "55 min", icon: "📘", type: "theory", activities: ["Debate: 'Do You Trust Code or State?'"], learnPoints: ["Chartalist vs Metallist vs Platform Money (thinking framework)", "Bitcoin vs bitcoin (protocol/network vs unit)", "Trust-Minimized Finance & Who Benefits"], theory: ["Money philosophy", "Bitcoin vs bitcoin", "Trust minimization"], practice: ["Philosophical debate", "Activity: Code vs State debate"], LiveSession: "Bitcoin philosophy", quiz: "questions on philosophy" },
   { id: 21, level: 3, number: 21, title: "Wrap-Up & Resources", difficulty: "Advanced", time: "40 min", icon: "📘", type: "theory", activities: ["Final Reflection — 'From Failing Fiat to Sovereign Bitcoin'"], learnPoints: ["Glossary of key terms", "Primary Sources & Local-First Tools", "Final Reflection on the journey"], theory: ["Course summary", "Resources", "Next steps"], practice: ["Final reflection", "Activity: Reflection exercise"], LiveSession: "Course wrap-up", quiz: "Final assessment" },
@@ -273,6 +273,21 @@ export const chaptersListTi: Partial<Record<number, Partial<ChapterListItem>>> =
     practice: ["ማልቲ-ሲግ ምድላው", "ንጥፈት፡ ናይ ስድራቤት ምሕላው ገንዘብ መደብ"],
     LiveSession: "ማልቲ-ሲግ ተገሊጹ",
     quiz: "ሕቶታት ብዛዕባ ማልቲ-ሲግ",
+  },
+  18: {
+    title: "መእተዊ ንቢትኮይን ስክሪፕት",
+    type: "mixed",
+    time: "60–75 ደቓይቕ",
+    learnPoints: [
+      "መሰረታት ምዕጻውን ምኽፋትን (P2PKH, P2WPKH, P2SH, P2TR)",
+      "ናይ ግዜ ምዕጻው (CLTV/CSV)ን ቀለልቲ ፖሊሲታትን",
+      "ቦርሳታት ንስክሪፕት ብኸመይ ከም ዘቃልልዎ",
+    ],
+    activities: ["ናይ ስክሪፕት ዓይነታት ምልላይ", "ንጥፈት፡ ናይ ፈተና ትራንዛክሽን ምህናጽን ምፍናውን"],
+    theory: ["ቢትኮይን ስክሪፕት", "ኩነታት ምዕጻው", "ናይ ግዜ ምዕጻው"],
+    practice: ["ኣብነታት ስክሪፕት", "ንድፊ ፖሊሲ"],
+    LiveSession: "መሰረታት ስክሪፕት",
+    quiz: "ሕቶታት ብዛዕባ ስክሪፕት",
   },
 
 };

@@ -30,7 +30,7 @@
 ### Level III (Advanced Sovereignty)
 [Chapter 16: Full Node & Opening a Lightning Channel](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch16-full-node-lightning.md)
 [Chapter 17: Multi-Sig (Collaborative Custody)](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch17-multisig.md) · [ትግርኛ (Tigrigna)](./chapters/ch17-multisig-ti.md)
-[Chapter 18: Intro to Bitcoin Script](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch18-bitcoin-script.md)
+[Chapter 18: Intro to Bitcoin Script](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch18-bitcoin-script.md) · [ትግርኛ (Tigrigna)](./chapters/ch18-bitcoin-script-ti.md)
 [Chapter 19: UTXO Consolidation & Privacy Risks](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch19-consolidation-privacy.md)
 [Chapter 20: Why Bitcoin? Philosophy & Adoption](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch20-philosophy.md)
 [Chapter 21: Wrap-Up & Resources](https://github.com/Joie199/pan-africa-bitcoin-academy/blob/main/content/courses/genesis/chapters/ch21-wrap-up.md)

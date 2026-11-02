@@ -1285,6 +1285,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
           ) : chapter.slug === 'intro-to-bitcoin-script-optional-track' ? (
             <Chapter18Assignment
               assignmentId="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+              isTi={isTi}
             />
           ) : chapter.slug === 'why-bitcoin-philosophy-adoption' ? (
             <ChapterAssignment

@@ -308,6 +308,8 @@ export default function ChaptersPage() {
         return <BookIcon className="w-4 h-4" />;
       case "practice":
         return <ToolIcon className="w-4 h-4" />;
+      case "mixed":
+        return <BookIcon className="w-4 h-4" />;
       case "lightning":
         return <LightningIcon className="w-4 h-4" />;
       default:
@@ -322,6 +324,8 @@ export default function ChaptersPage() {
         return "ቲዮሪ";
       case "practice":
         return "ልምምድ";
+      case "mixed":
+        return "ዝተሓዋወሰ";
       case "lightning":
         return "ላይትኒንግ";
       default:

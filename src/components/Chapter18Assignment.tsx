@@ -14,6 +14,7 @@ import {
 
 interface Chapter18AssignmentProps {
   assignmentId: string;
+  isTi: boolean;
 }
 
 const ADDRESSES = {
@@ -28,7 +29,7 @@ const CORRECT_ANSWERS = {
   C: 'Taproot (P2TR)',
 };
 
-export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) {
+export function Chapter18Assignment({ assignmentId, isTi }: Chapter18AssignmentProps) {
   const { profile, isAuthenticated, loading: authLoading, sessionEmail } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
   const studentEmail = profile?.email || sessionEmail || null;
@@ -44,6 +45,67 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
   const [loading, setLoading] = useState(true);
   const [showAnswers, setShowAnswers] = useState(false);
   const [practiceMode, setPracticeMode] = useState(false);
+  const text = isTi
+    ? {
+        loginToSubmit: 'ንዕዮኻ ንምልኣኽ በጃኻ እቶ።',
+        allAnswersRequired: 'ንኹሎም ሰለስተ ኣድራሻታት መልሲ ሃብ።',
+        submitFailed: 'ዕዮ ምልኣኽ ኣይተኻእለን። በጃኻ እንደገና ፈትን።',
+        loginToView: 'ነዚ ዕዮ ንምርኣይን ንምፍጻምን በጃኻ እቶ።',
+        title: 'ዕዮ፡ ስክሪፕት ምልላይ',
+        description: 'ንነፍሲ ወከፍ ኣድራሻ ዓይነት ስክሪፕት ኣለሊ | ሽልማት፡ TBD (ድሕሪ ገምጋም መምህር)',
+        approved: '✓ ጸዲቑ',
+        revisionNeeded: 'ምምሕያሽ የድሊ',
+        awaitingReview: '⏳ ተላኢኹ — ገና ገምጋም ይጽበ',
+        approvedMessage: 'ዕዮኻ ጸዲቑ።',
+        reviseMessage: 'ነቲ ርእይቶ (እንተሎ) ኣንብብ እሞ እንደገና ልኣኽ።',
+        pendingMessage: 'መምህርካ ገና ኣይገምገሞን። ክሳብ ዝጸድቕ ወይ ዝምለስ እንደገና ክትልእኽ ኣይትኽእልን።',
+        practiceAgainMessage: 'ኣብ ታሕቲ እንደገና ተለማመድ — እቲ ዝተረኽበ ሳት ሓደ ግዜ ጥራይ እዩ ዝምዝገብ።',
+        answers: 'መልስታትካን ቅኑዕ መልስታትን፦',
+        yourAnswer: 'መልስኻ፦',
+        correct: 'ቅኑዕ፦',
+        resubmit: 'ዕዮ እንደገና ልኣኽ',
+        practiceAgain: 'እንደገና ተለማመድ',
+        copyInstructions: 'ነዞም ኣድራሻታት ቅዳሕ እሞ ነፍሲ ወከፎም ኣብቲ ኣብ ታሕቲ ዘሎ ቅኑዕ ዓይነት ስክሪፕት ዓውዲ ለጥፎ፦',
+        address: 'ኣድራሻ',
+        copy: 'ቅዳሕ',
+        pasteMatchingAddress: 'እቲ ዝሰማማዕ ኣድራሻ ኣብዚ ለጥፎ',
+        pasteTaproot: 'ምስ ዓይነት ስክሪፕት Taproot (P2TR) ዝሰማማዕ ኣድራሻ ለጥፍ',
+        pasteP2WPKH: 'ምስ ዓይነት ስክሪፕት P2WPKH ዝሰማማዕ ኣድራሻ ለጥፍ',
+        pasteP2SH: 'ምስ ዓይነት ስክሪፕት P2SH ዝሰማማዕ ኣድራሻ ለጥፍ',
+        correctAddress: 'ቅኑዕ ኣድራሻ፦',
+        submitting: 'ይለኣኽ ኣሎ...',
+        submit: 'ዕዮ ለኣኽ',
+      }
+    : {
+        loginToSubmit: 'Please log in to submit your assignment.',
+        allAnswersRequired: 'Please provide answers for all three addresses.',
+        submitFailed: 'Failed to submit assignment. Please try again.',
+        loginToView: 'Please log in to view and complete this assignment.',
+        title: 'Assignment: Script Recognition',
+        description: 'Identify the script type for each address | Reward: TBD (after instructor review)',
+        approved: '✓ Approved',
+        revisionNeeded: 'Revision needed',
+        awaitingReview: '⏳ Submitted — awaiting review',
+        approvedMessage: 'Your submission was approved.',
+        reviseMessage: 'Read the feedback (if any) and submit again.',
+        pendingMessage: 'Your instructor has not graded this yet. You cannot submit again until it is approved or returned.',
+        practiceAgainMessage: 'Practice again below — your sats credit stays once earned.',
+        answers: 'Your Answers & Correct Answers:',
+        yourAnswer: 'Your answer:',
+        correct: 'Correct:',
+        resubmit: 'Resubmit Assignment',
+        practiceAgain: 'Practice again',
+        copyInstructions: 'Copy these addresses and paste each one in the correct script type field below:',
+        address: 'Address',
+        copy: 'Copy',
+        pasteMatchingAddress: 'Paste the matching address here',
+        pasteTaproot: 'Paste the address that matches Taproot (P2TR) script type',
+        pasteP2WPKH: 'Paste the address that matches P2WPKH script type',
+        pasteP2SH: 'Paste the address that matches P2SH script type',
+        correctAddress: 'Correct address:',
+        submitting: 'Submitting...',
+        submit: 'Submit Assignment',
+      };
 
   useEffect(() => {
     if (authLoading || adminLoading) return;
@@ -100,12 +162,12 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
     e.preventDefault();
     const email = isAdminAuth && adminEmail ? adminEmail : studentEmail;
     if ((!isAuthenticated && !isAdminAuth) || !email) {
-      setError('Please log in to submit your assignment.');
+      setError(text.loginToSubmit);
       return;
     }
 
     if (!answerA || !answerB || !answerC) {
-      setError('Please provide answers for all three addresses.');
+      setError(text.allAnswersRequired);
       return;
     }
 
@@ -140,7 +202,7 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
       setSubmissionStatus(data.submission);
       setShowAnswers(true); // Show answers after submission
     } catch (err: any) {
-      setError(err.message || 'Failed to submit assignment. Please try again.');
+      setError(err.message || text.submitFailed);
     } finally {
       setSubmitting(false);
     }
@@ -160,7 +222,7 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
   if (!isAuthenticated && !isAdminAuth) {
     return (
       <div className="rounded-lg border border-zinc-800/60 bg-zinc-900/50 p-5">
-        <p className="text-zinc-400">Please log in to view and complete this assignment.</p>
+        <p className="text-zinc-400">{text.loginToView}</p>
       </div>
     );
   }
@@ -168,8 +230,8 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
   return (
     <div className="rounded-lg border border-zinc-800/60 bg-zinc-950 p-5 shadow-inner space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-zinc-100 mb-2">Assignment: Script Recognition</h3>
-        <p className="text-sm text-zinc-400 mb-4">Identify the script type for each address | Reward: TBD (after instructor review)</p>
+        <h3 className="text-lg font-semibold text-zinc-100 mb-2">{text.title}</h3>
+        <p className="text-sm text-zinc-400 mb-4">{text.description}</p>
       </div>
 
       {submitted && submissionStatus && (
@@ -195,20 +257,20 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
               }`}
             >
               {clientSubmissionIsApproved(submissionStatus, phaseHint)
-                ? '✓ Approved'
+                ? text.approved
                 : clientNeedsResubmit(submissionStatus, phaseHint)
-                  ? 'Revision needed'
-                  : '⏳ Submitted — awaiting review'}
+                  ? text.revisionNeeded
+                  : text.awaitingReview}
             </p>
             <p className="text-sm text-zinc-300 mb-3">
               {clientSubmissionIsApproved(submissionStatus, phaseHint)
-                ? 'Your submission was approved.'
+                ? text.approvedMessage
                 : clientNeedsResubmit(submissionStatus, phaseHint)
-                  ? 'Read the feedback (if any) and submit again.'
-                  : 'Your instructor has not graded this yet. You cannot submit again until it is approved or returned.'}
+                  ? text.reviseMessage
+                  : text.pendingMessage}
             </p>
             {clientAutoGradedCanPractice(submissionStatus, phaseHint) && (
-              <p className="text-xs text-zinc-500">Practice again below — your sats credit stays once earned.</p>
+              <p className="text-xs text-zinc-500">{text.practiceAgainMessage}</p>
             )}
             {clientNeedsResubmit(submissionStatus, phaseHint) && submissionStatus.feedback && (
               <p className="text-sm text-zinc-300">{submissionStatus.feedback}</p>
@@ -216,22 +278,22 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
           </div>
 
           <div className="space-y-3 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-            <p className="text-sm font-medium text-zinc-300 mb-2">Your Answers & Correct Answers:</p>
+            <p className="text-sm font-medium text-zinc-300 mb-2">{text.answers}</p>
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-zinc-400 mb-1">Address A ({ADDRESSES.A})</p>
-                <p className="text-sm text-zinc-200">Your answer: {answerA}</p>
-                <p className="text-xs text-green-400 mt-1">Correct: {CORRECT_ANSWERS.A}</p>
+                <p className="text-xs text-zinc-400 mb-1">{text.address} A ({ADDRESSES.A})</p>
+                <p className="text-sm text-zinc-200">{text.yourAnswer} {answerA}</p>
+                <p className="text-xs text-green-400 mt-1">{text.correct} {CORRECT_ANSWERS.A}</p>
               </div>
               <div>
-                <p className="text-xs text-zinc-400 mb-1">Address B ({ADDRESSES.B})</p>
-                <p className="text-sm text-zinc-200">Your answer: {answerB}</p>
-                <p className="text-xs text-green-400 mt-1">Correct: {CORRECT_ANSWERS.B}</p>
+                <p className="text-xs text-zinc-400 mb-1">{text.address} B ({ADDRESSES.B})</p>
+                <p className="text-sm text-zinc-200">{text.yourAnswer} {answerB}</p>
+                <p className="text-xs text-green-400 mt-1">{text.correct} {CORRECT_ANSWERS.B}</p>
               </div>
               <div>
-                <p className="text-xs text-zinc-400 mb-1">Address C ({ADDRESSES.C})</p>
-                <p className="text-sm text-zinc-200">Your answer: {answerC}</p>
-                <p className="text-xs text-green-400 mt-1">Correct: {CORRECT_ANSWERS.C}</p>
+                <p className="text-xs text-zinc-400 mb-1">{text.address} C ({ADDRESSES.C})</p>
+                <p className="text-sm text-zinc-200">{text.yourAnswer} {answerC}</p>
+                <p className="text-xs text-green-400 mt-1">{text.correct} {CORRECT_ANSWERS.C}</p>
               </div>
             </div>
           </div>
@@ -247,7 +309,7 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
                 }}
                 className="text-sm text-cyan-400 hover:text-cyan-300 underline px-2 py-1 min-h-[32px] touch-target"
               >
-                Resubmit Assignment
+                {text.resubmit}
               </button>
             )}
             {clientAutoGradedCanPractice(submissionStatus, phaseHint) && (
@@ -256,7 +318,7 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
                 onClick={() => setPracticeMode(true)}
                 className="rounded-lg border border-green-500/40 bg-green-500/10 px-3 py-1.5 text-sm font-medium text-green-200"
               >
-                Practice again
+                {text.practiceAgain}
               </button>
             )}
           </div>
@@ -267,11 +329,11 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Addresses to copy */}
           <div className="space-y-3 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-            <p className="text-sm font-medium text-zinc-300 mb-3">Copy these addresses and paste each one in the correct script type field below:</p>
+            <p className="text-sm font-medium text-zinc-300 mb-3">{text.copyInstructions}</p>
             
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                <span className="text-sm font-semibold text-zinc-400 sm:w-24 flex-shrink-0">Address A:</span>
+                <span className="text-sm font-semibold text-zinc-400 sm:w-24 flex-shrink-0">{text.address} A:</span>
                 <code className="flex-1 w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded text-sm text-zinc-200 font-mono break-all">
                   {ADDRESSES.A}
                 </code>
@@ -280,12 +342,12 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
                   onClick={() => copyToClipboard(ADDRESSES.A)}
                   className="px-4 py-2 min-h-[44px] bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-300 rounded text-sm transition touch-target w-full sm:w-auto"
                 >
-                  Copy
+                  {text.copy}
                 </button>
               </div>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                <span className="text-sm font-semibold text-zinc-400 sm:w-24 flex-shrink-0">Address B:</span>
+                <span className="text-sm font-semibold text-zinc-400 sm:w-24 flex-shrink-0">{text.address} B:</span>
                 <code className="flex-1 w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded text-sm text-zinc-200 font-mono break-all">
                   {ADDRESSES.B}
                 </code>
@@ -294,12 +356,12 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
                   onClick={() => copyToClipboard(ADDRESSES.B)}
                   className="px-4 py-2 min-h-[44px] bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-300 rounded text-sm transition touch-target w-full sm:w-auto"
                 >
-                  Copy
+                  {text.copy}
                 </button>
               </div>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                <span className="text-sm font-semibold text-zinc-400 sm:w-24 flex-shrink-0">Address C:</span>
+                <span className="text-sm font-semibold text-zinc-400 sm:w-24 flex-shrink-0">{text.address} C:</span>
                 <code className="flex-1 w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded text-sm text-zinc-200 font-mono break-all">
                   {ADDRESSES.C}
                 </code>
@@ -308,7 +370,7 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
                   onClick={() => copyToClipboard(ADDRESSES.C)}
                   className="px-4 py-2 min-h-[44px] bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-300 rounded text-sm transition touch-target w-full sm:w-auto"
                 >
-                  Copy
+                  {text.copy}
                 </button>
               </div>
             </div>
@@ -319,52 +381,52 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
-                1. <span className="text-cyan-400 font-semibold">{CORRECT_ANSWERS.C}</span> → Paste the matching address here
+                1. <span className="text-cyan-400 font-semibold">{CORRECT_ANSWERS.C}</span> → {text.pasteMatchingAddress}
               </label>
               <input
                 type="text"
                 value={answerC}
                 onChange={(e) => setAnswerC(e.target.value)}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition font-mono text-sm"
-                placeholder="Paste the address that matches Taproot (P2TR) script type"
+                placeholder={text.pasteTaproot}
                 required
               />
               {showAnswers && (
-                <p className="mt-1 text-xs text-green-400">Correct address: {ADDRESSES.C}</p>
+                <p className="mt-1 text-xs text-green-400">{text.correctAddress} {ADDRESSES.C}</p>
               )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
-                2. <span className="text-cyan-400 font-semibold">{CORRECT_ANSWERS.A}</span> → Paste the matching address here
+                2. <span className="text-cyan-400 font-semibold">{CORRECT_ANSWERS.A}</span> → {text.pasteMatchingAddress}
               </label>
               <input
                 type="text"
                 value={answerA}
                 onChange={(e) => setAnswerA(e.target.value)}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition font-mono text-sm"
-                placeholder="Paste the address that matches P2WPKH script type"
+                placeholder={text.pasteP2WPKH}
                 required
               />
               {showAnswers && (
-                <p className="mt-1 text-xs text-green-400">Correct address: {ADDRESSES.A}</p>
+                <p className="mt-1 text-xs text-green-400">{text.correctAddress} {ADDRESSES.A}</p>
               )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
-                3. <span className="text-cyan-400 font-semibold">{CORRECT_ANSWERS.B}</span> → Paste the matching address here
+                3. <span className="text-cyan-400 font-semibold">{CORRECT_ANSWERS.B}</span> → {text.pasteMatchingAddress}
               </label>
               <input
                 type="text"
                 value={answerB}
                 onChange={(e) => setAnswerB(e.target.value)}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition font-mono text-sm"
-                placeholder="Paste the address that matches P2SH script type"
+                placeholder={text.pasteP2SH}
                 required
               />
               {showAnswers && (
-                <p className="mt-1 text-xs text-green-400">Correct address: {ADDRESSES.B}</p>
+                <p className="mt-1 text-xs text-green-400">{text.correctAddress} {ADDRESSES.B}</p>
               )}
             </div>
           </div>
@@ -380,11 +442,10 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
             disabled={submitting}
             className="w-full rounded-lg bg-gradient-to-r from-cyan-500 to-orange-500 px-6 py-3 min-h-[48px] font-semibold text-black transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
           >
-            {submitting ? 'Submitting...' : 'Submit Assignment'}
+            {submitting ? text.submitting : text.submit}
           </button>
         </form>
       )}
     </div>
   );
 }
-
