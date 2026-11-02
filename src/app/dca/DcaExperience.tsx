@@ -91,7 +91,17 @@ interface MarketData {
   low24h: number | null;
   lastUpdated: string;
   prices: PricePoint[];
+  candles: MarketCandle[];
+  candleError: string | null;
   source: string;
+}
+
+interface MarketCandle {
+  timestamp: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
 }
 
 const STORAGE_KEY = 'pba-dca-v1';
@@ -171,6 +181,110 @@ function formatDate(value: string) {
   if (!value) return '—';
   return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeZone: 'UTC' }).format(
     new Date(`${value.slice(0, 10)}T00:00:00.000Z`),
+  );
+}
+
+function CandleChart({ data }: { data: MarketCandle[] }) {
+  const width = 1000;
+  const height = 320;
+  const left = 78;
+  const right = 16;
+  const top = 14;
+  const bottom = 30;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const low = Math.min(...data.map((candle) => candle.low));
+  const high = Math.max(...data.map((candle) => candle.high));
+  const range = high - low || high * 0.02 || 1;
+  const minPrice = low - range * 0.05;
+  const maxPrice = high + range * 0.05;
+  const yForPrice = (price: number) =>
+    top + ((maxPrice - price) / (maxPrice - minPrice)) * plotHeight;
+  const candleStep = plotWidth / data.length;
+  const candleWidth = Math.max(2, Math.min(10, candleStep * 0.64));
+  const tickCount = Math.min(5, data.length);
+
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="h-full w-full"
+      role="img"
+      aria-label="Bitcoin USD historical candlestick chart"
+    >
+      {Array.from({ length: 5 }, (_, index) => {
+        const price = maxPrice - ((maxPrice - minPrice) * index) / 4;
+        const y = top + (plotHeight * index) / 4;
+        return (
+          <g key={index}>
+            <line x1={left} x2={width - right} y1={y} y2={y} stroke="#334155" strokeDasharray="3 3" />
+            <text x={left - 8} y={y + 4} textAnchor="end" fill="#94a3b8" fontSize="12">
+              {formatCurrency(price, 0)}
+            </text>
+          </g>
+        );
+      })}
+      {data.map((candle, index) => {
+        const x = left + (index + 0.5) * candleStep;
+        const openY = yForPrice(candle.open);
+        const closeY = yForPrice(candle.close);
+        const color = candle.close >= candle.open ? '#22c55e' : '#ef4444';
+        const date = new Intl.DateTimeFormat('en', {
+          month: 'short',
+          day: 'numeric',
+          timeZone: 'UTC',
+        }).format(candle.timestamp);
+        const bodyTop = Math.min(openY, closeY);
+        const bodyHeight = Math.max(2, Math.abs(openY - closeY));
+
+        return (
+          <g key={candle.timestamp}>
+            <title>
+              {`${date} · Open ${formatCurrency(candle.open)} · High ${formatCurrency(candle.high)} · Low ${formatCurrency(candle.low)} · Close ${formatCurrency(candle.close)}`}
+            </title>
+            <line
+              x1={x}
+              x2={x}
+              y1={yForPrice(candle.high)}
+              y2={yForPrice(candle.low)}
+              stroke={color}
+              strokeWidth="1.5"
+            />
+            <rect
+              x={x - candleWidth / 2}
+              y={bodyTop}
+              width={candleWidth}
+              height={bodyHeight}
+              fill={color}
+              rx="1"
+            />
+          </g>
+        );
+      })}
+      {Array.from({ length: tickCount }, (_, index) => {
+        const dataIndex = tickCount === 1
+          ? 0
+          : Math.round((index * (data.length - 1)) / (tickCount - 1));
+        const candle = data[dataIndex];
+        const x = left + (dataIndex + 0.5) * candleStep;
+        const label = new Intl.DateTimeFormat('en', {
+          month: 'short',
+          day: 'numeric',
+          timeZone: 'UTC',
+        }).format(candle.timestamp);
+        return (
+          <text
+            key={candle.timestamp}
+            x={x}
+            y={height - 6}
+            textAnchor="middle"
+            fill="#94a3b8"
+            fontSize="12"
+          >
+            {label}
+          </text>
+        );
+      })}
+    </svg>
   );
 }
 
@@ -361,7 +475,11 @@ export default function DcaExperience() {
         throw new Error(message);
       }
       const result = data as MarketData;
-      if (!Number.isFinite(result.currentPrice) || !Array.isArray(result.prices)) {
+      if (
+        !Number.isFinite(result.currentPrice) ||
+        !Array.isArray(result.prices) ||
+        !Array.isArray(result.candles)
+      ) {
         throw new Error('The market data provider returned incomplete information.');
       }
       setMarket(result);
@@ -742,16 +860,10 @@ export default function DcaExperience() {
     URL.revokeObjectURL(url);
   };
 
-  const marketChartData = useMemo(() => {
+  const marketCandles = useMemo(() => {
     if (!market) return [];
     const start = Date.now() - Number(marketDays) * 24 * 60 * 60 * 1000;
-    return market.prices
-      .filter((point) => point.timestamp >= start)
-      .map((point) => ({
-        date: new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' })
-          .format(point.timestamp),
-        price: point.price,
-      }));
+    return market.candles.filter((candle) => candle.timestamp >= start);
   }, [market, marketDays]);
 
   const setSectionAndScroll = (next: Section) => {
@@ -761,7 +873,7 @@ export default function DcaExperience() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-[1600px] px-3 pb-16 pt-6 sm:px-5 lg:px-8 lg:pt-10">
+    <main className="relative isolate mx-auto min-h-screen w-full max-w-[1600px] px-3 pb-16 pt-6 before:fixed before:inset-0 before:-z-10 before:bg-slate-950/45 before:content-[''] sm:px-5 lg:px-8 lg:pt-10">
       <header className="mb-6 flex flex-col gap-5 lg:mb-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-orange-400/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-orange-200">
@@ -1361,22 +1473,18 @@ export default function DcaExperience() {
           </div>
           <Panel>
             <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
-              <div><h3 className="font-semibold text-white">Bitcoin historical price</h3><p className="mt-1 text-xs text-slate-400">USD · daily market data</p></div>
+              <div>
+                <h3 className="font-semibold text-white">Bitcoin historical price</h3>
+                <p className="mt-1 text-xs text-slate-400">USD · OHLC candlesticks</p>
+                <p className="mt-1 text-xs text-slate-500">4-hour candles up to 30 days; 4-day candles for longer ranges.</p>
+              </div>
               {market && <p className="text-xs text-slate-400">Updated {new Date(market.lastUpdated).toLocaleString()}</p>}
             </div>
-            {marketLoading ? <LoadingPanel text="Loading market prices…" /> : marketChartData.length ? (
+            {marketLoading ? <LoadingPanel text="Loading market prices…" /> : marketCandles.length ? (
               <div className="h-80 w-full min-w-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={marketChartData}>
-                    <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-                    <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 11 }} minTickGap={32} />
-                    <YAxis domain={['auto', 'auto']} tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value).toLocaleString()}`} width={65} />
-                    <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#fff' }} formatter={(value) => [formatCurrency(Number(value)), 'BTC price']} />
-                    <Line type="monotone" dataKey="price" stroke="#f97602" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <CandleChart data={marketCandles} />
               </div>
-            ) : <p className="py-12 text-center text-sm text-slate-400">No market chart data is available right now.</p>}
+            ) : <p className="py-12 text-center text-sm text-slate-400">{market?.candleError ?? 'No market chart data is available right now.'}</p>}
             {market && <p className="mt-3 text-xs text-slate-500">Source: {market.source}. Data is not guaranteed to be real time.</p>}
           </Panel>
         </div>

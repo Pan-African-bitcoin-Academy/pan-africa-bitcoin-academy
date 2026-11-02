@@ -198,12 +198,6 @@ export function Navbar() {
               {t.navbar.impact}
             </Link>
             <Link prefetch={false}
-              href="/dca"
-              className="rounded-full px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
-            >
-              Bitcoin DCA
-            </Link>
-            <Link prefetch={false}
               href="/about"
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
@@ -344,12 +338,6 @@ export function Navbar() {
               className="rounded-full px-2 py-1.5 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               {t.navbar.impact}
-            </Link>
-            <Link prefetch={false}
-              href="/dca"
-              className="rounded-full px-2 py-1.5 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
-            >
-              Bitcoin DCA
             </Link>
             <Link prefetch={false}
               href="/donate"
@@ -539,13 +527,6 @@ export function Navbar() {
               className="block rounded-lg px-4 py-3 min-h-[48px] text-base text-zinc-300 active:bg-cyan-400/10 active:text-cyan-200 touch-target flex items-center"
             >
               {t.navbar.impact}
-            </Link>
-            <Link prefetch={false}
-              href="/dca"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block rounded-lg px-4 py-3 min-h-[48px] text-base font-medium text-orange-300 active:bg-orange-400/10 touch-target flex items-center"
-            >
-              Bitcoin DCA
             </Link>
             <Link prefetch={false}
               href="/about"
@@ -818,4 +799,3 @@ export function Navbar() {
     </>
   );
 }
-
