@@ -554,77 +554,67 @@ function MoneyProperties({ isTi }: { isTi: boolean }) {
 
   return (
     <LessonPanel
-      eyebrow={{ en: "03", ti: "03" }}
-      title={{ en: "Properties of money", ti: "ባህርያት ገንዘብ" }}
-      description={{
-        en: "Choose an item and inspect its trade-offs. These are qualities to compare, not a pass/fail checklist: usefulness depends on the community, technology, and situation.",
-        ti: "ኣቕሓ ምረጽካ ንዘለዎ ምትዕርራይ መርምር። እዚኦም ንምውድዳር ዝሕግዙ ባህርያት እዮም እምበር ፈተና ሓለፈ/ወደቐ ኣይኮኑን።",
-      }}
-      isTi={isTi}
+        eyebrow={{ en: "03", ti: "03" }}
+        title={{ en: "Properties of money", ti: "ባህርያት ገንዘብ" }}
+        description={{
+          en: "Select a form of money and a property to see its strengths and limitations.",
+          ti: "ዓይነት ገንዘብን ባህርይን ምረጽ፣ ጥንካረኡን ገደቡን ርአ።",
+        }}
+        isTi={isTi}
     >
-      <div className="flex flex-wrap gap-2" aria-label={isTi ? "ኣቕሑ ምረጽ" : "Select an item"}>
-        {assets.map((item) => (
-          <button
-            type="button"
-            key={item.id}
-            aria-pressed={asset === item.id}
-            className={asset === item.id ? selectedButtonClass : buttonClass}
-            onClick={() => setAsset(item.id)}
-          >
-            {text(item.label, isTi)}
-          </button>
-        ))}
-      </div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-[0.7fr_1.3fr]">
-        <div className={cardClass}>
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            {isTi ? "ኣብ ዝኾነ ኩነታት ኣስተውዕል" : "Consider the context"}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {properties.map((item) => (
-              <button
-                type="button"
-                key={item.id}
-                aria-pressed={property === item.id}
-                className={property === item.id ? selectedButtonClass : buttonClass}
-                onClick={() => setProperty(item.id)}
-              >
-                {text(item.label, isTi)}
-              </button>
-            ))}
+        <div className="space-y-4">
+          <div>
+            <h4 className="mb-2 text-sm font-semibold text-zinc-200">
+              {isTi ? "ገንዘብ ምረጽ" : "Select money"}
+            </h4>
+            <div className="flex flex-wrap gap-2" role="group" aria-label={isTi ? "ዓይነት ገንዘብ ምረጽ" : "Select a form of money"}>
+              {assets.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  aria-pressed={asset === item.id}
+                  className={asset === item.id ? selectedButtonClass : buttonClass}
+                  onClick={() => setAsset(item.id)}
+                >
+                  {text(item.label, isTi)}
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-300">
-            {text(propertyNotes[asset][property], isTi)}
-          </p>
+          <div>
+            <h4 className="mb-2 text-sm font-semibold text-zinc-200">
+              {isTi ? "ባህሪ ምረጽ" : "Select a property"}
+            </h4>
+            <div className="flex flex-wrap gap-2" role="group" aria-label={isTi ? "ባህሪ ምረጽ" : "Select a property"}>
+              {properties.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  aria-pressed={property === item.id}
+                  className={property === item.id ? selectedButtonClass : buttonClass}
+                  onClick={() => setProperty(item.id)}
+                >
+                  {text(item.label, isTi)}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className={cardClass}>
+        <div className={`${cardClass} mt-4`} aria-live="polite">
           <h4 className="font-semibold text-zinc-100">
-            {isTi ? "እዚ ኣቕሓ ዝህቦ ምትዕርራይ" : "The trade-off to notice"}
+            {text(assets.find((item) => item.id === asset)!.label, isTi)}
+            {" · "}
+            {text(properties.find((item) => item.id === property)!.label, isTi)}
           </h4>
           <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-            {asset === "bitcoin"
-              ? isTi
-                ? "ዲጂታላዊ ምንቅስቓስን ምክፍፋልን ምስ መሰረተ-ልምዓትን ምሕደራ ቁልፊን ዝተኣሳሰሩ እዮም።"
-                : "Digital portability and fine divisibility come with dependence on infrastructure and careful key custody."
-              : asset === "gold"
-                ? isTi
-                  ? "ኣካላዊ ጽንዓትን ዋሕድን ምስ ምርግጋጽ፣ ምስካምን ምክፍፋልን ይተዓራረዩ።"
-                  : "Physical durability and scarcity trade off against verification, portability, and convenient small payments."
-                : asset === "paper"
-                  ? isTi
-                    ? "ምቹእነት ወረቐት ምስ ናይ ወረቐት ጽንዓትን ምሕደራ ቀረብን ይተዓራረይ።"
-                    : "Convenient notes and electronic accounts trade off against physical wear and issuer/system dependence."
-                  : isTi
-                    ? "ኣብ ከባቢ ቀሊል ምርካቡን ንግዚኡ ጠቓሚ ምዃኑን ምስ ምዕቃብን ምንቅስቓስን ይተዓራረይ።"
-                    : "Local usefulness and availability trade off against storage, spoilage, and moving larger values."}
+            {text(propertyNotes[asset][property], isTi)}
           </p>
-          <p className="mt-3 rounded-lg border border-orange-400/20 bg-orange-500/5 p-3 text-sm text-orange-100">
+          <p className="mt-3 text-xs text-zinc-500">
             {isTi
-              ? "ኣብ ዝተፈላለየ ሕብረተሰብ፣ ግዜን ቴክኖሎጂን እቲ ሚዛን ክቕይሩ ይኽእሉ።"
-              : "A property can matter more or less depending on the community, period, and available technology."}
+              ? "ጥቕሚ እቲ ባህሪ ኣብ ኩነታት ይምርኮስ።"
+              : "How useful a property is depends on the context."}
           </p>
         </div>
-      </div>
       <KnowledgeCheck
         isTi={isTi}
         question={{ en: "A store of maize is easy to divide but can spoil in poor storage. What does this tell you?", ti: "ቆሎ ብቐሊሉ ይክፈል፣ ኣብ ዘይጽቡቕ ምዕቃብ ግን ክበላሾ ይኽእል። እዚ እንታይ ይነግረካ?" }}
@@ -753,10 +743,10 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
   const basketPrice = 10 * (1 + priceRise / 100);
   const basketsPurchasable = 50 / basketPrice;
   const alternatives: { id: ExchangeAlternative; label: Localized; note: Localized }[] = [
-    { id: "cash", label: { en: "Cash", ti: "ጥረ ገንዘብ" }, note: { en: "People accept it when they expect others to accept it and trust the rules and issuer.", ti: "ሰባት ካልኦት ክቕበልዎ እዮም ኢሎም ምስ ዝኣምኑ ይቕበልዎ።" } },
-    { id: "barter", label: { en: "Barter", ti: "ባርተር" }, note: { en: "Can work for a direct match, but both sides need compatible goods and wants.", ti: "ቀጥታዊ ምልውዋጥ ይከኣል፤ ክልቲኦም ወገናት ዝሰማማዕ ኣቕሓን ድሌትን ግን የድሊ።" } },
-    { id: "credit", label: { en: "Credit", ti: "ልቓሕ" }, note: { en: "A promise to pay later depends on trust in the borrower, lender, and enforcement arrangements.", ti: "ድሒርካ ክትከፍል ዝብል ተስፋ ኣብ ተለቃሒ፣ ኣለቃሒን ኣፈጻጽማን ምእማን ይምርኮስ።" } },
-    { id: "bitcoin", label: { en: "Bitcoin", ti: "ቢትኮይን" }, note: { en: "Rules and transactions can be checked with suitable software; acceptance, connectivity, and key custody still matter.", ti: "ሕግታትን ትራንዛክሽንን ብሶፍትዌር ክምርመሩ ይኽእሉ፤ ተቐባልነት፣ ኢንተርነትን ምሕደራ ቁልፊን ግን ኣገዳሲ እዩ።" } },
+    { id: "cash", label: { en: "Cash", ti: "ጥረ ገንዘብ" }, note: { en: "Acceptance depends on confidence in the issuer and in other people.", ti: "ተቐባልነት ኣብ ኣውጻኢን ካልኦት ሰባትን ዘሎ እምነት ይምርኮስ።" } },
+    { id: "barter", label: { en: "Barter", ti: "ባርተር" }, note: { en: "Both sides must want what the other offers.", ti: "ክልቲኦም ነቲ እቲ ካልእ ዘቕርቦ ክደልዩ ኣለዎም።" } },
+    { id: "credit", label: { en: "Credit", ti: "ልቓሕ" }, note: { en: "Repayment depends on the borrower and enforcement.", ti: "ምኽፋል ልቓሕ ኣብ ተለቃሒን ኣፈጻጽማን ይምርኮስ።" } },
+    { id: "bitcoin", label: { en: "Bitcoin", ti: "ቢትኮይን" }, note: { en: "Transactions can be checked; acceptance and access still matter.", ti: "ትራንዛክሽናት ክምርመሩ ይኽእሉ፤ ተቐባልነትን ተበጻሕነትን ግን ኣገደስቲ እዮም።" } },
   ];
 
   return (
@@ -764,15 +754,15 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
       eyebrow={{ en: "05", ti: "05" }}
       title={{ en: "Trust", ti: "እምነት" }}
       description={{
-        en: "This example shows two different ideas: whether people are willing to accept a currency, and how much a fixed amount can buy. Change each control to see its effect. The example does not calculate that one causes the other.",
-        ti: "እዚ ምሳሌ ክልተ ዝተፈላለዩ ሓሳባት የርኢ፦ ሰባት ነታ ባጤራ ክቕበሉ ድሉዋት ምዃኖምን፣ ውሱን መጠን ገንዘብ ክንደይ ክገዝእ ከም ዝኽእልን። ውጽኢቱ ንምርኣይ ነፍሲ ወከፍ መቆጻጸሪ ቀይር። እቲ ምሳሌ ሓደ ካልእ ከም ዘስዕብ ኣየርእን።",
+        en: "See how confidence affects acceptance, while prices affect purchasing power.",
+        ti: "እምነት ተቐባልነት ከም ዝጸልው፣ ዋጋታት ድማ ናይ ምግዛእ ዓቕሚ ከም ዝጸልዉ ርአ።",
       }}
       isTi={isTi}
     >
       <div className="grid gap-4 lg:grid-cols-2">
         <div className={cardClass}>
           <label htmlFor="chapter1-confidence" className="font-semibold text-zinc-100">
-            {isTi ? "ሰባት ኣብዛ ባጤራ ዘለዎም እምነት" : "People's confidence in this currency"}
+            {isTi ? "እምነት" : "Confidence"}
           </label>
           <input
             id="chapter1-confidence"
@@ -786,11 +776,6 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
             aria-valuetext={`${confidence}%`}
           />
           <div className="flex justify-between text-xs text-zinc-500"><span>0%</span><span>100%</span></div>
-          <p className="mt-2 text-sm text-zinc-300">
-            {isTi
-              ? "እዚ መቆጻጸሪ ኣብ ሓሳባዊ ጉጅለ 5 ነጋዶ ክንደይ ነታ ባጤራ ክቕበሉ ድሉዋት ከም ዝኾኑ ይጸልው።"
-              : "This control changes how many of five example merchants are willing to accept the currency."}
-          </p>
           <p className="mt-4 text-sm font-semibold text-zinc-100" aria-live="polite">
             {isTi
               ? `${acceptingTraders} ካብ 5 ነጋዶ ኣብዚ ምሳሌ ክቕበሉ ድሉዋት እዮም።`
@@ -801,24 +786,24 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
               <div
                 key={index}
                 className={`flex h-9 flex-1 items-center justify-center rounded-md border text-xs font-medium ${index < acceptingTraders ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-200" : "border-zinc-700 bg-zinc-900 text-zinc-500"}`}
-                aria-label={isTi ? `ነጋዳይ ${index + 1}፡ ${index < acceptingTraders ? "ክቕበል ድሉው" : "ኣይቅበልን"}` : `Merchant ${index + 1}: ${index < acceptingTraders ? "willing to accept" : "not willing to accept"}`}
+                aria-label={isTi ? (index < acceptingTraders ? "ይቕበል" : "ኣይቅበልን") : (index < acceptingTraders ? "Accepts" : "Does not accept")}
               >
-                {isTi ? `ነጋዳይ ${index + 1}` : `Merchant ${index + 1}`}
+                {index < acceptingTraders ? (isTi ? "ይቕበል" : "Accepts") : (isTi ? "ኣይቅበልን" : "Waits")}
               </div>
             ))}
           </div>
           <p className="mt-2 text-xs text-zinc-500">
-            {isTi ? "ምሳሌ ጥራይ እዩ፤ ናይ ሓቀኛ ዕዳጋ ግምት ወይ ትንበያ ኣይኮነን።" : "Illustrative only; this is not a measurement or prediction of a real market."}
+            {isTi ? "ኣብነታዊ ምሳሌ።" : "Illustrative example."}
           </p>
         </div>
         <div className={cardClass}>
           <label htmlFor="chapter1-trust-prices" className="font-semibold text-zinc-100">
-            {isTi ? "ኣብነታዊ ዋጋ መሶብ ምግቢ" : "Hypothetical food-basket price"}
+            {isTi ? "ዋጋ መሶብ ምግቢ" : "Food-basket price"}
           </label>
           <p className="mt-1 text-sm text-zinc-300">
             {isTi
-              ? "50 ናቕፋ ከም ዘለካ ግምት። እቲ መሶብ ኣብ መጀመርታ 10 ናቕፋ እዩ።"
-              : "Assume you hold 50 Nakfa. The basket starts at 10 Nakfa."}
+              ? "50 ናቕፋ፤ መጀመርታ ዋጋ መሶብ 10 ናቕፋ።"
+              : "50 Nakfa held; the basket starts at 10 Nakfa."}
           </p>
           <input
             id="chapter1-trust-prices"
@@ -835,33 +820,28 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
             {isTi ? "ዋጋ መሶብ ኣብዚ ምሳሌ፦" : "Basket price in this example:"}{" "}
             Nakfa {basketPrice.toLocaleString()}
           </p>
-          <p className="mt-3 text-sm text-zinc-300">
+          <p className="mt-3 text-sm font-medium text-zinc-100">
             {isTi
               ? `ብ50 ናቕፋ ኣስታት ${basketsPurchasable.toFixed(1)} መሶብ ክትገዝእ ትኽእል።`
               : `At this price, 50 Nakfa buys about ${basketsPurchasable.toFixed(1)} baskets.`}
           </p>
         </div>
       </div>
-      <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-        {isTi
-          ? "እዞም ክልተ መቆጻጸሪታት ብፍላይ ተፈላልዮም ኣለዉ፦ ሓደ ፍቓድ ምቕባል ይቕይር፣ እቲ ካልእ ድማ ዋጋ መሶብ ይቕይር። ኣብ ሓቀኛ ቁጠባ፡ እምነት ንሕቶ ገንዘብን ምንዛረ ሸርፊን ክጸልው ይኽእል፤ ግን ውጽኢቱ ብዙሓት ኩነታት ይውስንዎ።"
-          : "The controls are separate on purpose: one changes willingness to accept the currency; the other changes the basket's price. In real economies, confidence can influence demand for money and exchange rates, but the outcome depends on many factors."}
-      </p>
       <div className="mt-4">
-        <h4 className="font-semibold text-zinc-100">{isTi ? "ዓይነታት እምነት ኣብ ስርዓት ገንዘብ" : "Different kinds of trust in a monetary system"}</h4>
+        <h4 className="font-semibold text-zinc-100">{isTi ? "እምነት ኣብ ገንዘብ" : "Trust in money"}</h4>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
           {[
-            { en: "Institutional trust: confidence that laws and public institutions apply rules predictably.", ti: "እምነት ትካል፦ ሕግታትን ህዝባዊ ትካላትን ሕግታት ብትኽክል ከም ዘተግብሩ ዘሎ እምነት።" },
-            { en: "Issuer trust: confidence that the organization responsible for money or a promise will meet its obligations.", ti: "እምነት ኣውጻኢ፦ እቲ ገንዘብ ወይ ተስፋ ዘውጽእ ትካል ግዴታታቱ ከም ዝፍጽም ዘሎ እምነት።" },
-            { en: "Trust in other people: expecting a buyer or seller to accept payment or keep a promise.", ti: "ኣብ ካልኦት ሰባት ዘሎ እምነት፦ ዓዳጊ ወይ ሸያጢ ክፍሊት ክቕበል ወይ ተስፋኡ ክፍጽም ምጽባይ።" },
-            { en: "Verification: checking evidence about a payment or claim instead of relying only on someone's word.", ti: "ምርግጋጽ፦ ኣብ ቃል ካልእ ሰብ ጥራይ ከይተመርኮስካ፡ ብዛዕባ ክፍሊት ወይ ጠለብ ዘሎ መርትዖ ምምርማር።" },
+            { en: "Institutions: trust in rules and public systems.", ti: "ትካላት፦ ኣብ ሕግታትን ህዝባዊ ስርዓታትን ዘሎ እምነት።" },
+            { en: "Issuer: trust in the organization behind the money.", ti: "ኣውጻኢ፦ ኣብቲ ገንዘብ ዘውጽእ ትካል ዘሎ እምነት።" },
+            { en: "Other people: expecting a seller to accept payment.", ti: "ካልኦት ሰባት፦ ሸያጢ ክፍሊት ክቕበል ምጽባይ።" },
+            { en: "Verification: checking evidence for yourself.", ti: "ምርግጋጽ፦ ንመርትዖ ባዕልኻ ምርምር።" },
           ].map((note) => (
             <p key={note.en} className={`${cardClass} text-sm leading-relaxed text-zinc-300`}>{isTi ? note.ti : note.en}</p>
           ))}
         </div>
       </div>
       <div className="mt-4">
-        <h4 className="font-semibold text-zinc-100">{isTi ? "ኣማራጺ ኣገባባት ምልውዋጥ" : "Other ways people exchange value"}</h4>
+        <h4 className="font-semibold text-zinc-100">{isTi ? "ኣማራጺታት ምልውዋጥ" : "Alternatives"}</h4>
         <div className="mt-2 flex flex-wrap gap-2">
           {alternatives.map((item) => (
             <button type="button" key={item.id} aria-pressed={alternative === item.id} className={alternative === item.id ? selectedButtonClass : buttonClass} onClick={() => setAlternative(item.id)}>
@@ -875,13 +855,13 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
       </div>
       <KnowledgeCheck
         isTi={isTi}
-        question={{ en: "A transaction can be verified, but a trader declines it. Which distinction matters?", ti: "ትራንዛክሽን ክረጋገጽ ይኽእል፣ ነጋዳይ ግን ይነጽጎ። ኣየናይ ፍልልይ ኣገዳሲ እዩ?" }}
+        question={{ en: "A payment is verified, but the seller declines it. What does this show?", ti: "ክፍሊት ተረጋጊጹ፣ ሸያጢ ግን ነጺግዎ። እዚ እንታይ የርኢ?" }}
         choices={[
-          { label: { en: "Verification is different from willingness to accept", ti: "ምርግጋጽ ካብ ፍቓድ ምቕባል ዝተፈለየ እዩ" }, correct: true },
-          { label: { en: "Verification automatically creates trust in everyone", ti: "ምርግጋጽ ኣብ ኩሉ ሰብ እምነት ብኣውቶማቲክ ይፈጥር" }, correct: false },
-          { label: { en: "Declining a payment changes the protocol rules", ti: "ክፍሊት ምንጻግ ሕግታት ፕሮቶኮል ይቕይር" }, correct: false },
+          { label: { en: "Verification and acceptance are different", ti: "ምርግጋጽን ምቕባልን ዝተፈላለዩ እዮም" }, correct: true },
+          { label: { en: "Verification makes everyone accept it", ti: "ምርግጋጽ ኩሉ ሰብ ክቕበሎ ይገብር" }, correct: false },
+          { label: { en: "A refusal changes the rules", ti: "ምንጻግ ሕግታት ይቕይር" }, correct: false },
         ]}
-        explanation={{ en: "Verification can provide evidence about a payment, while acceptance depends on the other participant and circumstances.", ti: "ምርግጋጽ ብዛዕባ ክፍሊት መርትዖ ይህብ፤ ተቐባልነት ግን ኣብ ካልእ ተሳታፊን ኩነታትን ይምርኮስ።" }}
+        explanation={{ en: "Verification checks a payment; acceptance is the seller's choice.", ti: "ምርግጋጽ ክፍሊት ይምርምር፤ ምቕባል ግን ምርጫ ሸያጢ እዩ።" }}
       />
     </LessonPanel>
   );
