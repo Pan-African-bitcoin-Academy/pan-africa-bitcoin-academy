@@ -99,15 +99,15 @@ export const chaptersContent: ChapterContent[] = [
         paragraphs: [
           "Money isn't just paper or numbers on a screen. It has three powerful functions that make it unique:",
           "1. Medium of Exchange\n\nMoney removes the need for awkward bartering. Instead of finding someone who both wants your maize and has what you need, you can sell maize for money, then later buy anything else.",
-          "Example: In Uganda today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for shillings and use the shillings to buy airtime.",
+          "Example: In Eritrea today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for Nakfa and use the Nakfa to buy airtime.",
           "2. Store of Value\n\nGood money allows you to save for the future. If you work hard today, you want your earnings to keep their value tomorrow. But when money loses value, savings can vanish overnight.",
-          "3. Unit of Account\n\nMoney provides a standard measure for prices. Instead of saying, \"one goat equals five chickens or three baskets of millet,\" you simply say, \"one goat is 150,000 shillings.\" This makes trade clear, simple, and consistent.",
+          "3. Unit of Account\n\nMoney provides a standard measure for prices. Instead of saying, \"one goat equals five chickens or three baskets of millet,\" you simply say, \"one goat is 150,000 Nakfa.\" This makes trade clear, simple, and consistent.",
           "Together, these functions explain why money is far more than paper. It is the organizer of trade, savings, and planning in every society.",
         ],
         callouts: [
           {
             type: "example",
-            content: "In Uganda today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for shillings and use the shillings to buy airtime.",
+            content: "In Eritrea today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for Nakfa and use the Nakfa to buy airtime.",
           },
         ],
         images: [
@@ -124,7 +124,7 @@ export const chaptersContent: ChapterContent[] = [
         bullets: [
           "Durable – It should last. Gold and silver survive centuries. Salt or maize spoil.",
           "Portable – It should be easy to carry. A pocket full of coins beats dragging a cow around.",
-          "Divisible – You should be able to split it into smaller parts. A shilling can be divided into coins, but you can't divide a cow without losing its value.",
+          "Divisible – Money should be available in smaller units. You can pay a small amount in Nakfa without splitting a cow and losing its value.",
           "Recognizable – People should instantly know it's real and not fake.",
           "Scarce – If it's too easy to create, it loses value. Gold was rare, which made it precious.",
         ],

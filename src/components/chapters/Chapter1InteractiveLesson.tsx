@@ -356,7 +356,7 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
             <span aria-hidden="true" className="text-center text-xl text-orange-300">→</span>
             <div className="rounded-lg border border-orange-400/30 bg-orange-500/5 p-3 text-center">
               <p className="text-xs uppercase tracking-wide text-orange-200">{isTi ? "ተጠቒምካ" : "You receive"}</p>
-              <p className="mt-1 font-semibold text-zinc-100">UGX</p>
+              <p className="mt-1 font-semibold text-zinc-100">Nakfa</p>
             </div>
             <span aria-hidden="true" className="text-center text-xl text-orange-300">→</span>
             <div className="rounded-lg border border-zinc-700 p-3 text-center">
@@ -366,13 +366,13 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
           </div>
           <p className="mt-3 text-sm text-zinc-300">
             {isTi
-              ? "ኣብ ኡጋንዳ፡ ኣብ ዕዳጋ ዝሸጥካዮ እኽሊ ብሽልንጊ ክትቅይሮ፣ ድሒርካ ኣየርታይም ክትገዝእ ትኽእል። ኣብ ሓደ ምስ ዝሸጥካሉ ሰብ ኣየርታይም ክህሉ ኣየድልየካን።"
-              : "For example, in Uganda you could sell produce for shillings and later buy airtime. The person who buys your produce does not need to be the airtime seller."}
+              ? "ኣብ ኤርትራ፡ ኣብ ዕዳጋ ዝሸጥካዮ ፍርያት ብናቕፋ ክትቅይሮ፣ ድሒርካ ኣየርታይም ክትገዝእ ትኽእል። ኣብ ሓደ ምስ ዝሸጥካሉ ሰብ ኣየርታይም ክህሉ ኣየድልየካን።"
+              : "For example, in Eritrea you could sell produce for Nakfa and later buy airtime. The person who buys your produce does not need to be the airtime seller."}
           </p>
           <KnowledgeCheck
             key="exchange"
             isTi={isTi}
-            question={{ en: "Which function is at work when shillings bridge two separate trades?", ti: "ሽልንጊ ኣብ መንጎ ክልተ ዝተፈላለዩ ንግዲ እንታይ ተግባር ይፍጽም?" }}
+            question={{ en: "Which function is at work when Nakfa bridges two separate trades?", ti: "ናቕፋ ኣብ መንጎ ክልተ ዝተፈላለዩ ንግዲ እንታይ ተግባር ይፍጽም?" }}
             choices={[
               { label: { en: "Medium of exchange", ti: "ማእከላይ መለዋወጢ" }, correct: true },
               { label: { en: "Unit of account", ti: "መለክዒ ሕሳብ" }, correct: false },
@@ -415,9 +415,9 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
               <p className="text-xs uppercase tracking-wide text-zinc-500">
                 {isTi ? "ውሱን ዕቋር" : "Fixed savings"}
               </p>
-              <p className="mt-1 text-2xl font-bold text-orange-200">UGX 50,000</p>
+              <p className="mt-1 text-2xl font-bold text-orange-200">Nakfa 50,000</p>
               <p className="mt-3 text-sm text-zinc-300">
-                {isTi ? "እቲ ምሳሌ ሓደ መሶብ ምግቢ UGX 10,000 ከም ዝኾነ ይግምት።" : "Assume one example food basket costs UGX 10,000 today."}
+                {isTi ? "እቲ ምሳሌ ሓደ መሶብ ምግቢ 10,000 ናቕፋ ከም ዝኾነ ይግምት።" : "Assume one example food basket costs Nakfa 10,000 today."}
               </p>
               <div className="mt-4">
                 <div className="flex justify-between gap-2 text-xs text-zinc-400">
@@ -458,9 +458,9 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
             </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
               {[
-                { item: isTi ? "እንጀራ" : "Food", price: "UGX 4,000" },
-                { item: isTi ? "ትራንስፖርት" : "Transport", price: "UGX 2,500" },
-                { item: isTi ? "ኣየርታይም" : "Airtime", price: "UGX 1,000" },
+                { item: isTi ? "እንጀራ" : "Food", price: "Nakfa 4,000" },
+                { item: isTi ? "ትራንስፖርት" : "Transport", price: "Nakfa 2,500" },
+                { item: isTi ? "ኣየርታይም" : "Airtime", price: "Nakfa 1,000" },
               ].map((price) => (
                 <div key={price.item} className="flex items-center justify-between gap-2 rounded-lg border border-zinc-800 px-3 py-2">
                   <span className="text-zinc-200">{price.item}</span>
@@ -477,7 +477,7 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
           <KnowledgeCheck
             key="account"
             isTi={isTi}
-            question={{ en: "What function is used when a family compares food and transport prices in UGX?", ti: "ስድራ ዋጋ ምግብን ትራንስፖርትን ብUGX እንተኣወዳደረት እንታይ ተግባር ትጥቀም?" }}
+            question={{ en: "What function is used when a family compares food and transport prices in Nakfa?", ti: "ስድራ ዋጋ ምግብን ትራንስፖርትን ብናቕፋ እንተኣወዳደረት እንታይ ተግባር ትጥቀም?" }}
             choices={[
               { label: { en: "Unit of account", ti: "መለክዒ ሕሳብ" }, correct: true },
               { label: { en: "Medium of exchange", ti: "ማእከላይ መለዋወጢ" }, correct: false },
@@ -815,8 +815,8 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
             aria-valuetext={`${priceRise}%`}
           />
           <p className="mt-2 text-sm text-zinc-300">
-            {isTi ? "ምሳሌ ዋጋ ካብ UGX 10,000 ናብ" : "Illustrative basket price: UGX 10,000 →"}{" "}
-            UGX {(10000 * (1 + priceRise / 100)).toLocaleString()}
+            {isTi ? "ምሳሌ ዋጋ ካብ 10,000 ናቕፋ ናብ" : "Illustrative basket price: Nakfa 10,000 →"}{" "}
+            Nakfa {(10000 * (1 + priceRise / 100)).toLocaleString()}
           </p>
           <p className="mt-3 text-sm text-zinc-300">
             {isTi ? "ናይ ምግዛእ ዓቕሚ ብናይ ኣቕሑ ዋጋን መጠን ገንዘብን ይምልከት። እምነት ብዘይ ተወሳኺ ሓበሬታ ኣብ ባዕሉ ኣይውስኖን።" : "Purchasing power depends on prices and the amount held. Confidence alone does not determine it."}
@@ -875,14 +875,14 @@ const everydayCases: EverydayCase[] = [
   {
     id: "airtime",
     title: { en: "Buying airtime", ti: "ኣየርታይም ምግዛእ" },
-    description: { en: "You pay shillings through a shop or mobile-money service and receive airtime.", ti: "ብሽልንጊ ብድኳን ወይ ሞባይል ገንዘብ ከፊልካ ኣየርታይም ትቕበል።" },
+    description: { en: "You pay Nakfa through a shop or payment service and receive airtime.", ti: "ብናቕፋ ብድኳን ወይ ኣገልግሎት ክፍሊት ከፊልካ ኣየርታይም ትቕበል።" },
     correct: "exchange",
     explanation: { en: "Money is the means used to complete the purchase.", ti: "ገንዘብ ነቲ ግዝኣት ንምፍጻም ዝጥቀመሉ መንገዲ እዩ።" },
   },
   {
     id: "transport",
     title: { en: "Paying for transport", ti: "ክፍሊት ትራንስፖርት" },
-    description: { en: "You compare a shared taxi fare with the cost of walking or another route, all in shillings.", ti: "ክፍሊት ታክሲ ምስ ካልእ መንገዲ ብሽልንጊ ተወዳድር።" },
+    description: { en: "You compare a shared taxi fare with the cost of walking or another route, all in Nakfa.", ti: "ክፍሊት ታክሲ ምስ ካልእ መንገዲ ብናቕፋ ተወዳድር።" },
     correct: "account",
     explanation: { en: "A common unit helps compare different costs before choosing.", ti: "ሓደ ሓባራዊ መለክዒ ቅድሚ ምምራጽ ዝተፈላለዩ ወጻኢታት ከተወዳድር ይሕግዘካ።" },
   },

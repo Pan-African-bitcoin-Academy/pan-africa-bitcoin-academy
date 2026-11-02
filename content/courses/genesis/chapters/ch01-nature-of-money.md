@@ -52,7 +52,7 @@ Money removes the need for awkward bartering. Instead of finding someone who bot
 ገንዘብ ነቲ ዘይምቹእ ኣሰራርሓ ባርተሪንግ ክኣሊ ከሎ፣ ኣብ ክንዲ ንክልቲኡ ንዕፉንካ ዝደሊ ንስኻ ትደሊዮ ዘለዎን ትደሊ ነቲ ዕፉንካ ብገንዘብ ሼጥካ ነቲ ካልእ ዘድልየካ ድማ ደሓር ክትገዝእ ትኽእል።
 
 > **📖 Example / ኣብነት:**  
-> In Eritrea today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for shillings and use the shillings to buy airtime.  
+> In Eritrea today, you don't exchange sugarcane directly for airtime. You sell the sugarcane for Nakfa and use the Nakfa to buy airtime.<br>
 > ንኣብነት ሎሚ ኣብ ኤርትራ ቃንጫሽኮር ምስ ባኒ ኣይትልውጥን ቅድም ብናቅፋ ትቅይሮ እሞ ብኡ ጌርካ ክኣ ባኒ ትገዝእ።
 
 #### 2. Store of Value / መዕቆሪ ሃብቲ
@@ -60,7 +60,7 @@ Good money allows you to save for the future. If you work hard today, you want y
 እቲ ቅኑዕ ገንዘብ ንመጻኢ ክትዕቅብ ይሕግዘካ እዩ። ሎሚ ጽዕርካ ዝኣከብካዮ ኣብ መጻኢ ክብሮም ክቅንስ ኣይትደልን። ምስ ናይ ሎሚ ገንዘብ ግን ክብሮም ምስ ግዜ ዳቀነሰ ዝኸይድን ክብርም ዘጥፍኡን ኢዮም።
 
 #### 3. Unit of Account / መቁጸሪ ሕሳብ
-Money provides a standard measure for prices. Instead of saying, "one goat equals five chickens or three baskets of millet," you simply say, "one goat is 150,000 shillings." This makes trade clear, simple, and consistent.  
+Money provides a standard measure for prices. Instead of saying, "one goat equals five chickens or three baskets of millet," you simply say, "one goat is 150,000 Nakfa." This makes trade clear, simple, and consistent.<br>
 ገንዘብ ንዋጋታት ደረጃ ዘለዎ መለክዒ ይህብ። "ሓንቲ ምራኽ ማዕረ ሓሙሽተ ደርሆ ወይ ሰለስተ መሶብ ምሸላ" ኣብ ክንዲ ምባል "ሓንቲ ምራኽ 150 ሽሕ ሽልንግ እያ" ጥራይ ትብል። እዚ ድማ ንግዲ ንጹርን ቀሊልን ቅኑዕን ይገብሮ።
 
 Together, these functions explain why money is far more than paper. It is the organizer of trade, savings, and planning in every society.  
@@ -76,7 +76,7 @@ Not all money is equally valid. Some forms of money fail quickly, while others s
   ነባሪ – ነዊሕ ክጸንሕ ይግባእ። ወርቅን ብሩርን ንዘመናት ይጸንሕ እዩ። ጨው ወይ እኽሊ ቀልጢፉ ይበላሾ።
 - **Portable / ተንቀሳቓሲ** – It should be easy to carry. A pocket full of coins beats dragging a cow around.  
   ተንቀሳቓሲ – ንኽትስከሞ ቀሊል ክኸውን ኣለዎ። ሳንቲም ዝመልአ ጁባ ንሓንቲ ላም ካብ ሙግታት ይበልጽ።
-- **Divisible / ዝምቀል** – You should be able to split it into smaller parts. A shilling can be divided into coins, but you can't divide a cow without losing its value.  
+- **Divisible / ዝምቀል** – Money should be available in smaller units. You can pay a small amount in Nakfa without splitting a cow and losing its value.<br>
   ዝምቀል – ኣብ ንኣሽቱ ክፋላት ክትመቕሎ ክትክእል ኣለካ። ሓንቲ ሽልንግ ኣብ ሳንቲም ክትምቀል ትኽእል እያ፡ ንላም ግን ዋጋኣ ከይሰኣንካ ክትመቕላ ኣይትኽእልን ኢኻ።
 - **Recognizable / ምልላይ** – People should instantly know it's real and not fake.  
   ምልላይ – ሰባት ብቕጽበት ናይ ብሓቂ እምበር ናይ ሓሶት ከምዘይኮነ ክፈልጡ ይግባእ።
