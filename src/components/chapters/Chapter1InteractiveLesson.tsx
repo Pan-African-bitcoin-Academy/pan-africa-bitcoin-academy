@@ -318,7 +318,7 @@ const functionTabs: { id: MoneyFunction; label: Localized }[] = [
 function MoneyFunctions({ isTi }: { isTi: boolean }) {
   const [active, setActive] = useState<MoneyFunction>("exchange");
   const [priceRise, setPriceRise] = useState(0);
-  const basketsNow = 50000 / 10000;
+  const basketsNow = 50 / 10;
   const basketsLater = basketsNow / (1 + priceRise / 100);
   const purchasingPower = 100 / (1 + priceRise / 100);
 
@@ -413,11 +413,11 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
             </div>
             <div className={`${cardClass} flex flex-col justify-center`}>
               <p className="text-xs uppercase tracking-wide text-zinc-500">
-                {isTi ? "ውሱን ዕቋር" : "Fixed savings"}
+                {isTi ? "ውሱን ሃብቲ" : "Fixed savings"}
               </p>
-              <p className="mt-1 text-2xl font-bold text-orange-200">Nakfa 50,000</p>
+              <p className="mt-1 text-2xl font-bold text-orange-200">50 Nakfa</p>
               <p className="mt-3 text-sm text-zinc-300">
-                {isTi ? "እቲ ምሳሌ ሓደ መሶብ ምግቢ 10,000 ናቕፋ ከም ዝኾነ ይግምት።" : "Assume one example food basket costs Nakfa 10,000 today."}
+                {isTi ? "እቲ ምሳሌ ሓደ መሶብ ምግቢ 10 ናቕፋ ከም ዝኾነ ይግምት።" : "Assume one example food basket costs 10 Nakfa today."}
               </p>
               <div className="mt-4">
                 <div className="flex justify-between gap-2 text-xs text-zinc-400">
@@ -436,13 +436,13 @@ function MoneyFunctions({ isTi }: { isTi: boolean }) {
           <KnowledgeCheck
             key="store"
             isTi={isTi}
-            question={{ en: "If the same savings buy fewer baskets later, what changed?", ti: "ተመሳሳሊ ዕቋር ድሒሩ ውሑድ መሶብ እንተገዚኡ፡ እንታይ ተለዊጡ?" }}
+            question={{ en: "If the same savings buy fewer baskets later, what changed?", ti: "ተመሳሳሊ ሃብቲ ድሒሩ ውሑድ መሶብ እንተገዚኡ፡ እንታይ ተለዊጡ?" }}
             choices={[
               { label: { en: "Its purchasing power fell in this example", ti: "ኣብዚ ምሳሌ ናይ ምግዛእ ዓቕሙ ኣንቆልቊሉ" }, correct: true },
               { label: { en: "The amount of money automatically increased", ti: "መጠን ገንዘብ ብኣውቶማቲክ ወሲኹ" }, correct: false },
               { label: { en: "The money became a unit of account", ti: "ገንዘብ መለክዒ ሕሳብ ኮይኑ" }, correct: false },
             ]}
-            explanation={{ en: "The balance stayed fixed while the example price level rose, so it buys fewer baskets.", ti: "እቲ ዕቋር ከይተለወጠ ዋጋታት ስለ ዝወሰኹ፡ ውሑድ መሶብ ይገዝእ።" }}
+            explanation={{ en: "The balance stayed fixed while the example price level rose, so it buys fewer baskets.", ti: "እቲ ሃብቲ ከይተለወጠ ዋጋታት ስለ ዝወሰኹ፡ ውሑድ መሶብ ይገዝእ።" }}
           />
         </div>
       ) : null}
@@ -815,8 +815,8 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
             aria-valuetext={`${priceRise}%`}
           />
           <p className="mt-2 text-sm text-zinc-300">
-            {isTi ? "ምሳሌ ዋጋ ካብ 10,000 ናቕፋ ናብ" : "Illustrative basket price: Nakfa 10,000 →"}{" "}
-            Nakfa {(10000 * (1 + priceRise / 100)).toLocaleString()}
+            {isTi ? "ምሳሌ ዋጋ ካብ 10 ናቕፋ ናብ" : "Illustrative basket price: 10 Nakfa →"}{" "}
+            Nakfa {(10 * (1 + priceRise / 100)).toLocaleString()}
           </p>
           <p className="mt-3 text-sm text-zinc-300">
             {isTi ? "ናይ ምግዛእ ዓቕሚ ብናይ ኣቕሑ ዋጋን መጠን ገንዘብን ይምልከት። እምነት ብዘይ ተወሳኺ ሓበሬታ ኣብ ባዕሉ ኣይውስኖን።" : "Purchasing power depends on prices and the amount held. Confidence alone does not determine it."}
@@ -902,7 +902,7 @@ const everydayCases: EverydayCase[] = [
   },
   {
     id: "saving",
-    title: { en: "Saving for school costs", ti: "ንወጻኢ ትምህርቲ ምዕቋር" },
+    title: { en: "Saving for school costs", ti: "ንወጻኢ ትምህርቲ ዝተዓቀበ ሃብቲ" },
     description: { en: "You set aside some income now to help meet a known expense next term.", ti: "ንዝመጽእ ተርም ንዝህሉ ወጻኢ ካብ ኣታዊኻ ሓደ ክፋል ሎሚ ትዕቅብ።" },
     correct: "store",
     explanation: { en: "You are using money to carry purchasing power toward a future expense, though prices and risks can change.", ti: "ንዝመጽእ ወጻኢ ናይ ምግዛእ ዓቕሚ ክትዕቅብ ትፍትን፤ ዋጋን ስግኣታትን ግን ክለዋወጡ ይኽእሉ።" },
@@ -998,7 +998,7 @@ const assessmentQuestions: AssessmentQuestion[] = [
   },
   {
     topic: { en: "Purchasing power", ti: "ናይ ምግዛእ ዓቕሚ" },
-    prompt: { en: "Your savings balance is unchanged, but the prices of the items you need rise. What might happen to its store-of-value function?", ti: "መጠን ዕቋርካ ኣይተለወጠን፣ ዋጋ እቶም ዘድልዩኻ ኣቕሑ ግን ወሲኹ። ናይ መዕቆሪ ሃብቲ ተግባሩ እንታይ ክኸውን ይኽእል?" },
+    prompt: { en: "Your savings balance is unchanged, but the prices of the items you need rise. What might happen to its store-of-value function?", ti: "መጠን ሃብትኻ ኣይተለወጠን፣ ዋጋ እቶም ዘድልዩኻ ኣቕሑ ግን ወሲኹ። ናይ መዕቆሪ ሃብቲ ተግባሩ እንታይ ክኸውን ይኽእል?" },
     options: [
       { label: { en: "It may buy less than before", ti: "ካብ ቅድሚ ሕጂ ውሑድ ክገዝእ ይኽእል" }, correct: true },
       { label: { en: "It must buy exactly the same amount", ti: "ብግድን ተመሳሳሊ መጠን ክገዝእ ኣለዎ" }, correct: false },
