@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
+
+  outputFileTracingIncludes: {
+    "/api/chapters/*/translation": ["./content/courses/genesis/chapters/*-ti.md"],
+  },
   
   // Image optimization
   images: {

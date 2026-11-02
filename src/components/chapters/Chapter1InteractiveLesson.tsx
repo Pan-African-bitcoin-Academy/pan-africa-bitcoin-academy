@@ -714,11 +714,6 @@ function MonetaryComparison({ isTi }: { isTi: boolean }) {
           </article>
         ))}
       </div>
-      <p className="mt-4 text-xs leading-relaxed text-zinc-400">
-        {isTi
-          ? "እዞም መግለጺታት ንመምሃሪ ዝተዳለዉ ሓፈሻዊ ነጥብታት እዮም፤ ፖሊሲ፣ ቴክኖሎጂ፣ ሕጊን ኣብ ቦታኻ ዘሎ ኣጠቓቕማን ክፈላለ ይኽእል።"
-          : "These are general teaching points, not universal rankings. Policy, technology, law, and local practice can differ."}
-      </p>
       <KnowledgeCheck
         isTi={isTi}
         question={{ en: "A currency is legal tender in a country, but a shop does not accept a particular payment channel. What is true?", ti: "ባጤራ ኣብ ሓደ ሃገር ሕጋዊ ባጤራ እዩ፣ ድኳን ግን ሓደ ኣገባብ ክፍሊት ኣይቅበልን። ኣየናይ ሓቂ እዩ?" }}
@@ -737,11 +732,8 @@ type ExchangeAlternative = "cash" | "barter" | "credit" | "bitcoin";
 
 function TrustSimulation({ isTi }: { isTi: boolean }) {
   const [confidence, setConfidence] = useState(80);
-  const [priceRise, setPriceRise] = useState(20);
   const [alternative, setAlternative] = useState<ExchangeAlternative>("cash");
   const acceptingTraders = Math.round((confidence / 100) * 5);
-  const basketPrice = 10 * (1 + priceRise / 100);
-  const basketsPurchasable = 50 / basketPrice;
   const alternatives: { id: ExchangeAlternative; label: Localized; note: Localized }[] = [
     { id: "cash", label: { en: "Cash", ti: "ጥረ ገንዘብ" }, note: { en: "Acceptance depends on confidence in the issuer and in other people.", ti: "ተቐባልነት ኣብ ኣውጻኢን ካልኦት ሰባትን ዘሎ እምነት ይምርኮስ።" } },
     { id: "barter", label: { en: "Barter", ti: "ባርተር" }, note: { en: "Both sides must want what the other offers.", ti: "ክልቲኦም ነቲ እቲ ካልእ ዘቕርቦ ክደልዩ ኣለዎም።" } },
@@ -754,12 +746,12 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
       eyebrow={{ en: "05", ti: "05" }}
       title={{ en: "Trust", ti: "እምነት" }}
       description={{
-        en: "See how confidence affects acceptance, while prices affect purchasing power.",
-        ti: "እምነት ተቐባልነት ከም ዝጸልው፣ ዋጋታት ድማ ናይ ምግዛእ ዓቕሚ ከም ዝጸልዉ ርአ።",
+        en: "In this simplified example, lower confidence means fewer sellers are willing to accept the currency.",
+        ti: "ኣብዚ ቀሊል ምሳሌ፡ እምነት ምስ ዝንኪ ውሑዳት ሸየጥቲ ነታ ባጤራ ክቕበሉ ድሉዋት ይኾኑ።",
       }}
       isTi={isTi}
     >
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="max-w-2xl">
         <div className={cardClass}>
           <label htmlFor="chapter1-confidence" className="font-semibold text-zinc-100">
             {isTi ? "እምነት" : "Confidence"}
@@ -788,42 +780,14 @@ function TrustSimulation({ isTi }: { isTi: boolean }) {
                 className={`flex h-9 flex-1 items-center justify-center rounded-md border text-xs font-medium ${index < acceptingTraders ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-200" : "border-zinc-700 bg-zinc-900 text-zinc-500"}`}
                 aria-label={isTi ? (index < acceptingTraders ? "ይቕበል" : "ኣይቅበልን") : (index < acceptingTraders ? "Accepts" : "Does not accept")}
               >
-                {index < acceptingTraders ? (isTi ? "ይቕበል" : "Accepts") : (isTi ? "ኣይቅበልን" : "Waits")}
+                {index < acceptingTraders ? (isTi ? "ይቕበል" : "Accepts") : (isTi ? "ኣይቅበልን" : "Declines")}
               </div>
             ))}
           </div>
           <p className="mt-2 text-xs text-zinc-500">
-            {isTi ? "ኣብነታዊ ምሳሌ።" : "Illustrative example."}
-          </p>
-        </div>
-        <div className={cardClass}>
-          <label htmlFor="chapter1-trust-prices" className="font-semibold text-zinc-100">
-            {isTi ? "ዋጋ መሶብ ምግቢ" : "Food-basket price"}
-          </label>
-          <p className="mt-1 text-sm text-zinc-300">
             {isTi
-              ? "50 ናቕፋ፤ መጀመርታ ዋጋ መሶብ 10 ናቕፋ።"
-              : "50 Nakfa held; the basket starts at 10 Nakfa."}
-          </p>
-          <input
-            id="chapter1-trust-prices"
-            type="range"
-            min="0"
-            max="200"
-            step="10"
-            value={priceRise}
-            onChange={(event) => setPriceRise(Number(event.target.value))}
-            className="mt-4 w-full accent-[#F97602]"
-            aria-valuetext={`${priceRise}%`}
-          />
-          <p className="mt-2 text-sm text-zinc-300">
-            {isTi ? "ዋጋ መሶብ ኣብዚ ምሳሌ፦" : "Basket price in this example:"}{" "}
-            Nakfa {basketPrice.toLocaleString()}
-          </p>
-          <p className="mt-3 text-sm font-medium text-zinc-100">
-            {isTi
-              ? `ብ50 ናቕፋ ኣስታት ${basketsPurchasable.toFixed(1)} መሶብ ክትገዝእ ትኽእል።`
-              : `At this price, 50 Nakfa buys about ${basketsPurchasable.toFixed(1)} baskets.`}
+              ? "ሓሳባዊ ኣብነት እዩ፤ ናይ ሓቀኛ ዕዳጋ መጠን ኣይኮነን።"
+              : "Illustrative only; this is not a real market measure."}
           </p>
         </div>
       </div>

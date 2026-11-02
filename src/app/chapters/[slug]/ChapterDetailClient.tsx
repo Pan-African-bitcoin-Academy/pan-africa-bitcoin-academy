@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/PageContainer";
 import { getChapterBySlug, chaptersContent } from "@/content/chaptersContent";
+import { getChaptersList } from "@/content/chaptersListContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ChapterAccessCheck } from "./ChapterAccessCheck";
 import { ChapterCompletionTracker } from "./ChapterCompletionTracker";
@@ -27,6 +28,7 @@ import { ChapterSectionAnimated } from "@/components/chapters/ChapterSectionAnim
 import { ChapterTechVectors } from "@/components/chapters/ChapterTechVectors";
 import { WrapUpResourcesContent } from "@/components/chapters/WrapUpResourcesContent";
 import { ZoomableImage } from "@/components/ZoomableImage";
+import { MarkdownContent } from "@/components/MarkdownContent";
 import { KeysChapterHeroQuote } from "@/components/chapters/KeysChapterHeroQuote";
 import { BlockchainBasicsHeroQuote } from "@/components/chapters/BlockchainBasicsHeroQuote";
 import type { Metadata } from "next";
@@ -50,11 +52,79 @@ type ChapterDetailClientProps = {
 export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
   const { language } = useLanguage();
   const isTi = language === "ti";
+  const hasTigrinyaMarkdown = isTi && [
+    "the-journey-of-money",
+    "problems-with-traditional-fiat-money",
+    "from-crisis-to-innovation",
+    "the-birth-of-bitcoin",
+    "keys-and-transactions",
+    "blockchain-basics",
+    "exchange-software-wallet",
+    "utxos-fees-coin-control",
+    "good-bitcoin-hygiene",
+    "hardware-signers",
+  ].includes(slug);
+  const [tigrinyaLesson, setTigrinyaLesson] = React.useState<{
+    slug: string;
+    title: string;
+    content: string;
+  } | null>(null);
+  const [translationError, setTranslationError] = React.useState<string | null>(null);
+  const [translationRequest, setTranslationRequest] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!hasTigrinyaMarkdown) {
+      setTigrinyaLesson(null);
+      setTranslationError(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    setTigrinyaLesson(null);
+    setTranslationError(null);
+
+    const loadTranslation = async () => {
+      try {
+        const response = await fetch(`/api/chapters/${encodeURIComponent(slug)}/translation`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`Translation request failed (${response.status}).`);
+        }
+
+        const payload: unknown = await response.json();
+        if (
+          typeof payload !== "object" ||
+          payload === null ||
+          !("content" in payload) ||
+          typeof payload.content !== "string" ||
+          !("title" in payload) ||
+          typeof payload.title !== "string"
+        ) {
+          throw new Error("The translation response was invalid.");
+        }
+
+        setTigrinyaLesson({ slug, title: payload.title, content: payload.content });
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+        setTranslationError(
+          error instanceof Error ? error.message : "Unable to load the Tigrinya translation.",
+        );
+      }
+    };
+
+    void loadTranslation();
+    return () => controller.abort();
+  }, [hasTigrinyaMarkdown, slug, translationRequest]);
   
   if (!slug) {
     notFound();
   }
   const chapter = getChapterBySlug(slug, language);
+  const localizedChapter = hasTigrinyaMarkdown
+    ? getChaptersList("ti").find((item) => item.number === chapter?.number)
+    : undefined;
+  const activeTigrinyaLesson = tigrinyaLesson?.slug === slug ? tigrinyaLesson : null;
 
   if (!chapter) {
     const titleFromSlug = slug
@@ -97,13 +167,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
       title={
         isWrapUpResources
           ? undefined
-          : isTi ? `ምዕራፍ ${chapter.number} · ${chapter.title}` : `Chapter ${chapter.number} · ${chapter.title}`
+          : isTi
+            ? `ምዕራፍ ${chapter.number} · ${activeTigrinyaLesson?.title ?? localizedChapter?.title ?? chapter.title}`
+            : `Chapter ${chapter.number} · ${chapter.title}`
       }
       subtitle={
         isWrapUpResources
           ? undefined
           : isTi
-          ? `${chapter.level} · ${chapter.duration} · ${chapter.type === "Theory" ? "ቲዮሪ" : chapter.type === "Practice" ? "ልምምድ" : "ተሓዋዊ"}`
+          ? `${localizedChapter?.difficulty ?? chapter.level} · ${chapter.duration} · ${chapter.type === "Theory" ? "ቲዮሪ" : chapter.type === "Practice" ? "ልምምድ" : "ተሓዋዊ"}`
           : `${chapter.level} · ${chapter.duration} · ${chapter.type}`
       }
     >
@@ -119,7 +191,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.12em] text-cyan-300/90">
                 <span className="rounded-full border border-cyan-400/40 px-2 py-0.5">
-                  {chapter.level}
+                  {localizedChapter?.difficulty ?? chapter.level}
                 </span>
                 <span className="rounded-full border border-orange-400/40 px-2 py-0.5">
                   {isTi
@@ -134,9 +206,11 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                   {chapter.duration}
                 </span>
               </div>
-              <p className="text-lg font-semibold text-zinc-100 sm:text-xl">
-                {chapter.hook}
-              </p>
+              {!hasTigrinyaMarkdown ? (
+                <p className="text-lg font-semibold text-zinc-100 sm:text-xl">
+                  {chapter.hook}
+                </p>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               {previousChapter ? (
@@ -170,7 +244,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
             {isTi ? "እንታይ ክትመሃር ኢኻ።" : "What You Will Learn"}
           </h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-zinc-200">
-            {chapter.learn.map((item) => (
+            {(localizedChapter?.learnPoints ?? chapter.learn).map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
@@ -186,7 +260,48 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
             {isTi ? "ቀንዲ ትሕዝቶ ትምህርቲ" : "Main Lesson Content"}
           </h2>
           <div className="relative space-y-5">
-            {chapter.sections.map((section, sectionIdx) => {
+            {hasTigrinyaMarkdown ? (
+              activeTigrinyaLesson ? (
+                <>
+                  <MarkdownContent content={activeTigrinyaLesson.content} />
+                  {chapter.slug === "the-birth-of-bitcoin" ? (
+                    <div className="mt-8 rounded-lg border border-orange-400/20 bg-zinc-900/60 p-4">
+                      <h3 className="mb-4 text-lg font-semibold text-orange-200">
+                        {isTi ? "ቢትኮይንን ሳቶሺን ኣስላስል" : "Convert Bitcoin and satoshis"}
+                      </h3>
+                      <BtcSatsConverter />
+                    </div>
+                  ) : null}
+                  {chapter.slug === "blockchain-basics" ? (
+                    <div className="mt-8 rounded-lg border border-cyan-400/20 bg-zinc-900/60 p-4">
+                      <h3 className="mb-4 text-lg font-semibold text-cyan-200">
+                        {isTi ? "ህሉው ሓበሬታ ኔትወርክ ቢትኮይን" : "Live Bitcoin network data"}
+                      </h3>
+                      <LiveBlockchainData />
+                    </div>
+                  ) : null}
+                </>
+              ) : translationError ? (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100" role="alert">
+                  <p>
+                    {isTi
+                      ? "እዚ ትርጉም ክጽዕን ኣይከኣለን።"
+                      : "The translation could not be loaded."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setTranslationRequest((request) => request + 1)}
+                    className="mt-3 rounded-md border border-red-300/40 px-3 py-1.5 font-semibold hover:bg-red-400/10"
+                  >
+                    {isTi ? "እንደገና ፈትን" : "Try again"}
+                  </button>
+                </div>
+              ) : (
+                <p className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-4 text-sm text-zinc-300" role="status">
+                  {isTi ? "ትርጉም ይጽዕን ኣሎ..." : "Loading translation..."}
+                </p>
+              )
+            ) : chapter.sections.map((section, sectionIdx) => {
               const sectionId = `section-${sectionIdx}-${section.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
               const comparisonSection = chapter.slug === "the-birth-of-bitcoin" && (section.heading === "What Are Sats?" || section.heading === "ሳት እንታይ እዮም?") ? (
                 <ChapterSectionAnimated key="bitcoin-gold-fiat-comparison" sectionId="section-bitcoin-gold-fiat-comparison" sectionIdx={chapter.sections.length}>
@@ -1156,36 +1271,36 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
           ) : chapter.slug === 'the-journey-of-money' ? (
             <ChapterAssignment
               assignmentId="22222222-2222-4222-8222-222222222222"
-              title="Assignment: Money Under Pressure"
-              question="Write about how you saw old money fail."
-              description="Reflect on your experiences or observations of traditional money systems failing."
+              title={isTi ? "ዕዮ፡ ገንዘብ ኣብ ትሕቲ ጸቕጢ" : "Assignment: Money Under Pressure"}
+              question={isTi ? "ኣብ ከባቢኻ ገንዘብ ክሳራ ዋጋ ከጋጥሞ ዝረኣኻዮ ኣብነት ግለጽ።" : "Write about how you saw old money fail."}
+              description={isTi ? "ካብ ቤተሰብካ ወይ ሃገርካ ዝዝከሮ ናይ ዋጋ ዕዀ ወይ ምውሳኽ ዋጋ ኣብነት ኣካፍል።" : "Reflect on your experiences or observations of traditional money systems failing."}
               points={10}
               rewardSats={75}
             />
           ) : chapter.slug === 'problems-with-traditional-fiat-money' ? (
             <ChapterAssignment
               assignmentId="33333333-3333-4333-8333-333333333333"
-              title="Assignment: Inflation Reality Check"
-              question="Compare the price of one everyday item (bread, sugar, fuel) today vs 10–20 years ago."
-              description="Research and compare prices to understand inflation's impact on purchasing power."
+              title={isTi ? "ዕዮ፡ ምስ ዝቕባበ ምንጽጻር" : "Assignment: Inflation Reality Check"}
+              question={isTi ? "ዋጋ ሓደ ኣብ መዓልታዊ ህይወት እትጥቀመሉ ኣቕሓ ሎሚን ቅድሚ 10–20 ዓመትን ኣነጻጽር።" : "Compare the price of one everyday item (bread, sugar, fuel) today vs 10–20 years ago."}
+              description={isTi ? "እዚ ምንጽጻር ዝቕባበ ንዓቕሚ ምግዛእ ብኸመይ ከም ዝጸልዎ ንምርዳእ ይሕግዝ።" : "Research and compare prices to understand inflation's impact on purchasing power."}
               points={10}
               rewardSats={75}
             />
           ) : chapter.slug === 'from-crisis-to-innovation' ? (
             <ChapterAssignment
               assignmentId="44444444-4444-4444-8444-444444444444"
-              title="Assignment: &quot;What Broke?&quot;"
-              question="Explain in your own words one reason the old system failed (inflation, debt, bailouts, control)."
-              description="Reflect on the failures of the traditional financial system."
+              title={isTi ? "ዕዮ፡ እቲ ስርዓት እንታይ ኣፍረሶ?" : "Assignment: &quot;What Broke?&quot;"}
+              question={isTi ? "ካብ ዝቕባበ፣ ዕዳ፣ ሓገዝ ባንክ ወይ ማእከላይ ቁጽጽር፡ ሓደ ጠንቂ ናይቲ ኣረጊት ስርዓት ምፍሻል ብቃልካ ኣብራህ።" : "Explain in your own words one reason the old system failed (inflation, debt, bailouts, control)."}
+              description={isTi ? "ኣብ 2008 ዝነበረ ቅልውላውን ኣብ ስርዓት ፋይናንስ ዝነበሩ ጸገማትን ኣስተንትን።" : "Reflect on the failures of the traditional financial system."}
               points={10}
               rewardSats={75}
             />
           ) : chapter.slug === 'the-birth-of-bitcoin' ? (
             <ChapterAssignment
               assignmentId="55555555-5555-4555-8555-555555555555"
-              title="Assignment: Whitepaper Sentence Decode"
-              question="Rewrite this sentence in plain language: &quot;A purely peer-to-peer version of electronic cash…&quot;"
-              description="Practice translating technical language into everyday terms."
+              title={isTi ? "ዕዮ፡ ሓደ ሓሳብ ጻዕዳ ወረቐት ብቀሊሉ ምግላጽ" : "Assignment: Whitepaper Sentence Decode"}
+              question={isTi ? "እዚ ሓሳብ ብቀሊሉ ደጊምካ ጽሓፎ፡ «ንመዛኑ ዝኸውን ኤሌክትሮኒካዊ ጥረ ገንዘብ…»" : "Rewrite this sentence in plain language: &quot;A purely peer-to-peer version of electronic cash…&quot;"}
+              description={isTi ? "ተክኒካዊ ሓሳባት ብቀሊል ቋንቋ ምግላጽ ተለማመድ።" : "Practice translating technical language into everyday terms."}
               points={10}
               rewardSats={100}
             />
@@ -1196,9 +1311,9 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
           ) : chapter.slug === 'blockchain-basics' ? (
             <ChapterAssignment
               assignmentId="77777777-7777-4777-8777-777777777777"
-              title="Assignment: Understanding a Block"
-              question="What would happen if someone tried to change a transaction in an old block?"
-              description="Explain the consequences of attempting to alter a transaction in a previous block on the blockchain."
+              title={isTi ? "ዕዮ፡ ብሎክ ምርዳእ" : "Assignment: Understanding a Block"}
+              question={isTi ? "ሓደ ሰብ ኣብ ኣረጊት ብሎክ ዘሎ ትራንዛክሽን ክቕይር እንተፈቲኑ እንታይ ይፍጠር?" : "What would happen if someone tried to change a transaction in an old block?"}
+              description={isTi ? "ኣብ ብሎክቸይን ኣረጊት ትራንዛክሽን ምቕያር ዘስዕቦ ሳዕቤን ኣብራህ።" : "Explain the consequences of attempting to alter a transaction in a previous block on the blockchain."}
               points={10}
               rewardSats={100}
             />
@@ -1257,7 +1372,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
         </>
         ) : null}
 
-        {!isWrapUpResources ? (
+        {!isWrapUpResources && !hasTigrinyaMarkdown ? (
         <>
         {/* Summary */}
         <section className="rounded-xl border border-green-400/25 bg-black/70 p-3.5 sm:p-6 w-full min-w-0">
