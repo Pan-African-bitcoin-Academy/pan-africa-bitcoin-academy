@@ -32,6 +32,8 @@ import {
   Trash2,
   Wallet,
 } from 'lucide-react';
+import { AuthModal } from '@/components/AuthModal';
+import { ForgotPasswordModal } from '@/components/ForgotPasswordModal';
 import {
   Area,
   AreaChart,
@@ -105,6 +107,7 @@ interface MarketCandle {
 }
 
 const STORAGE_KEY = 'pba-dca-v1';
+const SIMULATION_START_DATE = '2020-01-01';
 const sectionLinks: { id: Section; label: string; icon: typeof Activity }[] = [
   { id: 'overview', label: 'Overview', icon: Gauge },
   { id: 'learn', label: 'Learn DCA', icon: BookOpen },
@@ -181,6 +184,18 @@ function formatDate(value: string) {
   if (!value) return '—';
   return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeZone: 'UTC' }).format(
     new Date(`${value.slice(0, 10)}T00:00:00.000Z`),
+  );
+}
+
+function isPricePoint(value: unknown): value is PricePoint {
+  if (!value || typeof value !== 'object') return false;
+  const point = value as Record<string, unknown>;
+  return (
+    typeof point.timestamp === 'number' &&
+    Number.isFinite(point.timestamp) &&
+    typeof point.price === 'number' &&
+    Number.isFinite(point.price) &&
+    point.price > 0
   );
 }
 
@@ -401,6 +416,13 @@ export default function DcaExperience() {
   const [market, setMarket] = useState<MarketData | null>(null);
   const [marketError, setMarketError] = useState('');
   const [marketLoading, setMarketLoading] = useState(true);
+  const [historicalPrices, setHistoricalPrices] = useState<PricePoint[]>([]);
+  const [historicalPriceSource, setHistoricalPriceSource] = useState('');
+  const [historicalPriceError, setHistoricalPriceError] = useState('');
+  const [historicalPriceLoading, setHistoricalPriceLoading] = useState(false);
+  const [signInModalOpen, setSignInModalOpen] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [notice, setNotice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [saving, setSaving] = useState(false);
@@ -416,7 +438,7 @@ export default function DcaExperience() {
   const [planNotes, setPlanNotes] = useState('');
   const [simContribution, setSimContribution] = useState('20');
   const [simFrequency, setSimFrequency] = useState<DcaFrequency>('weekly');
-  const [simStartDate, setSimStartDate] = useState(() => dateOffset(-180));
+  const [simStartDate, setSimStartDate] = useState(SIMULATION_START_DATE);
   const [simEndDate, setSimEndDate] = useState(todayInputValue);
   const [simInitial, setSimInitial] = useState('0');
   const [simFee, setSimFee] = useState('0');
@@ -490,9 +512,49 @@ export default function DcaExperience() {
     }
   }, []);
 
+  const loadHistoricalPrices = useCallback(async () => {
+    setHistoricalPriceLoading(true);
+    setHistoricalPriceError('');
+    try {
+      const response = await fetch('/api/dca/history');
+      const data: unknown = await response.json();
+      if (!response.ok || !data || typeof data !== 'object') {
+        const message =
+          data && typeof data === 'object' && 'error' in data && typeof data.error === 'string'
+            ? data.error
+            : 'Unable to load historical Bitcoin prices.';
+        throw new Error(message);
+      }
+
+      const result = data as { prices?: unknown; source?: unknown };
+      if (
+        !Array.isArray(result.prices) ||
+        !result.prices.length ||
+        !result.prices.every(isPricePoint) ||
+        typeof result.source !== 'string'
+      ) {
+        throw new Error('The historical price provider returned incomplete information.');
+      }
+      setHistoricalPrices(result.prices);
+      setHistoricalPriceSource(result.source);
+    } catch (error) {
+      setHistoricalPriceError(
+        error instanceof Error ? error.message : 'Unable to load historical Bitcoin prices.',
+      );
+    } finally {
+      setHistoricalPriceLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     void loadMarket(marketDays);
   }, [loadMarket, marketDays]);
+
+  useEffect(() => {
+    if (section === 'simulator' && !historicalPrices.length && !historicalPriceError) {
+      void loadHistoricalPrices();
+    }
+  }, [historicalPriceError, historicalPrices.length, loadHistoricalPrices, section]);
 
   useEffect(() => {
     if (authLoading || !storageReady) return;
@@ -552,10 +614,10 @@ export default function DcaExperience() {
 
   const simulation: DcaSimulation | null = useMemo(() => {
     const amount = Number(simContribution);
-    if (!market?.prices.length || !Number.isFinite(amount) || amount <= 0 || simStartDate > simEndDate) return null;
+    if (!historicalPrices.length || !Number.isFinite(amount) || amount <= 0 || simStartDate > simEndDate) return null;
     const rangeStart = new Date(`${simStartDate}T00:00:00.000Z`).getTime();
     const rangeEnd = new Date(`${simEndDate}T23:59:59.999Z`).getTime();
-    const prices = market.prices.filter((point) => point.timestamp >= rangeStart - 3 * 86400000 && point.timestamp <= rangeEnd + 3 * 86400000);
+    const prices = historicalPrices.filter((point) => point.timestamp >= rangeStart - 3 * 86400000 && point.timestamp <= rangeEnd + 3 * 86400000);
     return simulateDca({
       startDate: simStartDate,
       endDate: simEndDate,
@@ -565,7 +627,7 @@ export default function DcaExperience() {
       initialContribution: Math.max(0, Number(simInitial) || 0),
       prices,
     });
-  }, [market, simContribution, simEndDate, simFee, simFrequency, simInitial, simStartDate]);
+  }, [historicalPrices, simContribution, simEndDate, simFee, simFrequency, simInitial, simStartDate]);
 
   const purchaseStats = useMemo(() => {
     const totalSpent = purchases.reduce((sum, item) => sum + item.amountUsd, 0);
@@ -868,9 +930,21 @@ export default function DcaExperience() {
 
   const setSectionAndScroll = (next: Section) => {
     clearMessages();
+    const signInRequired = next === 'planner' || next === 'dashboard';
+    if (signInRequired && authLoading) return;
+    if (signInRequired && !isAuthenticated) {
+      setSignInModalOpen(true);
+      return;
+    }
     setSection(next);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated && (section === 'planner' || section === 'dashboard')) {
+      setSection('overview');
+    }
+  }, [authLoading, isAuthenticated, section]);
 
   return (
     <main className="relative isolate mx-auto min-h-screen w-full max-w-[1600px] px-3 pb-16 pt-6 before:fixed before:inset-0 before:-z-10 before:bg-slate-950/45 before:content-[''] sm:px-5 lg:px-8 lg:pt-10">
@@ -900,7 +974,13 @@ export default function DcaExperience() {
               key={id}
               type="button"
               onClick={() => setSectionAndScroll(id)}
+              disabled={authLoading && (id === 'planner' || id === 'dashboard')}
               aria-current={section === id ? 'page' : undefined}
+              aria-label={
+                (id === 'planner' || id === 'dashboard') && !isAuthenticated
+                  ? `${label} (sign in required)`
+                  : undefined
+              }
               className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition ${
                 section === id
                   ? 'bg-orange-500 text-white'
@@ -909,6 +989,9 @@ export default function DcaExperience() {
             >
               <Icon className="h-4 w-4" aria-hidden="true" />
               {label}
+              {(id === 'planner' || id === 'dashboard') && !isAuthenticated && (
+                <LockKeyhole className="h-3.5 w-3.5 opacity-70" aria-hidden="true" />
+              )}
             </button>
           ))}
         </div>
@@ -927,9 +1010,16 @@ export default function DcaExperience() {
         </div>
       )}
       {!authLoading && !isAuthenticated && (
-        <p className="mb-4 rounded-xl border border-white/10 bg-slate-950/50 px-3 py-2 text-xs text-slate-400">
-          Your plans and purchase journal are saved only in this browser unless you sign in.
-        </p>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-orange-400/20 bg-orange-400/5 px-3 py-2 text-sm text-slate-300">
+          <p>Sign in is required to use the DCA planner and My dashboard.</p>
+          <button
+            type="button"
+            onClick={() => setSignInModalOpen(true)}
+            className="font-semibold text-orange-300 underline decoration-orange-300/50 underline-offset-4 hover:text-orange-200"
+          >
+            Sign in
+          </button>
+        </div>
       )}
 
       {section === 'overview' && (
@@ -1170,11 +1260,19 @@ export default function DcaExperience() {
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-300">Historical what-if</p>
                 <h2 className="mt-2 text-2xl font-bold text-white">Test a schedule against historical prices</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-                  Hypothetically buy at each scheduled date using the nearest available daily price. Price gaps over three days are skipped and shown in the results.
+                  Hypothetically buy at each scheduled date using the nearest available historical price. Price gaps over three days are skipped and shown in the results.
+                </p>
+                <p className="mt-2 text-xs text-slate-400">
+                  Historical market-price data from January 2020 onward{historicalPriceSource ? ` · Source: ${historicalPriceSource}` : ''}.
                 </p>
               </div>
-              <button type="button" onClick={() => void loadMarket('max')} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 px-3 text-sm text-slate-200 hover:bg-white/10">
-                <RefreshCw className="h-4 w-4" aria-hidden="true" /> Load longest available history
+              <button
+                type="button"
+                onClick={() => void loadHistoricalPrices()}
+                disabled={historicalPriceLoading}
+                className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 px-3 text-sm text-slate-200 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <RefreshCw className="h-4 w-4" aria-hidden="true" /> {historicalPriceLoading ? 'Loading history…' : 'Reload history from 2020'}
               </button>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -1189,8 +1287,8 @@ export default function DcaExperience() {
               <Field label="Estimated fee (%)">
                 <input className={inputClass} type="number" min="0" max="100" step="0.01" value={simFee} onChange={(event) => setSimFee(event.target.value)} />
               </Field>
-              <Field label="Start date" hint={market?.prices[0] ? `Available from ${formatDate(new Date(market.prices[0].timestamp).toISOString().slice(0, 10))}` : undefined}>
-                <input className={inputClass} type="date" value={simStartDate} onChange={(event) => setSimStartDate(event.target.value)} />
+              <Field label="Start date" hint={historicalPrices[0] ? `Available from ${formatDate(new Date(historicalPrices[0].timestamp).toISOString().slice(0, 10))}` : 'Select a date from January 1, 2020 onward.'}>
+                <input className={inputClass} type="date" min={SIMULATION_START_DATE} max={todayInputValue()} value={simStartDate} onChange={(event) => setSimStartDate(event.target.value)} />
               </Field>
               <Field label="End date">
                 <input className={inputClass} type="date" min={simStartDate} max={todayInputValue()} value={simEndDate} onChange={(event) => setSimEndDate(event.target.value)} />
@@ -1201,12 +1299,12 @@ export default function DcaExperience() {
             </div>
           </Panel>
 
-          {marketError ? <MarketError message={marketError} onRetry={() => void loadMarket('max')} /> : null}
-          {marketLoading && <LoadingPanel text="Loading historical Bitcoin prices…" />}
-          {!marketLoading && !marketError && simulation && (
+          {historicalPriceError ? <MarketError message={historicalPriceError} onRetry={() => void loadHistoricalPrices()} /> : null}
+          {historicalPriceLoading && <LoadingPanel text="Loading historical Bitcoin prices from 2020…" />}
+          {!historicalPriceLoading && !historicalPriceError && simulation && (
             <>
               {simulation.purchases.length === 0 ? (
-                <Panel><p className="text-sm text-slate-300">No scheduled purchases could be matched to the available price history. Select dates within the provider’s available range.</p></Panel>
+                <Panel><p className="text-sm text-slate-300">No scheduled purchases could be matched to the available price history. Choose dates from January 2020 onward.</p></Panel>
               ) : (
                 <>
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -1254,8 +1352,8 @@ export default function DcaExperience() {
                           <tr><th className="p-3">Date</th><th className="p-3">Price</th><th className="p-3">Contribution</th><th className="p-3">BTC</th><th className="p-3">Fees</th></tr>
                         </thead>
                         <tbody>
-                          {simulation.purchases.map((item) => (
-                            <tr key={item.date} className="border-t border-white/10 text-slate-200">
+                          {simulation.purchases.map((item, index) => (
+                            <tr key={`${item.date}-${index}`} className="border-t border-white/10 text-slate-200">
                               <td className="p-3">{formatDate(item.date)}</td><td className="p-3">{formatCurrency(item.price)}</td><td className="p-3">{formatCurrency(item.contribution)}</td><td className="p-3">{item.btc.toFixed(8)}</td><td className="p-3">{formatCurrency(item.fees)}</td>
                             </tr>
                           ))}
@@ -1267,11 +1365,11 @@ export default function DcaExperience() {
               )}
             </>
           )}
-          {!marketLoading && !marketError && !simulation && (
+          {!historicalPriceLoading && !historicalPriceError && !simulation && (
             <Panel><p className="text-sm text-slate-300">Enter a positive contribution and a valid date range to view a simulation.</p></Panel>
           )}
           <p className="text-xs leading-5 text-slate-500">
-            Historical market prices from {market?.source ?? 'CoinGecko'}. Simulation ignores exchange spreads, taxes, withdrawals, and individual execution differences. This is hypothetical analysis, not a recommendation.
+            Historical market-price samples from {historicalPriceSource || 'Blockchain.com'}. Simulation ignores exchange spreads, taxes, withdrawals, and individual execution differences. This is hypothetical analysis, not a recommendation.
           </p>
         </div>
       )}
@@ -1493,6 +1591,25 @@ export default function DcaExperience() {
       <footer className="mt-8 rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-xs leading-5 text-slate-400 sm:p-5">
         Bitcoin is volatile and you could lose some or all of the value of any purchase. Dollar-cost averaging does not eliminate risk or guarantee returns. PBA provides educational and analytical tools only—not financial advice, trading, custody, payments, or verification of manually entered records. Historical outcomes are hypothetical and do not predict future performance.
       </footer>
+      <AuthModal
+        isOpen={signInModalOpen}
+        onClose={() => setSignInModalOpen(false)}
+        mode="signin"
+        redirectAfterLogin={null}
+        onForgotPassword={(email) => {
+          setForgotPasswordEmail(email);
+          setSignInModalOpen(false);
+          setForgotPasswordOpen(true);
+        }}
+      />
+      <ForgotPasswordModal
+        isOpen={forgotPasswordOpen}
+        onClose={() => {
+          setForgotPasswordOpen(false);
+          setForgotPasswordEmail('');
+        }}
+        initialEmail={forgotPasswordEmail}
+      />
     </main>
   );
 }
