@@ -295,35 +295,6 @@ export function WrapUpResourcesContent({ isTi }: { isTi: boolean }) {
             &ldquo;{localize("Bitcoin gives you full control—but also full responsibility.", isTi)}&rdquo;
           </p>
         </blockquote>
-        <div className="mt-6 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 sm:mt-8 sm:p-5">
-          <ol
-            aria-label={
-              isTi
-                ? "ዋሕዚ ኮርስ፦ ገንዘብ፣ ቢትኮይን፣ ምርግጋጽ፣ ድሕነት፣ ተግባር"
-                : "Course path: money, Bitcoin, verification, security, practice"
-            }
-            className="grid grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3"
-          >
-            {(isTi
-              ? ["ገንዘብ", "ቢትኮይን", "ምርግጋጽ", "ድሕነት", "ተግባር"]
-              : ["Money", "Bitcoin", "Verify", "Secure", "Practice"]
-            ).map((label, index) => (
-              <li
-                key={label}
-                className={`flex min-w-0 items-center gap-2 rounded-lg border px-3 py-3 text-sm font-semibold ${
-                  index === 0 || index === 4
-                    ? "border-orange-500/30 bg-orange-500/5 text-orange-100"
-                    : "border-cyan-500/25 bg-cyan-500/5 text-cyan-100"
-                }`}
-              >
-                <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs text-zinc-300">
-                  {index + 1}
-                </span>
-                <span>{label}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
       </section>
 
       {/* Action + Safety */}

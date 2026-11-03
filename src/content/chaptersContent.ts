@@ -1655,7 +1655,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/difficulty-adjustment.svg",
+            src: "/images/book_images/difficulty-adjustment.png",
             alt: "Chart showing Bitcoin difficulty adjustment over time",
             caption: "Difficulty automatically adjusts to maintain 10-minute block times",
           },
@@ -1676,7 +1676,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/mining-pools.svg",
+            src: "/images/book_images/mining-pools.png",
             alt: "Diagram showing how mining pools combine hashing power",
             caption: "Mining pools combine hashing power and share rewards",
           },
@@ -1694,13 +1694,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "As block rewards decline, transaction fees must grow to maintain network security. A healthy fee market is essential for Bitcoin's long-term sustainability.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/security-budget.svg",
-            alt: "Conceptual chart showing a declining block subsidy and fees that may become a larger share of miner revenue",
-            caption: "Illustrative only, not a forecast: subsidy declines over halvings; fees depend on demand.",
-          },
-        ],
       },
       {
         heading: "14.3 ASIC Supply Chains and Geopolitical Risks",
@@ -1712,13 +1705,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "warning",
             content: "ASIC supply chain concentration and geographic mining concentration create potential risks. Diversification is important for network resilience.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/miners.jpeg",
-            alt: "Rows of specialized Bitcoin mining machines in a mining facility",
-            caption: "ASICs are specialized hardware; their supply chains and manufacturing locations can be concentrated.",
           },
         ],
       },
@@ -1825,7 +1811,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/sidechain-peg.svg",
+            src: "/images/book_images/sidechain-peg.png",
             alt: "Diagram showing Bitcoin pegged to sidechain and back",
             caption: "Sidechains are pegged to Bitcoin but use different consensus",
           },
@@ -1908,7 +1894,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/node-stack.svg",
+            src: "/images/book_images/node-stack.png",
             alt: "Diagram showing Bitcoin Core + Lightning node setup",
             caption: "Bitcoin Core + Lightning enables full sovereignty",
           },
@@ -1928,7 +1914,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/lightning-channel-open.svg",
+            src: "/images/book_images/lightning-channel-open.png",
             alt: "Diagram showing Lightning channel opening process",
             caption: "Opening a Lightning channel locks funds in multi-sig",
           },
@@ -2311,7 +2297,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/mempool-fees.svg",
+            src: "/images/book_images/mempool-fees.png",
             alt: "Chart showing mempool fee levels over time",
             caption: "Watch mempool conditions to time consolidation",
           },
@@ -2329,13 +2315,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Consolidation links UTXOs together on the blockchain. Avoid merging UTXOs from different sources or with different privacy characteristics.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/utxo-consolidation-privacy.svg",
-            alt: "UTXOs from separate sources being combined into one transaction, linking them on-chain",
-            caption: "Combining inputs makes their on-chain relationship visible.",
-          },
-        ],
       },
       {
         heading: "19.2 Planning Future Spends (Cost and Privacy Balance)",
@@ -2347,13 +2326,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "tip",
             content: "Plan future spends in advance. Consolidate related UTXOs during low-fee windows, but keep sensitive UTXOs separate.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/utxosize.jpg",
-            alt: "Illustration comparing transactions with different numbers of UTXO inputs and virtual sizes",
-            caption: "More inputs can increase transaction size and fees; this example is illustrative.",
           },
         ],
       },
@@ -2425,7 +2397,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/money-frameworks.svg",
+            src: "/images/book_images/money-frameworks.png",
             alt: "Diagram comparing Chartalism, Metallism, and Platform Money",
             caption: "Bitcoin represents a new category of money",
           },
@@ -2441,13 +2413,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "tip",
             content: "Bitcoin (capital B) = protocol/network. bitcoin (lowercase b) = asset/unit. This distinction clarifies debates and strategy.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/bitcoin-network-asset.svg",
-            alt: "A connected Bitcoin network shown beside a single bitcoin unit",
-            caption: "Bitcoin names the network and protocol; bitcoin names the asset and unit.",
           },
         ],
       },
@@ -2468,13 +2433,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "example",
             content: "A worker in a developing country can receive Bitcoin payments from anywhere in the world, store value without a bank account, and send money to family members across borders — all without permission from any institution.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/lightning_networ.png",
-            alt: "Nodes connected through a Lightning payment network",
-            caption: "Payment networks connect participants; routes and availability depend on the network.",
           },
         ],
       },

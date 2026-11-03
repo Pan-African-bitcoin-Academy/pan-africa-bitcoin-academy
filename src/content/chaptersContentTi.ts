@@ -374,8 +374,8 @@ export const chaptersContentTi: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/difficulty-adjustment.svg",
-            alt: "ለውጢ ክብደትን ናይ ብሎክ ግዜን ዘርኢ ስእላዊ መግለጺ",
+            src: "/images/book_images/difficulty-adjustment.png",
+            alt: "Chart showing Bitcoin difficulty adjustment over time",
             caption: "ክብደት ናይ 10 ደቓይቕ ናይ ብሎክ ግዜ ንምዕቃብ ብኣውቶማቲክ ይስተኻኸል",
           },
         ],
@@ -395,8 +395,8 @@ export const chaptersContentTi: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/mining-pools.svg",
-            alt: "ብዙሓት ዓደንቲ ሓይሊ ሃሺንጎም ናብ ፑል ከም ዘወሃህዱ ዘርኢ ስእላዊ መግለጺ",
+            src: "/images/book_images/mining-pool.png",
+            alt: "Diagram showing multiple miners connecting to a mining pool",
             caption: "ናይ ዕደና ፑል ሓይሊ ሃሺንግ ኣወሃሂዶም ሽልማት ይካፈሉ።",
           },
         ],
@@ -415,9 +415,9 @@ export const chaptersContentTi: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/security-budget.svg",
-            alt: "ብግዜ እናነከየ ዝኸይድ ድጎማ ብሎክን ክፍሊት ዝህልዎ ሚናን ዘርኢ ሓፈሻዊ ግራፍ",
-            caption: "ምሳሌ እዩ፣ ትንበያ ኣይኮነን፦ ድጎማ ብምፍራቕ ይንኪ፤ ክፍሊት ግን ኣብ ጠለብ ይምርኮስ።",
+            src: "/images/book_images/security-budget.png",
+            alt: "Chart showing the transition from block rewards to transaction fees over time",
+            caption: "ናይ ጸጥታ ባጀት: ካብ ሽልማት ብሎክ ናብ ክፍሊት ትራንዛክሽን ምስ ኣቢሉ",
           },
         ],
       },
@@ -435,8 +435,8 @@ export const chaptersContentTi: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/miners.jpeg",
-            alt: "ኣብ ቦታ ዕደና ዝተሰርዑ ፍሉያት ማሽናት ዕደና ቢትኮይን",
+            src: "/images/book_images/asic.png",
+            alt: "Image of ASIC mining hardware",
             caption: "ASIC ሃርድዌር: ፍሉይ ንዕደና ቢትኮይን ዝተዃነ፣ ግን ዝተዋህለለ ቀረብ ሰንሰለት ዘለዎ",
           },
         ],
@@ -539,8 +539,8 @@ export const chaptersContentTi: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/sidechain-peg.svg",
-            alt: "ቢትኮይን ኣብ ጎናዊ ሰንሰለት ከም ዝኣቱን ከም ዝምለስን ዘርኢ ስእላዊ መግለጺ",
+            src: "/images/book_images/sidechain-peg.png",
+            alt: "Diagram showing Bitcoin pegged to sidechain and back",
             caption: "ሳይድቸይን ምስ ቢትኮይን ዝተኣሳሰሩ ኮይኖም ግን ዝተፈላለየ ምርድዳእ ይጥቀሙ",
           },
         ],
@@ -622,8 +622,8 @@ export const chaptersContentTi: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/node-stack.svg",
-            alt: "ኖድ ቢትኮይንን መርበብ ላይትኒንግን ከም ዝራኸቡ ዘርኢ ስእላዊ መግለጺ",
+            src: "/images/book_images/node-stack.png",
+            alt: "Diagram showing Bitcoin Core + Lightning node setup",
             caption: "ቢትኮይን ኮር + ላይትኒንግ ምሉእ ልኡላውነት የኽእል",
           },
         ],
@@ -642,8 +642,8 @@ export const chaptersContentTi: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/lightning-channel-open.svg",
-            alt: "ክልተ ወገናት ቻነል ላይትኒንግ ንምኽፋት ገንዘብ ኣብ ብዙሕ ፊርማ ዘለዎ ኣድራሻ ከም ዝዓጽዉ ዘርኢ",
+            src: "/images/book_images/lightning-channel-open.png",
+            alt: "Diagram showing Lightning channel opening process",
             caption: "Lightning channel ምኽፋት ገንዘብ ኣብ multi-sig ይዓጽዎ።",
           },
         ],
@@ -1021,13 +1021,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "ኣብ መስኮታት ትሑት ክፍሊት (ባዶ mempool፡ መዓልታት ዕረፍቲ፡ ለይቲ) ኣደላድል፣ ኣብ መጻኢ ትራንዛክሽናት ገንዘብ ንምቑጣብ።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/mempool-fees.svg",
-            alt: "ብዝሒ ናይ ምጽባይ ትራንዛክሽናትን ዋጋ ክፍሊትን ኣብ ምሳሌ ዘርኢ ግራፍ",
-            caption: "እዚ ምሳሌ ጥራይ እዩ፤ ክፍሊት ኣብ ጠለብን ቦታ ብሎክን ይምርኮስ።",
-          },
-        ],
       },
       {
         heading: "19.1 ሓደጋታት ብሕትውና ካብ ምድልዳል (ምውህሃድ ምንጭታት የራኽብ)",
@@ -1041,13 +1034,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "ምድልዳል UTXOታት ኣብ ብሎክቸይን ብሓባር የራኽቦም። ካብ ዝተፈላለዩ ምንጭታት ዝመጹ ወይ ዝተፈላለዩ ናይ ብሕትውና ባህርያት ዘለዎም UTXOታት ምውህሃድ ኣወግድ።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/utxo-consolidation-privacy.svg",
-            alt: "UTXOታት ካብ ዝተፈላለዩ ምንጭታት ኣብ ሓደ ትራንዛክሽን እናተዋሃሃዱ ኣብ ብሎክቸይን ከም ዝተኣሳሰሩ ዘርኢ",
-            caption: "እቶም እተዋሃሃዱ እታዎታት ኣብ ህዝባዊ ብሎክቸይን ብሓባር ይረኣዩ።",
-          },
-        ],
       },
       {
         heading: "19.2 መጻኢ ወጻኢታት ምውጣን (ሚዛን ዋጋን ብሕትውናን)",
@@ -1059,13 +1045,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "tip",
             content: "ናይ መጻኢ ወጻኢታት ኣቐዲምካ ውጥን። ኣብ መስኮታት ትሑት ክፍሊት ተዛመድቲ UTXOታት ኣደላድል፣ ተኣፈፍቲ UTXOታት ግን ፍሉያት ሓዞም።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/utxosize.jpg",
-            alt: "ብዝሒ እታዎታት UTXO ንዓቐን ትራንዛክሽንን ክፍሊትን ብኸመይ ከም ዝጸልው ዘርኢ ምስሊ",
-            caption: "ብዙሓት እታዎታት ዓቐንን ክፍሊትን ትራንዛክሽን ከዕብዩ ይኽእሉ፤ እዚ ኣብነት ሓፈሻዊ እዩ።",
           },
         ],
       },
@@ -1135,13 +1114,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "ቢትኮይን ፕላትፎርም ገንዘብ የተኣታቱ — ዋጋኡ ካብ ምርድዳእ መርበብን ክሪፕቶግራፊያዊ ውሱንነት ቀረብን እምበር ካብ ኣዋጅ መንግስቲ ወይ ኣካላዊ ባህርያት ኣይኮነን።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/money-frameworks.svg",
-            alt: "ሰለስተ ማዕቀፋት ገንዘብ — መንግስቲ፣ ኣካላዊ ሸቐጥን መርበብን — ዘነጻጽር ስእላዊ መግለጺ",
-            caption: "ገንዘብ ብደገፍ መንግስቲ፣ ብኣካላዊ ንብረት ወይ ብምርድዳእ መርበብ ክግለጽ ይኽእል።",
-          },
-        ],
       },
       {
         heading: "20.1 ቢትኮይን ኣንጻር ቢትኮይን (ፕሮቶኮል/መርበብ ኣንጻር ንብረት/ኣሃዱ)",
@@ -1153,13 +1125,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "tip",
             content: "Bitcoin (ዓቢ ፊደል B) = ፕሮቶኮል/መርበብ። bitcoin (ንእሽቶ ፊደል b) = ንብረት/ኣሃዱ። እዚ ፍልልይ ንክትዓትን ስትራተጂን የነጽር።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/bitcoin-network-asset.svg",
-            alt: "ዝተኣሳሰረ መርበብ ቢትኮይን ኣብ ጎኒ ሓደ ኣሃዱ ቢትኮይን ዘርኢ",
-            caption: "Bitcoin ንመርበብን ፕሮቶኮልን የመልክት፤ bitcoin ድማ ንንብረትን ኣሃዱን።",
           },
         ],
       },
@@ -1180,13 +1145,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "example",
             content: "ኣብ ሓንቲ እትምዕብል ሃገር ዝሰርሕ ሰራሕተኛ ካብ ዝኾነ ክፍሊ ዓለም ክፍሊት ቢትኮይን ክረክብ፡ ብዘይ ሕሳብ ባንኪ ዋጋ ክዕቅብ፡ ከምኡ’ውን ብዘይ ፍቓድ ዝኾነ ትካል ንኣባላት ስድራቤቱ ስግር ዶብ ገንዘብ ክሰድድ ይኽእል።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/lightning_networ.png",
-            alt: "ኣብ መርበብ ክፍሊት ላይትኒንግ ዝተኣሳሰሩ ኖድታት",
-            caption: "መርበባት ክፍሊት ተሳተፍቲ የራኽቡ፤ መንገድን ተረኽቦን ግን ኣብ መርበብ ይምርኮስ።",
           },
         ],
       },
