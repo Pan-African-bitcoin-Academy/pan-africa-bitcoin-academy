@@ -64,17 +64,23 @@ function TigrinyaChapterLesson({
   const findOriginalSection = (heading: string) => {
     const sectionNumber = heading.match(/^\s*(\d+(?:\.\d+)?)/)?.[1];
     if (sectionNumber) {
-      return chapter.sections.find(
+      const numberedSection = chapter.sections.find(
         (section) => section.heading.match(/^\s*(\d+(?:\.\d+)?)/)?.[1] === sectionNumber,
       );
+      if (numberedSection) return numberedSection;
     }
 
     if (heading.includes("መእተዊ")) {
       return chapter.sections.find((section) => section.heading === "Introduction");
     }
 
-    if (heading.toLowerCase().includes("seed phrase")) {
+    const normalizedHeading = heading.toLowerCase();
+    if (normalizedHeading.includes("seed phrase") || heading.includes("ዘርኢ ሓረግ")) {
       return chapter.sections.find((section) => section.seedPhrase?.length);
+    }
+
+    if (chapter.slug === "the-birth-of-bitcoin" && heading.includes("ሳት")) {
+      return chapter.sections.find((section) => section.heading === "What Are Sats?");
     }
 
     return undefined;
@@ -110,24 +116,145 @@ function TigrinyaChapterLesson({
                   <LiveBlockchainData />
                 </div>
               ) : null}
-              {images.length > 0 ? (
-                <div
-                  className={`mt-6 grid gap-6 ${
-                    images.length === 1
-                      ? "grid-cols-1"
-                      : "grid-cols-1 sm:grid-cols-2"
-                  }`}
-                >
-                  {images.map((image) => (
-                    <ZoomableImage
-                      key={image.src}
-                      src={image.src}
-                      alt={image.alt}
-                      caption={image.caption}
-                      className="w-full rounded-lg border border-orange-400/20 shadow-lg"
-                    />
-                  ))}
+              {chapter.slug === "blockchain-basics" && heading.startsWith("7.4") ? (
+                <div className="mt-6 rounded-lg border border-cyan-400/30 bg-cyan-500/10 p-6">
+                  <h4 className="mb-3 text-base font-semibold text-cyan-200">
+                    መስተጋብራዊ ሰልፊ ብሎክቸይን
+                  </h4>
+                  <p className="mb-4 text-sm text-zinc-300">
+                    ብዛዕባ ብሎኮታት፡ ሃሽን ሰንሰለት ብሎክቸይንን ኣብዚ መስተጋብራዊ ሰልፊ ፈትሽ።
+                  </p>
+                  <a
+                    href="https://andersbrownworth.com/blockchain"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-orange-500 px-6 py-3 font-semibold text-black transition hover:brightness-110"
+                  >
+                    <span>🔗 ሰልፊ ብሎክቸይን ፈትን</span>
+                    <span className="text-sm">→</span>
+                  </a>
                 </div>
+              ) : null}
+              {images.length > 0 ? (
+                chapter.slug === "problems-with-traditional-fiat-money" &&
+                  originalSection?.heading.startsWith("3.1") &&
+                  images.length >= 4 ? (
+                  <div className="mt-6 space-y-6">
+                    <p className="text-center text-lg font-semibold text-orange-200">
+                      ቅድሚ 20 ዓመት → ሕጂ
+                    </p>
+                    <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-8">
+                      {images.slice(0, 3).map((image, imageIndex) => (
+                        <div key={image.src} className="flex flex-col items-center">
+                          {imageIndex === 0 ? (
+                            <p className="mb-2 text-base font-semibold text-orange-200">ቅድሚ 20 ዓመት</p>
+                          ) : null}
+                          {imageIndex === 2 ? (
+                            <p className="mb-2 text-base font-semibold text-orange-200">ሕጂ</p>
+                          ) : null}
+                          <ZoomableImage
+                            src={image.src}
+                            alt={image.alt}
+                            caption={image.caption}
+                            className={`rounded-lg shadow-lg ${
+                              image.src.includes("arrow")
+                                ? "h-16 w-32 object-contain sm:h-20 sm:w-40"
+                                : "w-48 sm:w-64"
+                            }`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {images.length >= 5 ? (
+                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {images.slice(3, 5).map((image) => (
+                          <ZoomableImage
+                            key={image.src}
+                            src={image.src}
+                            alt={image.alt}
+                            caption={image.caption}
+                            className="w-full rounded-lg shadow-lg"
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : chapter.slug === "problems-with-traditional-fiat-money" &&
+                  originalSection?.heading.startsWith("3.2") &&
+                  images.length === 2 ? (
+                  <div className="mt-6 space-y-6">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                      {images.map((image) => (
+                        <ZoomableImage
+                          key={image.src}
+                          src={image.src}
+                          alt={image.alt}
+                          caption={image.caption}
+                          className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-center text-lg font-semibold text-orange-200">
+                      ማእከላዊ ቁጽጽር ኣብ ገንዘብ
+                    </p>
+                  </div>
+                ) : chapter.slug === "from-crisis-to-innovation" &&
+                  originalSection?.heading.startsWith("4.1") ? (
+                  <div className="mt-6 flex flex-col items-center space-y-4">
+                    {images.map((image) => (
+                      <div key={image.src} className="flex w-full min-w-0 flex-col items-center sm:max-w-[50%]">
+                        <ZoomableImage
+                          src={image.src}
+                          alt={image.alt}
+                          caption={image.caption}
+                          className="w-full rounded-lg border border-orange-400/20 object-contain shadow-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : chapter.slug === "keys-and-transactions" &&
+                  originalSection?.heading.startsWith("6.2") &&
+                  images.length === 1 ? (
+                  <div className="mt-6 flex flex-col items-center space-y-4">
+                    <div className="w-full max-w-2xl rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-4 shadow-lg">
+                      <ZoomableImage
+                        src={images[0].src}
+                        alt={images[0].alt}
+                        caption={images[0].caption}
+                        className="w-full rounded-lg object-contain"
+                      />
+                      <p className="mt-2 text-center text-xs text-zinc-400">
+                        ኣሊስ ትራንዛክሽን ትፈጥር → ትፍኖ → ኖድስ የረጋግጹ → ዕደናውያን የረጋግጹ
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`mt-6 grid gap-6 ${
+                      images.length === 1
+                        ? "grid-cols-1"
+                        : "grid-cols-1 sm:grid-cols-2"
+                    }`}
+                  >
+                    {images.map((image) => (
+                      <ZoomableImage
+                        key={image.src}
+                        src={image.src}
+                        alt={image.alt}
+                        caption={image.caption}
+                        className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                        thumbnailClassName={
+                          image.src.includes("utxosize") ||
+                          image.src.includes("mempool") ||
+                          image.src.includes("markel") ||
+                          image.src.includes("pow")
+                            ? "max-h-[32rem]"
+                            : undefined
+                        }
+                      />
+                    ))}
+                  </div>
+                )
               ) : null}
               {originalSection?.video ? (
                 <div className="mt-6">
