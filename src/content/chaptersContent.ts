@@ -873,7 +873,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/block-structure.png",
+            src: "/images/book_images/block-structure.svg",
             alt: "Diagram showing block structure: transactions, hash, previous block hash",
             caption: "Structure of a Bitcoin block",
           },
@@ -1341,7 +1341,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/psbt-flow.png",
+            src: "/images/book_images/psbt-flow.svg",
             alt: "Diagram showing PSBT flow: create on computer → sign on hardware → broadcast",
             caption: "PSBT flow keeps keys secure on hardware device",
           },
@@ -1655,7 +1655,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/difficulty-adjustment.png",
+            src: "/images/book_images/difficulty-adjustment.svg",
             alt: "Chart showing Bitcoin difficulty adjustment over time",
             caption: "Difficulty automatically adjusts to maintain 10-minute block times",
           },
@@ -1676,7 +1676,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/mining-pools.png",
+            src: "/images/book_images/mining-pools.svg",
             alt: "Diagram showing how mining pools combine hashing power",
             caption: "Mining pools combine hashing power and share rewards",
           },
@@ -1811,7 +1811,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/sidechain-peg.png",
+            src: "/images/book_images/sidechain-peg.svg",
             alt: "Diagram showing Bitcoin pegged to sidechain and back",
             caption: "Sidechains are pegged to Bitcoin but use different consensus",
           },
@@ -1894,7 +1894,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/node-stack.png",
+            src: "/images/book_images/node-stack.svg",
             alt: "Diagram showing Bitcoin Core + Lightning node setup",
             caption: "Bitcoin Core + Lightning enables full sovereignty",
           },
@@ -1914,7 +1914,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/lightning-channel-open.png",
+            src: "/images/book_images/lightning-channel-open.svg",
             alt: "Diagram showing Lightning channel opening process",
             caption: "Opening a Lightning channel locks funds in multi-sig",
           },
@@ -2297,7 +2297,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/mempool-fees.png",
+            src: "/images/book_images/mempool-fees.svg",
             alt: "Chart showing mempool fee levels over time",
             caption: "Watch mempool conditions to time consolidation",
           },
@@ -2397,7 +2397,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/book_images/money-frameworks.png",
+            src: "/images/book_images/money-frameworks.svg",
             alt: "Diagram comparing Chartalism, Metallism, and Platform Money",
             caption: "Bitcoin represents a new category of money",
           },
