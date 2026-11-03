@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/PageContainer";
 import { getChapterBySlug, chaptersContent } from "@/content/chaptersContent";
+import type { ChapterContent } from "@/content/chaptersContent";
 import { getChaptersList } from "@/content/chaptersListContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ChapterAccessCheck } from "./ChapterAccessCheck";
@@ -44,6 +45,114 @@ const Chapter1InteractiveLesson = dynamic(
     ),
   }
 );
+
+function TigrinyaChapterLesson({
+  content,
+  chapter,
+}: {
+  content: string;
+  chapter: ChapterContent;
+}) {
+  const sections = content
+    .split(/(?=^#{2,3}\s+)/m)
+    .map((markdown) => {
+      const heading = markdown.match(/^#{2,3}\s+(.+)$/m)?.[1]?.trim();
+      return heading ? { heading, markdown } : null;
+    })
+    .filter((section): section is { heading: string; markdown: string } => section !== null);
+
+  const findOriginalSection = (heading: string) => {
+    const sectionNumber = heading.match(/^\s*(\d+(?:\.\d+)?)/)?.[1];
+    if (sectionNumber) {
+      return chapter.sections.find(
+        (section) => section.heading.match(/^\s*(\d+(?:\.\d+)?)/)?.[1] === sectionNumber,
+      );
+    }
+
+    if (heading.includes("መእተዊ")) {
+      return chapter.sections.find((section) => section.heading === "Introduction");
+    }
+
+    if (heading.toLowerCase().includes("seed phrase")) {
+      return chapter.sections.find((section) => section.seedPhrase?.length);
+    }
+
+    return undefined;
+  };
+
+  return (
+    <div className="space-y-5">
+      {sections.map(({ heading, markdown }, index) => {
+        const originalSection = findOriginalSection(heading);
+        const images = originalSection?.images ?? [];
+
+        return (
+          <ChapterSectionAnimated
+            key={`${index}-${heading}`}
+            sectionId={`tigrinya-section-${index}`}
+            sectionIdx={index}
+          >
+            <section
+              id={`tigrinya-section-${index}`}
+              className="chapter-section-inner scroll-mt-20 rounded-lg border border-zinc-800/60 bg-zinc-950 p-3.5 shadow-inner transition-shadow duration-300 sm:p-5"
+            >
+              <MarkdownContent content={markdown} variant="chapter" />
+              {originalSection?.seedPhrase?.length ? (
+                <SeedPhraseGrid words={originalSection.seedPhrase} columns={4} />
+              ) : null}
+              {chapter.slug === "the-birth-of-bitcoin" && heading.includes("ሳት") ? (
+                <div className="mt-6">
+                  <BtcSatsConverter />
+                </div>
+              ) : null}
+              {chapter.slug === "blockchain-basics" && heading.startsWith("7.0") ? (
+                <div className="mt-6">
+                  <LiveBlockchainData />
+                </div>
+              ) : null}
+              {images.length > 0 ? (
+                <div
+                  className={`mt-6 grid gap-6 ${
+                    images.length === 1
+                      ? "grid-cols-1"
+                      : "grid-cols-1 sm:grid-cols-2"
+                  }`}
+                >
+                  {images.map((image) => (
+                    <ZoomableImage
+                      key={image.src}
+                      src={image.src}
+                      alt={image.alt}
+                      caption={image.caption}
+                      className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                    />
+                  ))}
+                </div>
+              ) : null}
+              {originalSection?.video ? (
+                <div className="mt-6">
+                  <video
+                    className="w-full rounded-lg"
+                    controls
+                    preload="metadata"
+                    src={originalSection.video.src}
+                  >
+                    {originalSection.video.caption}
+                  </video>
+                  {originalSection.video.caption ? (
+                    <p className="mt-2 text-center text-sm text-zinc-400">
+                      {originalSection.video.caption}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+            </section>
+          </ChapterSectionAnimated>
+        );
+      })}
+    </div>
+  );
+}
 
 type ChapterDetailClientProps = {
   slug: string;
@@ -263,23 +372,10 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
             {hasTigrinyaMarkdown ? (
               activeTigrinyaLesson ? (
                 <>
-                  <MarkdownContent content={activeTigrinyaLesson.content} />
-                  {chapter.slug === "the-birth-of-bitcoin" ? (
-                    <div className="mt-8 rounded-lg border border-orange-400/20 bg-zinc-900/60 p-4">
-                      <h3 className="mb-4 text-lg font-semibold text-orange-200">
-                        {isTi ? "ቢትኮይንን ሳቶሺን ኣስላስል" : "Convert Bitcoin and satoshis"}
-                      </h3>
-                      <BtcSatsConverter />
-                    </div>
-                  ) : null}
-                  {chapter.slug === "blockchain-basics" ? (
-                    <div className="mt-8 rounded-lg border border-cyan-400/20 bg-zinc-900/60 p-4">
-                      <h3 className="mb-4 text-lg font-semibold text-cyan-200">
-                        {isTi ? "ህሉው ሓበሬታ ኔትወርክ ቢትኮይን" : "Live Bitcoin network data"}
-                      </h3>
-                      <LiveBlockchainData />
-                    </div>
-                  ) : null}
+                  <TigrinyaChapterLesson
+                    content={activeTigrinyaLesson.content}
+                    chapter={chapter}
+                  />
                 </>
               ) : translationError ? (
                 <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100" role="alert">

@@ -37,9 +37,10 @@ export async function GET(
     const markdown = await readFile(filePath, "utf8");
     const heading = markdown.match(/^#\s+(.+)$/m)?.[1]?.trim();
     const title = heading?.replace(/^ምዕራፍ\s+\d+\s*[·:.-]\s*/u, "").trim();
-    const content = markdown
-      .replace(/^#\s+.+\r?\n+/, "")
-      .replace(/^##\s+ቀንዲ ትሕዝቶ ትምህርቲ\s*\r?\n+/mu, "");
+    const lessonStart = markdown.match(/^##\s+ቀንዲ ትሕዝቶ ትምህርቲ\s*$/mu);
+    const content = lessonStart?.index !== undefined
+      ? markdown.slice(lessonStart.index + lessonStart[0].length).trim()
+      : markdown.replace(/^#\s+.+\r?\n+/, "").trim();
 
     return Response.json(
       { content, title },

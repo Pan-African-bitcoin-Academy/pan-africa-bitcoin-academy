@@ -7,6 +7,7 @@ import { ZoomableImage } from '@/components/ZoomableImage';
 interface MarkdownContentProps {
   content: string;
   highlightTerms?: readonly string[];
+  variant?: 'default' | 'chapter';
 }
 
 type MarkdownNode = {
@@ -96,11 +97,57 @@ function highlightArticleTerms(terms: readonly string[]) {
   };
 }
 
-export function MarkdownContent({ content, highlightTerms = [] }: MarkdownContentProps) {
+export function MarkdownContent({ content, highlightTerms = [], variant = 'default' }: MarkdownContentProps) {
   return (
     <ReactMarkdown
       remarkPlugins={highlightTerms.length ? [remarkGfm, highlightArticleTerms(highlightTerms)] : [remarkGfm]}
       components={{
+        table: ({ node, children, ...props }) => variant === 'chapter' ? (
+          <div className="mt-6 overflow-x-auto rounded-lg border border-cyan-400/25 bg-zinc-950/70">
+            <table {...props} className="w-full min-w-[640px] border-collapse text-sm">
+              {children}
+            </table>
+          </div>
+        ) : (
+          <table {...props}>{children}</table>
+        ),
+        thead: ({ node, children, ...props }) => (
+          <thead
+            {...props}
+            className={variant === 'chapter' ? 'border-b border-cyan-400/30 bg-cyan-500/10' : undefined}
+          >
+            {children}
+          </thead>
+        ),
+        tbody: ({ node, children, ...props }) => (
+          <tbody {...props} className={variant === 'chapter' ? 'text-zinc-300' : undefined}>
+            {children}
+          </tbody>
+        ),
+        tr: ({ node, children, ...props }) => (
+          <tr
+            {...props}
+            className={variant === 'chapter' ? 'border-b border-cyan-400/10 hover:bg-cyan-500/5' : undefined}
+          >
+            {children}
+          </tr>
+        ),
+        th: ({ node, children, ...props }) => (
+          <th
+            {...props}
+            className={variant === 'chapter' ? 'px-3 py-2.5 text-left font-semibold text-cyan-200 sm:px-4 sm:py-3' : undefined}
+          >
+            {children}
+          </th>
+        ),
+        td: ({ node, children, ...props }) => (
+          <td
+            {...props}
+            className={variant === 'chapter' ? 'px-3 py-2.5 first:font-semibold first:text-cyan-200 sm:px-4 sm:py-3' : undefined}
+          >
+            {children}
+          </td>
+        ),
         h1: ({ node, ...props }) => (
           <h1 className="mb-4 text-3xl font-bold text-amber-200 transition-colors duration-200 hover:text-amber-100" {...props} />
         ),
