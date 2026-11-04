@@ -12,8 +12,8 @@ From shells to paper to fiat, each step tried to fix the limits of the last.
   ሳንቲም ከመይ ጌሩ ተንቀሳቓሲነትን ደረጃታትን ከም ዘመሓይሾ
 - **Why paper notes replaced metal**  
   ስለምንታይ ናይ ወረቐት ገንዘብ ንሓጺን ተኪኡ
-- **Fiat’s trust-and-inflation trade-offs**  
-  ፊያት ናይ ምትእምማንን ዝቕባበን ምትሕውዋስ’ዩ።
+- **Fiat's trust-and-inflation trade-offs**  
+  ፊያት ናይ ምትእምማንን ዝቕባበን ምትሕውዋስ'ዩ።
 - **Cryptographic precursors to Bitcoin**  
   ክሪፕቶግራፊክ ቅድመ-ኩነት ንቢትኮይን
 
@@ -47,67 +47,118 @@ Without money, economies would remain tiny and local. With money, people could b
 
 ### 2.1 From Barter to Commodity Exchange / ካብ ባርተይር ናብ ምልውዋጥ ሸቐጣት።
 
-> **Why barter struggled**
-
-Barter requires a *double coincidence of wants*: each party must own something the other desires at the same time and in the right quantity. This creates inefficiencies:
-- **Search costs** – traders spend time locating a partner with matching needs.
-- **Indivisibility** – large‑scale items (e.g., a cow) cannot easily be split to match a small price.
-- **Storage issues** – perishable goods lose value before they can be exchanged.
-
-**Illustrative scenario**: A fisherman catches fish daily but needs maize. The local farmer grows maize but wants metal tools. Neither can satisfy the other's need directly, so trade stalls.
-
-> **Emergence of commodity money**
-
-To overcome these limitations, societies began to use widely‑accepted commodities as a *medium of exchange*. Ideal commodities share three traits:
-1. **Acceptability** – most people recognize its value.
-2. **Durability** – it does not spoil quickly.
-3. **Divisibility** – it can be broken into smaller units.
-
-In East Africa, *cowrie shells* served this role; elsewhere, *salt* and *spices* were trusted mediums because they were portable, abundant, and hard to counterfeit.
-
----
-
-### Interactive visual: barter vs. commodity money
-
-Below is a minimal three‑js illustration that shows two agents trying to barter directly (left) and then using a neutral commodity (right) to complete the exchange.
-
-<div id="barterViz" style="width:100%;height:400px; margin-bottom:1rem;"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-<script>
-  // Simple three.js scene
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / 400, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, 400);
-  document.getElementById('barterViz').appendChild(renderer.domElement);
-
-  // Agents
-  const farmer = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({ color: 0x8B4513 }));
-  farmer.position.set(-3, 0, 0);
-  const fisherman = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({ color: 0x1E90FF }));
-  fisherman.position.set(3, 0, 0);
-  // Commodity (e.g., a shell)
-  const shell = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1, 8), new THREE.MeshBasicMaterial({ color: 0xDAA520 }));
-  shell.position.set(0, 0, 0);
-
-  scene.add(farmer, fisherman, shell);
-  camera.position.z = 8;
-  function animate(){ requestAnimationFrame(animate); renderer.render(scene, camera); }
-  animate();
-</script>
-
-*The three‑dimensional blocks represent the farmer (brown) and fisherman (blue). The golden cone in the centre symbolizes a neutral commodity that both can trade for, demonstrating how a common medium eliminates the need for a direct double coincidence of wants.*
 Long before banks or cash, life depended on barter trade. A farmer might trade maize for fish, or a potter might swap clay pots for salt. This worked — but only when luck was on your side. Both parties had to want what the other had, at the same time, and in the right quantity.  
 ቅድሚ ባንክታት ወይ ጥረ ገንዘብ ነዊሕ እዋን፡ ህይወት ኣብ ንግዲ ምልውዋጥ እዩ ዝምርኰስ ነይሩ። ሓደ ሓረስታይ ቆሎ ብዓሳ ክነግዶ ይኽእል እዩ፣ ወይ ድማ ሰራሕ ሸኽላ ድስቲ ጭቃ ብጨው ክቕይሮ ይኽእል እዩ። እዚ ሰሪሑ — ግን ዕድል ኣብ ጎንኻ ምስ ዝኸውን ጥራይ። ክልቲኦም ወገናት ነቲ እቲ ካልእ ዝነበሮ ክደልዩ ነይርዎም፣ ኣብ ሓደ እዋንን ብትኽክለኛ ብዝሒን።
 
 But imagine: the fisherman doesn't need maize today. Or the potter wants a goat, not pots. Suddenly, you're stuck. Barter made trade slow and frustrating. Communities could only grow as far as their local exchanges allowed.  
 ግን ሕሰብዎ እሞ : እቲ ገፋፍ ዓሳ ሎሚ ቆሎ ኣየድልዮን እዩ። ወይ እቲ ሰራሕ ሸኽላ ድስቲ ዘይኮነስ ምራኽ እዩ ዝደሊ። ሃንደበት፡ ተዓጽኻ። ምልውዋጥ ንግዲ ምዝሕሓልን ተስፋ ዘቑርጽን ገበሮ። ማሕበረሰባት ክሳብ እቲ ኣብ ከባቢኦም ዝነበረ ምልውዋጥ ዝፈቕዶ ጥራይ እዩ ክዓብዩ ዝኽእሉ ነይሮም።
 
+#### Why Barter Struggled
+
+Barter requires a **double coincidence of wants**: each party must own something the other desires, at the same time, and in the right quantity. This creates three core inefficiencies:
+
+- **Search costs** — traders spend time and energy locating a partner with exactly matching needs.
+- **Indivisibility** — large items like a cow cannot easily be split to match a small price.
+- **Storage issues** — perishable goods (fish, fruit) lose value before a suitable trade partner is found.
+
+**Illustrative scenario**: A fisherman catches fish daily but needs maize. The local farmer grows maize but wants metal tools. Neither can satisfy the other's need directly — so trade stalls.
+
+#### The Emergence of Commodity Money
+
+To overcome these limitations, societies began to use widely accepted commodities as a **medium of exchange**. Ideal commodities share three traits:
+
+1. **Acceptability** — most people recognize and trust its value.
+2. **Durability** — it does not spoil or degrade quickly.
+3. **Divisibility** — it can be broken into smaller units to match different prices.
+
+In East Africa, **cowrie shells** served this role. Elsewhere, **salt** and **spices** were trusted mediums — portable, abundant, and hard to counterfeit. For the first time, trade became smoother: not perfect, but far better than endless searching.
+
 So people began to use commodities as common ground. These were items that everyone valued, not just a few. In East Africa, cowrie shells became a trusted medium. In other places, salt, spices, and even cattle served this role. These commodities became the earliest forms of money because they were widely useful, recognizable, and trusted.  
 ስለዚ ሰባት ንሸቐጣት ከም ናይ ሓባር መርገጺ ክጥቀሙሉ ጀመሩ። እዚኦም ንውሑዳት ጥራይ ዘይኮኑስ ኩሉ ሰብ ዋጋ ዝህቦም ነገራት እዮም ነይሮም። ኣብ ምብራቕ ኣፍሪቃ፡ ቅርፊት ላም ዝእመን መሳርሒ ኰነ። ኣብ ካልእ ቦታታት ድማ ጨው፡ ቀመማት፡ ከብቲ ከይተረፈ ነዚ ተራ እዚ የገልግሉ ነበሩ። እዞም ኣቑሑት እዚኣቶም፡ ብሰፊሑ ዝጠቕሙን ዝፍለጡን ዝእመኑን ስለ ዝነበሩ፡ ቀዳሞት ዓይነታት ገንዘብ ኮይኖም።
 
-For the first time, trade became smoother — not perfect, but better than endless searching.  
-ንመጀመርታ ግዜ ንግዲ ስሉጥ ኮይኑ - ፍጹም ዘይኮነስ ካብ መወዳእታ ዘይብሉ ምድላይ ዝሓሸ።
+#### Interactive Visual: Barter vs. Commodity Money
+
+The scene below shows three actors: a **farmer** (brown), a **fisherman** (blue), and a **golden commodity** (cone) in the centre. Direct barter between farmer and fisherman fails — but both can trade through the commodity, eliminating the need for a double coincidence of wants.
+
+<div id="barterViz" style="width:100%;height:380px;margin-bottom:1.5rem;border-radius:8px;overflow:hidden;"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script>
+(function () {
+  var container = document.getElementById('barterViz');
+  if (!container || typeof THREE === 'undefined') return;
+
+  var w = container.clientWidth, h = 380;
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a1a2e);
+
+  var camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+  camera.position.set(0, 2, 10);
+
+  var renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(w, h);
+  container.appendChild(renderer.domElement);
+
+  // Lighting
+  var ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambient);
+  var dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(5, 10, 7);
+  scene.add(dirLight);
+
+  // Farmer (brown box)
+  var farmer = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, 1.2, 1.2),
+    new THREE.MeshLambertMaterial({ color: 0x8B4513 })
+  );
+  farmer.position.set(-3.5, 0, 0);
+  scene.add(farmer);
+
+  // Fisherman (blue box)
+  var fisherman = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, 1.2, 1.2),
+    new THREE.MeshLambertMaterial({ color: 0x1E90FF })
+  );
+  fisherman.position.set(3.5, 0, 0);
+  scene.add(fisherman);
+
+  // Commodity — golden cone in the centre
+  var commodity = new THREE.Mesh(
+    new THREE.ConeGeometry(0.7, 1.4, 12),
+    new THREE.MeshLambertMaterial({ color: 0xDAA520 })
+  );
+  commodity.position.set(0, 0, 0);
+  scene.add(commodity);
+
+  // Ground plane
+  var ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(14, 6),
+    new THREE.MeshLambertMaterial({ color: 0x0f3460 })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.9;
+  scene.add(ground);
+
+  // Animate
+  function animate() {
+    requestAnimationFrame(animate);
+    farmer.rotation.y += 0.008;
+    fisherman.rotation.y -= 0.008;
+    commodity.rotation.y += 0.015;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Resize
+  window.addEventListener('resize', function () {
+    var nw = container.clientWidth;
+    camera.aspect = nw / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(nw, h);
+  });
+})();
+</script>
+
+*The **brown cube** = farmer, **blue cube** = fisherman, **golden cone** = commodity money (e.g. cowrie shells or salt). Both agents can trade through the commodity without needing to want each other's goods simultaneously.*
 
 #### Image Captions / መግለጺታት ስእሊ
 - **Salt was used as an early form of commodity money:** ጨው ከም ቀዳማይ መልክዕ ናይ ሸቐጣት ገንዘብ ይጥቀሙሉ ነይሮም
