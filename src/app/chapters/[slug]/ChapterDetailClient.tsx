@@ -188,18 +188,18 @@ function TigrinyaChapterLesson({
                 ) : chapter.slug === "problems-with-traditional-fiat-money" &&
                   originalSection?.heading.startsWith("3.1") &&
                   images.length >= 4 ? (
-                  <div className="mt-6 space-y-6">
-                    <p className="text-center text-lg font-semibold text-orange-200">
+                  <div className="mt-6 space-y-5">
+                    <p className="text-center text-base font-semibold text-orange-200">
                       ቅድሚ 20 ዓመት → ሕጂ
                     </p>
-                    <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-8">
+                    <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-6">
                       {images.slice(0, 3).map((image, imageIndex) => (
                         <div key={image.src} className="flex flex-col items-center">
                           {imageIndex === 0 ? (
-                            <p className="mb-2 text-base font-semibold text-orange-200">ቅድሚ 20 ዓመት</p>
+                            <p className="mb-1 text-xs font-semibold text-orange-200">ቅድሚ 20 ዓመት</p>
                           ) : null}
                           {imageIndex === 2 ? (
-                            <p className="mb-2 text-base font-semibold text-orange-200">ሕጂ</p>
+                            <p className="mb-1 text-xs font-semibold text-orange-200">ሕጂ</p>
                           ) : null}
                           <ZoomableImage
                             src={image.src}
@@ -207,23 +207,31 @@ function TigrinyaChapterLesson({
                             caption={image.caption}
                             className={`rounded-lg shadow-lg ${
                               image.src.includes("arrow")
-                                ? "h-16 w-32 object-contain sm:h-20 sm:w-40"
-                                : "w-48 sm:w-64"
+                                ? "h-10 w-20 object-contain sm:h-12 sm:w-24"
+                                : "w-28 sm:w-36"
                             }`}
+                            thumbnailClassName={
+                              image.src.includes("arrow")
+                                ? "max-h-12"
+                                : "max-h-28 sm:max-h-32 object-contain"
+                            }
                           />
                         </div>
                       ))}
                     </div>
                     {images.length >= 5 ? (
-                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
                         {images.slice(3, 5).map((image) => (
-                          <ZoomableImage
-                            key={image.src}
-                            src={image.src}
-                            alt={image.alt}
-                            caption={image.caption}
-                            className="w-full rounded-lg shadow-lg"
-                          />
+                          <div key={image.src} className="flex flex-col items-center">
+                            <ZoomableImage
+                              key={image.src}
+                              src={image.src}
+                              alt={image.alt}
+                              caption={image.caption}
+                              className="w-full rounded-lg shadow-lg"
+                              thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                            />
+                          </div>
                         ))}
                       </div>
                     ) : null}
@@ -231,19 +239,22 @@ function TigrinyaChapterLesson({
                 ) : chapter.slug === "problems-with-traditional-fiat-money" &&
                   originalSection?.heading.startsWith("3.2") &&
                   images.length === 2 ? (
-                  <div className="mt-6 space-y-6">
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                  <div className="mt-6 space-y-4">
+                    <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
                       {images.map((image) => (
-                        <ZoomableImage
-                          key={image.src}
-                          src={image.src}
-                          alt={image.alt}
-                          caption={image.caption}
-                          className="w-full rounded-lg border border-orange-400/20 shadow-lg"
-                        />
+                        <div key={image.src} className="flex flex-col items-center">
+                          <ZoomableImage
+                            key={image.src}
+                            src={image.src}
+                            alt={image.alt}
+                            caption={image.caption}
+                            className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                            thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                          />
+                        </div>
                       ))}
                     </div>
-                    <p className="text-center text-lg font-semibold text-orange-200">
+                    <p className="text-center text-sm font-semibold text-orange-200">
                       ማእከላዊ ቁጽጽር ኣብ ገንዘብ
                     </p>
                   </div>
@@ -275,6 +286,25 @@ function TigrinyaChapterLesson({
                       <p className="mt-2 text-center text-xs text-zinc-400">
                         ኣሊስ ትራንዛክሽን ትፈጥር → ትፍኖ → ኖድስ የረጋግጹ → ዕደናውያን የረጋግጹ
                       </p>
+                    </div>
+                  </div>
+                ) : chapter.slug === "problems-with-traditional-fiat-money" &&
+                  originalSection?.heading.startsWith("3.5") &&
+                  images.length >= 1 ? (
+                  <div className="mt-6 space-y-4">
+                    <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
+                      {images.map((image) => (
+                        <div key={image.src} className="flex flex-col items-center">
+                          <ZoomableImage
+                            key={image.src}
+                            src={image.src}
+                            alt={image.alt}
+                            caption={image.caption}
+                            className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                            thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ) : (
@@ -309,17 +339,27 @@ function TigrinyaChapterLesson({
                 <MarkdownContent content={deferredExampleMarkdown} variant="chapter" />
               ) : null}
               {originalSection?.video ? (
-                <div className="mt-6">
-                  <video
-                    className="w-full rounded-lg"
-                    controls
-                    preload="metadata"
-                    src={originalSection.video.src}
+                <div className="mt-6 flex flex-col items-center">
+                  <div
+                    className={[
+                      "w-full mx-auto overflow-hidden rounded-xl border border-orange-400/20 bg-black shadow-lg",
+                      chapter.slug === "problems-with-traditional-fiat-money"
+                        ? "max-w-md sm:max-w-lg"
+                        : "max-w-2xl",
+                    ].join(" ")}
                   >
-                    {originalSection.video.caption}
-                  </video>
+                    <video
+                      className="w-full max-h-56 sm:max-h-64 object-contain aspect-video"
+                      controls
+                      preload="metadata"
+                      src={originalSection.video.src}
+                      playsInline
+                    >
+                      {originalSection.video.caption}
+                    </video>
+                  </div>
                   {originalSection.video.caption ? (
-                    <p className="mt-2 text-center text-sm text-zinc-400">
+                    <p className="mt-2 text-center text-sm italic text-zinc-400">
                       {originalSection.video.caption}
                     </p>
                   ) : null}
@@ -1303,27 +1343,28 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       </div>
                     ) : (section.heading === "3.1 Inflation and Loss of Purchasing Power" || section.heading.startsWith("3.1")) && section.images.length >= 4 ? (
                       // Special layout: first 3 images (animals, arrow, animals) in a row, then the 4th image below, then Zimbabwe images side by side
-                      <div className="mt-6 space-y-6">
-                        <div className="flex flex-col items-center mb-4">
-                          <p className="text-lg font-semibold text-orange-200">{isTi ? "ቅድሚ 20 ዓመት: 40,000 UGX → ሕጂ: 4,000,000 UGX" : "20 Years ago: 40,000 UGX → Now: 4,000,000 UGX"}</p>
+                      <div className="mt-6 space-y-5">
+                        <div className="flex flex-col items-center mb-3">
+                          <p className="text-base font-semibold text-orange-200">{isTi ? "ቅድሚ 20 ዓመት: 40,000 UGX → ሕጂ: 4,000,000 UGX" : "20 Years ago: 40,000 UGX → Now: 4,000,000 UGX"}</p>
                         </div>
-                        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+                        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                           {section.images.slice(0, 3).map((image, idx) => (
                             <div key={idx} className="flex flex-col items-center">
                               {idx === 0 && (
-                                <p className="mb-2 text-base font-semibold text-orange-200">{isTi ? "ቅድሚ 20 ዓመት" : "20 Years ago"}</p>
+                                <p className="mb-1 text-xs font-semibold text-orange-200">{isTi ? "ቅድሚ 20 ዓመት" : "20 Years ago"}</p>
                               )}
                               {idx === 2 && (
-                                <p className="mb-2 text-base font-semibold text-orange-200">{isTi ? "ሕጂ" : "Now"}</p>
+                                <p className="mb-1 text-xs font-semibold text-orange-200">{isTi ? "ሕጂ" : "Now"}</p>
                               )}
                               <ZoomableImage
                                 src={image.src}
                                 alt={image.alt}
                                 caption={image.caption}
-                                className={`rounded-lg shadow-lg ${image.src.includes('arrow') ? 'w-32 h-16 sm:w-40 sm:h-20 object-contain' : 'w-48 sm:w-64'}`}
+                                className={`rounded-lg shadow-lg ${image.src.includes('arrow') ? 'w-20 h-10 sm:w-24 sm:h-12 object-contain' : 'w-28 sm:w-36'}`}
+                                thumbnailClassName={image.src.includes('arrow') ? 'max-h-12' : 'max-h-28 sm:max-h-32 object-contain'}
                               />
-                  </div>
-                ))}
+                            </div>
+                          ))}
                         </div>
                         {/* Example callout before Zimbabwe images for section 3.1 */}
                         {section.callouts?.find(c => c.type === "example") && (
@@ -1337,44 +1378,42 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                           </div>
                         )}
                         {section.images.length >= 5 && (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
                             {section.images.slice(3, 5).map((image, idx) => (
-                              <ZoomableImage
-                                key={idx}
-                                src={image.src}
-                                alt={image.alt}
-                                caption={image.caption}
-                                className="w-full rounded-lg shadow-lg"
-                              />
-                ))}
+                              <div key={idx} className="flex flex-col items-center">
+                                <ZoomableImage
+                                  key={idx}
+                                  src={image.src}
+                                  alt={image.alt}
+                                  caption={image.caption}
+                                  className="w-full rounded-lg shadow-lg"
+                                  thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                                />
+                              </div>
+                            ))}
                           </div>
                         )}
                         {section.video && (
-                          <div
-                            className={[
-                              "flex flex-col items-center w-full mx-auto",
-                              chapter.slug === "problems-with-traditional-fiat-money" &&
-                              section.video.caption === "Inflation and its impact"
-                                ? "max-w-lg"
-                                : "max-w-2xl",
-                            ].join(" ")}
-                          >
-                            <video
-                              src={section.video.src}
-                              controls
+                          <div className="mt-6 flex flex-col items-center">
+                            <div
                               className={[
-                                "w-full rounded-lg border border-orange-400/20 shadow-lg bg-black",
-                                chapter.slug === "problems-with-traditional-fiat-money" &&
-                                section.video.caption === "Inflation and its impact"
-                                  ? "max-h-64 object-contain"
-                                  : "",
+                                "w-full mx-auto overflow-hidden rounded-xl border border-orange-400/20 bg-black shadow-lg",
+                                chapter.slug === "problems-with-traditional-fiat-money"
+                                  ? "max-w-md sm:max-w-lg"
+                                  : "max-w-2xl",
                               ].join(" ")}
-                              playsInline
                             >
-                              Your browser does not support the video tag.
-                            </video>
+                              <video
+                                src={section.video.src}
+                                controls
+                                className="w-full max-h-56 sm:max-h-64 object-contain aspect-video"
+                                playsInline
+                              >
+                                Your browser does not support the video tag.
+                              </video>
+                            </div>
                             {section.video.caption && (
-                              <p className="mt-2 text-center text-sm text-zinc-400 italic">
+                              <p className="mt-2 text-center text-sm italic text-zinc-400">
                                 {section.video.caption}
                               </p>
                             )}
@@ -1383,20 +1422,23 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                       </div>
                     ) : section.heading === "3.2 Centralized Control — Governments and Banks" && section.images.length === 2 ? (
                       // Special layout for Centralized Control section with title below images
-                      <div className="mt-6 space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="mt-6 space-y-4">
+                        <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
                           {section.images.map((image, idx) => (
-                            <ZoomableImage
-                              key={idx}
-                              src={image.src}
-                              alt={image.alt}
-                              caption={image.caption}
-                              className="w-full rounded-lg border border-orange-400/20 shadow-lg"
-                            />
+                            <div key={idx} className="flex flex-col items-center">
+                              <ZoomableImage
+                                key={idx}
+                                src={image.src}
+                                alt={image.alt}
+                                caption={image.caption}
+                                className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                                thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                              />
+                            </div>
                           ))}
                         </div>
                         <div className="text-center">
-                          <p className="text-lg font-semibold text-orange-200">Centralized control over money</p>
+                          <p className="text-sm font-semibold text-orange-200">Centralized control over money</p>
                         </div>
                       </div>
                     ) : section.heading === "4.1 The Cypherpunks & Early Digital Currencies → Satoshi's Breakthrough" && section.images.length >= 1 ? (
@@ -1483,6 +1525,25 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                           </li>
                         ))}
                       </ol>
+                    ) : chapter.slug === "problems-with-traditional-fiat-money" &&
+                      (section.heading.startsWith("3.5") || section.heading.includes("2008")) &&
+                      section.images.length >= 1 ? (
+                      <div className="mt-6 space-y-4">
+                        <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
+                          {section.images.map((image, idx) => (
+                            <div key={idx} className="flex flex-col items-center">
+                              <ZoomableImage
+                                key={idx}
+                                src={image.src}
+                                alt={image.alt}
+                                caption={image.caption}
+                                className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                                thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     ) : section.images.length === 2 ? (
                       // Side by side layout for sections with exactly 2 images
                       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
