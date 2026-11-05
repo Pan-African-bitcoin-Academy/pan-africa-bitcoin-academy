@@ -5,9 +5,6 @@ import {
   CreditCard,
   Coins,
   Cpu,
-  FileText,
-  Building2,
-  Lock,
   Key,
   Zap,
   AlertTriangle,
@@ -17,10 +14,12 @@ import {
   ShieldCheck,
   Newspaper,
   Sparkles,
-  Layers,
   Check,
   X,
   History,
+  Mail,
+  RefreshCw,
+  Shield,
 } from "lucide-react";
 
 type Localized = { en: string; ti: string };
@@ -103,6 +102,195 @@ const attempts: Attempt[] = [
   },
 ];
 
+/* =========================================================================
+   Interactive Hashcash (Proof of Work) Demo
+   ========================================================================= */
+function HashcashInteractiveDemo({ isTi }: { isTi: boolean }) {
+  const [status, setStatus] = useState<"idle" | "mining" | "success">("idle");
+  const [nonce, setNonce] = useState<number>(0);
+  const [currentHash, setCurrentHash] = useState<string>("8b4f19");
+
+  const runProofOfWork = () => {
+    setStatus("mining");
+    let step = 0;
+    const interval = setInterval(() => {
+      step++;
+      const randomHex = Math.random().toString(16).substring(2, 8);
+      if (step >= 10) {
+        clearInterval(interval);
+        const winningNonce = 47;
+        setNonce(winningNonce);
+        setCurrentHash("000" + Math.random().toString(16).substring(2, 5));
+        setStatus("success");
+      } else {
+        setNonce(step * 4 + 3);
+        setCurrentHash(randomHex);
+      }
+    }, 90);
+  };
+
+  const reset = () => {
+    setStatus("idle");
+    setNonce(0);
+    setCurrentHash("8b4f19");
+  };
+
+  return (
+    <div className="space-y-4 pt-1">
+      {/* Problem / Concept Header */}
+      <div className="rounded-lg bg-zinc-900/80 p-3 text-xs text-zinc-300 space-y-1">
+        <p className="font-semibold text-orange-200">
+          {t(
+            {
+              en: "The Problem (1997): Email is virtually free ($0), so spammers could blast millions of junk messages at zero cost.",
+              ti: "እቲ ጸገም (1997)፦ ኢሜይል ምልኣኽ ብነጻ ስለ ዝነበረ፡ ኣጭበርበርቲ ብቢልዮናት ዝቑጸር ናይ ስፓም መልእኽቲ ብዘይ ምንም ወጻኢ ይሰዱ ነይሮም።",
+            },
+            isTi
+          )}
+        </p>
+        <p className="text-zinc-400">
+          {t(
+            {
+              en: "Adam Back's Solution: Require sender's computer to solve a small mathematical puzzle (Proof of Work) before sending each email.",
+              ti: "ናይ ኣዳም ባክ መፍትሒ፦ ነፍሲ ወከፍ ኢሜይል ቅድሚ ምልኣኹ፡ ናይቲ ሰዳዲ ኮምፒተር ሓደ ናይ ሕሳብ ሽግር (Proof of Work) ክትፈትሕ ምግዳድ።",
+            },
+            isTi
+          )}
+        </p>
+      </div>
+
+      {/* Simulator Box */}
+      <div className="rounded-xl border border-orange-500/30 bg-black/60 p-4 space-y-3">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <div className="flex items-center gap-2">
+            <Mail className="h-4 w-4 text-orange-400" />
+            <span className="text-xs font-mono font-bold text-zinc-200">
+              To: alice@example.com
+            </span>
+          </div>
+          <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
+            {t({ en: "Target: Hash with '000'", ti: "ዕላማ፦ ብ '000' ዝጅምር Hash" }, isTi)}
+          </span>
+        </div>
+
+        {/* Computation Display */}
+        <div className="rounded-lg bg-zinc-900/90 p-3 font-mono text-xs space-y-1.5">
+          <div className="flex justify-between text-zinc-400 text-[11px]">
+            <span>Tested Nonce:</span>
+            <span className="font-bold text-orange-300">
+              {status === "idle" ? "0 (Waiting)" : nonce}
+            </span>
+          </div>
+          <div className="flex justify-between items-center text-[11px]">
+            <span className="text-zinc-400">Hash Output:</span>
+            <span
+              className={`font-bold px-2 py-0.5 rounded ${
+                status === "success"
+                  ? "bg-emerald-500/20 text-emerald-300"
+                  : status === "mining"
+                  ? "bg-amber-500/20 text-amber-300 animate-pulse"
+                  : "text-zinc-500"
+              }`}
+            >
+              #{currentHash}
+            </span>
+          </div>
+
+          {status === "success" && (
+            <div className="mt-2 rounded border border-emerald-500/30 bg-emerald-500/10 p-2 text-[11px] text-emerald-200 space-y-0.5">
+              <div className="flex items-center gap-1.5 font-bold">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+                <span>
+                  {t({ en: "Proof-of-Work Stamp Verified!", ti: "ናይ ስራሕ መርትዖ ማሕተም ተረኺቡ!" }, isTi)}
+                </span>
+              </div>
+              <p className="text-[10px] font-mono text-zinc-300 truncate">
+                X-Hashcash: 1:20:970512:alice@example.com::{nonce}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Action Button */}
+        <div className="flex gap-2">
+          {status !== "success" ? (
+            <button
+              type="button"
+              disabled={status === "mining"}
+              onClick={runProofOfWork}
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-orange-500/60 bg-orange-500/20 px-3 py-2 text-xs font-bold text-orange-200 hover:bg-orange-500/30 disabled:opacity-50 transition-all"
+            >
+              <Cpu className={`h-4 w-4 ${status === "mining" ? "animate-spin" : ""}`} />
+              <span>
+                {status === "mining"
+                  ? t({ en: "Computing Proof of Work...", ti: "ናይ ስራሕ መርትዖ ይሕሰብ ኣሎ..." }, isTi)
+                  : t({ en: "Generate Hashcash Stamp (Run Proof of Work)", ti: "ናይ Hashcash ማሕተም ፍጠር (Proof of Work)" }, isTi)}
+              </span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={reset}
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 hover:bg-zinc-700 transition-all"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span>{t({ en: "Reset Simulation", ti: "ዳግማይ ፈትን" }, isTi)}</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* The Math: Why it Stops Spammers */}
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3">
+          <p className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            <span>{t({ en: "Ordinary Human (1 Email)", ti: "ተራ ሰብ (1 ኢሜይል)" }, isTi)}</span>
+          </p>
+          <p className="mt-1 text-xs text-zinc-300">
+            {t(
+              {
+                en: "Takes ~0.5 seconds of CPU time. Invisible to real people, costs virtually nothing.",
+                ti: "ናይ ኮምፒተር 0.5 ካልኢት ጥራይ ይወስድ። ሰብ ከየስተውዓሎ ብቐሊሉ ይሰድ።",
+              },
+              isTi
+            )}
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3">
+          <p className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+            <Shield className="h-3.5 w-3.5" />
+            <span>{t({ en: "Mass Spammer (1,000,000 Emails)", ti: "ኣጭበርባሪ (1,000,000 ኢሜይል)" }, isTi)}</span>
+          </p>
+          <p className="mt-1 text-xs text-zinc-300">
+            {t(
+              {
+                en: "1,000,000 × 0.5s = 5.7 days of 100% CPU burn & electricity. Spamming becomes economically impossible!",
+                ti: "1,000,000 × 0.5 ካልኢት = 5.7 መዓልታት ቀጻሊ ናይ ኮምፒተርን ኤሌክትሪክን ኪሳራ። ስፓም ምልኣኽ ይፈሽል!",
+              },
+              isTi
+            )}
+          </p>
+        </div>
+      </div>
+
+      {/* Direct Connection to Bitcoin */}
+      <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 px-3 py-2 text-center text-xs text-orange-200">
+        <p className="font-semibold">
+          {t(
+            {
+              en: "💡 The Bitcoin Connection: Satoshi Nakamoto took Adam Back's Proof-of-Work and used it to secure transactions and mine new Bitcoin without a central server!",
+              ti: "💡 ምትእስሳር ምስ ቢትኮይን፦ ሳቶሺ ናካሞቶ ነዚ ናይ ኣዳም ባክ Proof-of-Work ወሲዱ፡ ብዘይ ማእከላይ ሰርቨር ትራንዛክሽናት ንምሕላውን ቢትኮይን ንምዕዳንን ተጠቒሙሉ!",
+            },
+            isTi
+          )}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function CypherpunkTimelineGraphic({ isTi }: { isTi: boolean }) {
   const [selected, setSelected] = useState<number>(0);
   const current = attempts[selected];
@@ -174,135 +362,53 @@ function CypherpunkTimelineGraphic({ isTi }: { isTi: boolean }) {
           </div>
         </div>
 
-        {/* Idea */}
-        <div className="rounded-lg bg-zinc-900/80 px-3 py-2.5">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500 mb-1">
-            {t({ en: "The Idea", ti: "ሓሳቡ" }, isTi)}
-          </p>
-          <p className="text-sm text-zinc-200">{t(current.idea, isTi)}</p>
-        </div>
+        {current.name === "Hashcash" ? (
+          <HashcashInteractiveDemo isTi={isTi} />
+        ) : (
+          <>
+            {/* Idea */}
+            <div className="rounded-lg bg-zinc-900/80 px-3 py-2.5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500 mb-1">
+                {t({ en: "The Idea", ti: "ሓሳቡ" }, isTi)}
+              </p>
+              <p className="text-sm text-zinc-200">{t(current.idea, isTi)}</p>
+            </div>
 
-        {/* Outcome */}
-        <div className={`rounded-lg border px-3 py-2.5 ${current.failureColor}`}>
-          <div className="flex items-center gap-1.5 mb-1">
-            {current.isSuccess ? (
-              <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
-            ) : (
-              <X className="h-3.5 w-3.5 shrink-0 text-rose-400" />
-            )}
-            <p className="text-[11px] font-bold uppercase tracking-widest opacity-80">
-              {t({ en: "What Happened", ti: "እንታይ ኮነ" }, isTi)}
-            </p>
-          </div>
-          <p className="text-sm">{t(current.failure, isTi)}</p>
-        </div>
-      </div>
-
-      {/* Pattern callout */}
-      <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Key className="h-4 w-4 text-amber-400 shrink-0" />
-          <p className="text-xs font-bold text-amber-300">
-            {t({ en: "The Pattern:", ti: "ቀንዲ ሕጽኖት፦" }, isTi)}
-          </p>
-        </div>
-        <p className="mt-1 text-xs text-zinc-300">
-          {t(
-            {
-              en: "Every attempt either relied on a central company (which could fail) or a central vault (which could be shut down). The missing ingredient was a system with NO central point of failure.",
-              ti: "ነፍሲ ወከፍ ፈተነ ወይ ኣብ ማእከላይ ኩባንያ (ክትፈርስ እትኽእል) ወይ ኣብ ማእከላይ መኽዘን (ክዕጾ ዝኽእል) ተደጊፉ ነይሩ። እቲ ዝጎደለ መፍትሒ ዝኾነ ማእከላይ መጥቃዕቲ ዘይብሉ ስርዓት ምፍጣር እዩ ነይሩ።",
-            },
-            isTi
-          )}
-        </p>
-      </div>
-
-      {/* 2008 Bridge */}
-      <div className="mt-6 rounded-xl border border-rose-500/30 bg-rose-500/5 px-4 py-4 space-y-2">
-        <div className="flex items-center gap-2">
-          <Zap className="h-4 w-4 text-rose-400 shrink-0" />
-          <p className="text-xs font-bold uppercase tracking-widest text-rose-400">
-            {t({ en: "The Crisis That Changed Everything — 2008", ti: "እቲ ኩሉ ዝቐየረ ቅልውላው — 2008" }, isTi)}
-          </p>
-        </div>
-        <p className="text-sm text-zinc-300 leading-relaxed">
-          {t(
-            {
-              en: "Then came 2008. The global financial crisis hit. Banks collapsed, families lost homes and life savings, and governments printed trillions to bail out the very institutions that caused the disaster — while ordinary citizens absorbed the loss.",
-              ti: "ሽዑ 2008 መጸ። ዓለማዊ ፋይናንሳዊ ቅልውላው ወቒዑ። ባንክታት ፈሪሰን፡ ሰባት ገዛውተንን ዕቋረንን ስኢኖም፡ መንግስታት ድማ ነተን ነቲ ዕንወት ዝፈጠራ ትካላት ንምድሓን ትሪልዮናት ሓቲሞም — ተራ ሰባት ግን ዋጋ ከፊሎም ተረፉ።",
-            },
-            isTi
-          )}
-        </p>
-      </div>
-
-      {/* Satoshi reveal */}
-      <div className="mt-4 rounded-xl border border-orange-400/40 bg-gradient-to-br from-orange-500/10 via-zinc-950/60 to-zinc-950 px-4 py-4 space-y-3">
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-2.5">
-            <FileText className="h-6 w-6 text-orange-300" />
-          </div>
-          <div>
-            <p className="text-base font-black text-orange-200">
-              {t({ en: "Satoshi Nakamoto — October 31, 2008", ti: "ሳቶሺ ናካሞቶ — 31 ጥቅምቲ 2008" }, isTi)}
-            </p>
-            <p className="text-xs text-zinc-400 font-mono">
-              {t({ en: "Bitcoin: A Peer-to-Peer Electronic Cash System", ti: "ቢትኮይን፦ ናይ ሰብ-ናብ-ሰብ ኤሌክትሮኒካዊ ጥረ ገንዘብ ስርዓት" }, isTi)}
-            </p>
-          </div>
-        </div>
-
-        <p className="text-sm text-zinc-300 leading-relaxed">
-          {t(
-            {
-              en: "At that exact moment, Satoshi Nakamoto released a 9-page whitepaper describing a new form of money — pure digital cash with no central bank, no government, and no counterparty risk.",
-              ti: "ኣብታ ልክዕ ህሞት፡ ሳቶሺ ናካሞቶ 9 ገጽ ዝሓዘ ጻዕዳ ወረቐት ኣውጺኡ ሓድሽ ዓይነት ገንዘብ ኣላልዩ — ማእከላይ ባንክ፡ መንግስቲ ወይ መንጎኛ ዘይብሉ ንጹር ዲጂታላዊ ጥረ ገንዘብ።",
-            },
-            isTi
-          )}
-        </p>
-
-        {/* Three solved problems */}
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-2">
-          {[
-            {
-              icon: Building2,
-              label: { en: "No Central Bank", ti: "ማእከላይ ባንክ የለን" },
-              sub: { en: "No single point to shut down", ti: "ዝዕጾ ማእከል የብሉን" },
-            },
-            {
-              icon: Layers,
-              label: { en: "Fixed Supply", ti: "ቀዋሚ ደረት" },
-              sub: { en: "Strict mathematical limit", ti: "ብሕሳብ ዝተወሰነ ደረት" },
-            },
-            {
-              icon: Lock,
-              label: { en: "Permissionless", ti: "ፍቓድ ዘየድልዮ" },
-              sub: { en: "Censorship-resistant cash", ti: "ምዕጻው ዘይከኣል ጥረ ገንዘብ" },
-            },
-          ].map((item, i) => {
-            const PillarIcon = item.icon;
-            return (
-              <div key={i} className="rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 text-center">
-                <PillarIcon className="h-5 w-5 text-orange-300 mx-auto" />
-                <p className="mt-1.5 text-xs font-bold text-orange-200">{t(item.label, isTi)}</p>
-                <p className="mt-0.5 text-[10px] text-zinc-400">{t(item.sub, isTi)}</p>
+            {/* Outcome */}
+            <div className={`rounded-lg border px-3 py-2.5 ${current.failureColor}`}>
+              <div className="flex items-center gap-1.5 mb-1">
+                {current.isSuccess ? (
+                  <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                ) : (
+                  <X className="h-3.5 w-3.5 shrink-0 text-rose-400" />
+                )}
+                <p className="text-[11px] font-bold uppercase tracking-widest opacity-80">
+                  {t({ en: "What Happened", ti: "እንታይ ኮነ" }, isTi)}
+                </p>
               </div>
-            );
-          })}
-        </div>
+              <p className="text-sm">{t(current.failure, isTi)}</p>
+            </div>
 
-        <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 px-3 py-2 text-center">
-          <p className="text-xs font-bold text-orange-200">
-            {t(
-              {
-                en: "\"For the first time in history, humans had digital money that no one could shut down, inflate, or control.\"",
-                ti: "\"ኣብ ታሪኽ ንፈለማ እዋን ደቂ ሰባት ክዓጽዎ፡ ከንፍሖ፡ ወይ ክቆጻጸሮ ዘይክእል ዲጂታላዊ ገንዘብ ሒዞም።\"",
-              },
-              isTi
-            )}
-          </p>
-        </div>
+            {/* Pattern callout */}
+            <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Key className="h-4 w-4 text-amber-400 shrink-0" />
+                <p className="text-xs font-bold text-amber-300">
+                  {t({ en: "The Pattern:", ti: "ቀንዲ ሕጽኖት፦" }, isTi)}
+                </p>
+              </div>
+              <p className="mt-1 text-xs text-zinc-300">
+                {t(
+                  {
+                    en: "Every attempt either relied on a central company (which could fail) or a central vault (which could be shut down). The missing ingredient was a system with NO central point of failure.",
+                    ti: "ነፍሲ ወከፍ ፈተነ ወይ ኣብ ማእከላይ ኩባንያ (ክትፈርስ እትኽእል) ወይ ኣብ ማእከላይ መኽዘን (ክዕጾ ዝኽእል) ተደጊፉ ነይሩ። እቲ ዝጎደለ መፍትሒ ዝኾነ ማእከላይ መጥቃዕቲ ዘይብሉ ስርዓት ምፍጣር እዩ ነይሩ።",
+                  },
+                  isTi
+                )}
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
