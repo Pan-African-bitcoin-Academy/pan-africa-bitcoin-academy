@@ -1,6 +1,23 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import {
+  Building2,
+  Landmark,
+  Users,
+  Lock,
+  TrendingDown,
+  TrendingUp,
+  Printer,
+  Calculator,
+  ShoppingBag,
+  Home,
+  Package,
+  AlertOctagon,
+  Flame,
+  Sparkles,
+  AlertTriangle,
+} from "lucide-react";
 
 export type Chapter3Module =
   | "inflation_power"
@@ -164,7 +181,10 @@ function InflationPowerGraphic({ isTi }: { isTi: boolean }) {
           </div>
 
           <div className="mt-4 flex items-center justify-between rounded-lg border border-orange-500/20 bg-orange-500/5 p-2.5 text-xs text-orange-200">
-            <span>{scenario === "uganda" ? "🍞 40,000 UGX ➔ 4,000,000 UGX" : "🛒 1 Loaf = 100 Trillion ZWD"}</span>
+            <div className="flex items-center gap-1.5">
+              <ShoppingBag className="h-4 w-4 text-orange-300 shrink-0" />
+              <span>{scenario === "uganda" ? "40,000 UGX ➔ 4,000,000 UGX" : "1 Loaf = 100 Trillion ZWD"}</span>
+            </div>
             <span className="font-mono text-zinc-400">{isTi ? "ፊያት ዝቕባበ" : "Fiat Inflation"}</span>
           </div>
         </div>
@@ -216,7 +236,9 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
               : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
           }`}
         >
-          <span className="text-3xl">🏛️</span>
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-2.5">
+            <Building2 className="h-6 w-6 text-red-300" />
+          </div>
           <span className="mt-2 text-sm font-bold text-red-200">
             {isTi ? "ማእከላይ ባንክን መንግስትን" : "Central Bank & State"}
           </span>
@@ -235,7 +257,9 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
               : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
           }`}
         >
-          <span className="text-3xl">🏦</span>
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5">
+            <Landmark className="h-6 w-6 text-amber-300" />
+          </div>
           <span className="mt-2 text-sm font-bold text-amber-200">
             {isTi ? "ንግዳዊ ባንክታት" : "Commercial Banks"}
           </span>
@@ -254,7 +278,9 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
               : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
           }`}
         >
-          <span className="text-3xl">👥</span>
+          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-2.5">
+            <Users className="h-6 w-6 text-cyan-300" />
+          </div>
           <span className="mt-2 text-sm font-bold text-cyan-200">
             {isTi ? "ተራ ዜጋታት" : "Ordinary Citizens"}
           </span>
@@ -268,7 +294,7 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
       <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
         {activeTier === "central" && (
           <div className="flex items-start gap-3">
-            <span className="text-2xl text-red-400">⚠️</span>
+            <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
             <div>
               <h5 className="font-bold text-red-200">
                 {isTi ? "ማእከላይ ሓይሊ፦ ውሳነ ብውሑዳት ሰባት" : "Central Authority: Decisions by the Few"}
@@ -283,7 +309,7 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
         )}
         {activeTier === "banks" && (
           <div className="flex items-start gap-3">
-            <span className="text-2xl text-amber-400">🔒</span>
+            <Lock className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
               <h5 className="font-bold text-amber-200">
                 {isTi ? "መዕገቲ ኣፍደገ፦ ፍቓድ የድሊ" : "The Gatekeepers: Permission Required"}
@@ -298,7 +324,7 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
         )}
         {activeTier === "citizens" && (
           <div className="flex items-start gap-3">
-            <span className="text-2xl text-cyan-400">📉</span>
+            <TrendingDown className="h-5 w-5 text-cyan-400 shrink-0 mt-0.5" />
             <div>
               <h5 className="font-bold text-cyan-200">
                 {isTi ? "ተቐባሊ ጸገም፦ ተራ ሰራሕተኛ" : "The Base: Carrying the Burden"}
@@ -332,8 +358,9 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
               </div>
               {/* Money supply bar */}
               <div className="flex items-center gap-2">
-                <span className="w-20 shrink-0 text-right text-[10px] text-zinc-500">
-                  {isTi ? "ሕትመት 🖨️" : "🖨️ Supply"}
+                <span className="w-20 shrink-0 text-right text-[10px] text-zinc-500 flex items-center justify-end gap-1">
+                  <Printer className="h-3 w-3" />
+                  <span>{isTi ? "ሕትመት" : "Supply"}</span>
                 </span>
                 <div className="flex-1 rounded-full bg-zinc-800 h-2.5 overflow-hidden">
                   <div
@@ -344,8 +371,9 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
               </div>
               {/* Inflation bar */}
               <div className="flex items-center gap-2">
-                <span className="w-20 shrink-0 text-right text-[10px] text-zinc-500">
-                  {isTi ? "ዝቕባበ 📈" : "📈 Inflation"}
+                <span className="w-20 shrink-0 text-right text-[10px] text-zinc-500 flex items-center justify-end gap-1">
+                  <TrendingUp className="h-3 w-3" />
+                  <span>{isTi ? "ዝቕባበ" : "Inflation"}</span>
                 </span>
                 <div className="flex-1 rounded-full bg-zinc-800 h-2.5 overflow-hidden">
                   <div
@@ -366,9 +394,12 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
 
       {/* ── Inflation Calculator ── */}
       <div className="mt-6 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
-        <p className="mb-1 text-xs font-bold uppercase tracking-widest text-cyan-400">
-          {isTi ? "🧮 ናይ ዝቕባበ ሕሳብ ማሽን" : "🧮 Inflation Calculator"}
-        </p>
+        <div className="flex items-center gap-1.5 mb-1">
+          <Calculator className="h-4 w-4 text-cyan-400" />
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">
+            {isTi ? "ናይ ዝቕባበ ሕሳብ ማሽን" : "Inflation Calculator"}
+          </p>
+        </div>
         <p className="mb-4 text-[11px] text-zinc-400">
           {isTi
             ? "ሎሚ ዘሎ ዋጋ ኣእቱ — ብዝቕባበ ድሕሪ ዓመታት ክንደይ ከም ዝኸውን ርአ"
@@ -477,31 +508,36 @@ function CantillonFunnelGraphic({ isTi }: { isTi: boolean }) {
       <div className="flex gap-2">
         <button
           type="button"
-          className={step === 1 ? selectedButtonClass : buttonClass}
+          className={`flex items-center gap-1.5 ${step === 1 ? selectedButtonClass : buttonClass}`}
           onClick={() => setStep(1)}
         >
-          {isTi ? "1. ሕትመት 🖨️" : "1. Newly Created Money"}
+          <Printer className="h-4 w-4 shrink-0" />
+          <span>{isTi ? "1. ሕትመት" : "1. Newly Created Money"}</span>
         </button>
         <button
           type="button"
-          className={step === 2 ? selectedButtonClass : buttonClass}
+          className={`flex items-center gap-1.5 ${step === 2 ? selectedButtonClass : buttonClass}`}
           onClick={() => setStep(2)}
         >
-          {isTi ? "2. ባንክታትን ኤሊትን 🏛️" : "2. Banks & Mega-Corps"}
+          <Building2 className="h-4 w-4 shrink-0" />
+          <span>{isTi ? "2. ባንክታትን ኤሊትን" : "2. Banks & Mega-Corps"}</span>
         </button>
         <button
           type="button"
-          className={step === 3 ? selectedButtonClass : buttonClass}
+          className={`flex items-center gap-1.5 ${step === 3 ? selectedButtonClass : buttonClass}`}
           onClick={() => setStep(3)}
         >
-          {isTi ? "3. ተራ ሰራሕተኛታት 🛒" : "3. Ordinary Citizens"}
+          <ShoppingBag className="h-4 w-4 shrink-0" />
+          <span>{isTi ? "3. ተራ ሰራሕተኛታት" : "3. Ordinary Citizens"}</span>
         </button>
       </div>
 
       <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950 p-4">
         {step === 1 && (
           <div className="flex flex-col items-center justify-center text-center p-4">
-            <span className="text-4xl animate-bounce">🖨️💵</span>
+            <div className="rounded-2xl border border-zinc-700 bg-zinc-900/80 p-3 mb-2">
+              <Printer className="h-10 w-10 text-zinc-300" />
+            </div>
             <h5 className="mt-2 font-bold text-zinc-100">
               {isTi ? "ሓድሽ ገንዘብ ብማእከላይ ባንክ ይሕተም" : "New Fiat is Injected at the Center"}
             </h5>
@@ -514,7 +550,9 @@ function CantillonFunnelGraphic({ isTi }: { isTi: boolean }) {
         )}
         {step === 2 && (
           <div className="flex flex-col items-center justify-center text-center p-4">
-            <span className="text-4xl">🏛️📈</span>
+            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 mb-2">
+              <Building2 className="h-10 w-10 text-emerald-300" />
+            </div>
             <h5 className="mt-2 font-bold text-emerald-300">
               {isTi ? "ቀዳሞት ተረባሕቲ፦ ቅድሚ ዋጋታት ምውሳኹ ይገዝኡ" : "First Recipients: Spend at Old Prices"}
             </h5>
@@ -527,7 +565,9 @@ function CantillonFunnelGraphic({ isTi }: { isTi: boolean }) {
         )}
         {step === 3 && (
           <div className="flex flex-col items-center justify-center text-center p-4">
-            <span className="text-4xl text-rose-400">🛒📉</span>
+            <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 mb-2">
+              <ShoppingBag className="h-10 w-10 text-rose-300" />
+            </div>
             <h5 className="mt-2 font-bold text-rose-300">
               {isTi ? "ናይ መወዳእታ ተቐበልቲ፦ ድሕሪ ዋጋታት ምውሳኹ ይበጽሖም" : "Last Recipients: Facing Higher Prices"}
             </h5>
@@ -561,38 +601,44 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <button
           type="button"
-          className={phase === 0 ? selectedButtonClass : buttonClass}
+          className={`flex items-center justify-center gap-1.5 ${phase === 0 ? selectedButtonClass : buttonClass}`}
           onClick={() => setPhase(0)}
         >
-          {isTi ? "1. ሳብፕራይም ልቓሕ 🏠" : "1. Subprime Loans"}
+          <Home className="h-4 w-4 shrink-0" />
+          <span>{isTi ? "1. ሳብፕራይም" : "1. Subprime Loans"}</span>
         </button>
         <button
           type="button"
-          className={phase === 1 ? selectedButtonClass : buttonClass}
+          className={`flex items-center justify-center gap-1.5 ${phase === 1 ? selectedButtonClass : buttonClass}`}
           onClick={() => setPhase(1)}
         >
-          {isTi ? "2. ምዕሻግ CDO 📦" : "2. CDO Bundling"}
+          <Package className="h-4 w-4 shrink-0" />
+          <span>{isTi ? "2. ምዕሻግ CDO" : "2. CDO Bundling"}</span>
         </button>
         <button
           type="button"
-          className={phase === 2 ? selectedButtonClass : buttonClass}
+          className={`flex items-center justify-center gap-1.5 ${phase === 2 ? selectedButtonClass : buttonClass}`}
           onClick={() => setPhase(2)}
         >
-          {isTi ? "3. ውድቀትን ስንባደን 💥" : "3. Default & Collapse"}
+          <AlertOctagon className="h-4 w-4 shrink-0" />
+          <span>{isTi ? "3. ውድቀትን ስንባደን" : "3. Default & Crash"}</span>
         </button>
         <button
           type="button"
-          className={phase === 3 ? selectedButtonClass : buttonClass}
+          className={`flex items-center justify-center gap-1.5 ${phase === 3 ? selectedButtonClass : buttonClass}`}
           onClick={() => setPhase(3)}
         >
-          {isTi ? "4. ምድሓን ባንክታት 🖨️" : "4. Trillion$ Bailout"}
+          <Printer className="h-4 w-4 shrink-0" />
+          <span>{isTi ? "4. ምድሓን ባንክታት" : "4. Trillion$ Bailout"}</span>
         </button>
       </div>
 
       <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950 p-5">
         {phase === 0 && (
           <div className="space-y-3 text-center">
-            <span className="text-4xl">🏠💳</span>
+            <div className="inline-block rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 mb-1">
+              <Home className="h-8 w-8 text-amber-300 mx-auto" />
+            </div>
             <h5 className="font-bold text-amber-200">
               {isTi ? "1. ሳብፕራይም ሞርጌጅ (Subprime Mortgages)" : "1. Subprime Mortgages"}
             </h5>
@@ -626,9 +672,9 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
                     ? "ሰባት ዘይክፈሉ ዝኽእሉ ልቓሕ ተዋህቦም (NINJA loans)"
                     : "Thousands of NINJA loans (No Income, No Job, No Assets) issued to unqualified buyers"}
                 </p>
-                <div className="mt-1 flex flex-wrap justify-center gap-1">
-                  {["🏠","🏠","🏠","🏠","🏠","🏠","🏠","🏠"].map((h, i) => (
-                    <span key={i} className="text-base">{h}</span>
+                <div className="mt-2 flex flex-wrap justify-center gap-2">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <Home key={i} className="h-4 w-4 text-amber-400/80" />
                   ))}
                 </div>
               </div>
@@ -715,8 +761,9 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
                 <div className="rounded-lg border border-rose-600/60 bg-rose-600/10 px-3 py-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-black text-rose-400">BBB / Equity</span>
-                    <span className="rounded-full bg-rose-600/20 px-2 py-0.5 text-[10px] font-bold text-rose-300">
-                      {isTi ? "ዝኸፈአ ደረጃ 🔥" : "TOXIC BOTTOM 🔥"}
+                    <span className="flex items-center gap-1 rounded-full bg-rose-600/20 px-2 py-0.5 text-[10px] font-bold text-rose-300">
+                      <span>{isTi ? "ዝኸፈአ ደረጃ" : "TOXIC BOTTOM"}</span>
+                      <Flame className="h-3 w-3 text-rose-400" />
                     </span>
                   </div>
                   <p className="mt-1 text-[11px] text-zinc-300">
@@ -729,10 +776,16 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
 
               {/* Fraud callout */}
               <div className="mt-2 w-full max-w-sm rounded-lg border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-center">
-                <p className="text-[11px] font-bold text-rose-300">
+                <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                  <AlertTriangle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+                  <span className="text-[11px] font-bold text-rose-300 uppercase tracking-wide">
+                    {isTi ? "ግጭት ረብሓ" : "Conflict of Interest"}
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-300">
                   {isTi
-                    ? "⚠️ ናይ ክረዲት ደረጃ ወሃብቲ (Moody's, S&P, Fitch) ብዓበይቲ ባንክታት ዝተኸፈሉ ነይሮም — ስለዚ ሓሶት 'AAA' ደረጃ ሃቡ።"
-                    : "⚠️ Rating agencies (Moody's, S&P, Fitch) were PAID by the same banks whose products they rated — a catastrophic conflict of interest that enabled the fraud."}
+                    ? "ናይ ክረዲት ደረጃ ወሃብቲ (Moody's, S&P, Fitch) ብዓበይቲ ባንክታት ዝተኸፈሉ ነይሮም — ስለዚ ሓሶት 'AAA' ደረጃ ሃቡ።"
+                    : "Rating agencies (Moody's, S&P, Fitch) were PAID by the same banks whose products they rated — a catastrophic conflict of interest that enabled the fraud."}
                 </p>
               </div>
             </div>
@@ -741,7 +794,9 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
 
         {phase === 2 && (
           <div className="space-y-3 text-center">
-            <span className="text-4xl animate-pulse">📉💣</span>
+            <div className="inline-block rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 mb-1">
+              <AlertOctagon className="h-8 w-8 text-rose-400 mx-auto" />
+            </div>
             <h5 className="font-bold text-rose-300">
               {isTi ? "3. ውድቀት ሰንሰለት (CDS & Lehman Collapse)" : "3. Contagion, CDS & Lehman Collapse"}
             </h5>
@@ -758,7 +813,9 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
 
         {phase === 3 && (
           <div className="space-y-3 text-center">
-            <span className="text-4xl">🏛️🖨️</span>
+            <div className="inline-block rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-3 mb-1">
+              <Printer className="h-8 w-8 text-yellow-300 mx-auto" />
+            </div>
             <h5 className="font-bold text-yellow-300">
               {isTi ? "4. ናይ ትሪልዮናት ዶላር ምድሓን (TARP & Quantitative Easing)" : "4. 'Too Big to Fail' Bailouts & QE"}
             </h5>
@@ -767,8 +824,11 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
                 ? "ማእከላይ ባንክታትን መንግስትን ትሪልዮናት ሓድሽ ዶላር ብምሕታም ነተን ገበነኛታት ባንክታት ኣድሓንወን። ተራ ስድራቤታት ግና ገዛውተንን ዕቋረንን ስኢነን ጾር ተሰኪመን ተረፋ።"
                 : "Central banks printed trillions to bail out the reckless banks ('Too Big to Fail'), while ordinary people suffered foreclosures, lost jobs, and inflation."}
             </p>
-            <div className="mt-2 inline-block rounded border border-orange-500/40 bg-orange-500/15 px-3 py-1.5 text-xs font-mono font-bold text-orange-200">
-              {isTi ? "💡 3 ጥሪ 2009፦ ሳቶሺ ናካሞቶ ቢትኮይን ፈጠረ!" : "💡 Jan 3, 2009: Satoshi Nakamoto mined the Bitcoin Genesis Block!"}
+            <div className="mt-2 inline-flex items-center gap-1.5 rounded border border-orange-500/40 bg-orange-500/15 px-3 py-1.5 text-xs font-mono font-bold text-orange-200">
+              <Sparkles className="h-4 w-4 shrink-0 text-orange-300" />
+              <span>
+                {isTi ? "3 ጥሪ 2009፦ ሳቶሺ ናካሞቶ ቢትኮይን ፈጠረ!" : "Jan 3, 2009: Satoshi Nakamoto mined the Bitcoin Genesis Block!"}
+              </span>
             </div>
           </div>
         )}
