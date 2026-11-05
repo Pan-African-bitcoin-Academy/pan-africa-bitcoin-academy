@@ -57,6 +57,18 @@ const Chapter2InteractiveLesson = dynamic(
   }
 );
 
+const Chapter3InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter3InteractiveLesson").then((module) => module.Chapter3InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 3 learning activities…
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -328,6 +340,18 @@ function TigrinyaChapterLesson({
             ) : null}
             {chapter.slug === "the-journey-of-money" && heading.startsWith("2.4") ? (
               <Chapter2InteractiveLesson module="fiat_inflation" isTi={true} />
+            ) : null}
+            {chapter.slug === "problems-with-traditional-fiat-money" && heading.startsWith("3.1") ? (
+              <Chapter3InteractiveLesson module="inflation_power" isTi={true} />
+            ) : null}
+            {chapter.slug === "problems-with-traditional-fiat-money" && heading.startsWith("3.2") ? (
+              <Chapter3InteractiveLesson module="centralized_control" isTi={true} />
+            ) : null}
+            {chapter.slug === "problems-with-traditional-fiat-money" && heading.startsWith("3.3") ? (
+              <Chapter3InteractiveLesson module="cantillon_funnel" isTi={true} />
+            ) : null}
+            {chapter.slug === "problems-with-traditional-fiat-money" && heading.startsWith("3.5") ? (
+              <Chapter3InteractiveLesson module="crisis_bailout_2008" isTi={true} />
             ) : null}
           </ChapterSectionAnimated>
         );
@@ -1529,6 +1553,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "the-journey-of-money" && sectionIdx === 5 ? (
                 <Chapter2InteractiveLesson module="fiat_inflation" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "problems-with-traditional-fiat-money" && sectionIdx === 1 ? (
+                <Chapter3InteractiveLesson module="inflation_power" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "problems-with-traditional-fiat-money" && sectionIdx === 2 ? (
+                <Chapter3InteractiveLesson module="centralized_control" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "problems-with-traditional-fiat-money" && sectionIdx === 3 ? (
+                <Chapter3InteractiveLesson module="cantillon_funnel" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "problems-with-traditional-fiat-money" && sectionIdx === 5 ? (
+                <Chapter3InteractiveLesson module="crisis_bailout_2008" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
