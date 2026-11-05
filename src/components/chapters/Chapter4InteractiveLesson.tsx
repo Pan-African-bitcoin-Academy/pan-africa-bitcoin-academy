@@ -33,8 +33,9 @@ const panelClass =
    ========================================================================= */
 
 type Attempt = {
+  id: string;
   year: string;
-  name: string;
+  name: Localized;
   icon: ComponentType<{ className?: string }>;
   who: Localized;
   idea: Localized;
@@ -47,8 +48,9 @@ type Attempt = {
 
 const attempts: Attempt[] = [
   {
+    id: "digicash",
     year: "1983",
-    name: "DigiCash",
+    name: { en: "DigiCash", ti: "ዲጂካሽ" },
     icon: CreditCard,
     who: { en: "David Chaum", ti: "ዴቪድ ቻውም" },
     idea: {
@@ -57,7 +59,7 @@ const attempts: Attempt[] = [
     },
     failure: {
       en: "Required a central company to operate. When the company went bankrupt in 1998, DigiCash collapsed with it.",
-      ti: "ንምስራሕ ማእከላይ ኩባንያ ይሓትት ነይሩ። እቲ ኩባንያ ኣብ 1998 ምስ ፈሸለ፡ DigiCash ምስኡ ተደምሰሰ።",
+      ti: "ንምስራሕ ማእከላይ ኩባንያ ይሓትት ነይሩ። እቲ ኩባንያ ኣብ 1998 ምስ ፈሸለ፡ ዲጂካሽ ምስኡ ተደምሰሰ።",
     },
     isSuccess: false,
     failureColor: "bg-rose-500/10 border-rose-500/30 text-rose-300",
@@ -65,8 +67,9 @@ const attempts: Attempt[] = [
     textColor: "text-purple-300",
   },
   {
+    id: "egold",
     year: "1996",
-    name: "E-Gold",
+    name: { en: "E-Gold", ti: "ኤለትሮኒካዊ-ወርቂ" },
     icon: Coins,
     who: { en: "Douglas Jackson", ti: "ዳግላስ ጃክሰን" },
     idea: {
@@ -83,8 +86,9 @@ const attempts: Attempt[] = [
     textColor: "text-yellow-300",
   },
   {
+    id: "hashcash",
     year: "1997",
-    name: "Hashcash",
+    name: { en: "Hashcash", ti: "ሃሽካሽ" },
     icon: Cpu,
     who: { en: "Adam Back", ti: "ኣዳም ባክ" },
     idea: {
@@ -224,7 +228,7 @@ function HashcashInteractiveDemo({ isTi }: { isTi: boolean }) {
               <span>
                 {status === "mining"
                   ? t({ en: "Computing Proof of Work...", ti: "ናይ ስራሕ መርትዖ ይሕሰብ ኣሎ..." }, isTi)
-                  : t({ en: "Generate Hashcash Stamp (Run Proof of Work)", ti: "ናይ Hashcash ማሕተም ፍጠር (Proof of Work)" }, isTi)}
+                  : t({ en: "Generate Hashcash Stamp (Run Proof of Work)", ti: "ናይ ሃሽካሽ ማሕተም ፍጠር (Proof of Work)" }, isTi)}
               </span>
             </button>
           ) : (
@@ -343,7 +347,7 @@ function CypherpunkTimelineGraphic({ isTi }: { isTi: boolean }) {
             >
               <IconComponent className="h-4 w-4 shrink-0" />
               <span>{a.year}</span>
-              <span className="font-bold">{a.name}</span>
+              <span className="font-bold">{t(a.name, isTi)}</span>
             </button>
           );
         })}
@@ -357,12 +361,12 @@ function CypherpunkTimelineGraphic({ isTi }: { isTi: boolean }) {
             <CurrentIcon className={`h-6 w-6 ${current.textColor}`} />
           </div>
           <div>
-            <p className={`text-lg font-black ${current.textColor}`}>{current.name}</p>
+            <p className={`text-lg font-black ${current.textColor}`}>{t(current.name, isTi)}</p>
             <p className="text-xs text-zinc-400">{current.year} · {t(current.who, isTi)}</p>
           </div>
         </div>
 
-        {current.name === "Hashcash" ? (
+        {current.id === "hashcash" ? (
           <HashcashInteractiveDemo isTi={isTi} />
         ) : (
           <>
@@ -479,7 +483,7 @@ function TimestampChainGraphic({ isTi }: { isTi: boolean }) {
             }`}
           >
             <AlertTriangle className="h-3.5 w-3.5 text-rose-300 shrink-0" />
-            <span>{t({ en: "Alter Document A (Tamper)", ti: "ንሰነድ A ቀይሮ (ምጭብርባር)" }, isTi)}</span>
+            <span>{t({ en: "Alter Document A (Tamper)", ti: "ንሰነድ A ቀይሮ (ምቅይያር)" }, isTi)}</span>
           </button>
         </div>
       </div>
@@ -500,7 +504,7 @@ function TimestampChainGraphic({ isTi }: { isTi: boolean }) {
         <span>
           {!isTampered
             ? t({ en: "STATUS: CHAIN VALID — All hashes match perfectly!", ti: "ኩነታት፦ ሰንሰለት ትክክል እዩ — ኩሎም ኣሰራት ብልክዕ ገጢሞም!" }, isTi)
-            : t({ en: "STATUS: FRAUD DETECTED! Altering Document A broke the entire chain downstream!", ti: "ኩነታት፦ ምጭብርባር ተረኺቡ! ንሰነድ A ምቕያር ንኩሉ ሰንሰለት ኣፍሪስዎ!" }, isTi)}
+            : t({ en: "STATUS: FRAUD DETECTED! Altering Document A broke the entire chain downstream!", ti: "ኩነታት፦ ምቅይያር ተረኺቡ! ንሰነድ A ምቕያር ንኩሉ ሰንሰለት ኣፍሪስዎ!" }, isTi)}
         </span>
       </div>
 
@@ -722,7 +726,7 @@ function TimestampChainGraphic({ isTi }: { isTi: boolean }) {
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-3 text-center">
           <ShieldCheck className="h-6 w-6 text-emerald-300 mx-auto" />
           <p className="mt-2 text-xs font-bold text-emerald-300">
-            {t({ en: "3. Tamper-Proof History", ti: "3. ዘይጭበርበር ታሪኽ" }, isTi)}
+            {t({ en: "3. Tamper-Proof History", ti: "3. ዘይቅየር ታሪኽ" }, isTi)}
           </p>
           <p className="mt-1 text-[11px] text-zinc-400">
             {t(
@@ -754,7 +758,7 @@ function TimestampChainGraphic({ isTi }: { isTi: boolean }) {
               {t(
                 {
                   en: "Before decentralized blockchains existed, Haber and Stornetta's company (Surety) proved their database was untampered by publishing their weekly master hash in the Sunday New York Times classified section under 'Notices'. Because millions of physical newspapers were printed worldwide, no government or company could alter past history without rounding up every paper on earth!",
-                  ti: "ዲሴንትራላይዝድ ብሎክቸይን ቅድሚ ምምጻኡ፡ ሃበርን ስቶርኔታን (ኩባንያ Surety) መዝገቦም ከም ዘይተጨበርበረ ንምርግጋጽ፡ ነቲ ናይ ሰሙን ዋና ኣሰር (master hash) ኣብ ሰንበት ጋዜጣ ኒው ዮርክ ታይምስ ኣብ ዓምዲ ምልክታታት ይሓትምዎ ነበሩ። ሚልዮናት ጋዜጣታት ኣብ ዓለም ስለ ዝተዘርገሑ፡ ዝኾነ መንግስቲ ወይ ኩባንያ ነቲ ታሪኽ ክጭበርብሮ ኣይክእልን ነበረ!",
+                  ti: "ዲሴንትራላይዝድ ብሎክቸይን ቅድሚ ምምጻኡ፡ ሃበርን ስቶርኔታን (ኩባንያ Surety) መዝገቦም ከም ዘይተቐየረ ንምርግጋጽ፡ ነቲ ናይ ሰሙን ዋና ኣሰር (master hash) ኣብ ሰንበት ጋዜጣ ኒው ዮርክ ታይምስ ኣብ ዓምዲ ምልክታታት ይሓትምዎ ነበሩ። ሚልዮናት ጋዜጣታት ኣብ ዓለም ስለ ዝተዘርገሑ፡ ዝኾነ መንግስቲ ወይ ኩባንያ ነቲ ታሪኽ ክቕይሮ ኣይክእልን ነበረ!",
                 },
                 isTi
               )}
