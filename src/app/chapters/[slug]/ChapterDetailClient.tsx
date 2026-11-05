@@ -320,6 +320,25 @@ function TigrinyaChapterLesson({
                       ))}
                     </div>
                   </div>
+                ) : chapter.slug === "from-crisis-to-innovation" &&
+                  originalSection?.heading.startsWith("4.2") &&
+                  images.length >= 1 ? (
+                  <div className="mt-6 space-y-4">
+                    <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
+                      {images.map((image) => (
+                        <div key={image.src} className="flex flex-col items-center">
+                          <ZoomableImage
+                            key={image.src}
+                            src={image.src}
+                            alt={image.alt}
+                            caption={image.caption}
+                            className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                            thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 ) : (
                   <div
                     className={`mt-6 grid gap-6 ${
@@ -408,6 +427,9 @@ function TigrinyaChapterLesson({
             ) : null}
             {chapter.slug === "from-crisis-to-innovation" && heading.startsWith("4.1") ? (
               <Chapter4InteractiveLesson module="cypherpunk_timeline" isTi={true} />
+            ) : null}
+            {chapter.slug === "from-crisis-to-innovation" && heading.startsWith("4.2") ? (
+              <Chapter4InteractiveLesson module="timestamp_chain" isTi={true} />
             ) : null}
           </ChapterSectionAnimated>
         );
@@ -1561,6 +1583,25 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                           ))}
                         </div>
                       </div>
+                    ) : chapter.slug === "from-crisis-to-innovation" &&
+                      (section.heading.startsWith("4.2") || section.heading.includes("Haber")) &&
+                      section.images.length >= 1 ? (
+                      <div className="mt-6 space-y-4">
+                        <div className="mx-auto grid max-w-lg grid-cols-1 gap-4 sm:grid-cols-2">
+                          {section.images.map((image, idx) => (
+                            <div key={idx} className="flex flex-col items-center">
+                              <ZoomableImage
+                                key={idx}
+                                src={image.src}
+                                alt={image.alt}
+                                caption={image.caption}
+                                className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                                thumbnailClassName="max-h-40 sm:max-h-44 object-contain"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     ) : section.images.length === 2 ? (
                       // Side by side layout for sections with exactly 2 images
                       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1646,6 +1687,9 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "from-crisis-to-innovation" && sectionIdx === 1 ? (
                 <Chapter4InteractiveLesson module="cypherpunk_timeline" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "from-crisis-to-innovation" && sectionIdx === 2 ? (
+                <Chapter4InteractiveLesson module="timestamp_chain" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
