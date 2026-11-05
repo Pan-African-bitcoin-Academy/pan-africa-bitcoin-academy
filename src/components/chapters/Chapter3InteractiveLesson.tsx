@@ -174,10 +174,26 @@ function InflationPowerGraphic({ isTi }: { isTi: boolean }) {
 }
 
 /* =========================================================================
-   3.2 Centralized Control Pyramid Graphic
+   3.2 Centralized Control Pyramid Graphic + Money Supply vs Inflation + Calculator
    ========================================================================= */
 function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
   const [activeTier, setActiveTier] = useState<"central" | "banks" | "citizens">("central");
+
+  // Inflation calculator state
+  const [calcPrice, setCalcPrice] = useState<number>(100);
+  const [calcRate, setCalcRate] = useState<number>(10);
+  const [calcYears, setCalcYears] = useState<number>(10);
+
+  const futurePrice = calcPrice * Math.pow(1 + calcRate / 100, calcYears);
+  const purchasingPower = (calcPrice / futurePrice) * 100;
+
+  // Money supply vs inflation scenarios
+  const printScenarios = [
+    { label: isTi ? "2% ዝቕባበ" : "2% Inflation",  supply: 20, inflation: 20,  supplyColor: "bg-emerald-500", inflColor: "bg-emerald-400", eg: isTi ? "ምቹእ ቁጠባ" : "Healthy economy" },
+    { label: isTi ? "10% ዝቕባበ" : "10% Inflation", supply: 45, inflation: 45,  supplyColor: "bg-yellow-500",  inflColor: "bg-yellow-400",  eg: isTi ? "ቀስ ብቀስ ምፍራስ" : "Gradual erosion" },
+    { label: isTi ? "50% ዝቕባበ" : "50% Inflation", supply: 72, inflation: 72,  supplyColor: "bg-orange-500",  inflColor: "bg-orange-400",  eg: isTi ? "ቀውሲ ደረጃ" : "Crisis-level" },
+    { label: isTi ? "500%+ ዝቕባበ" : "500%+ Inflation", supply: 100, inflation: 100, supplyColor: "bg-rose-600",   inflColor: "bg-rose-500",    eg: isTi ? "ሃይፐርኢንፍሌሽን — ዚምባብዌ" : "Hyperinflation — Zimbabwe" },
+  ];
 
   return (
     <VisualPanel
@@ -188,6 +204,7 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
       }}
       isTi={isTi}
     >
+      {/* ── Pyramid tier cards ── */}
       <div className="grid gap-4 md:grid-cols-3">
         {/* Tier 1: Central Bank */}
         <button
@@ -294,6 +311,155 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
             </div>
           </div>
         )}
+      </div>
+
+      {/* ── Money Supply vs Inflation Chart ── */}
+      <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/80 p-4">
+        <p className="mb-1 text-xs font-bold uppercase tracking-widest text-orange-400">
+          {isTi ? "ዝያዳ ሕትመት = ዝያዳ ዝቕባበ" : "More Printing = More Inflation"}
+        </p>
+        <p className="mb-4 text-[11px] text-zinc-400">
+          {isTi
+            ? "ቀረብ ገንዘብ ምስ ወሰኸ፡ ዋጋታት ብተመሳሳሊ ይወስኹ — ዜጋታት ዝሰርሑሉ ናይ ምግዛእ ዓቕሚ ይቀንስ"
+            : "As money supply expands, prices rise proportionally — eroding what your earnings can actually buy"}
+        </p>
+        <div className="space-y-3">
+          {printScenarios.map((s, i) => (
+            <div key={i} className="space-y-1">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-semibold text-zinc-200">{s.label}</span>
+                <span className="text-zinc-500 italic">{s.eg}</span>
+              </div>
+              {/* Money supply bar */}
+              <div className="flex items-center gap-2">
+                <span className="w-20 shrink-0 text-right text-[10px] text-zinc-500">
+                  {isTi ? "ሕትመት 🖨️" : "🖨️ Supply"}
+                </span>
+                <div className="flex-1 rounded-full bg-zinc-800 h-2.5 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-700 ${s.supplyColor}`}
+                    style={{ width: `${s.supply}%` }}
+                  />
+                </div>
+              </div>
+              {/* Inflation bar */}
+              <div className="flex items-center gap-2">
+                <span className="w-20 shrink-0 text-right text-[10px] text-zinc-500">
+                  {isTi ? "ዝቕባበ 📈" : "📈 Inflation"}
+                </span>
+                <div className="flex-1 rounded-full bg-zinc-800 h-2.5 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-700 ${s.inflColor} opacity-70`}
+                    style={{ width: `${s.inflation}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-center text-[11px] text-zinc-500 italic">
+          {isTi
+            ? "ቀረብ ገንዘብ ምስ ወሰኸ ዝቕባበ ብተመሳሳሊ ይወስኽ — ሕጊ ቁጠባ"
+            : "Supply expands → prices expand. This is not coincidence — it is cause and effect."}
+        </p>
+      </div>
+
+      {/* ── Inflation Calculator ── */}
+      <div className="mt-6 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
+        <p className="mb-1 text-xs font-bold uppercase tracking-widest text-cyan-400">
+          {isTi ? "🧮 ናይ ዝቕባበ ሕሳብ ማሽን" : "🧮 Inflation Calculator"}
+        </p>
+        <p className="mb-4 text-[11px] text-zinc-400">
+          {isTi
+            ? "ሎሚ ዘሎ ዋጋ ኣእቱ — ብዝቕባበ ድሕሪ ዓመታት ክንደይ ከም ዝኸውን ርአ"
+            : "Enter a price today — see what it will cost after years of inflation"}
+        </p>
+
+        {/* Inputs */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div>
+            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+              {isTi ? "ሎሚ ዋጋ ($)" : "Starting Price ($)"}
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={1000000}
+              value={calcPrice}
+              onChange={e => setCalcPrice(Math.max(1, Number(e.target.value)))}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-cyan-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+              {isTi ? "ዓመታዊ ዝቕባበ (%)" : "Annual Inflation Rate (%)"}
+            </label>
+            <input
+              type="number"
+              min={0.1}
+              max={1000}
+              step={0.1}
+              value={calcRate}
+              onChange={e => setCalcRate(Math.max(0.1, Number(e.target.value)))}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-cyan-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+              {isTi ? "ዓመታት" : "Years"}
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={100}
+              value={calcYears}
+              onChange={e => setCalcYears(Math.max(1, Number(e.target.value)))}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-cyan-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Formula shown */}
+        <div className="mt-3 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-center font-mono text-xs text-zinc-400">
+          {isTi
+            ? `ዋጋ × (1 + ዝቕባበ%)^ዓመታት = ${calcPrice} × (1 + ${calcRate/100})^${calcYears}`
+            : `Price × (1 + rate)^years = ${calcPrice} × (1 + ${calcRate/100})^${calcYears}`}
+        </div>
+
+        {/* Result */}
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-center">
+            <p className="text-[11px] text-zinc-400">
+              {isTi ? `ድሕሪ ${calcYears} ዓመት ዋጋ` : `Price after ${calcYears} years`}
+            </p>
+            <p className="mt-1 text-xl font-black text-rose-300">
+              ${futurePrice.toFixed(2)}
+            </p>
+            <p className="text-[10px] text-zinc-500">
+              {isTi ? `ካብ $${calcPrice} ወሲኹ` : `Up from $${calcPrice}`}
+            </p>
+          </div>
+          <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-center">
+            <p className="text-[11px] text-zinc-400">
+              {isTi ? "ዝተረፈ ናይ ምግዛእ ዓቕሚ" : "Purchasing power remaining"}
+            </p>
+            <p className="mt-1 text-xl font-black text-emerald-300">
+              {purchasingPower.toFixed(1)}%
+            </p>
+            <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                style={{ width: `${Math.min(purchasingPower, 100)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-3 text-center text-[11px] text-zinc-500 italic">
+          {isTi
+            ? `💡 ፊያት ደረት የብሉን — ቢትኮይን ግን ቀዋሚ 21 ሚልዮን ሒዙ ይመጽእ`
+            : "💡 Fiat has no supply limit — Bitcoin's 21 million cap is a direct fix to this."}
+        </p>
       </div>
     </VisualPanel>
   );
