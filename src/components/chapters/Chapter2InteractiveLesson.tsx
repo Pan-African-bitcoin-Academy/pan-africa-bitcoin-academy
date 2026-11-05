@@ -356,41 +356,6 @@ function MoneyEvolutionStepper({ isTi }: { isTi: boolean }) {
           </div>
         </div>
       </div>
-
-      <KnowledgeCheck
-        isTi={isTi}
-        question={{
-          en: "Why did societies repeatedly transition from one monetary system to another throughout history?",
-          ti: "ስለምንታይ ማሕበረሰባት ኣብ ታሪኽ ካብ ሓደ ስርዓት ገንዘብ ናብ ካልእ ብተደጋጋሚ ክሰጋገሩ ተገዲዶም?",
-        }}
-        choices={[
-          {
-            label: {
-              en: "To solve limitations like spoilage, heavy weight, or debasement",
-              ti: "ከም ምብስባስ፣ ክብደት ወይ ምቕናስ ዋጋ ዝኣመሰሉ ገደባት ንምፍታሕ",
-            },
-            correct: true,
-          },
-          {
-            label: {
-              en: "Because older money naturally disappeared every 100 years",
-              ti: "ምኽንያቱ ጥንታዊ ገንዘብ በብ100 ዓመት ስለ ዝጠፍእ",
-            },
-            correct: false,
-          },
-          {
-            label: {
-              en: "Governments wanted to make trading more difficult",
-              ti: "መንግስታት ንግዲ ዝኸበደ ንምግባር ስለ ዝደለዩ",
-            },
-            correct: false,
-          },
-        ]}
-        explanation={{
-          en: "Each step—from barter to shells, coins, banknotes, and digital money—responded to real economic friction.",
-          ti: "ነፍሲ ወከፍ ስጉምቲ (ባርተር፣ ሸል፣ ሳንቲም፣ ባንክኖት፣ ቢትኮይን) ንዝነበረ ናይ ንግዲ ጸገም ንምፍታሕ ዝመጸ እዩ።",
-        }}
-      />
     </LessonPanel>
   );
 }
@@ -558,41 +523,6 @@ function BarterVsCommodityGraphic({ isTi }: { isTi: boolean }) {
           </div>
         )}
       </div>
-
-      <KnowledgeCheck
-        isTi={isTi}
-        question={{
-          en: "What makes cowrie shells or salt function as commodity money?",
-          ti: "ቅርፊት ላም (ሸል) ወይ ጨው ከም ሸቐጣዊ ገንዘብ ክሰርሑ ዘኽኣሎም እንታይ እዩ?",
-        }}
-        choices={[
-          {
-            label: {
-              en: "Wide social acceptability, durability, and divisibility",
-              ti: "ሰፊሕ ተቐባልነት፣ ነባርነትን ኣብ ንኣሽቱ ምምቃል ምኽኣልን",
-            },
-            correct: true,
-          },
-          {
-            label: {
-              en: "Government laws passed 10,000 years ago",
-              ti: "ቅድሚ 10,000 ዓመት ዝወጸ መንግስታዊ ሕጊ",
-            },
-            correct: false,
-          },
-          {
-            label: {
-              en: "They could only be eaten for survival",
-              ti: "ንህይወት ምቕጻል ጥራይ ስለ ዝብልዑ",
-            },
-            correct: false,
-          },
-        ]}
-        explanation={{
-          en: "Commodities succeed as early money because people universally accept them and they do not spoil instantly like vegetables or fish.",
-          ti: "እዞም ኣቕሑት ኩሉ ሰብ ስለ ዝደልዮምን ከም ዓሳን ኣሕምልትን ቀልጢፎም ስለ ዘይበላሸዉን ቀዳሞት ገንዘብ ኮይኖም።",
-        }}
-      />
     </LessonPanel>
   );
 }
@@ -747,41 +677,6 @@ function CoinageAndAksumGraphic({ isTi }: { isTi: boolean }) {
           </div>
         )}
       </div>
-
-      <KnowledgeCheck
-        isTi={isTi}
-        question={{
-          en: "What was the main advantage of Aksumite minted coins over raw gold dust or salt?",
-          ti: "ሳንቲም ኣኽሱም ካብ ጥረ ወርቂ ወይ ጨው ዝነበሮ ቀንዲ ብልጫ እንታይ ነበረ?",
-        }}
-        choices={[
-          {
-            label: {
-              en: "Standardized weight and royal seal eliminated weighing and testing",
-              ti: "ደረጃ ዘለዎ ክብደትን ማሕተምን ስለዝነበሮ ምዛንን ምምርማርን ኣየድለየን",
-            },
-            correct: true,
-          },
-          {
-            label: {
-              en: "Coins were made to be eaten during famine",
-              ti: "ሳንቲም ኣብ እዋን ጥሜት ስለ ዝብላዕ",
-            },
-            correct: false,
-          },
-          {
-            label: {
-              en: "Coins could only be spent within 5 kilometers of the palace",
-              ti: "ሳንቲም ካብቲ ቤተ-መንግስቲ ኣብ 5 ኪሎሜተር ጥራይ ስለ ዝሰርሕ",
-            },
-            correct: false,
-          },
-        ]}
-        explanation={{
-          en: "Official coinage gave cross-border merchants certainty of weight and fineness without relying on assays for every trade.",
-          ti: "ወግዓዊ ሳንቲም ንነጋዶ ብዘይ ተወሳኺ ምምርማር ጽሬትን ክብደትን ብእምንቶ ንኽነግዱ ኣኽኢልዎም።",
-        }}
-      />
     </LessonPanel>
   );
 }
@@ -923,243 +818,179 @@ function GoldsmithVaultSimulation({ isTi }: { isTi: boolean }) {
           </p>
         </div>
       ) : null}
-
-      <KnowledgeCheck
-        isTi={isTi}
-        question={{
-          en: "What allowed paper banknotes to circulate as money in place of gold?",
-          ti: "ወረቐት ባንክኖታት ኣብ ክንዲ ወርቂ ከም ገንዘብ ክዘዋወሩ ዘኽኣሎም እንታይ እዩ ነይሩ?",
-        }}
-        choices={[
-          {
-            label: {
-              en: "People trusted that each note could be redeemed for physical gold",
-              ti: "ነፍሲ ወከፍ ወረቐት ኣብ ካዝና ንዘሎ ወርቂ ክትቅይሮ ከም እትኽእል ምእማን",
-            },
-            correct: true,
-          },
-          {
-            label: {
-              en: "Paper was heavier and harder to steal than gold",
-              ti: "ወረቐት ካብ ወርቂ ዝኸበደን ንስርቂ ዘይጥዕምን ስለ ዝነበረ",
-            },
-            correct: false,
-          },
-          {
-            label: {
-              en: "Gold had completely run out across the entire planet",
-              ti: "ኣብ ዓለም ዘሎ ወርቂ ብሙሉኡ ስለ ዝተወድአ",
-            },
-            correct: false,
-          },
-        ]}
-        explanation={{
-          en: "Banknotes initially succeeded strictly because they were 100% redeemable warehouse receipts for gold.",
-          ti: "ባንክኖታት ኣብ መጀመርታ ዝሰርሑ ብሓቀኛ ወርቂ ዝድገፉን ዝቕየሩን ናይ ካዝና ቅብሊት ብምንባሮም ጥራይ እዩ።",
-        }}
-      />
     </LessonPanel>
   );
 }
 
 /* =========================================================================
-   5. Fiat & Inflation Purchasing Power Simulator (Section 2.4)
+   5. The 1971 Gold Window Severance (Pre-1971 vs Post-1971) (Section 2.4)
    ========================================================================= */
-function FiatInflationSimulator({ isTi }: { isTi: boolean }) {
-  const [inflationRate, setInflationRate] = useState(25);
-  const [years, setYears] = useState(5);
-
-  // Purchasing power decay: initial $100 purchasing power
-  // Formula: 100 / (1 + r)^t
-  const remainingPower = Math.max(
-    1,
-    Math.round(100 / Math.pow(1 + inflationRate / 100, years))
-  );
+function GoldStandardSeverance1971({ isTi }: { isTi: boolean }) {
+  const [era, setEra] = useState<"pre1971" | "post1971">("pre1971");
 
   return (
     <LessonPanel
-      eyebrow={{ en: "Section 2.4 Interactive", ti: "ክፍሊ 2.4 መስተጋብራዊ" }}
+      eyebrow={{ en: "Section 2.4 Historical Pivot", ti: "ክፍሊ 2.4 ታሪኻዊ ለውጢ" }}
       title={{
-        en: "Fiat Money: Decree, Printing & Inflation",
-        ti: "ፊያት ገንዘብ፦ ብኣዋጅ፣ ሕትመትን ዝቕባበን",
+        en: "1971: The Severing of the Gold Link",
+        ti: "1971፦ ምቑራጽ ምትእስሳር ወርቂ",
       }}
       description={{
-        en: "In 1971, fiat currencies officially broke away from gold. See how unconstrained money printing eats away at purchasing power over time (as seen in Zimbabwe and Uganda).",
-        ti: "ኣብ 1971 ፊያት ባጤራታት ካብ መዐቀኒ ወርቂ ተፈልዩ። ደረት ኣልቦ ሕትመት ገንዘብ ከመይ ጌሩ ናይ ምግዛእ ዓቕሚ ከም ዘንቆልቁል (ከም ኣብ ዚምባብወን ኡጋንዳን) ተመልከት።",
+        en: "In August 1971, the US officially ended the gold standard. Switch between eras to see how money transformed from a gold-backed warehouse receipt into pure fiat (by decree).",
+        ti: "ኣብ ነሓሰ 1971 ኣመሪካ መዐቀኒ ወርቂ ብወግዒ ኣቋሪጻቶ። ገንዘብ ብወርቂ ካብ ዝድገፍ ናብ ፊያት (ብኣዋጅ ዝተሰረተ) ከመይ ከም ዝተቐየረ ንምርኣይ ኣብ መንጎ ክልቲኡ እዋን ቀይር።",
       }}
       isTi={isTi}
     >
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Controls */}
-        <div className={cardClass}>
-          <div>
-            <label htmlFor="ch2-inflation-rate" className="font-semibold text-zinc-100 block">
-              {isTi ? "ዓመታዊ መጠን ዝቕባበ (Inflation Rate)" : "Annual Inflation Rate"}:{" "}
-              <span className="text-orange-400 font-mono font-bold">
-                {inflationRate}%
-              </span>
-            </label>
-            <input
-              id="ch2-inflation-rate"
-              type="range"
-              min="2"
-              max="100"
-              step="2"
-              value={inflationRate}
-              onChange={(e) => setInflationRate(Number(e.target.value))}
-              className="mt-3 w-full accent-orange-500"
-            />
-            <div className="flex justify-between text-[11px] text-zinc-500">
-              <span>2% (Mild)</span>
-              <span>25% (High)</span>
-              <span>100% (Severe)</span>
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <label htmlFor="ch2-years" className="font-semibold text-zinc-100 block">
-              {isTi ? "ግዜ (Years Passed)" : "Years Passed"}:{" "}
-              <span className="text-orange-400 font-mono font-bold">
-                {years} {isTi ? "ዓመታት" : "Years"}
-              </span>
-            </label>
-            <input
-              id="ch2-years"
-              type="range"
-              min="1"
-              max="20"
-              step="1"
-              value={years}
-              onChange={(e) => setYears(Number(e.target.value))}
-              className="mt-3 w-full accent-orange-500"
-            />
-            <div className="flex justify-between text-[11px] text-zinc-500">
-              <span>1 Year</span>
-              <span>10 Years</span>
-              <span>20 Years</span>
-            </div>
-          </div>
-
-          <div className="mt-5 flex gap-2">
-            <button
-              type="button"
-              className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-300 hover:border-orange-400"
-              onClick={() => {
-                setInflationRate(7);
-                setYears(10);
-              }}
-            >
-              🇺🇬 {isTi ? "ምሳሌ ኡጋንዳ" : "Uganda Example"} (7%)
-            </button>
-            <button
-              type="button"
-              className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-300 hover:border-orange-400"
-              onClick={() => {
-                setInflationRate(85);
-                setYears(3);
-              }}
-            >
-              🇿🇼 {isTi ? "ምሳሌ ዚምባብወ" : "Zimbabwe Example"} (85%)
-            </button>
-          </div>
-        </div>
-
-        {/* Purchasing Power Visualizer */}
-        <div className={`${cardClass} flex flex-col justify-between`}>
-          <div>
-            <p className="text-xs uppercase tracking-wider text-zinc-400">
-              {isTi ? "ናይ ምግዛእ ዓቕሚ ዝተረፈ" : "Purchasing Power Remaining"}
-            </p>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-4xl font-extrabold text-orange-200">
-                {remainingPower}%
-              </span>
-              <span className="text-xs text-zinc-400">
-                {isTi
-                  ? `(ካብ ናይ መበገሲ $100 ናይ ዕዳጋ ዋጋ)`
-                  : `(of initial purchasing power)`}
-              </span>
-            </div>
-
-            {/* Visual Basket Representation */}
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-zinc-400">
-                <span>{isTi ? "ምግዛእ ዝከኣል መሶብ ምግቢ" : "Food Basket Value"}</span>
-                <span>{remainingPower} / 100</span>
-              </div>
-              <div className="mt-2 h-4 overflow-hidden rounded-full bg-zinc-800">
-                <div
-                  className={`h-full transition-all duration-300 rounded-full ${
-                    remainingPower > 60
-                      ? "bg-emerald-400"
-                      : remainingPower > 25
-                        ? "bg-amber-400"
-                        : "bg-rose-500"
-                  }`}
-                  style={{ width: `${remainingPower}%` }}
-                />
-              </div>
-            </div>
-
-            <p className="mt-4 text-xs leading-relaxed text-zinc-300 sm:text-sm">
-              {remainingPower < 30 ? (
-                <span className="text-rose-300 font-semibold">
-                  ⚠️ {isTi
-                    ? "ከቢድ ናይ ዋጋ ምውሳኽ! ዕቋርካ ዳርጋ ምሉእ ብምሉእ ዋጋኡ ስኢኑ። ሓንቲ ባኒ ንምግዛእ ቦርሳ ዝመልአ ገንዘብ የድሊ።"
-                    : "Severe loss of purchasing power! Your hard-earned savings have dissolved. A loaf of bread now costs stacks of bills."}
-                </span>
-              ) : (
-                <span>
-                  {isTi
-                    ? "ፊያት ገንዘብ ተፈጥሮኣዊ ደረት ስለዘይብሉ፡ ማእከላይ ባንክታት ዝያዳ ብዝሓተማ መጠን ነፍሲ ወከፍ ኖት ዘለዋ ናይ ምግዛእ ዓቕሚ እናነከየ ይኸይድ።"
-                    : "Because fiat money has no mathematical limit, every newly printed unit dilutes the value of every existing unit in your pocket."}
-                </span>
-              )}
-            </p>
-          </div>
-
-          <div className="mt-4 rounded border border-orange-500/30 bg-orange-500/10 p-2.5 text-xs text-orange-200">
-            💡 {isTi
-              ? "ቢትኮይን ነዚ ንምፍታሕ እዩ 21 ሚልዮን ቀዋሚ ደረት ሒዙ ዝመጸ። ማንም ሰብ ወይ መንግስቲ ካብኡ ንላዕሊ ክሓትም ኣይኽእልን!"
-              : "Bitcoin fixes this by enforcing a hard math cap of 21,000,000 coins. No politician or banker can inflate away your wealth!"}
-          </div>
-        </div>
+      {/* Era Toggle */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          className={era === "pre1971" ? selectedButtonClass : buttonClass}
+          onClick={() => setEra("pre1971")}
+        >
+          {isTi ? "🔒 ቅድሚ 1971፦ ብወርቂ ዝተደገፈ" : "🔒 Pre-1971: The Gold Standard"}
+        </button>
+        <button
+          type="button"
+          className={era === "post1971" ? selectedButtonClass : buttonClass}
+          onClick={() => setEra("post1971")}
+        >
+          {isTi ? "✂️ ድሕሪ 1971፦ ፊያት (ብኣዋጅ)" : "✂️ Post-1971: Fiat by Decree"}
+        </button>
       </div>
 
-      <KnowledgeCheck
-        isTi={isTi}
-        question={{
-          en: "What happened in 1971 that changed the fundamental nature of world currencies?",
-          ti: "ኣብ 1971 እንታይ ተፈጺሙ እዩ ንመሰረታዊ ባህሪ ባጤራታት ዓለም ዝቐየሮ?",
-        }}
-        choices={[
-          {
-            label: {
-              en: "The US ended the gold standard, making world money fiat (unbacked)",
-              ti: "ኣመሪካ መዐቀኒ ወርቂ ኣቋሪጻቶ፣ ገንዘብ ድማ ብወርቂ ዘይድገፍ ፊያት ኮይኑ",
-            },
-            correct: true,
-          },
-          {
-            label: {
-              en: "Paper money was completely banned globally",
-              ti: "ወረቐት ገንዘብ ኣብ መላእ ዓለም ተኸልኪሉ",
-            },
-            correct: false,
-          },
-          {
-            label: {
-              en: "All central banks were closed down permanently",
-              ti: "ኩለን ማእከላይ ባንክታት ንሓዋሩ ተዓጽየን",
-            },
-            correct: false,
-          },
-        ]}
-        explanation={{
-          en: "The 1971 'Nixon Shock' cut the US dollar's tie to gold, turning the entire global financial order into a system of unbacked fiat currencies.",
-          ti: "ኣብ 1971 ዶላር ምስ ወርቂ ዝነበሮ ምትእስሳር ተቛሪጹ፡ መላእ ስርዓት ገንዘብ ዓለም ናብ ፊያት (ብኣዋጅ ዝተሰረተ) ተቐይሩ።",
-        }}
-      />
+      {/* Interactive Visual Canvas */}
+      <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950 p-4 sm:p-6">
+        {era === "pre1971" ? (
+          <div className="space-y-4">
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+              {/* Paper Note */}
+              <div className="w-full rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 text-center md:w-5/12">
+                <span className="text-4xl">📜</span>
+                <h5 className="mt-2 font-bold text-emerald-200">
+                  {isTi ? "ወግዓዊ ቅብሊት ወርቂ (Gold Certificate)" : "Gold Certificate / Note"}
+                </h5>
+                <p className="mt-1 text-xs text-zinc-300">
+                  {isTi
+                    ? "«እዚ ወረቐት ኣብ ዝኾነ እዋን ብወርቂ ይቕየር»"
+                    : "\"Redeemable in gold coin on demand\""}
+                </p>
+                <div className="mt-2 rounded bg-emerald-500/20 py-1 text-xs font-mono font-bold text-emerald-300">
+                  $35 = 1 Ounce of Gold
+                </div>
+              </div>
+
+              {/* Secure Gold Link Chain */}
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex items-center gap-1 font-mono text-2xl text-yellow-400">
+                  <span>⛓️</span>
+                  <span className="h-1 w-12 bg-yellow-400/80 sm:w-20"></span>
+                  <span>⛓️</span>
+                </div>
+                <span className="mt-1 text-xs font-bold uppercase tracking-wider text-yellow-300">
+                  {isTi ? "1:1 ብወርቂ ዝተኣሳሰረ" : "Physical Gold Link"}
+                </span>
+                <span className="text-[11px] text-zinc-400">
+                  {isTi ? "ቀረብ ብመጠን ወርቂ ይድረት" : "Supply strictly disciplined"}
+                </span>
+              </div>
+
+              {/* Fort Knox Vault */}
+              <div className="w-full rounded-xl border border-yellow-500/40 bg-yellow-950/20 p-4 text-center md:w-5/12">
+                <span className="text-4xl">🏦</span>
+                <h5 className="mt-2 font-bold text-yellow-200">
+                  {isTi ? "ካዝና ወርቂ (Fort Knox Vault)" : "Fort Knox Gold Vault"}
+                </h5>
+                <p className="mt-1 text-xs text-zinc-300">
+                  {isTi
+                    ? "ነፍሲ ወከፍ ዶላር ኣብ ካዝና ብዘሎ ወርቂ ይዕቀብ"
+                    : "Real physical gold safely stored in vaults"}
+                </p>
+                <div className="mt-2 rounded bg-yellow-500/20 py-1 text-xs font-mono font-bold text-yellow-300">
+                  {isTi ? "ተፈጥሮኣዊ ዋሕዲ" : "Natural Physical Scarcity"}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3.5 text-sm text-emerald-200">
+              <strong className="font-semibold text-emerald-100">
+                {isTi ? "ስርዓት መዐቀኒ ወርቂ፦" : "The Gold Standard Mechanism:"}
+              </strong>{" "}
+              {isTi
+                ? "መንግስታት ዝደለይዎ መጠን ገንዘብ ክሓትሙ ኣይክእሉን ነይሮም፤ ተወሳኺ ገንዘብ ንምሕታም መጀመርታ ተወሳኺ ወርቂ ናብቲ ካዝና ምእካብ የድሊ ነበረ። እዚ ድማ ንዋጋ ገንዘብ ዘተኣማምን ገይርዎ ነበረ።"
+                : "Governments could not print unlimited currency. To issue more banknotes, they had to physically acquire and store more gold in the vault. This anchored the value of money in natural physical reality."}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+              {/* Fiat Paper Note */}
+              <div className="w-full rounded-xl border border-rose-500/40 bg-rose-950/20 p-4 text-center md:w-5/12">
+                <span className="text-4xl">💵</span>
+                <h5 className="mt-2 font-bold text-rose-200">
+                  {isTi ? "ፊያት ኖት (ብኣዋጅ ጥራሕ ዝሰርሕ)" : "Modern Fiat Note"}
+                </h5>
+                <p className="mt-1 text-xs text-zinc-300">
+                  {isTi
+                    ? "«እዚ ሕጋዊ ባጤራ እዩ» (ብወርቂ ኣይቕየርን)"
+                    : "\"This note is legal tender\" (Unbacked)"}
+                </p>
+                <div className="mt-2 rounded bg-rose-500/20 py-1 text-xs font-mono font-bold text-rose-300">
+                  {isTi ? "ደረት ኣልቦ ሕትመት" : "Unlimited Creation by Decree"}
+                </div>
+              </div>
+
+              {/* Severed Scissors */}
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex items-center gap-2 font-mono text-3xl text-rose-400 animate-pulse">
+                  <span>✂️</span>
+                  <span className="h-0.5 w-12 border-t-2 border-dashed border-rose-500 sm:w-20"></span>
+                  <span>💥</span>
+                </div>
+                <span className="mt-1 text-xs font-bold uppercase tracking-wider text-rose-400">
+                  {isTi ? "ምትእስሳር ተቖሪጹ (1971)" : "Gold Link Severed (1971)"}
+                </span>
+                <span className="text-[11px] text-zinc-400">
+                  {isTi ? "«ኒክሰን ሾክ» (Nixon Shock)" : "\"The Nixon Shock\""}
+                </span>
+              </div>
+
+              {/* Free-Floating Central Bank */}
+              <div className="w-full rounded-xl border border-zinc-700 bg-zinc-900/60 p-4 text-center md:w-5/12">
+                <span className="text-4xl">🏛️</span>
+                <h5 className="mt-2 font-bold text-zinc-200">
+                  {isTi ? "ማእከላይ ባንክ (Central Bank)" : "Central Bank Printing"}
+                </h5>
+                <p className="mt-1 text-xs text-zinc-400">
+                  {isTi
+                    ? "ብኣዋጅ ገንዘብ ይፍጠር፤ ወርቂ ኣብ ካዝና ምዕቃብ ኣየድልን"
+                    : "Money created by policy decision, no gold backing required"}
+                </p>
+                <div className="mt-2 rounded bg-zinc-800 py-1 text-xs font-mono font-bold text-orange-300">
+                  {isTi ? "እምነት ኣብ መንግስቲ ጥራይ" : "Pure Trust in Government"}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-3.5 text-sm text-rose-200">
+              <strong className="font-semibold text-rose-100">
+                {isTi ? "ትርጉም ፊያት፦" : "The Meaning of 'Fiat':"}
+              </strong>{" "}
+              {isTi
+                ? "ፊያት ማለት ብላቲን 'ይኹን' (ብኣዋጅ) ማለት እዩ። ገንዘብ ዋጋ ዘለዎ መንግስታት ከምኡ ስለዝኣወጁ ጥራይ እዩ። እዚ ንመንግስታት ተዓጻጻፍነት እንተሃበ፡ ነቲ ንዘመናት ንገንዘብ ጽኑዕ ዝገበሮ ተፈጥሮኣዊ ዋሕዲ ግን ኣጥፊእዎ።"
+                : "Fiat comes from Latin meaning 'let it be done' (by decree). Money no longer represents gold; it holds value simply because governments declare it as legal tender. While flexible for states, it severed money from natural scarcity."}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Historical Context Callout */}
+      <div className="mt-4 rounded-xl border border-orange-500/30 bg-orange-500/10 p-3.5 text-xs text-orange-200 sm:text-sm">
+        💡 <strong className="text-orange-100">{isTi ? "ስለምንታይ እዚ ኣገዳሲ ዝኾነ፦" : "Why This Matters for Bitcoin:"}</strong>{" "}
+        {isTi
+          ? "ቢትኮይን ዝተፈጥረ ነቲ ድሕሪ 1971 ዝጠፍአ ተፈጥሮኣዊ ዋሕዲ ወርቂ፡ ናብዚ ዘመነ ዲጂታል ብሕጋጋት ማቲማቲክስ (21 ሚልዮን ሳንቲም) ዳግማይ ንምምላስ እዩ።"
+          : "Bitcoin was created in 2009 to restore the mathematically enforced scarcity that money lost when the gold standard ended in 1971."}
+      </div>
     </LessonPanel>
   );
 }
@@ -1322,7 +1153,7 @@ export function Chapter2InteractiveLesson({
     case "goldsmith_paper":
       return <GoldsmithVaultSimulation isTi={isTi} />;
     case "fiat_inflation":
-      return <FiatInflationSimulator isTi={isTi} />;
+      return <GoldStandardSeverance1971 isTi={isTi} />;
     case "assessment":
       return <Chapter2FinalQuiz isTi={isTi} />;
   }
