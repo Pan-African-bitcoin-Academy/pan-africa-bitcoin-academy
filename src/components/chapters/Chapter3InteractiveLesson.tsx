@@ -384,84 +384,116 @@ function CantillonFunnelGraphic({ isTi }: { isTi: boolean }) {
 }
 
 /* =========================================================================
-   3.5 The 2008 Financial Crisis & Bailout Domino (Section 3.5)
+   3.5 The 2008 Financial Crisis: Subprime, CDOs, and Bailouts
    ========================================================================= */
 function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
-  const [phase, setPhase] = useState<0 | 1 | 2>(0);
+  const [phase, setPhase] = useState<0 | 1 | 2 | 3>(0);
 
   return (
     <VisualPanel
       eyebrow={{ en: "Interactive 3.5", ti: "መስተጋብራዊ 3.5" }}
       title={{
-        en: "The 2008 Financial Crisis: Chain Reaction",
-        ti: "ናይ 2008 ቅልውላው፦ ሰንሰለታዊ ምፍራስ",
+        en: "The 2008 Collapse: Subprime, CDOs & Bailouts",
+        ti: "ናይ 2008 ውድቀት፦ ሳብፕራይም፣ CDOsን ምድሓን ባንክታትን",
       }}
       isTi={isTi}
     >
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <button
           type="button"
           className={phase === 0 ? selectedButtonClass : buttonClass}
           onClick={() => setPhase(0)}
         >
-          {isTi ? "1. ዘይሓላፍነታዊ ልቓሕ 📝" : "1. Reckless Lending"}
+          {isTi ? "1. ሳብፕራይም ልቓሕ 🏠" : "1. Subprime Loans"}
         </button>
         <button
           type="button"
           className={phase === 1 ? selectedButtonClass : buttonClass}
           onClick={() => setPhase(1)}
         >
-          {isTi ? "2. ውድቀት ባንክታት 💥" : "2. Bank Collapse"}
+          {isTi ? "2. ምዕሻግ CDO 📦" : "2. CDO Bundling"}
         </button>
         <button
           type="button"
           className={phase === 2 ? selectedButtonClass : buttonClass}
           onClick={() => setPhase(2)}
         >
-          {isTi ? "3. ምድሓን ባንክታት 🖨️" : "3. The Bailout"}
+          {isTi ? "3. ውድቀትን ስንባደን 💥" : "3. Default & Collapse"}
+        </button>
+        <button
+          type="button"
+          className={phase === 3 ? selectedButtonClass : buttonClass}
+          onClick={() => setPhase(3)}
+        >
+          {isTi ? "4. ምድሓን ባንክታት 🖨️" : "4. Trillion$ Bailout"}
         </button>
       </div>
 
       <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950 p-5">
         {phase === 0 && (
-          <div className="space-y-2 text-center">
+          <div className="space-y-3 text-center">
             <span className="text-4xl">🏠💳</span>
             <h5 className="font-bold text-amber-200">
-              {isTi ? "ሓደገኛ ልቓሕ ገዛ (Subprime Mortgages)" : "Subprime Mortgage Boom"}
+              {isTi ? "1. ሳብፕራይም ሞርጌጅ (Subprime Mortgages)" : "1. Subprime Mortgages"}
             </h5>
-            <p className="text-xs text-zinc-300 sm:text-sm">
+            <p className="mx-auto max-w-lg text-xs text-zinc-300 sm:text-sm">
               {isTi
-                ? "ባንክታት ንኽመልስዎ ዓቕሚ ንዘይብሎም ሰባት ብዘይ ሓላፍነት ልቓሕ ገዛ ሃባ።"
-                : "Banks lent aggressively to borrowers who could not realistically repay, bundling bad debts into complex investments."}
+                ? "ባንክታት ንኽመልስዎ እኹል ኣታዊ ወይ መረጋገጺ ንዘይብሎም ተለቃሕቲ ብዘይ ሓላፍነት ልቓሕ ገዛ ዓደላ።"
+                : "Banks issued risky home loans (NINJA loans: No Income, No Job) to buyers who couldn't realistically repay once teaser interest rates jumped."}
             </p>
+            <div className="inline-block rounded bg-amber-500/10 px-3 py-1 text-xs font-mono text-amber-300 border border-amber-500/30">
+              {isTi ? "ዘይውሑስ ዕዳ ➔ ትሑት ጽሬት" : "Toxic Debt Created"}
+            </div>
           </div>
         )}
+
         {phase === 1 && (
-          <div className="space-y-2 text-center">
+          <div className="space-y-3 text-center">
+            <span className="text-4xl">📦🏷️</span>
+            <h5 className="font-bold text-cyan-200">
+              {isTi ? "2. ምዕሻግ CDO (Collateralized Debt Obligations)" : "2. CDOs & Wall Street Financial Alchemy"}
+            </h5>
+            <p className="mx-auto max-w-lg text-xs text-zinc-300 sm:text-sm">
+              {isTi
+                ? "ኢንቨስትመንት ባንክታት ነዞም ሓደገኛታት ልቓሓት ኣኪበን ናብ «CDO» ዝተሰምዩ ፓኬጃት ዓሸጋኦም። ናይ ክረዲት ደረጃ ወሃብቲ (Credit Agencies) ድማ ብሓሶት 'AAA' (ዝለዓለ ውሑስ) ዝብል ማሕተም ሃብኦም!"
+                : "Investment banks bundled thousands of toxic subprime mortgages into complex instruments called CDOs, and rating agencies slapped fraudulent 'AAA' ratings on them as if they were safe as US treasuries."}
+            </p>
+            <div className="inline-block rounded bg-cyan-500/10 px-3 py-1 text-xs font-mono text-cyan-300 border border-cyan-500/30">
+              {isTi ? "ሓደገኛ ዕዳ ከም ወርቂ ተመሲሉ ተሸጠ" : "Toxic debt disguised as 'AAA Safe'"}
+            </div>
+          </div>
+        )}
+
+        {phase === 2 && (
+          <div className="space-y-3 text-center">
             <span className="text-4xl animate-pulse">📉💣</span>
             <h5 className="font-bold text-rose-300">
-              {isTi ? "እቲ ገዛ ካርድታት ፈሪሱ" : "The House of Cards Crumbles"}
+              {isTi ? "3. ውድቀት ሰንሰለት (CDS & Lehman Collapse)" : "3. Contagion, CDS & Lehman Collapse"}
             </h5>
-            <p className="text-xs text-zinc-300 sm:text-sm">
+            <p className="mx-auto max-w-lg text-xs text-zinc-300 sm:text-sm">
               {isTi
-                ? "ተለቃሕቲ ምኽፋል ምስ ኣብዩ፡ ዓበይቲ ባንክታት (ከም Lehman Brothers) ኣብ ኣፍደገ ምኽሳር በጺሐን ዓለማዊ ስንባደ ፈጠራ።"
-                : "Defaults surged. Renowned financial institutions faced bankruptcy. Global liquidity froze overnight."}
+                ? "ተለቃሕቲ ምኽፋል ምስ ኣብዩ፡ ዋጋ CDO ናብ ባዶ ወደቐ። ዓበይቲ ባንክታት (ከም Lehman Brothers) ኣብ ሓደ ለይቲ ፈረሳ፤ ናይ ውሕስነት ትካላት (AIG) ድማ ብሰንኪ Credit Default Swaps (CDS) ተደምሰሳ።"
+                : "Borrowers defaulted. CDOs turned worthless. Wall Street titans like Lehman Brothers went bankrupt overnight, while AIG collapsed under trillions in unbacked insurance bets (Credit Default Swaps)."}
             </p>
+            <div className="inline-block rounded bg-rose-500/10 px-3 py-1 text-xs font-mono text-rose-300 border border-rose-500/30">
+              {isTi ? "ዓለማዊ ልቓሕ ደው በለ" : "Global Interbank Lending Froze"}
+            </div>
           </div>
         )}
-        {phase === 2 && (
-          <div className="space-y-2 text-center">
-            <span className="text-4xl">🏛️💸</span>
+
+        {phase === 3 && (
+          <div className="space-y-3 text-center">
+            <span className="text-4xl">🏛️🖨️</span>
             <h5 className="font-bold text-yellow-300">
-              {isTi ? "ትሪልዮናት ዶላር ምሕታም (Bailouts)" : "Trillions Printed for Bailouts"}
+              {isTi ? "4. ናይ ትሪልዮናት ዶላር ምድሓን (TARP & Quantitative Easing)" : "4. 'Too Big to Fail' Bailouts & QE"}
             </h5>
-            <p className="text-xs text-zinc-300 sm:text-sm">
+            <p className="mx-auto max-w-lg text-xs text-zinc-300 sm:text-sm">
               {isTi
-                ? "መንግስታት ነተን ቅልውላው ዝፈጠራ ባንክታት ብትሪልዮናት ዶላር ኣድሓንወን፤ ተራ ስድራቤታት ግን ገዝአንን ስራሐንን ስኢነን።"
-                : "Governments printed trillions to save the failing banks, while ordinary citizens lost homes, jobs, and savings."}
+                ? "ማእከላይ ባንክታትን መንግስትን ትሪልዮናት ሓድሽ ዶላር ብምሕታም ነተን ገበነኛታት ባንክታት ኣድሓንወን። ተራ ስድራቤታት ግና ገዛውተንን ዕቋረንን ስኢነን ጾር ተሰኪመን ተረፋ።"
+                : "Central banks printed trillions to bail out the reckless banks ('Too Big to Fail'), while ordinary people suffered foreclosures, lost jobs, and inflation."}
             </p>
-            <div className="mt-3 inline-block rounded border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-xs font-mono font-bold text-orange-200">
-              {isTi ? "💡 ኣብዚ ቅልውላው እዩ ቢትኮይን ዝተወልደ!" : "💡 Out of this broken trust, Bitcoin was born (2009)!"}
+            <div className="mt-2 inline-block rounded border border-orange-500/40 bg-orange-500/15 px-3 py-1.5 text-xs font-mono font-bold text-orange-200">
+              {isTi ? "💡 3 ጥሪ 2009፦ ሳቶሺ ናካሞቶ ቢትኮይን ፈጠረ!" : "💡 Jan 3, 2009: Satoshi Nakamoto mined the Bitcoin Genesis Block!"}
             </div>
           </div>
         )}
