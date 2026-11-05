@@ -7,11 +7,9 @@ export type Chapter2Module =
   | "barter_commodity"
   | "coinage_aksum"
   | "goldsmith_paper"
-  | "fiat_inflation"
-  | "assessment";
+  | "fiat_inflation";
 
 type Localized = { en: string; ti: string };
-type Choice = { label: Localized; correct: boolean };
 
 const text = (value: Localized, isTi: boolean) => (isTi ? value.ti : value.en);
 
@@ -52,68 +50,6 @@ function LessonPanel({
       </div>
       {children}
     </section>
-  );
-}
-
-function KnowledgeCheck({
-  question,
-  choices,
-  explanation,
-  isTi,
-}: {
-  question: Localized;
-  choices: Choice[];
-  explanation: Localized;
-  isTi: boolean;
-}) {
-  const [answer, setAnswer] = useState<number | null>(null);
-  const [checked, setChecked] = useState(false);
-
-  return (
-    <div className={`${cardClass} mt-5`}>
-      <h4 className="font-semibold text-zinc-100">{text(question, isTi)}</h4>
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
-        {choices.map((choice, index) => (
-          <button
-            type="button"
-            key={text(choice.label, isTi)}
-            aria-pressed={answer === index}
-            className={answer === index ? selectedButtonClass : buttonClass}
-            onClick={() => {
-              setAnswer(index);
-              setChecked(false);
-            }}
-          >
-            {text(choice.label, isTi)}
-          </button>
-        ))}
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-zinc-950 hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={answer === null}
-          onClick={() => setChecked(true)}
-        >
-          {isTi ? "መልሲ ኣረጋግጽ" : "Check answer"}
-        </button>
-        {checked && answer !== null ? (
-          <p
-            className={`text-sm ${choices[answer].correct ? "text-emerald-300" : "text-amber-200"}`}
-            role="status"
-          >
-            {choices[answer].correct
-              ? isTi
-                ? "ትኽክለኛ መልሲ! "
-                : "That's right! "
-              : isTi
-                ? "ልክዕ ኣይኮነን። "
-                : "Not quite. "}
-            {text(explanation, isTi)}
-          </p>
-        ) : null}
-      </div>
-    </div>
   );
 }
 
@@ -996,144 +932,6 @@ function GoldStandardSeverance1971({ isTi }: { isTi: boolean }) {
 }
 
 /* =========================================================================
-   6. Final Chapter 2 Mastery Assessment
-   ========================================================================= */
-function Chapter2FinalQuiz({ isTi }: { isTi: boolean }) {
-  const questions: {
-    question: Localized;
-    choices: Choice[];
-    explanation: Localized;
-  }[] = [
-    {
-      question: {
-        en: "1. What is the fundamental problem of direct barter trade?",
-        ti: "1. ናይ ቀጥታዊ ንግዲ ባርተር ቀንዲ መሰረታዊ ጸገም እንታይ እዩ?",
-      },
-      choices: [
-        {
-          label: {
-            en: "Double coincidence of wants",
-            ti: "ድርብ ምግጥጣም ድሌታት ምድላይ",
-          },
-          correct: true,
-        },
-        {
-          label: {
-            en: "Items are too cheap",
-            ti: "ኣቕሑ ኣዝዩ ሕሱር ምዃኑ",
-          },
-          correct: false,
-        },
-        {
-          label: {
-            en: "Lack of internet connection",
-            ti: "ኢንተርነት ዘይምንባሩ",
-          },
-          correct: false,
-        },
-      ],
-      explanation: {
-        en: "Direct barter stalls unless both traders want each other's specific item at the same time in matching amounts.",
-        ti: "ክልቲኦም ነጋዶ ነቲ እቲ ካልእ ዘለዎ ነገር ብሓንሳብ እንተዘይደልዮም ባርተር ይዕገት።",
-      },
-    },
-    {
-      question: {
-        en: "2. Which historic East African civilization struck internationally traded gold coins centuries ago?",
-        ti: "2. ቅድሚ ዘመናት ዓለምለኻዊ ተቐባልነት ዝነበሮም ሳንቲም ወርቂ ዝቐረጸ ምብራቕ ኣፍሪቃዊ ስልጣነ ኣየናይ እዩ?",
-      },
-      choices: [
-        {
-          label: {
-            en: "The Kingdom of Aksum",
-            ti: "ንግስነት ኣኽሱም",
-          },
-          correct: true,
-        },
-        {
-          label: {
-            en: "Ancient Rome",
-            ti: "ጥንታዊት ሮማ",
-          },
-          correct: false,
-        },
-        {
-          label: {
-            en: "The Song Dynasty",
-            ti: "ስርወ መንግስቲ ሶንግ",
-          },
-          correct: false,
-        },
-      ],
-      explanation: {
-        en: "Aksum (in modern Eritrea & Ethiopia) minted world-renowned gold and silver coins that traded across the Red Sea and Mediterranean.",
-        ti: "ኣኽሱም (ኣብ ናይ ሎሚ ኤርትራን ኢትዮጵያን) ዓለምለኻዊ ሳንቲም ወርቅን ብሩርን ዝቐረጸ ኃያል ስልጣነ ነበረ።",
-      },
-    },
-    {
-      question: {
-        en: "3. What does 'Fiat' mean in the context of fiat currency?",
-        ti: "3. ኣብ ፊያት ባጤራ 'ፊያት' ዝብል ቃል እንታይ ማለት እዩ?",
-      },
-      choices: [
-        {
-          label: {
-            en: "By decree / government declaration",
-            ti: "ብኣዋጅ / ብመንግስታዊ ትእዛዝ",
-          },
-          correct: true,
-        },
-        {
-          label: {
-            en: "100% backed by gold in vault",
-            ti: "100% ብወርቂ ዝተደገፈ",
-          },
-          correct: false,
-        },
-        {
-          label: {
-            en: "Made out of silver metal",
-            ti: "ካብ ብሩር ዝተሰርሐ",
-          },
-          correct: false,
-        },
-      ],
-      explanation: {
-        en: "Fiat is Latin for 'let it be done'—meaning value is declared by law and decree, not backed by physical gold.",
-        ti: "ፊያት ማለት ብኣዋጅ ዝተሰረተ እምበር ብኣካላዊ ወርቂ ዝተደገፈ ኣይኮነን።",
-      },
-    },
-  ];
-
-  return (
-    <LessonPanel
-      eyebrow={{ en: "Knowledge Check", ti: "ናይ ፍልጠት መረጋገጺ" }}
-      title={{
-        en: "Chapter 2 Mastery Review",
-        ti: "ምዕራፍ 2 ፍልጠትካ ገምግም",
-      }}
-      description={{
-        en: "Test your understanding of the journey of money from ancient barter to modern fiat.",
-        ti: "ካብ ጥንታዊ ባርተር ክሳብ ዘመናዊ ፊያት ዝነበረ ጉዕዞ ገንዘብ ክሳብ ክንደይ ከም እተረደእካ ፈትን።",
-      }}
-      isTi={isTi}
-    >
-      <div className="space-y-6">
-        {questions.map((q, idx) => (
-          <KnowledgeCheck
-            key={idx}
-            question={q.question}
-            choices={q.choices}
-            explanation={q.explanation}
-            isTi={isTi}
-          />
-        ))}
-      </div>
-    </LessonPanel>
-  );
-}
-
-/* =========================================================================
    Main Chapter2InteractiveLesson Export
    ========================================================================= */
 export function Chapter2InteractiveLesson({
@@ -1154,7 +952,5 @@ export function Chapter2InteractiveLesson({
       return <GoldsmithVaultSimulation isTi={isTi} />;
     case "fiat_inflation":
       return <GoldStandardSeverance1971 isTi={isTi} />;
-    case "assessment":
-      return <Chapter2FinalQuiz isTi={isTi} />;
   }
 }

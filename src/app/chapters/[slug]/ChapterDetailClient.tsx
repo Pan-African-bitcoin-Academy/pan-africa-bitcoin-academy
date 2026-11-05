@@ -32,7 +32,6 @@ import { ZoomableImage } from "@/components/ZoomableImage";
 import { MarkdownContent } from "@/components/MarkdownContent";
 import { KeysChapterHeroQuote } from "@/components/chapters/KeysChapterHeroQuote";
 import { BlockchainBasicsHeroQuote } from "@/components/chapters/BlockchainBasicsHeroQuote";
-import type { Metadata } from "next";
 
 const Chapter1InteractiveLesson = dynamic(
   () => import("@/components/chapters/Chapter1InteractiveLesson").then((module) => module.Chapter1InteractiveLesson),
@@ -333,9 +332,6 @@ function TigrinyaChapterLesson({
           </ChapterSectionAnimated>
         );
       })}
-      {chapter.slug === "the-journey-of-money" ? (
-        <Chapter2InteractiveLesson module="assessment" isTi={true} />
-      ) : null}
     </div>
   );
 }
@@ -1544,9 +1540,6 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                 <Chapter1InteractiveLesson module="everyday" isTi={isTi} />
                 <Chapter1InteractiveLesson module="assessment" isTi={isTi} />
               </>
-            ) : null}
-            {chapter.slug === "the-journey-of-money" ? (
-              <Chapter2InteractiveLesson module="assessment" isTi={isTi} />
             ) : null}
           </div>
         </section>
