@@ -448,18 +448,133 @@ function CrisisBailout2008Graphic({ isTi }: { isTi: boolean }) {
         )}
 
         {phase === 1 && (
-          <div className="space-y-3 text-center">
-            <span className="text-4xl">📦🏷️</span>
-            <h5 className="font-bold text-cyan-200">
-              {isTi ? "2. ምዕሻግ CDO (Collateralized Debt Obligations)" : "2. CDOs & Wall Street Financial Alchemy"}
+          <div className="space-y-5">
+            <h5 className="font-bold text-cyan-200 text-center text-sm sm:text-base">
+              {isTi ? "2. ምዕሻግ CDO — ሞርጌጅ ናብ ደረጃታት ብምቅይያር" : "2. CDO Construction — How Mortgages Became 'Safe' Investments"}
             </h5>
-            <p className="mx-auto max-w-lg text-xs text-zinc-300 sm:text-sm">
-              {isTi
-                ? "ኢንቨስትመንት ባንክታት ነዞም ሓደገኛታት ልቓሓት ኣኪበን ናብ «CDO» ዝተሰምዩ ፓኬጃት ዓሸጋኦም። ናይ ክረዲት ደረጃ ወሃብቲ (Credit Agencies) ድማ ብሓሶት 'AAA' (ዝለዓለ ውሑስ) ዝብል ማሕተም ሃብኦም!"
-                : "Investment banks bundled thousands of toxic subprime mortgages into complex instruments called CDOs, and rating agencies slapped fraudulent 'AAA' ratings on them as if they were safe as US treasuries."}
-            </p>
-            <div className="inline-block rounded bg-cyan-500/10 px-3 py-1 text-xs font-mono text-cyan-300 border border-cyan-500/30">
-              {isTi ? "ሓደገኛ ዕዳ ከም ወርቂ ተመሲሉ ተሸጠ" : "Toxic debt disguised as 'AAA Safe'"}
+
+            {/* Flow: Mortgages → Bundle → CDO → Tranches */}
+            <div className="flex flex-col items-center gap-1">
+
+              {/* Step 1: Mortgages */}
+              <div className="w-full max-w-sm rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-center">
+                <p className="text-xs font-bold text-amber-300 uppercase tracking-wide">
+                  {isTi ? "ደረጃ 1 — ሞርጌጅ (ልቓሕ ገዛ)" : "Step 1 — Subprime Mortgages"}
+                </p>
+                <p className="mt-1 text-xs text-zinc-300">
+                  {isTi
+                    ? "ሰባት ዘይክፈሉ ዝኽእሉ ልቓሕ ተዋህቦም (NINJA loans)"
+                    : "Thousands of NINJA loans (No Income, No Job, No Assets) issued to unqualified buyers"}
+                </p>
+                <div className="mt-1 flex flex-wrap justify-center gap-1">
+                  {["🏠","🏠","🏠","🏠","🏠","🏠","🏠","🏠"].map((h, i) => (
+                    <span key={i} className="text-base">{h}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex flex-col items-center gap-0.5">
+                <div className="h-6 w-0.5 bg-gradient-to-b from-amber-500/60 to-cyan-500/60" />
+                <span className="text-xs font-bold text-zinc-400">
+                  {isTi ? "ኣኺቦም →" : "Bundle →"}
+                </span>
+                <div className="h-6 w-0.5 bg-gradient-to-b from-cyan-500/60 to-zinc-500/60" />
+              </div>
+
+              {/* Step 2: CDO Box */}
+              <div className="w-full max-w-sm rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-center">
+                <p className="text-xs font-bold text-cyan-300 uppercase tracking-wide">
+                  {isTi ? "ደረጃ 2 — CDO (Collateralized Debt Obligation)" : "Step 2 — CDO Instrument Created"}
+                </p>
+                <p className="mt-1 text-xs text-zinc-300">
+                  {isTi
+                    ? "ኩሎም ሓደገኛታት ሞርጌጅ ናብ ሓደ ዓቢ ፓኬጅ ተዋሃሃዱ — ሽዑ ናብ ደረጃታት (tranches) ተኸፈሉ"
+                    : "All those risky mortgages pooled together into one complex financial product — then sliced into risk 'tranches'"}
+                </p>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex flex-col items-center gap-0.5">
+                <div className="h-6 w-0.5 bg-gradient-to-b from-cyan-500/60 to-green-500/40" />
+                <span className="text-xs font-bold text-zinc-400">
+                  {isTi ? "ደረጃታት →" : "Slice into tranches →"}
+                </span>
+                <div className="h-6 w-0.5 bg-gradient-to-b from-green-500/40 to-yellow-500/40" />
+              </div>
+
+              {/* Tranches */}
+              <div className="w-full max-w-sm space-y-2">
+
+                {/* AAA */}
+                <div className="rounded-lg border border-emerald-500/50 bg-emerald-500/10 px-3 py-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-emerald-300">AAA</span>
+                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-200">
+                      {isTi ? "ዝለዓለ ደረጃ" : "TOP TRANCHE"}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-zinc-300">
+                    {isTi
+                      ? "\"ብጣዕሚ ውሑስ\" ተባሂሉ ተሸጠ — ናይ US ቦንድ ምስ ዝተመሳሰለ ደረጃ ተዋሃቦ። ኮሌጃትን ፔንሽን ፈንድታትን ዘሕዘናሉ ቦታ!"
+                      : "\"Extremely safe\" — given same rating as US Treasury bonds. Pension funds & college endowments bought this believing it was rock-solid. REALITY: still backed by toxic mortgages."}
+                  </p>
+                </div>
+
+                {/* AA */}
+                <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-3 py-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-yellow-300">AA</span>
+                    <span className="rounded-full bg-yellow-500/20 px-2 py-0.5 text-[10px] font-bold text-yellow-200">
+                      {isTi ? "ካልኣይ ደረጃ" : "SENIOR TRANCHE"}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-zinc-300">
+                    {isTi
+                      ? "\"ቅቡል ውሑስ\" ተባሂሉ ተሸጠ — ብቕሉ ዋጋ ዘለዎ ብዝምስልዎ ሞዴል ደረጃ ተዋሃቦ። ሓደ ቁሩብ ሓደጋ ኣለዎ ተባህለ።"
+                      : "\"High quality\" rating — slightly more risk admitted, but still investment grade. Banks kept large portions on their own books."}
+                  </p>
+                </div>
+
+                {/* A */}
+                <div className="rounded-lg border border-orange-500/50 bg-orange-500/10 px-3 py-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-orange-300">A</span>
+                    <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-[10px] font-bold text-orange-200">
+                      {isTi ? "ሳልሳይ ደረጃ" : "MEZZANINE TRANCHE"}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-zinc-300">
+                    {isTi
+                      ? "\"ሓደ ቁሩብ ሓደጋ ኣለዎ\" ተባሂሉ ዝለዓለ ወለድ ተዋሃቦ — ሃብታማት ተወፋርቲ ዝዓድዎ ቦታ።"
+                      : "\"Moderate risk\" with higher yield — sold to hedge funds and aggressive investors seeking returns. Still fictitiously rated."}
+                  </p>
+                </div>
+
+                {/* Equity / Toxic */}
+                <div className="rounded-lg border border-rose-600/60 bg-rose-600/10 px-3 py-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-rose-400">BBB / Equity</span>
+                    <span className="rounded-full bg-rose-600/20 px-2 py-0.5 text-[10px] font-bold text-rose-300">
+                      {isTi ? "ዝኸፈአ ደረጃ 🔥" : "TOXIC BOTTOM 🔥"}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-zinc-300">
+                    {isTi
+                      ? "\"ዝለዓለ ሓደጋ\" ደረጃ — ፈለማ ዝጠፍእ ቦታ። ብዙሓት ካብ ዓበይቲ ባንክታት (Lehman, Bear Stearns) ንባዕሎም ሒዞሞ ነይሮም!"
+                      : "\"High risk\" — first to absorb losses. Ironically, banks like Lehman & Bear Stearns kept this slice on their own balance sheets, hiding the true risk from investors."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Fraud callout */}
+              <div className="mt-2 w-full max-w-sm rounded-lg border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-center">
+                <p className="text-[11px] font-bold text-rose-300">
+                  {isTi
+                    ? "⚠️ ናይ ክረዲት ደረጃ ወሃብቲ (Moody's, S&P, Fitch) ብዓበይቲ ባንክታት ዝተኸፈሉ ነይሮም — ስለዚ ሓሶት 'AAA' ደረጃ ሃቡ።"
+                    : "⚠️ Rating agencies (Moody's, S&P, Fitch) were PAID by the same banks whose products they rated — a catastrophic conflict of interest that enabled the fraud."}
+                </p>
+              </div>
             </div>
           </div>
         )}
