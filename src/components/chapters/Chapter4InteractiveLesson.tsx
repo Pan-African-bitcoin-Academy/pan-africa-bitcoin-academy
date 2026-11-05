@@ -147,7 +147,7 @@ function HashcashInteractiveDemo({ isTi }: { isTi: boolean }) {
           {t(
             {
               en: "The Problem (1997): Email is virtually free ($0), so spammers could blast millions of junk messages at zero cost.",
-              ti: "እቲ ጸገም (1997)፦ ኢሜይል ምልኣኽ ብነጻ ስለ ዝነበረ፡ ኣጭበርበርቲ ብቢልዮናት ዝቑጸር ናይ ስፓም መልእኽቲ ብዘይ ምንም ወጻኢ ይሰዱ ነይሮም።",
+              ti: "እቲ ጸገም (1997)፦ ኢሜይል ምልኣኽ ብነጻ ስለ ዝነበረ፡ ሰርቅቲ ብቢልዮናት ዝቑጸር ናይ ስፓም መልእኽቲ ብዘይ ምንም ወጻኢ ይሰዱ ነይሮም።",
             },
             isTi
           )}
@@ -265,7 +265,7 @@ function HashcashInteractiveDemo({ isTi }: { isTi: boolean }) {
         <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3">
           <p className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
             <Shield className="h-3.5 w-3.5" />
-            <span>{t({ en: "Mass Spammer (1,000,000 Emails)", ti: "ኣጭበርባሪ (1,000,000 ኢሜይል)" }, isTi)}</span>
+            <span>{t({ en: "Mass Spammer (1,000,000 Emails)", ti: "ሰራቂ (1,000,000 ኢሜይል)" }, isTi)}</span>
           </p>
           <p className="mt-1 text-xs text-zinc-300">
             {t(
