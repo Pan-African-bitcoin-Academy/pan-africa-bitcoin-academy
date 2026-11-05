@@ -454,12 +454,6 @@ function CentralizedControlGraphic({ isTi }: { isTi: boolean }) {
             </div>
           </div>
         </div>
-
-        <p className="mt-3 text-center text-[11px] text-zinc-500 italic">
-          {isTi
-            ? `💡 ፊያት ደረት የብሉን — ቢትኮይን ግን ቀዋሚ 21 ሚልዮን ሒዙ ይመጽእ`
-            : "💡 Fiat has no supply limit — Bitcoin's 21 million cap is a direct fix to this."}
-        </p>
       </div>
     </VisualPanel>
   );

@@ -69,6 +69,18 @@ const Chapter3InteractiveLesson = dynamic(
   }
 );
 
+const Chapter4InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter4InteractiveLesson").then((module) => module.Chapter4InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 4 learning activities…
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -268,6 +280,7 @@ function TigrinyaChapterLesson({
                           alt={image.alt}
                           caption={image.caption}
                           className="w-full rounded-lg border border-orange-400/20 object-contain shadow-lg"
+                          thumbnailClassName="max-h-44 sm:max-h-48 object-contain"
                         />
                       </div>
                     ))}
@@ -392,6 +405,9 @@ function TigrinyaChapterLesson({
             ) : null}
             {chapter.slug === "problems-with-traditional-fiat-money" && heading.startsWith("3.5") ? (
               <Chapter3InteractiveLesson module="crisis_bailout_2008" isTi={true} />
+            ) : null}
+            {chapter.slug === "from-crisis-to-innovation" && heading.startsWith("4.1") ? (
+              <Chapter4InteractiveLesson module="cypherpunk_timeline" isTi={true} />
             ) : null}
           </ChapterSectionAnimated>
         );
@@ -1451,6 +1467,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                               alt={image.alt}
                               caption={image.caption}
                               className="w-full rounded-lg border border-orange-400/20 shadow-lg object-contain"
+                              thumbnailClassName="max-h-44 sm:max-h-48 object-contain"
                             />
                           </div>
                         ))}
@@ -1626,6 +1643,9 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "problems-with-traditional-fiat-money" && sectionIdx === 5 ? (
                 <Chapter3InteractiveLesson module="crisis_bailout_2008" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "from-crisis-to-innovation" && sectionIdx === 1 ? (
+                <Chapter4InteractiveLesson module="cypherpunk_timeline" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
