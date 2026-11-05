@@ -46,6 +46,18 @@ const Chapter1InteractiveLesson = dynamic(
   }
 );
 
+const Chapter2InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter2InteractiveLesson").then((module) => module.Chapter2InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 2 learning activities…
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -303,9 +315,27 @@ function TigrinyaChapterLesson({
                 </div>
               ) : null}
             </section>
+            {chapter.slug === "the-journey-of-money" && heading.includes("መእተዊ") ? (
+              <Chapter2InteractiveLesson module="evolution" isTi={true} />
+            ) : null}
+            {chapter.slug === "the-journey-of-money" && heading.startsWith("2.1") ? (
+              <Chapter2InteractiveLesson module="barter_commodity" isTi={true} />
+            ) : null}
+            {chapter.slug === "the-journey-of-money" && heading.startsWith("2.2") ? (
+              <Chapter2InteractiveLesson module="coinage_aksum" isTi={true} />
+            ) : null}
+            {chapter.slug === "the-journey-of-money" && heading.startsWith("2.3") ? (
+              <Chapter2InteractiveLesson module="goldsmith_paper" isTi={true} />
+            ) : null}
+            {chapter.slug === "the-journey-of-money" && heading.startsWith("2.4") ? (
+              <Chapter2InteractiveLesson module="fiat_inflation" isTi={true} />
+            ) : null}
           </ChapterSectionAnimated>
         );
       })}
+      {chapter.slug === "the-journey-of-money" ? (
+        <Chapter2InteractiveLesson module="assessment" isTi={true} />
+      ) : null}
     </div>
   );
 }
@@ -1489,6 +1519,21 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               {chapter.slug === "the-nature-of-money" && sectionIdx === 2 ? (
                 <Chapter1InteractiveLesson module="properties" isTi={isTi} />
               ) : null}
+              {chapter.slug === "the-journey-of-money" && sectionIdx === 0 ? (
+                <Chapter2InteractiveLesson module="evolution" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-journey-of-money" && sectionIdx === 2 ? (
+                <Chapter2InteractiveLesson module="barter_commodity" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-journey-of-money" && sectionIdx === 3 ? (
+                <Chapter2InteractiveLesson module="coinage_aksum" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-journey-of-money" && sectionIdx === 4 ? (
+                <Chapter2InteractiveLesson module="goldsmith_paper" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-journey-of-money" && sectionIdx === 5 ? (
+                <Chapter2InteractiveLesson module="fiat_inflation" isTi={isTi} />
+              ) : null}
               </React.Fragment>
               );
             })}
@@ -1499,6 +1544,9 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                 <Chapter1InteractiveLesson module="everyday" isTi={isTi} />
                 <Chapter1InteractiveLesson module="assessment" isTi={isTi} />
               </>
+            ) : null}
+            {chapter.slug === "the-journey-of-money" ? (
+              <Chapter2InteractiveLesson module="assessment" isTi={isTi} />
             ) : null}
           </div>
         </section>
