@@ -49,6 +49,7 @@ import {
   YAxis,
 } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
+import { cn } from '@/lib/styles';
 import {
   getNextPurchaseDate,
   getScheduledDates,
@@ -407,6 +408,76 @@ function Field({
 const inputClass =
   'min-h-11 w-full min-w-0 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 outline-none transition focus:border-[#f97602] focus:ring-2 focus:ring-orange-500/20 shadow-xs placeholder:text-zinc-400';
 
+
+function formatChartDate(dateStr: string): string {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(`${dateStr.slice(0, 10)}T00:00:00.000Z`);
+    return new Intl.DateTimeFormat('en', { month: 'short', year: '2-digit', timeZone: 'UTC' }).format(d);
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatYAxisCurrency(val: number): string {
+  if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}M`;
+  if (val >= 1_000) return `${Math.round(val / 1000)}k`;
+  return `${Math.round(val)}`;
+}
+
+interface SimulationTooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: ScheduledPurchase }>;
+  valuationMode: 'historical' | 'endPrice';
+}
+
+function SimulationTooltip({ active, payload, valuationMode }: SimulationTooltipProps) {
+  if (!active || !payload || !payload.length) return null;
+  const item = payload[0]?.payload;
+  if (!item) return null;
+
+  const value = valuationMode === 'historical' ? (item.historicalValue ?? item.portfolioValue) : item.portfolioValue;
+  const invested = item.cumulativeContribution;
+  const diff = value - invested;
+  const pct = invested > 0 ? (diff / invested) * 100 : 0;
+  const isGain = diff >= 0;
+
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xl min-w-[240px] text-zinc-900 pointer-events-none">
+      <div className="flex items-center justify-between border-b border-zinc-100 pb-2 mb-2 text-xs">
+        <span className="font-semibold text-zinc-800">{formatDate(item.date)}</span>
+        <span className="font-mono text-zinc-500 font-medium">{formatCurrency(item.price, 0)}/BTC</span>
+      </div>
+      <div className="space-y-1.5 text-xs">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-zinc-500">
+            <span className="h-2 w-2 rounded-full bg-zinc-400" />
+            Total Invested:
+          </span>
+          <span className="font-semibold text-zinc-800">{formatCurrency(invested)}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-zinc-500">
+            <span className="h-2 w-2 rounded-full bg-[#f97602]" />
+            Portfolio Value:
+          </span>
+          <span className="font-bold text-zinc-950 text-sm">{formatCurrency(value)}</span>
+        </div>
+        <div className="flex items-center justify-between pt-1 border-t border-zinc-100">
+          <span className="text-zinc-500">Unrealized P&L:</span>
+          <span className={`font-semibold ${isGain ? 'text-emerald-600' : 'text-red-600'}`}>
+            {isGain ? '+' : ''}{formatCurrency(diff)} ({isGain ? '+' : ''}{pct.toFixed(1)}%)
+          </span>
+        </div>
+        <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-0.5">
+          <span>Accumulated BTC:</span>
+          <span className="font-mono text-zinc-600 font-medium">{item.cumulativeBtc.toFixed(8)} BTC</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DcaExperience() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [section, setSection] = useState<Section>('overview');
@@ -450,6 +521,7 @@ export default function DcaExperience() {
   const [purchaseTxid, setPurchaseTxid] = useState('');
   const [purchaseNotes, setPurchaseNotes] = useState('');
   const [marketDays, setMarketDays] = useState('180');
+  const [valuationMode, setValuationMode] = useState<'historical' | 'endPrice'>('historical');
 
   useEffect(() => {
     try {
@@ -1325,27 +1397,145 @@ export default function DcaExperience() {
                     <MetricPanel label="Average acquisition price" value={formatCurrency(simulation.averagePrice)} />
                     <MetricPanel label="Value at period end" value={formatCurrency(simulation.portfolioValue)} detail={`${simulation.profitLoss >= 0 ? '+' : ''}${formatCurrency(simulation.profitLoss)} hypothetical difference`} />
                   </div>
-                  <Panel>
-                    <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+                  <Panel className="border-zinc-200 bg-white shadow-xs">
+                    {/* Header with Title and Interactive Valuation Mode Toggle */}
+                    <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 pb-4">
                       <div>
-                        <h3 className="font-semibold text-zinc-900">Contributions and hypothetical value</h3>
-                        <p className="mt-1 text-xs text-zinc-500">Value is calculated using the period-end price. Past performance does not predict future results.</p>
+                        <h3 className="text-base sm:text-lg font-bold text-zinc-900">
+                          Contributions and hypothetical value
+                        </h3>
+                        <p className="mt-0.5 text-xs text-zinc-500">
+                          {valuationMode === 'historical'
+                            ? "Dynamic historical portfolio valuation based on Bitcoin's daily market price at each scheduled date."
+                            : `Evaluates accumulated bitcoin value at the period-end price (${formatCurrency(simulation.endPrice)}).`}
+                        </p>
                       </div>
-                      <p className="text-xs text-zinc-500">Fees: {formatCurrency(simulation.totalFees)} · End price: {formatCurrency(simulation.endPrice)}</p>
+
+                      {/* Valuation Switcher */}
+                      <div className="inline-flex rounded-xl border border-zinc-200 bg-zinc-100/80 p-1 self-start sm:self-auto shrink-0 shadow-xs">
+                        <button
+                          type="button"
+                          onClick={() => setValuationMode('historical')}
+                          className={cn(
+                            "rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 touch-manipulation",
+                            valuationMode === 'historical'
+                              ? "bg-[#f97602] text-white shadow-xs"
+                              : "text-zinc-600 hover:text-zinc-900 hover:bg-white"
+                          )}
+                        >
+                          Historical Market Value
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setValuationMode('endPrice')}
+                          className={cn(
+                            "rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 touch-manipulation",
+                            valuationMode === 'endPrice'
+                              ? "bg-[#f97602] text-white shadow-xs"
+                              : "text-zinc-600 hover:text-zinc-900 hover:bg-white"
+                          )}
+                        >
+                          Period-End Value ({formatCurrency(simulation.endPrice, 0)})
+                        </button>
+                      </div>
                     </div>
-                    <div className="h-72 w-full min-w-0">
+
+                    {/* Rich Interactive Legend and Metric Bar */}
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 text-xs">
+                      <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                        {/* Total Contributions */}
+                        <div className="flex items-center gap-2">
+                          <span className="flex h-3 w-4 items-center justify-center">
+                            <span className="h-0.5 w-4 border-b-2 border-dashed border-zinc-500" />
+                          </span>
+                          <span className="text-zinc-500 font-medium">Total Invested:</span>
+                          <span className="font-bold text-zinc-800">{formatCurrency(simulation.totalContributions)}</span>
+                        </div>
+
+                        {/* Portfolio Value */}
+                        <div className="flex items-center gap-2">
+                          <span className="flex h-3 w-4 items-center justify-center">
+                            <span className="h-1 w-4 rounded-full bg-[#f97602]" />
+                          </span>
+                          <span className="text-zinc-500 font-medium">Portfolio Value:</span>
+                          <span className="font-bold text-zinc-900">{formatCurrency(simulation.portfolioValue)}</span>
+                        </div>
+
+                        {/* Profit / Loss Badge */}
+                        <div className="flex items-center gap-1.5">
+                          <span className={cn(
+                            "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold",
+                            simulation.profitLoss >= 0
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                              : "bg-red-100 text-red-800 border border-red-200"
+                          )}>
+                            {simulation.profitLoss >= 0 ? '+' : ''}
+                            {simulation.totalContributions > 0 ? ((simulation.profitLoss / simulation.totalContributions) * 100).toFixed(1) : '0.0'}%
+                            {' '}({simulation.profitLoss >= 0 ? '+' : ''}{formatCurrency(simulation.profitLoss)})
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Period Metadata */}
+                      <div className="flex items-center gap-3 text-zinc-500 text-[11px]">
+                        <span>Fees: <strong className="text-zinc-700">{formatCurrency(simulation.totalFees)}</strong></span>
+                        <span>·</span>
+                        <span>End Price: <strong className="text-zinc-700">{formatCurrency(simulation.endPrice)}</strong></span>
+                      </div>
+                    </div>
+
+                    {/* Graphical Chart with Gradient Fills and Clean Ticks */}
+                    <div className="h-80 sm:h-96 w-full min-w-0">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={simulation.purchases}>
-                          <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
-                          <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} minTickGap={30} />
-                          <YAxis tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={52} />
-                          <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => formatCurrency(Number(value))} />
-                          <Legend />
-                          <Area type="monotone" dataKey="cumulativeContribution" name="Contributions" stroke="#71717a" fill="#71717a" fillOpacity={0.08} />
-                          <Area type="monotone" dataKey="portfolioValue" name="Hypothetical value" stroke="#f97602" fill="#f97602" fillOpacity={0.12} />
+                        <AreaChart data={simulation.purchases} margin={{ top: 12, right: 12, left: 0, bottom: 4 }}>
+                          <defs>
+                            <linearGradient id="dcaValueGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#f97602" stopOpacity={0.30} />
+                              <stop offset="95%" stopColor="#f97602" stopOpacity={0.01} />
+                            </linearGradient>
+                            <linearGradient id="dcaContribGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#71717a" stopOpacity={0.12} />
+                              <stop offset="95%" stopColor="#71717a" stopOpacity={0.01} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical={false} />
+                          <XAxis
+                            dataKey="date"
+                            tick={{ fill: '#71717a', fontSize: 11 }}
+                            minTickGap={40}
+                            tickFormatter={formatChartDate}
+                            axisLine={{ stroke: '#e4e4e7' }}
+                            tickLine={{ stroke: '#e4e4e7' }}
+                          />
+                          <YAxis
+                            tick={{ fill: '#71717a', fontSize: 11 }}
+                            tickFormatter={formatYAxisCurrency}
+                            width={56}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <Tooltip content={<SimulationTooltip valuationMode={valuationMode} />} />
+                          <Area
+                            type="monotone"
+                            dataKey="cumulativeContribution"
+                            name="Total Invested"
+                            stroke="#71717a"
+                            strokeWidth={1.75}
+                            strokeDasharray="4 4"
+                            fill="url(#dcaContribGrad)"
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey={valuationMode === 'historical' ? 'historicalValue' : 'portfolioValue'}
+                            name="Portfolio Value"
+                            stroke="#f97602"
+                            strokeWidth={2.5}
+                            fill="url(#dcaValueGrad)"
+                          />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
+
                     {simulation.skippedPurchases > 0 && (
                       <p className="mt-3 flex items-start gap-2 text-sm text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
                         <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
