@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { cn } from '@/lib/styles';
 import type { ApplyCopy } from '@/lib/translations/apply';
 
@@ -64,332 +64,107 @@ export function CohortSelector({
     [isTi, normalizeLevel]
   );
 
-  // Cohort categorization: Open vs Completed
-  const { openCohorts, completedCohorts } = useMemo(() => {
-    const open: CohortItem[] = [];
-    const completed: CohortItem[] = [];
+  // Filter: show open only vs all
+  const [showAll, setShowAll] = useState(false);
 
-    cohorts.forEach((c) => {
-      const statusLower = (c.status || '').toLowerCase();
-      const isFinished =
-        statusLower === 'completed' ||
-        statusLower === 'ended' ||
-        c.available === 0;
+  // Smart sort: Open cohorts first, completed cohorts after
+  const sortedCohorts = useMemo(() => {
+    return [...cohorts].sort((a, b) => {
+      const aFinished =
+        a.available === 0 ||
+        (a.status || '').toLowerCase() === 'completed' ||
+        (a.status || '').toLowerCase() === 'ended';
+      const bFinished =
+        b.available === 0 ||
+        (b.status || '').toLowerCase() === 'completed' ||
+        (b.status || '').toLowerCase() === 'ended';
 
-      if (isFinished) {
-        completed.push(c);
-      } else {
-        open.push(c);
-      }
+      // Open cohorts come first
+      if (!aFinished && bFinished) return -1;
+      if (aFinished && !bFinished) return 1;
+
+      // Within same status, sort newest first
+      const aTime = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const bTime = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return bTime - aTime;
     });
-
-    return { openCohorts: open, completedCohorts: completed };
   }, [cohorts]);
 
-  // Filter state: 'open' | 'all' | 'completed'
-  const [filter, setFilter] = useState<'open' | 'all' | 'completed'>('open');
-
-  // View mode: 'grid' | 'carousel' (default 'grid' for easy vertical scrolling on mobile & desktop)
-  const [viewMode, setViewMode] = useState<'grid' | 'carousel'>('grid');
-
-  // Active index for carousel pagination dots on mobile
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  // Update default filter when cohorts load
-  useEffect(() => {
-    if (cohorts.length > 0) {
-      if (openCohorts.length > 0) {
-        setFilter('open');
-      } else {
-        setFilter('all');
-      }
-    }
-  }, [cohorts.length, openCohorts.length]);
-
-  // Filtered cohorts list
-  const displayedCohorts = useMemo(() => {
-    if (filter === 'open') {
-      return openCohorts.length > 0 ? openCohorts : cohorts;
-    }
-    if (filter === 'completed') {
-      return completedCohorts;
-    }
-    return cohorts;
-  }, [filter, openCohorts, completedCohorts, cohorts]);
-
-  // Carousel scrolling support
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const checkScroll = useCallback(() => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
-
-    // Calculate approximate active card index for mobile dots
-    const cardEl = scrollRef.current.querySelector('[data-cohort-card]') as HTMLElement | null;
-    if (cardEl && cardEl.offsetWidth > 0) {
-      const cardWidth = cardEl.offsetWidth + 16; // width + gap
-      const newIndex = Math.round(scrollLeft / cardWidth);
-      setActiveIndex(Math.max(0, Math.min(displayedCohorts.length - 1, newIndex)));
-    }
-  }, [displayedCohorts.length]);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el || viewMode !== 'carousel') return;
-    checkScroll();
-    el.addEventListener('scroll', checkScroll, { passive: true });
-    window.addEventListener('resize', checkScroll);
-    return () => {
-      el.removeEventListener('scroll', checkScroll);
-      window.removeEventListener('resize', checkScroll);
-    };
-  }, [viewMode, displayedCohorts, checkScroll]);
-
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (!scrollRef.current) return;
-    const scrollAmount = Math.max(280, scrollRef.current.clientWidth * 0.78);
-    scrollRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
+  // Open cohorts list
+  const openCohorts = useMemo(() => {
+    return sortedCohorts.filter((c) => {
+      const statusLower = (c.status || '').toLowerCase();
+      return (
+        c.available > 0 &&
+        statusLower !== 'completed' &&
+        statusLower !== 'ended'
+      );
     });
-  };
+  }, [sortedCohorts]);
 
-  const scrollToCardIndex = (index: number) => {
-    if (!scrollRef.current) return;
-    const cardEl = scrollRef.current.querySelector(`[data-card-index="${index}"]`) as HTMLElement | null;
-    if (cardEl) {
-      cardEl.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center',
-      });
+  // Displayed cohorts: if not showAll and open cohorts exist, show only open ones
+  const displayedCohorts = useMemo(() => {
+    if (!showAll && openCohorts.length > 0) {
+      return openCohorts;
     }
-  };
+    return sortedCohorts;
+  }, [showAll, openCohorts, sortedCohorts]);
 
-  // Auto-scroll to selected cohort or first open cohort when in carousel mode
-  useEffect(() => {
-    if (viewMode !== 'carousel' || !scrollRef.current) return;
-    const timer = setTimeout(() => {
-      if (!scrollRef.current) return;
-      const targetId = selectedCohort || openCohorts[0]?.id;
-      if (targetId) {
-        const cardEl = scrollRef.current.querySelector(`[data-cohort-id="${targetId}"]`);
-        if (cardEl) {
-          (cardEl as HTMLElement).scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'center',
-          });
-        }
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [viewMode, selectedCohort, openCohorts]);
-
-  // Find currently selected cohort details for mobile confirmation banner
-  const selectedCohortItem = useMemo(() => {
-    return cohorts.find((c) => c.id === selectedCohort);
-  }, [cohorts, selectedCohort]);
-
-  // Localized texts with fallbacks
   const tCohorts = t.form.cohorts;
-  const labelOpenFilter = tCohorts.filter_open || (isTi ? 'ክፉታት ጥራይ' : 'Open for Enrollment');
-  const labelAllFilter = tCohorts.filter_all || (isTi ? 'ኩሎም' : 'All Cohorts');
-  const labelCompletedFilter = tCohorts.filter_completed || (isTi ? 'ዝተዛዘሙ' : 'Completed');
-  const labelViewGrid = tCohorts.view_grid || (isTi ? 'ሰሌዳ' : 'Grid');
-  const labelViewCarousel = tCohorts.view_carousel || (isTi ? 'ዝዝወር' : 'Carousel');
 
   return (
     <div className="space-y-4 border-b border-zinc-800 pb-6">
-      {/* Header and Controls Toolbar */}
-      <div className="space-y-3">
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="text-base sm:text-lg font-semibold text-zinc-50 tracking-tight">
-              {tCohorts.heading}
-            </h3>
-            <p className="mt-0.5 text-xs sm:text-sm text-zinc-400">
-              {tCohorts.subheading}
-            </p>
-          </div>
-
-          {/* View Toggle & Carousel Navigation Controls */}
-          {!loading && !error && cohorts.length > 0 && (
-            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
-              {/* Carousel Arrow Buttons (desktop & tablet) */}
-              {viewMode === 'carousel' && (
-                <div className="hidden sm:flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950 p-1 shadow-sm">
-                  <button
-                    type="button"
-                    onClick={() => handleScroll('left')}
-                    disabled={!canScrollLeft}
-                    aria-label={tCohorts.scroll_prev || (isTi ? 'ናብ ዝሓለፈ' : 'Previous')}
-                    className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition active:scale-95",
-                      canScrollLeft
-                        ? "hover:bg-zinc-800 hover:text-cyan-300"
-                        : "cursor-not-allowed opacity-30 text-zinc-600"
-                    )}
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleScroll('right')}
-                    disabled={!canScrollRight}
-                    aria-label={tCohorts.scroll_next || (isTi ? 'ናብ ዝቕጽል' : 'Next')}
-                    className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition active:scale-95",
-                      canScrollRight
-                        ? "hover:bg-zinc-800 hover:text-cyan-300"
-                        : "cursor-not-allowed opacity-30 text-zinc-600"
-                    )}
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-
-              {/* Grid vs Carousel View Toggle */}
-              <div className="flex items-center rounded-xl border border-zinc-800 bg-zinc-950 p-1 shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('grid')}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition active:scale-95 touch-manipulation",
-                    viewMode === 'grid'
-                      ? "bg-zinc-800 text-cyan-300 shadow-sm"
-                      : "text-zinc-400 hover:text-zinc-200"
-                  )}
-                  title={labelViewGrid}
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                  <span className="hidden xs:inline">{labelViewGrid}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('carousel')}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition active:scale-95 touch-manipulation",
-                    viewMode === 'carousel'
-                      ? "bg-zinc-800 text-cyan-300 shadow-sm"
-                      : "text-zinc-400 hover:text-zinc-200"
-                  )}
-                  title={labelViewCarousel}
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
-                  <span className="hidden xs:inline">{labelViewCarousel}</span>
-                </button>
-              </div>
-            </div>
-          )}
+      {/* Header and Filter Switcher */}
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-base sm:text-lg font-semibold text-zinc-50 tracking-tight">
+            {tCohorts.heading}
+          </h3>
+          <p className="mt-0.5 text-xs sm:text-sm text-zinc-400">
+            {tCohorts.subheading}
+          </p>
         </div>
 
-        {/* Filter Tabs - Mobile touch-scrollable strip */}
-        {!loading && !error && cohorts.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 -mx-2 px-2 sm:mx-0 sm:px-0 sm:flex-wrap">
-            {/* Open Filter */}
+        {/* Minimalist Switcher: Open vs All */}
+        {!loading && !error && cohorts.length > 0 && openCohorts.length > 0 && (
+          <div className="inline-flex items-center rounded-xl border border-zinc-800 bg-zinc-950 p-1 self-start sm:self-auto shrink-0 shadow-sm">
             <button
               type="button"
-              onClick={() => setFilter('open')}
+              onClick={() => setShowAll(false)}
               className={cn(
-                "inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium transition border touch-manipulation active:scale-95",
-                filter === 'open'
-                  ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-                  : "border-zinc-800 bg-zinc-950/70 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                "rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 touch-manipulation",
+                !showAll
+                  ? "bg-amber-400 text-black shadow-sm"
+                  : "text-zinc-400 hover:text-zinc-200"
               )}
             >
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{labelOpenFilter}</span>
-              <span className={cn(
-                "rounded-full px-1.5 py-0.2 text-[10px] font-semibold",
-                filter === 'open' ? "bg-emerald-500/30 text-emerald-200" : "bg-zinc-800 text-zinc-400"
-              )}>
-                {openCohorts.length}
-              </span>
-            </button>
-
-            {/* All Filter */}
-            <button
-              type="button"
-              onClick={() => setFilter('all')}
-              className={cn(
-                "inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium transition border touch-manipulation active:scale-95",
-                filter === 'all'
-                  ? "border-cyan-400/60 bg-cyan-500/15 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.15)]"
-                  : "border-zinc-800 bg-zinc-950/70 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
-              )}
-            >
-              <span>{labelAllFilter}</span>
-              <span className={cn(
-                "rounded-full px-1.5 py-0.2 text-[10px] font-semibold",
-                filter === 'all' ? "bg-cyan-500/30 text-cyan-200" : "bg-zinc-800 text-zinc-400"
-              )}>
-                {cohorts.length}
-              </span>
-            </button>
-
-            {/* Completed Filter */}
-            {completedCohorts.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setFilter('completed')}
-                className={cn(
-                  "inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium transition border touch-manipulation active:scale-95",
-                  filter === 'completed'
-                    ? "border-zinc-600 bg-zinc-800 text-zinc-300"
-                    : "border-zinc-800 bg-zinc-950/70 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
-                )}
-              >
-                <span>{labelCompletedFilter}</span>
+              <span className="flex items-center gap-1.5">
                 <span className={cn(
-                  "rounded-full px-1.5 py-0.2 text-[10px] font-semibold",
-                  filter === 'completed' ? "bg-zinc-700 text-zinc-200" : "bg-zinc-900 text-zinc-500"
-                )}>
-                  {completedCohorts.length}
-                </span>
-              </button>
-            )}
+                  "h-1.5 w-1.5 rounded-full",
+                  !showAll ? "bg-black" : "bg-emerald-400 animate-pulse"
+                )} />
+                <span>{isTi ? 'ክፉታት' : 'Open'}</span>
+                <span>({openCohorts.length})</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 touch-manipulation",
+                showAll
+                  ? "bg-amber-400 text-black shadow-sm"
+                  : "text-zinc-400 hover:text-zinc-200"
+              )}
+            >
+              <span>{isTi ? 'ኩሎም' : 'All'}</span>{' '}
+              <span>({cohorts.length})</span>
+            </button>
           </div>
         )}
       </div>
 
-      {/* Selected Cohort Confirmation Banner (Sticky clarity on mobile) */}
-      {selectedCohortItem && (
-        <div className="flex items-center justify-between rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent px-3.5 py-2.5 text-xs sm:text-sm text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black font-bold text-[11px]">
-              ✓
-            </span>
-            <div className="truncate">
-              <span className="font-semibold text-amber-300">
-                {isTi ? 'ዝተመርጸ ጉጅለ:' : 'Selected Cohort:'}
-              </span>{' '}
-              <span className="text-zinc-100 font-bold">{selectedCohortItem.name}</span>
-              <span className="hidden xs:inline text-zinc-400 ml-1.5">
-                ({selectedCohortItem.startDate})
-              </span>
-            </div>
-          </div>
-          <span className="shrink-0 text-[11px] font-semibold text-amber-400 bg-amber-400/20 px-2 py-0.5 rounded-full ml-2">
-            {selectedCohortItem.available} {tCohorts.seats_available_suffix || (isTi ? 'ክፉት' : 'open')}
-          </span>
-        </div>
-      )}
-
-      {/* Main Cohorts Content Area */}
+      {/* Main Cohorts Horizontal Carousel */}
       {loading ? (
         <div className="flex items-center justify-center py-12 text-cyan-400 text-sm">
           <svg className="animate-spin h-5 w-5 mr-3 text-cyan-400" fill="none" viewBox="0 0 24 24">
@@ -405,48 +180,23 @@ export function CohortSelector({
       ) : displayedCohorts.length === 0 ? (
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 text-center text-zinc-400">
           <p className="text-sm">{tCohorts.empty}</p>
-          {filter !== 'all' && (
-            <button
-              type="button"
-              onClick={() => setFilter('all')}
-              className="mt-3 inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 hover:underline"
-            >
-              <span>{isTi ? 'ኩሎም ዝሓለፉ ጉጅለታት ርአ' : 'View all previous cohorts'}</span>
-              <span>→</span>
-            </button>
-          )}
         </div>
       ) : (
         <div className="relative">
-          {/* Gradient fade edge for carousel */}
-          {viewMode === 'carousel' && (
+          {/* Subtle gradient right edge indicating more cards to swipe */}
+          {displayedCohorts.length > 1 && (
             <div
               className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-zinc-950/90 to-transparent z-10"
               aria-hidden
             />
           )}
 
-          {/* Container: either Grid or Horizontal Carousel */}
+          {/* Horizontal Carousel (Mobile swipe-friendly with snap) */}
           <div
-            ref={scrollRef}
-            className={cn(
-              viewMode === 'grid'
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5 py-1"
-                : "overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-hide py-1 -mx-3 px-3 sm:-mx-4 sm:px-4 snap-x snap-mandatory"
-            )}
-            style={
-              viewMode === 'carousel'
-                ? { WebkitOverflowScrolling: 'touch' }
-                : undefined
-            }
+            className="overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-hide py-1 -mx-3 px-3 sm:-mx-4 sm:px-4 snap-x snap-mandatory"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
-            <div
-              className={cn(
-                viewMode === 'carousel'
-                  ? "flex gap-3.5 sm:gap-5 w-max min-w-full pb-2"
-                  : "contents"
-              )}
-            >
+            <div className="flex gap-3.5 sm:gap-5 w-max min-w-full pb-2">
               {displayedCohorts.map((cohort, index) => {
                 const statusLower = (cohort.status || '').toLowerCase();
                 const isCompleted =
@@ -468,23 +218,15 @@ export function CohortSelector({
                   <div
                     key={cohort.id}
                     data-cohort-id={cohort.id}
-                    data-cohort-card="true"
-                    data-card-index={index}
                     className={cn(
-                      "cohort-card-entrance rounded-2xl overflow-hidden transition-all duration-300",
-                      viewMode === 'carousel' &&
-                        "flex-shrink-0 w-[82vw] max-w-[340px] sm:w-[320px] lg:w-[340px] snap-center sm:snap-start",
+                      "cohort-card-entrance flex-shrink-0 w-[84vw] max-w-[340px] sm:w-[320px] lg:w-[340px] snap-center sm:snap-start rounded-2xl overflow-hidden transition-all duration-300",
                       isCardSelected &&
                         "ring-2 ring-amber-400/90 ring-offset-2 ring-offset-zinc-950 shadow-[0_0_36px_rgba(245,158,11,0.35),0_0_72px_rgba(234,179,8,0.12)]",
                       !isCompleted &&
                         !isCardSelected &&
                         "hover:border-cyan-400/60 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] cursor-pointer active:scale-[0.99]"
                     )}
-                    style={
-                      viewMode === 'carousel'
-                        ? { animationDelay: `${index * 60}ms` }
-                        : { animationDelay: `${index * 60}ms` }
-                    }
+                    style={{ animationDelay: `${index * 60}ms` }}
                     onClick={() => {
                       if (!isCompleted) {
                         onSelectCohort(cohort);
@@ -634,61 +376,6 @@ export function CohortSelector({
               })}
             </div>
           </div>
-
-          {/* Mobile Carousel Indicators & Quick Arrows (Shown only in carousel view on mobile) */}
-          {viewMode === 'carousel' && displayedCohorts.length > 1 && (
-            <div className="flex sm:hidden items-center justify-between pt-2 px-1">
-              {/* Prev Mobile Arrow */}
-              <button
-                type="button"
-                onClick={() => handleScroll('left')}
-                disabled={!canScrollLeft}
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950 text-zinc-300 transition active:scale-95 touch-manipulation",
-                  canScrollLeft ? "text-cyan-300" : "opacity-30 cursor-not-allowed"
-                )}
-                aria-label="Previous"
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-
-              {/* Interactive Pagination Dots */}
-              <div className="flex items-center gap-1.5">
-                {displayedCohorts.map((c, i) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => scrollToCardIndex(i)}
-                    className={cn(
-                      "h-2 rounded-full transition-all duration-300 touch-manipulation",
-                      i === activeIndex
-                        ? "w-6 bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
-                        : "w-2 bg-zinc-700 hover:bg-zinc-500"
-                    )}
-                    aria-label={`Go to slide ${i + 1}`}
-                  />
-                ))}
-              </div>
-
-              {/* Next Mobile Arrow */}
-              <button
-                type="button"
-                onClick={() => handleScroll('right')}
-                disabled={!canScrollRight}
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950 text-zinc-300 transition active:scale-95 touch-manipulation",
-                  canScrollRight ? "text-cyan-300" : "opacity-30 cursor-not-allowed"
-                )}
-                aria-label="Next"
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>
