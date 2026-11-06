@@ -207,4 +207,3 @@ Class Prompt for Discussion: / ናይ ክፍሊ ምይይጥ ሕቶታት:
   ሎሚ ሰባት ካብቲ ናይ ከባቢኦም ባጤራ ንላዕሊ ንቢትኮይን ይኣምንዎ ኢልካ ትኣምን ዲኻ? ስለምንታይ ወይ ስለምንታይ ዘይኮነ?
 
 ## Image references
-- `images/book_images/dec.jpeg`

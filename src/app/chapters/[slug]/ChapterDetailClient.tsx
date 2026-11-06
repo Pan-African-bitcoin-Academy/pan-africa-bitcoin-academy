@@ -449,6 +449,7 @@ function TigrinyaChapterLesson({
             {chapter.slug === "the-birth-of-bitcoin" && heading.startsWith("5.2") ? (
               <>
                 <Chapter5InteractiveLesson module="p2p_vs_centralized" isTi={true} />
+                <Chapter5InteractiveLesson module="network_topology" isTi={true} />
                 <Chapter5InteractiveLesson module="three_pillars" isTi={true} />
               </>
             ) : null}
@@ -1718,6 +1719,7 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               {chapter.slug === "the-birth-of-bitcoin" && sectionIdx === 2 ? (
                 <>
                   <Chapter5InteractiveLesson module="p2p_vs_centralized" isTi={isTi} />
+                  <Chapter5InteractiveLesson module="network_topology" isTi={isTi} />
                   <Chapter5InteractiveLesson module="three_pillars" isTi={isTi} />
                 </>
               ) : null}

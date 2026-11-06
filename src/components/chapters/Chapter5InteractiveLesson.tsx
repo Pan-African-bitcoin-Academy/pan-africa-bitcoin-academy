@@ -1544,12 +1544,425 @@ function ThreePillarsExplorer({ isTi }: { isTi: boolean }) {
 }
 
 /* =========================================================================
+   Interactive Graphical Representation: Decentralized vs Centralized
+   Replacing static dec.jpeg with interactive SVG topologies
+   ========================================================================= */
+
+export function NetworkTopologyGraphic({ isTi }: { isTi: boolean }) {
+  const [isBankDown, setIsBankDown] = useState(false);
+  const [offlinePeer, setOfflinePeer] = useState<number | null>(null);
+
+  // 6 node coordinates arranged in a circle (center 150, 150, radius 96)
+  const nodes = [
+    { id: 0, x: 150, y: 54, label: "Alice" },
+    { id: 1, x: 233, y: 102, label: "Bob" },
+    { id: 2, x: 233, y: 198, label: "Charlie" },
+    { id: 3, x: 150, y: 246, label: "David" },
+    { id: 4, x: 67, y: 198, label: "Emma" },
+    { id: 5, x: 67, y: 102, label: "Frank" },
+  ];
+
+  // All 15 full-mesh pairs
+  const meshLines: [number, number][] = [
+    [0, 1], [0, 2], [0, 3], [0, 4], [0, 5],
+    [1, 2], [1, 3], [1, 4], [1, 5],
+    [2, 3], [2, 4], [2, 5],
+    [3, 4], [3, 5],
+    [4, 5],
+  ];
+
+  return (
+    <section
+      className="my-6 rounded-2xl border border-zinc-800 bg-zinc-950/90 p-4 shadow-xl sm:p-6"
+      aria-label="Network Topology: Decentralized vs Centralized"
+    >
+      {/* Header */}
+      <div className="mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-400">
+          {t(
+            {
+              en: "5.2 Visual Architecture: Network Topologies",
+              ti: "5.2 ስእላዊ ኣሰራርሓ: ቅርጺ መርበባት (Network Topologies)",
+            },
+            isTi
+          )}
+        </p>
+        <h4 className="mt-1 text-lg font-bold text-zinc-100 sm:text-xl">
+          {t(
+            {
+              en: "Decentralized Mesh (DeFi) vs Centralized Star (CeFi)",
+              ti: "ዘይማእከላዊ መርበብ (P2P) ኣንጻር ማእከላይ ባንኪ (Star)",
+            },
+            isTi
+          )}
+        </h4>
+        <p className="mt-1 text-xs text-zinc-400">
+          {t(
+            {
+              en: "Compare how payments route directly peer-to-peer versus requiring authorization from a single custodial intermediary.",
+              ti: "ክፍሊታት ብቐጥታ መዛኑ ንመዛኑ ክሰጋገር ከሎን ብሓደ ማእከላይ መንጎኛ ባንኪ ክሓልፍ ከሎን ዘሎ ፍልልይ ተዓዘብ።",
+            },
+            isTi
+          )}
+        </p>
+      </div>
+
+      {/* Side-by-side Topologies */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        {/* LEFT: Decentralized Mesh Network */}
+        <div className="flex flex-col justify-between rounded-xl border border-cyan-500/30 bg-zinc-900/60 p-4 sm:p-5">
+          <div>
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300">
+                  <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                  DeFi · {t({ en: "Decentralized Network", ti: "ዘይማእከላዊ መርበብ" }, isTi)}
+                </span>
+                <h5 className="mt-1.5 text-base font-bold text-zinc-100">
+                  {t({ en: "Peer-to-Peer Full Mesh", ti: "መዛኑ ንመዛኑ (Full Mesh)" }, isTi)}
+                </h5>
+              </div>
+              <span className="text-xs font-mono text-cyan-400/80">
+                15 {t({ en: "routes", ti: "መስመራት" }, isTi)}
+              </span>
+            </div>
+
+            {/* SVG Canvas */}
+            <div className="relative mx-auto my-4 flex aspect-square max-w-[280px] items-center justify-center">
+              <svg viewBox="0 0 300 300" className="h-full w-full select-none">
+                <defs>
+                  <linearGradient id="meshGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.6" />
+                  </linearGradient>
+                </defs>
+
+                {/* Mesh Connecting Lines */}
+                {meshLines.map(([fromIdx, toIdx], i) => {
+                  const fromNode = nodes[fromIdx];
+                  const toNode = nodes[toIdx];
+                  const isLineSevered = offlinePeer !== null && (fromIdx === offlinePeer || toIdx === offlinePeer);
+
+                  return (
+                    <line
+                      key={"mesh-line-" + i}
+                      x1={fromNode.x}
+                      y1={fromNode.y}
+                      x2={toNode.x}
+                      y2={toNode.y}
+                      stroke={isLineSevered ? "#ef4444" : "url(#meshGradient)"}
+                      strokeWidth={isLineSevered ? "1" : "1.75"}
+                      strokeDasharray={isLineSevered ? "3 3" : undefined}
+                      strokeOpacity={isLineSevered ? 0.35 : 0.75}
+                      className="transition-all duration-300"
+                    />
+                  );
+                })}
+
+                {/* 6 User Nodes */}
+                {nodes.map((n) => {
+                  const isNodeOffline = offlinePeer === n.id;
+                  return (
+                    <g
+                      key={n.id}
+                      className="cursor-pointer transition-transform hover:scale-110"
+                      onClick={() => setOfflinePeer(isNodeOffline ? null : n.id)}
+                    >
+                      <circle
+                        cx={n.x}
+                        cy={n.y}
+                        r="18"
+                        fill={isNodeOffline ? "#450a0a" : "#082f49"}
+                        stroke={isNodeOffline ? "#ef4444" : "#38bdf8"}
+                        strokeWidth="2"
+                        className="transition-colors duration-300 shadow-lg"
+                      />
+                      {/* Avatar head & shoulders */}
+                      <circle
+                        cx={n.x}
+                        cy={n.y - 3}
+                        r="4.5"
+                        fill={isNodeOffline ? "#f87171" : "#38bdf8"}
+                      />
+                      <path
+                        d={"M " + (n.x - 7.5) + " " + (n.y + 10) + " a 7.5 6 0 0 1 15 0"}
+                        fill={isNodeOffline ? "#f87171" : "#38bdf8"}
+                      />
+                      {/* Node Label */}
+                      <text
+                        x={n.x}
+                        y={n.y + 28}
+                        textAnchor="middle"
+                        className="fill-zinc-400 text-[10px] font-mono font-medium"
+                      >
+                        {n.label}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+
+            <p className="text-center text-[11px] text-zinc-400 italic">
+              {t(
+                {
+                  en: "Click any peer to simulate a local failure — other 5 peers stay fully interconnected.",
+                  ti: "ሓደ መዛኑ ንምቁራጽ ጠውቕ — ዝተረፉ 5 መዛኑ ቀጥታዊ ርክቦም ከይተቛረጸ ይቕጽል።",
+                },
+                isTi
+              )}
+            </p>
+          </div>
+
+          {/* Bullet Breakdown */}
+          <div className="mt-4 space-y-2 border-t border-zinc-800 pt-3 text-xs text-zinc-300">
+            <div className="flex items-center gap-2 text-emerald-300 font-semibold">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-[11px]">✓</span>
+              <span>{t({ en: "Direct Peer-to-Peer settlement", ti: "ቀጥታዊ ስግግር ካብ ኢድ ናብ ኢድ" }, isTi)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-emerald-300 font-semibold">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-[11px]">✓</span>
+              <span>{t({ en: "No central point of control or shutdown", ti: "ማእከላይ መጥቃዕቲ ወይ Kill Switch የለን" }, isTi)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-emerald-300 font-semibold">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-[11px]">✓</span>
+              <span>{t({ en: "Resilient: Reroutes around any outage", ti: "ሓያል: ሓደ እንተወደቐ ብኻልእ መስመር ይቕጽል" }, isTi)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: Centralized Star Network */}
+        <div className={"flex flex-col justify-between rounded-xl border p-4 sm:p-5 transition-colors duration-300 " + (isBankDown ? "border-rose-500/50 bg-rose-950/20" : "border-amber-500/30 bg-zinc-900/60")}>
+          <div>
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div>
+                <span className={"inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold " + (isBankDown ? "bg-rose-500/20 border-rose-500/40 text-rose-300" : "bg-amber-500/10 border-amber-500/30 text-amber-300")}>
+                  <span className={"h-2 w-2 rounded-full " + (isBankDown ? "bg-rose-400" : "bg-amber-400")} />
+                  CeFi · {t({ en: "Centralized Network", ti: "ማእከላይ መርበብ" }, isTi)}
+                </span>
+                <h5 className="mt-1.5 text-base font-bold text-zinc-100">
+                  {t({ en: "Star Topology (Custodial Bank)", ti: "ማእከላይ መርበብ (መንጎኛ ባንኪ)" }, isTi)}
+                </h5>
+              </div>
+              <span className="text-xs font-mono text-amber-400/80">
+                {isBankDown
+                  ? t({ en: "OUTAGE", ti: "ተቛሪጹ" }, isTi)
+                  : t({ en: "1 Chokepoint", ti: "1 ማእከል" }, isTi)}
+              </span>
+            </div>
+
+            {/* SVG Canvas */}
+            <div className="relative mx-auto my-4 flex aspect-square max-w-[280px] items-center justify-center">
+              <svg viewBox="0 0 300 300" className="h-full w-full select-none">
+                <defs>
+                  {/* Arrow marker pointing inward to center */}
+                  <marker
+                    id="arrowInward"
+                    viewBox="0 0 10 10"
+                    refX="6"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 1 L 8 5 L 0 9 z" fill={isBankDown ? "#f43f5e" : "#f59e0b"} />
+                  </marker>
+                </defs>
+
+                {/* 6 Inward Arrows to Central Bank */}
+                {nodes.map((n) => {
+                  // Angle towards center (150, 150)
+                  const dx = 150 - n.x;
+                  const dy = 150 - n.y;
+                  const dist = Math.sqrt(dx * dx + dy * dy);
+                  // stop line slightly before bank circle of radius 32
+                  const stopX = 150 - (dx / dist) * 32;
+                  const stopY = 150 - (dy / dist) * 32;
+
+                  return (
+                    <g key={"star-" + n.id}>
+                      <line
+                        x1={n.x}
+                        y1={n.y}
+                        x2={stopX}
+                        y2={stopY}
+                        stroke={isBankDown ? "#f43f5e" : "#f59e0b"}
+                        strokeWidth="2"
+                        strokeDasharray={isBankDown ? "4 4" : undefined}
+                        strokeOpacity={isBankDown ? 0.4 : 0.8}
+                        markerEnd="url(#arrowInward)"
+                        className="transition-all duration-300"
+                      />
+                      {isBankDown && (
+                        <text
+                          x={(n.x + stopX) / 2}
+                          y={(n.y + stopY) / 2}
+                          textAnchor="middle"
+                          className="fill-rose-400 text-xs font-bold"
+                        >
+                          ✕
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+
+                {/* Central Bank Icon at (150, 150) */}
+                <g className="transition-all duration-300">
+                  <circle
+                    cx="150"
+                    cy="150"
+                    r="34"
+                    fill={isBankDown ? "#450a0a" : "#451a03"}
+                    stroke={isBankDown ? "#f43f5e" : "#f59e0b"}
+                    strokeWidth="2.5"
+                    className="shadow-2xl"
+                  />
+                  {/* Bank Building graphic */}
+                  {/* Pediment roof */}
+                  <polygon
+                    points="132,140 150,126 168,140"
+                    fill={isBankDown ? "#f87171" : "#fbbf24"}
+                  />
+                  {/* Pillars */}
+                  <rect x="134" y="142" width="4" height="15" fill={isBankDown ? "#f87171" : "#fbbf24"} />
+                  <rect x="142" y="142" width="4" height="15" fill={isBankDown ? "#f87171" : "#fbbf24"} />
+                  <rect x="154" y="142" width="4" height="15" fill={isBankDown ? "#f87171" : "#fbbf24"} />
+                  <rect x="162" y="142" width="4" height="15" fill={isBankDown ? "#f87171" : "#fbbf24"} />
+                  {/* Base step */}
+                  <rect x="130" y="158" width="40" height="4" fill={isBankDown ? "#f87171" : "#fbbf24"} />
+
+                  <text
+                    x="150"
+                    y="173"
+                    textAnchor="middle"
+                    className={"text-[9px] font-bold font-mono " + (isBankDown ? "fill-rose-300" : "fill-amber-300")}
+                  >
+                    {isBankDown ? "OFFLINE" : "BANK"}
+                  </text>
+                </g>
+
+                {/* 6 Peripheral Users */}
+                {nodes.map((n) => (
+                  <g key={n.id}>
+                    <circle
+                      cx={n.x}
+                      cy={n.y}
+                      r="18"
+                      fill={isBankDown ? "#27272a" : "#27272a"}
+                      stroke={isBankDown ? "#f43f5e" : "#fbbf24"}
+                      strokeWidth="1.5"
+                      strokeDasharray={isBankDown ? "2 2" : undefined}
+                      className="transition-colors duration-300"
+                    />
+                    <circle
+                      cx={n.x}
+                      cy={n.y - 3}
+                      r="4.5"
+                      fill={isBankDown ? "#71717a" : "#f59e0b"}
+                    />
+                    <path
+                      d={"M " + (n.x - 7.5) + " " + (n.y + 10) + " a 7.5 6 0 0 1 15 0"}
+                      fill={isBankDown ? "#71717a" : "#f59e0b"}
+                    />
+                    <text
+                      x={n.x}
+                      y={n.y + 28}
+                      textAnchor="middle"
+                      className="fill-zinc-400 text-[10px] font-mono font-medium"
+                    >
+                      {n.label}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            </div>
+
+            <p className={"text-center text-[11px] italic transition-colors " + (isBankDown ? "text-rose-300 font-medium" : "text-zinc-400")}>
+              {isBankDown
+                ? t(
+                    {
+                      en: "⚠️ The bank is down: All 6 users are completely cut off and frozen.",
+                      ti: "⚠️ እቲ ማእከላይ ባንኪ ወደቐ: ኩሎም 6 ተጠቀምቲ ብሓንሳብ ተዓጽዮምን ተቛሪጾምን።",
+                    },
+                    isTi
+                  )
+                : t(
+                    {
+                      en: "Every single transaction must funnel through the central bank for approval.",
+                      ti: "ነፍሲ ወከፍ ትራንዛክሽን ብማእከላይ ባንኪ ጥራይ ክሓልፍን ፍቓድ ክረክብን ኣለዎ።",
+                    },
+                    isTi
+                  )}
+            </p>
+          </div>
+
+          {/* Bullet Breakdown */}
+          <div className="mt-4 space-y-2 border-t border-zinc-800 pt-3 text-xs text-zinc-300">
+            <div className="flex items-center gap-2 text-rose-300 font-semibold">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-[11px]">✕</span>
+              <span>{t({ en: "Intermediary chokepoint controls balances", ti: "ማእከላይ መንጎኛ ሕሳብካ ይቆጻጸር" }, isTi)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-rose-300 font-semibold">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-[11px]">✕</span>
+              <span>{t({ en: "Bank can freeze, delay, or censor payments", ti: "ባንክ ክፍሊትካ ክዓግት ወይ ክሰርዝ ይኽእል" }, isTi)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-rose-300 font-semibold">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 text-[11px]">✕</span>
+              <span>{t({ en: "Catastrophic Single Point of Failure", ti: "ሓደገኛ ንጽል ነጥቢ ውድቀት (Single Point of Failure)" }, isTi)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Simulation Controls */}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-900/40 p-3 sm:p-4">
+        <div className="text-xs text-zinc-300">
+          <span className="font-semibold text-zinc-100">
+            {t({ en: "Interactive Test:", ti: "ፈተነ ኣካይድ:" }, isTi)}
+          </span>{" "}
+          {t(
+            {
+              en: "Toggle an outage on the central bank to witness how a single point of failure paralyzes an entire economy.",
+              ti: "ሓደ ማእከላይ ትካል እንተፈሺሉ ምሉእ ቁጠባ ከመይ ከም ዝዕጾ ንምርኣይ ነቲ ባንኪ ኣጥፍኣዮ።",
+            },
+            isTi
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsBankDown(!isBankDown)}
+            className={"rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all " + (isBankDown ? "border-emerald-500/60 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30" : "border-rose-500/60 bg-rose-500/20 text-rose-200 hover:bg-rose-500/30")}
+          >
+            {isBankDown
+              ? t({ en: "Restore Bank System", ti: "ንቡር ባንኪ ምለስ" }, isTi)
+              : t({ en: "Simulate Bank System Outage", ti: "ናይ ባንኪ ምቁራጽ ፈትን" }, isTi)}
+          </button>
+          {offlinePeer !== null && (
+            <button
+              type="button"
+              onClick={() => setOfflinePeer(null)}
+              className="rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-2.5 py-1.5 text-xs font-medium text-cyan-200 hover:bg-cyan-500/20"
+            >
+              {t({ en: "Reconnect All Peers", ti: "ኩሎም መዛኑ ኣተሓሕዝ" }, isTi)}
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+/* =========================================================================
    Main Chapter 5 Export
    ========================================================================= */
 
 export type Chapter5Module =
   | "genesis_whitepaper"
   | "p2p_vs_centralized"
+  | "network_topology"
   | "three_pillars";
 
 export function Chapter5InteractiveLesson({
@@ -1564,6 +1977,8 @@ export function Chapter5InteractiveLesson({
       return <GenesisWhitepaperGraphic isTi={isTi} />;
     case "p2p_vs_centralized":
       return <PeerToPeerSimulator isTi={isTi} />;
+    case "network_topology":
+      return <NetworkTopologyGraphic isTi={isTi} />;
     case "three_pillars":
       return <ThreePillarsExplorer isTi={isTi} />;
     default:

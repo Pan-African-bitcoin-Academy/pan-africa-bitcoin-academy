@@ -665,13 +665,7 @@ export const chaptersContent: ChapterContent[] = [
           "The Halving Mechanism: New bitcoins are issued strictly according to code. Approximately every 4 years (210,000 blocks), the new supply issued per block is cut by 50% (50 BTC -> 25 -> 12.5 -> 6.25 -> 3.125 -> 0), making the remaining supply progressively harder to acquire.",
           "Digital Gold: Bitcoin's value is rooted in mathematical certainty, not political promises. Scarcity protects users against inflation, encourages disciplined long-term saving, and prevents arbitrary currency debasement.",
         ],
-        images: [
-          {
-            src: "/images/book_images/dec.jpeg",
-            alt: "Decentralization explained - no single point of control, power distributed across the network",
-            caption: "Decentralization Explained",
-          },
-        ],
+
       },
       {
         heading: "What Are Sats?",
