@@ -483,6 +483,152 @@ function SimulationTooltip({ active, payload, valuationMode }: SimulationTooltip
   );
 }
 
+
+interface PortfolioValueTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  currentPrice: number;
+}
+
+function PortfolioValueTooltip({ active, payload, currentPrice }: PortfolioValueTooltipProps) {
+  if (!active || !payload || !payload.length) return null;
+  const item = payload[0]?.payload;
+  if (!item) return null;
+
+  const value = item.value ?? 0;
+  const spent = item.contributions ?? 0;
+  const net = value - spent;
+  const pct = spent > 0 ? (net / spent) * 100 : 0;
+  const isGain = net >= 0;
+
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xl min-w-[240px] text-zinc-900 pointer-events-none">
+      <div className="flex items-center justify-between border-b border-zinc-100 pb-2 mb-2.5 text-xs">
+        <span className="font-semibold text-zinc-800">{item.date}</span>
+        <span className="font-mono text-zinc-500 font-medium">{formatCurrency(currentPrice, 0)} spot</span>
+      </div>
+      <div className="space-y-2 text-xs">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-zinc-500">
+            <span className="h-2 w-2 rounded-full bg-[#f97602]" />
+            Portfolio Value:
+          </span>
+          <span className="font-bold text-zinc-900">{formatCurrency(value)}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-zinc-500">
+            <span className="h-2 w-2 rounded-full bg-zinc-400" />
+            Total Spent:
+          </span>
+          <span className="font-semibold text-zinc-700">{formatCurrency(spent)}</span>
+        </div>
+        <div className="flex items-center justify-between border-t border-zinc-100 pt-2">
+          <span className="text-zinc-500">Unrealized Return:</span>
+          <span className={cn(
+            "font-bold inline-flex items-center gap-0.5",
+            isGain ? "text-emerald-600" : "text-red-600"
+          )}>
+            {isGain ? '+' : ''}{formatCurrency(net)} ({isGain ? '+' : ''}{pct.toFixed(1)}%)
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface AccumulationTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  currentPrice: number;
+}
+
+function AccumulationTooltip({ active, payload, currentPrice }: AccumulationTooltipProps) {
+  if (!active || !payload || !payload.length) return null;
+  const item = payload[0]?.payload;
+  if (!item) return null;
+
+  const btc = item.btc ?? 0;
+  const sats = Math.round(btc * 100_000_000);
+  const avgPrice = item.averagePrice ?? 0;
+  const priceDiff = currentPrice > 0 && avgPrice > 0 ? ((currentPrice - avgPrice) / avgPrice) * 100 : null;
+
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xl min-w-[250px] text-zinc-900 pointer-events-none">
+      <div className="border-b border-zinc-100 pb-2 mb-2.5 text-xs font-semibold text-zinc-800">
+        {item.date}
+      </div>
+      <div className="space-y-2 text-xs">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-zinc-500">
+            <span className="h-2 w-2 rounded-full bg-[#0284c7]" />
+            Accumulated BTC:
+          </span>
+          <span className="font-bold text-sky-800 font-mono">{btc.toFixed(6)} BTC</span>
+        </div>
+        <div className="flex items-center justify-between pl-3.5 text-[11px] text-zinc-500">
+          <span>Sats:</span>
+          <span className="font-mono font-medium text-zinc-700">{sats.toLocaleString()} sats</span>
+        </div>
+        <div className="flex items-center justify-between border-t border-zinc-100 pt-2">
+          <span className="flex items-center gap-1.5 text-zinc-500">
+            <span className="h-2 w-2 rounded-full bg-[#f97602]" />
+            Avg Cost / BTC:
+          </span>
+          <span className="font-bold text-zinc-900">{formatCurrency(avgPrice, 0)}</span>
+        </div>
+        {priceDiff !== null && (
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-zinc-500">vs Current Spot:</span>
+            <span className={cn("font-semibold", priceDiff >= 0 ? "text-emerald-600" : "text-zinc-600")}>
+              {priceDiff >= 0 ? '+' : ''}{priceDiff.toFixed(1)}%
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface MonthlyContributionsTooltipProps {
+  active?: boolean;
+  payload?: any[];
+}
+
+function MonthlyContributionsTooltip({ active, payload }: MonthlyContributionsTooltipProps) {
+  if (!active || !payload || !payload.length) return null;
+  const item = payload[0]?.payload;
+  if (!item) return null;
+
+  const btc = item.btc ?? 0;
+  const sats = Math.round(btc * 100_000_000);
+
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xl min-w-[230px] text-zinc-900 pointer-events-none">
+      <div className="border-b border-zinc-100 pb-2 mb-2 text-xs font-semibold text-zinc-800">
+        {item.label}
+      </div>
+      <div className="space-y-1.5 text-xs">
+        <div className="flex items-center justify-between">
+          <span className="text-zinc-500">Monthly Spending:</span>
+          <span className="font-bold text-[#f97602]">{formatCurrency(item.contributions)}</span>
+        </div>
+        {btc > 0 && (
+          <div className="flex items-center justify-between">
+            <span className="text-zinc-500">Acquired BTC:</span>
+            <span className="font-semibold text-zinc-800 font-mono">{btc.toFixed(6)} BTC</span>
+          </div>
+        )}
+        {sats > 0 && (
+          <div className="flex items-center justify-between text-[11px] text-zinc-500">
+            <span>Acquired Sats:</span>
+            <span className="font-mono text-zinc-700">{sats.toLocaleString()} sats</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function DcaExperience() {
   const { isAuthenticated, loading: authLoading, profile, sessionEmail, logout } = useAuth();
   const [linkKeyModalOpen, setLinkKeyModalOpen] = useState(false);
@@ -770,6 +916,28 @@ export default function DcaExperience() {
         };
       });
   }, [purchases, market?.currentPrice]);
+
+  const latestPurchase = purchaseHistory.length > 0 ? purchaseHistory[purchaseHistory.length - 1] : null;
+  const portfolioNetPnl = latestPurchase ? latestPurchase.value - latestPurchase.contributions : 0;
+  const portfolioPnlPercent = latestPurchase && latestPurchase.contributions > 0
+    ? (portfolioNetPnl / latestPurchase.contributions) * 100
+    : 0;
+  const isPortfolioGain = portfolioNetPnl >= 0;
+  const portfolioCostEfficiency = latestPurchase && market?.currentPrice && latestPurchase.averagePrice > 0
+    ? ((market.currentPrice - latestPurchase.averagePrice) / latestPurchase.averagePrice) * 100
+    : null;
+
+  const totalMonthlySpent = useMemo(() => {
+    return monthlyData.reduce((acc, m) => acc + m.contributions, 0);
+  }, [monthlyData]);
+  const avgMonthlyContribution = monthlyData.length > 0 ? totalMonthlySpent / monthlyData.length : 0;
+  const peakMonthlyEntry = useMemo(() => {
+    if (!monthlyData.length) return null;
+    return [...monthlyData].sort((a, b) => b.contributions - a.contributions)[0];
+  }, [monthlyData]);
+  const totalMonthlyBtc = useMemo(() => {
+    return monthlyData.reduce((acc, m) => acc + m.btc, 0);
+  }, [monthlyData]);
 
   const updatePlan = useCallback(async (plan: DcaPlan, method: 'POST' | 'PATCH') => {
     if (!isAuthenticated) return plan;
@@ -1704,37 +1872,238 @@ export default function DcaExperience() {
             <div className="space-y-5">
               {purchaseHistory.length > 0 && (
                 <>
-                  <Panel>
-                    <h3 className="mb-1 font-semibold text-zinc-900">Portfolio value vs. recorded spending</h3>
-                    <p className="mb-4 text-xs text-zinc-500">Portfolio value uses the current BTC price for every entry date.</p>
-                    <div className="h-56 w-full min-w-0">
+                  {/* Fintech Card: Portfolio value vs. recorded spending */}
+                  <Panel className="border-zinc-200/90 bg-white shadow-xs overflow-hidden">
+                    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-zinc-100 pb-5">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="inline-flex h-2 w-2 rounded-full bg-[#f97602]" />
+                          <span className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+                            Portfolio Performance
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
+                          Portfolio value vs. recorded spending
+                        </h3>
+                        <p className="mt-1 text-xs text-zinc-500 max-w-xl">
+                          Real-time valuation of your accumulated bitcoin based on current spot price ({market?.currentPrice ? formatCurrency(market.currentPrice, 0) : '—'}) compared against all recorded spending.
+                        </p>
+                      </div>
+
+                      {latestPurchase && (
+                        <div className="flex flex-wrap items-baseline sm:flex-col sm:items-end gap-2 sm:gap-1 bg-zinc-50/80 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-zinc-100">
+                          <div className="text-xs text-zinc-500 font-medium">Current Portfolio Value</div>
+                          <div className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+                            {formatCurrency(latestPurchase.value)}
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className={cn(
+                                "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold border",
+                                isPortfolioGain
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  : "bg-red-50 text-red-700 border-red-200"
+                              )}
+                            >
+                              {isPortfolioGain ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                              {isPortfolioGain ? '+' : ''}{formatCurrency(portfolioNetPnl)} ({isPortfolioGain ? '+' : ''}{portfolioPnlPercent.toFixed(1)}%)
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* KPI Stat Bar */}
+                    <div className="mb-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                      <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Total Spent</span>
+                        <span className="text-sm sm:text-base font-bold text-zinc-800">{formatCurrency(latestPurchase?.contributions ?? 0)}</span>
+                      </div>
+                      <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Accumulated</span>
+                        <span className="text-sm sm:text-base font-bold text-zinc-800 font-mono">{(latestPurchase?.btc ?? 0).toFixed(6)} BTC</span>
+                      </div>
+                      <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Current Price</span>
+                        <span className="text-sm sm:text-base font-bold text-[#f97602]">{formatCurrency(market?.currentPrice ?? 0, 0)}</span>
+                      </div>
+                      <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">All-Time ROI</span>
+                        <span className={cn("text-sm sm:text-base font-bold", isPortfolioGain ? "text-emerald-600" : "text-red-600")}>
+                          {isPortfolioGain ? '+' : ''}{portfolioPnlPercent.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="h-72 sm:h-80 w-full min-w-0">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={purchaseHistory}>
-                          <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
-                          <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} minTickGap={30} />
-                          <YAxis tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={48} />
-                          <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => formatCurrency(Number(value))} />
-                          <Legend />
-                          <Area type="monotone" dataKey="contributions" name="Spending and fees" stroke="#71717a" fill="#71717a" fillOpacity={0.08} />
-                          <Area type="monotone" dataKey="value" name="Current-price value" stroke="#f97602" fill="#f97602" fillOpacity={0.12} />
+                        <AreaChart data={purchaseHistory} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="fintechPortfolioValGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#f97602" stopOpacity={0.28} />
+                              <stop offset="95%" stopColor="#f97602" stopOpacity={0.01} />
+                            </linearGradient>
+                            <linearGradient id="fintechSpentGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#71717a" stopOpacity={0.10} />
+                              <stop offset="95%" stopColor="#71717a" stopOpacity={0.01} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid stroke="#f4f4f5" strokeDasharray="3 3" vertical={false} />
+                          <XAxis
+                            dataKey="date"
+                            tick={{ fill: '#71717a', fontSize: 11 }}
+                            minTickGap={35}
+                            axisLine={{ stroke: '#e4e4e7' }}
+                            tickLine={false}
+                          />
+                          <YAxis
+                            tick={{ fill: '#71717a', fontSize: 11 }}
+                            tickFormatter={(v: number) => `$${Math.round(v).toLocaleString()}`}
+                            axisLine={false}
+                            tickLine={false}
+                            width={54}
+                          />
+                          <Tooltip content={<PortfolioValueTooltip currentPrice={market?.currentPrice ?? 0} />} />
+                          <Area
+                            type="monotone"
+                            dataKey="contributions"
+                            name="Spending and fees"
+                            stroke="#71717a"
+                            strokeWidth={1.75}
+                            strokeDasharray="4 4"
+                            fill="url(#fintechSpentGrad)"
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="value"
+                            name="Current-price value"
+                            stroke="#f97602"
+                            strokeWidth={2.5}
+                            fill="url(#fintechPortfolioValGrad)"
+                          />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
                   </Panel>
-                  <Panel>
-                    <h3 className="mb-1 font-semibold text-zinc-900">Bitcoin accumulation and average cost</h3>
-                    <p className="mb-4 text-xs text-zinc-500">Average cost includes recorded fees. Values reflect manual entries only.</p>
-                    <div className="h-56 w-full min-w-0">
+
+                  {/* Fintech Card: Bitcoin accumulation and average cost */}
+                  <Panel className="border-zinc-200/90 bg-white shadow-xs overflow-hidden">
+                    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-zinc-100 pb-5">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="inline-flex h-2 w-2 rounded-full bg-[#0284c7]" />
+                          <span className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+                            Cost Basis & Sats Stack
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
+                          Bitcoin accumulation and average cost
+                        </h3>
+                        <p className="mt-1 text-xs text-zinc-500 max-w-xl">
+                          Tracks accumulated bitcoin alongside your dollar-weighted average acquisition price including all recorded exchange fees.
+                        </p>
+                      </div>
+
+                      {latestPurchase && (
+                        <div className="flex flex-wrap sm:flex-nowrap gap-3">
+                          <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-3 sm:text-right min-w-[130px]">
+                            <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wide">Total Bitcoin</span>
+                            <div className="text-lg sm:text-xl font-extrabold text-sky-900 font-mono">
+                              {latestPurchase.btc.toFixed(6)}
+                            </div>
+                            <span className="text-[11px] text-sky-600 font-medium">
+                              {Math.round(latestPurchase.btc * 100_000_000).toLocaleString()} sats
+                            </span>
+                          </div>
+
+                          <div className="rounded-xl border border-orange-200 bg-orange-50/60 p-3 sm:text-right min-w-[130px]">
+                            <span className="text-[10px] font-bold text-[#f97602] uppercase tracking-wide">Average Cost</span>
+                            <div className="text-lg sm:text-xl font-extrabold text-zinc-900">
+                              {formatCurrency(latestPurchase.averagePrice, 0)}
+                            </div>
+                            <span className="text-[11px] text-zinc-500">per BTC</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Legend & Stats Ribbon */}
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-100 bg-zinc-50/70 p-3 text-xs">
+                      <div className="flex flex-wrap items-center gap-5">
+                        <div className="flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#0284c7]" />
+                          <span className="text-zinc-500 font-medium">Accumulated BTC:</span>
+                          <span className="font-bold text-zinc-900 font-mono">{latestPurchase?.btc.toFixed(6) ?? '0.000000'} BTC</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#f97602]" />
+                          <span className="text-zinc-500 font-medium">Avg Acquisition Price:</span>
+                          <span className="font-bold text-zinc-900">{formatCurrency(latestPurchase?.averagePrice ?? 0, 0)}</span>
+                        </div>
+                      </div>
+
+                      {portfolioCostEfficiency !== null && (
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-zinc-500">Cost Basis Advantage:</span>
+                          <span className={cn(
+                            "font-bold rounded-md px-2 py-0.5 text-[11px]",
+                            portfolioCostEfficiency >= 0 ? "bg-emerald-100 text-emerald-800" : "bg-zinc-200 text-zinc-700"
+                          )}>
+                            {portfolioCostEfficiency >= 0 ? '+' : ''}{portfolioCostEfficiency.toFixed(1)}% vs spot
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="h-72 sm:h-80 w-full min-w-0">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={purchaseHistory}>
-                          <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
-                          <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} minTickGap={30} />
-                          <YAxis yAxisId="btc" tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => value.toFixed(4)} width={55} />
-                          <YAxis yAxisId="price" orientation="right" tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={60} />
-                          <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                          <Legend />
-                          <Line yAxisId="btc" type="monotone" dataKey="btc" name="Accumulated BTC" stroke="#0284c7" dot={false} />
-                          <Line yAxisId="price" type="monotone" dataKey="averagePrice" name="Average acquisition price" stroke="#f97602" dot={false} />
+                        <LineChart data={purchaseHistory} margin={{ top: 10, right: 10, left: -5, bottom: 0 }}>
+                          <CartesianGrid stroke="#f4f4f5" strokeDasharray="3 3" vertical={false} />
+                          <XAxis
+                            dataKey="date"
+                            tick={{ fill: '#71717a', fontSize: 11 }}
+                            minTickGap={35}
+                            axisLine={{ stroke: '#e4e4e7' }}
+                            tickLine={false}
+                          />
+                          <YAxis
+                            yAxisId="btc"
+                            tick={{ fill: '#0284c7', fontSize: 11 }}
+                            tickFormatter={(v: number) => v.toFixed(4)}
+                            axisLine={false}
+                            tickLine={false}
+                            width={54}
+                          />
+                          <YAxis
+                            yAxisId="price"
+                            orientation="right"
+                            tick={{ fill: '#f97602', fontSize: 11 }}
+                            tickFormatter={(v: number) => `$${Math.round(v).toLocaleString()}`}
+                            axisLine={false}
+                            tickLine={false}
+                            width={60}
+                          />
+                          <Tooltip content={<AccumulationTooltip currentPrice={market?.currentPrice ?? 0} />} />
+                          <Line
+                            yAxisId="btc"
+                            type="monotone"
+                            dataKey="btc"
+                            name="Accumulated BTC"
+                            stroke="#0284c7"
+                            strokeWidth={2.75}
+                            dot={false}
+                            activeDot={{ r: 5, fill: '#0284c7', stroke: '#ffffff', strokeWidth: 2 }}
+                          />
+                          <Line
+                            yAxisId="price"
+                            type="monotone"
+                            dataKey="averagePrice"
+                            name="Average acquisition price"
+                            stroke="#f97602"
+                            strokeWidth={2.75}
+                            dot={false}
+                            activeDot={{ r: 5, fill: '#f97602', stroke: '#ffffff', strokeWidth: 2 }}
+                          />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -1768,16 +2137,81 @@ export default function DcaExperience() {
                 </Panel>
               )}
               {monthlyData.length > 0 && (
-                <Panel>
-                  <h3 className="mb-4 font-semibold text-zinc-900">Monthly manual contributions</h3>
-                  <div className="h-56 w-full min-w-0">
+                <Panel className="border-zinc-200/90 bg-white shadow-xs overflow-hidden">
+                  <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-zinc-100 pb-5">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="inline-flex h-2 w-2 rounded-full bg-[#f97602]" />
+                        <span className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
+                          Contribution Velocity
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
+                        Monthly manual contributions
+                      </h3>
+                      <p className="mt-1 text-xs text-zinc-500 max-w-xl">
+                        Total fiat capital committed per calendar month, aggregating manual purchase entries and recorded transaction fees.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap sm:flex-col sm:items-end gap-1 bg-zinc-50/80 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-zinc-100">
+                      <span className="text-xs text-zinc-500 font-medium">Monthly Average</span>
+                      <div className="text-xl sm:text-2xl font-extrabold text-zinc-900">
+                        {formatCurrency(avgMonthlyContribution)}
+                      </div>
+                      <span className="text-[11px] text-zinc-500">
+                        Across {monthlyData.length} recorded {monthlyData.length === 1 ? 'month' : 'months'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Summary Metric Ribbon */}
+                  <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
+                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Total Cumulative</span>
+                      <span className="text-sm font-bold text-zinc-800">{formatCurrency(totalMonthlySpent)}</span>
+                    </div>
+                    <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
+                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Peak Month</span>
+                      <span className="text-sm font-bold text-[#f97602]">{peakMonthlyEntry ? `${peakMonthlyEntry.label} (${formatCurrency(peakMonthlyEntry.contributions, 0)})` : '—'}</span>
+                    </div>
+                    <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3 col-span-2 sm:col-span-1">
+                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Total Stacked</span>
+                      <span className="text-sm font-bold text-sky-800 font-mono">{totalMonthlyBtc.toFixed(6)} BTC</span>
+                    </div>
+                  </div>
+
+                  <div className="h-72 sm:h-80 w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={monthlyData}>
-                        <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
-                        <XAxis dataKey="label" tick={{ fill: '#71717a', fontSize: 11 }} />
-                        <YAxis tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={48} />
-                        <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => formatCurrency(Number(value))} />
-                        <Bar dataKey="contributions" name="Spending and fees" fill="#f97602" radius={[5, 5, 0, 0]} />
+                      <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="fintechBarGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f97602" stopOpacity={1} />
+                            <stop offset="100%" stopColor="#ea580c" stopOpacity={0.85} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid stroke="#f4f4f5" strokeDasharray="3 3" vertical={false} />
+                        <XAxis
+                          dataKey="label"
+                          tick={{ fill: '#71717a', fontSize: 11 }}
+                          axisLine={{ stroke: '#e4e4e7' }}
+                          tickLine={false}
+                        />
+                        <YAxis
+                          tick={{ fill: '#71717a', fontSize: 11 }}
+                          tickFormatter={(v: number) => `$${Math.round(v).toLocaleString()}`}
+                          axisLine={false}
+                          tickLine={false}
+                          width={54}
+                        />
+                        <Tooltip content={<MonthlyContributionsTooltip />} cursor={{ fill: '#f4f4f5', opacity: 0.6 }} />
+                        <Bar
+                          dataKey="contributions"
+                          name="Spending and fees"
+                          fill="url(#fintechBarGrad)"
+                          radius={[8, 8, 2, 2]}
+                          maxBarSize={56}
+                        />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
