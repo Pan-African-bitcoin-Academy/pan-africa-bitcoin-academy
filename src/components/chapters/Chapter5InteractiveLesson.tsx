@@ -27,6 +27,14 @@ import {
   X,
   Sparkles,
   Info,
+  ExternalLink,
+  Ban,
+  AlertCircle,
+  DollarSign,
+  Clock,
+  RotateCcw,
+  Pause,
+  Play,
 } from "lucide-react";
 
 type Localized = { en: string; ti: string };
@@ -190,8 +198,8 @@ function GenesisWhitepaperGraphic({ isTi }: { isTi: boolean }) {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-400">
             {t(
               {
-                en: "5.1 Interactive Artifact: Genesis & The Whitepaper",
-                ti: "5.1 መስተጋብራዊ ቅርስ: ጀነሲስ ብሎክን ዋይትፐይፐርን",
+                en: "5.1 Practical Example: Genesis & The Whitepaper",
+                ti: "5.1 ተግባራዊ ኣብነት: ጀነሲስ ብሎክን ዋይትፐይፐርን",
               },
               isTi
             )}
@@ -205,6 +213,26 @@ function GenesisWhitepaperGraphic({ isTi }: { isTi: boolean }) {
               isTi
             )}
           </h4>
+          <div className="mt-2.5">
+            <a
+              href="https://panafricanbitcoin.com/white_paper"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300 shadow-sm transition-all hover:border-cyan-400 hover:bg-cyan-500/20 hover:text-cyan-200"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              <span>
+                {t(
+                  {
+                    en: "Read Full Whitepaper (PanAfrican Bitcoin) →",
+                    ti: "ናይ ቢትኮይን ዋይትፐይፐር ኣብዚ ኣንብብ →",
+                  },
+                  isTi
+                )}
+              </span>
+              <ExternalLink className="h-3 w-3 opacity-70" />
+            </a>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -412,6 +440,26 @@ function GenesisWhitepaperGraphic({ isTi }: { isTi: boolean }) {
                 &ldquo;{currentPageData.quote}&rdquo;
               </p>
             </div>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800/80 pt-3 text-xs">
+              <span className="text-zinc-400">
+                {t(
+                  {
+                    en: "Explore the complete bilingual whitepaper:",
+                    ti: "ሙሉእ ትርጉም ዋይትፐይፐር ንምንባብ:",
+                  },
+                  isTi
+                )}
+              </span>
+              <a
+                href="https://panafricanbitcoin.com/white_paper"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-cyan-300 hover:underline"
+              >
+                <span>https://panafricanbitcoin.com/white_paper</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
           </div>
         </div>
       )}
@@ -424,24 +472,72 @@ function GenesisWhitepaperGraphic({ isTi }: { isTi: boolean }) {
    ========================================================================= */
 
 function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
-  const [mode, setMode] = useState<"centralized" | "p2p">("centralized");
-  const [step, setStep] = useState(0);
-  const [censorshipTriggered, setCensorshipTriggered] = useState(false);
+  const [activeTab, setActiveTab] = useState<"race" | "centralized" | "p2p">("race");
 
-  const resetSim = (newMode: "centralized" | "p2p") => {
-    setMode(newMode);
-    setStep(0);
-    setCensorshipTriggered(false);
+  // Race Simulation State
+  const [raceRunning, setRaceRunning] = useState(false);
+  const [bankProgress, setBankProgress] = useState(0); // 0 to 100
+  const [btcProgress, setBtcProgress] = useState(0);   // 0 to 100
+  const [bankFrozen, setBankFrozen] = useState(false);
+  const [btcCensorAttempted, setBtcCensorAttempted] = useState(false);
+
+  // Single Deep-Dive States
+  const [centralizedStep, setCentralizedStep] = useState(0);
+  const [singleBankFrozen, setSingleBankFrozen] = useState(false);
+  const [p2pStep, setP2pStep] = useState(0);
+
+  // Run Race Simulation with interval
+  const startRace = () => {
+    setRaceRunning(true);
+    setBankFrozen(false);
+    setBtcCensorAttempted(false);
+    setBtcProgress(15);
+    setBankProgress(10);
+
+    // Bitcoin completes fast (~10 min simulated in 3 seconds)
+    setTimeout(() => setBtcProgress(55), 1000);
+    setTimeout(() => setBtcProgress(85), 2000);
+    setTimeout(() => {
+      setBtcProgress(100);
+    }, 2800);
+
+    // Bank takes long days (slow progression)
+    setTimeout(() => setBankProgress(25), 1200);
+    setTimeout(() => setBankProgress(40), 2400);
+    setTimeout(() => setBankProgress(60), 3800);
+    setTimeout(() => {
+      setBankProgress(85);
+      setRaceRunning(false);
+    }, 5000);
+  };
+
+  const resetRace = () => {
+    setRaceRunning(false);
+    setBankProgress(0);
+    setBtcProgress(0);
+    setBankFrozen(false);
+    setBtcCensorAttempted(false);
+  };
+
+  const freezeBankAction = () => {
+    setBankFrozen(true);
+    setRaceRunning(false);
+  };
+
+  const attemptBtcCensor = () => {
+    setBtcCensorAttempted(true);
+    setTimeout(() => setBtcCensorAttempted(false), 4000);
   };
 
   return (
     <section className={panelClass} aria-label="Peer-to-Peer vs Centralized Simulator">
+      {/* Header */}
       <div className="mb-4">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-400">
           {t(
             {
-              en: "5.2 Network Simulator: Money Transmission",
-              ti: "5.2 መስተጋብራዊ መርበብ: ምስግጋር ገንዘብ",
+              en: "5.2 Practical Example: Money Transmission",
+              ti: "5.2 ተግባራዊ ኣብነት: ምስግጋር ገንዘብ",
             },
             isTi
           )}
@@ -449,7 +545,7 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
         <h4 className="mt-1 text-lg font-bold text-zinc-100 sm:text-xl">
           {t(
             {
-              en: "Traditional Banking Wire vs. Bitcoin Peer-to-Peer",
+              en: "Traditional Bank Wire vs. Bitcoin Peer-to-Peer",
               ti: "ናይ ባንኪ ምስግጋር ኣንጻር መዘዛዊ (P2P) ቢትኮይን",
             },
             isTi
@@ -458,7 +554,7 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
         <p className="mt-1 text-xs text-zinc-400">
           {t(
             {
-              en: "Scenario: Alice in Kampala wants to send $100 (or equivalent Sats) to Bob in Asmara across borders.",
+              en: "Scenario: Alice in Kampala wants to send $100 (or equivalent in Sats) across borders to Bob in Asmara.",
               ti: "ኣብነት: ኣሊስ ኣብ ካምፓላ ዘላ ንቦብ ኣብ ኣስመራ ዘሎ ዶባት ሰጊራ $100 ወይ ሳትስ ክትሰደሉ ትደሊ።",
             },
             isTi
@@ -466,38 +562,342 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
         </p>
       </div>
 
-      {/* Mode Selector */}
+      {/* Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           type="button"
-          onClick={() => resetSim("centralized")}
-          className={mode === "centralized" ? selectedButtonClass : buttonClass}
+          onClick={() => setActiveTab("race")}
+          className={activeTab === "race" ? selectedButtonClass : buttonClass}
         >
           <span className="flex items-center gap-1.5">
-            <Building2 className="h-4 w-4 text-rose-400" />
-            {t({ en: "Traditional Centralized Bank", ti: "ባህላዊ ማእከላይ ባንኪ" }, isTi)}
+            <Zap className="h-4 w-4 text-amber-400" />
+            {t({ en: "Live Transfer Race", ti: "ናይ ክልቲኦም ምውድዳር" }, isTi)}
           </span>
         </button>
         <button
           type="button"
-          onClick={() => resetSim("p2p")}
-          className={mode === "p2p" ? selectedButtonClass : buttonClass}
+          onClick={() => setActiveTab("centralized")}
+          className={activeTab === "centralized" ? selectedButtonClass : buttonClass}
+        >
+          <span className="flex items-center gap-1.5">
+            <Building2 className="h-4 w-4 text-rose-400" />
+            {t({ en: "Legacy Bank Details", ti: "ናይ ባንኪ መስርሕ ብዝርዝር" }, isTi)}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("p2p")}
+          className={activeTab === "p2p" ? selectedButtonClass : buttonClass}
         >
           <span className="flex items-center gap-1.5">
             <Globe2 className="h-4 w-4 text-emerald-400" />
-            {t({ en: "Bitcoin Peer-to-Peer Network", ti: "መዘዛዊ (P2P) ቢትኮይን" }, isTi)}
+            {t({ en: "Bitcoin P2P Details", ti: "ናይ ቢትኮይን P2P ብዝርዝር" }, isTi)}
           </span>
         </button>
       </div>
 
-      {/* Centralized Pipeline */}
-      {mode === "centralized" && (
+      {/* ================= TAB 1: LIVE RACE ================= */}
+      {activeTab === "race" && (
+        <div className="space-y-6">
+          {/* Race Controls */}
+          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/80 p-3.5">
+            <button
+              type="button"
+              disabled={raceRunning || btcProgress === 100}
+              onClick={startRace}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-xs font-bold text-zinc-950 shadow-md hover:from-amber-400 hover:to-orange-400 disabled:opacity-40"
+            >
+              <Play className="h-4 w-4 fill-current" />
+              {raceRunning
+                ? t({ en: "Transferring...", ti: "ይሰጋገር ኣሎ..." }, isTi)
+                : t({ en: "Start Transfer Race", ti: "ምስግጋር ጀምር" }, isTi)}
+            </button>
+
+            <button
+              type="button"
+              onClick={resetRace}
+              className="inline-flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 hover:text-zinc-100"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {t({ en: "Reset", ti: "ዳግማይ ጀምር" }, isTi)}
+            </button>
+
+            <div className="ml-auto text-[11px] text-zinc-400">
+              {t(
+                {
+                  en: "Watch settlement speed, intermediary fees, and censorship vulnerability:",
+                  ti: "ናይ ግዜ ፍጥነት፡ ናይ ባንክታት ክፍሊትን ናይ ምእጋድ ሓደጋን ተዓዘብ:",
+                },
+                isTi
+              )}
+            </div>
+          </div>
+
+          {/* Lane 1: Traditional Bank Wire */}
+          <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/15 via-zinc-950 to-zinc-950 p-4 sm:p-5 shadow-lg">
+            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-2.5">
+                <div className="rounded-lg bg-rose-500/20 p-2 text-rose-300">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h5 className="font-bold text-sm text-zinc-100 sm:text-base">
+                    {t({ en: "Traditional Centralized Bank Wire", ti: "ባህላዊ ማእከላይ ባንኪ" }, isTi)}
+                  </h5>
+                  <p className="text-xs text-zinc-400">
+                    Alice ($100) ➔ Kampala Bank ➔ Clearing House ➔ Correspondent Bank ➔ Asmara ➔ Bob
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <div>
+                {bankFrozen ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-rose-500 bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-300 animate-pulse">
+                    <Ban className="h-3.5 w-3.5" />
+                    {t({ en: "ACCOUNT FROZEN (KYC/Sanction)", ti: "ሕሳብ ተዓጽዩ / ደው ኢሉ!" }, isTi)}
+                  </span>
+                ) : bankProgress >= 85 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-300">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    {t({ en: "Arrived after 4 Days (-$18.50 Fee)", ti: "ድሕሪ 4 መዓልቲ ($18.50 ተቖሪጹ) በጺሑ" }, isTi)}
+                  </span>
+                ) : bankProgress > 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-300">
+                    <Clock className="h-3.5 w-3.5 text-rose-400 animate-spin" />
+                    {t({ en: "Processing via SWIFT... (Day 2 of 4)", ti: "ብባንክታት ይሕለፍ ኣሎ... (መዓልቲ 2 ካብ 4)" }, isTi)}
+                  </span>
+                ) : (
+                  <span className="text-xs text-zinc-500">
+                    {t({ en: "Ready to initiate wire", ti: "ምስግጋር ንምጅማር ድሉው" }, isTi)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div
+                  className={`h-full transition-all duration-700 ${
+                    bankFrozen ? "bg-rose-500" : "bg-gradient-to-r from-rose-500 to-amber-500"
+                  }`}
+                  style={{ width: bankFrozen ? "45%" : `${bankProgress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Metrics */}
+            <div className="mt-4 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Settlement Time", ti: "ዝወስዶ ግዜ" }, isTi)}
+                </span>
+                <p className="font-bold text-zinc-200">
+                  {bankFrozen
+                    ? t({ en: "Indefinite Hold", ti: "ንዘይተወሰነ እዋን ተዓጊቱ" }, isTi)
+                    : t({ en: "3 to 5 Business Days", ti: "3 - 5 ናይ ስራሕ መዓልታት" }, isTi)}
+                </p>
+              </div>
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Intermediary Fee", ti: "ዝተቖርጸ ክፍሊት" }, isTi)}
+                </span>
+                <p className="font-bold text-rose-300">-$18.50 (18.5% cut)</p>
+              </div>
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Final Delivery", ti: "ተቐባሊ ዝረኸቦ" }, isTi)}
+                </span>
+                <p className="font-bold text-amber-300">
+                  {bankFrozen ? "$0.00 (Frozen)" : "$81.50"}
+                </p>
+              </div>
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Censorship Vulnerability", ti: "ናይ ምእጋድ ሓደጋ" }, isTi)}
+                </span>
+                <p className="font-bold text-rose-400">
+                  {t({ en: "High (4 Intermediaries)", ti: "ልዑል (4 ማእከላይ ትካላት)" }, isTi)}
+                </p>
+              </div>
+            </div>
+
+            {/* Freeze Button for Bank */}
+            <div className="mt-3 flex items-center justify-between border-t border-rose-500/20 pt-3">
+              <span className="text-xs text-zinc-400">
+                {t(
+                  {
+                    en: "Test centralized vulnerability:",
+                    ti: "ማእከላይ ባንኪ ክዓግት ከሎ እንታይ ከም ዝኸውን ፈትን:",
+                  },
+                  isTi
+                )}
+              </span>
+              <button
+                type="button"
+                onClick={freezeBankAction}
+                disabled={bankFrozen}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/50 bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-200 hover:bg-rose-500/30 disabled:opacity-50"
+              >
+                <ShieldAlert className="h-3.5 w-3.5" />
+                {t({ en: "Trigger Bank Freeze / KYC Demand", ti: "ሕሳብ ዓጽው / ደው ኣብሎ" }, isTi)}
+              </button>
+            </div>
+          </div>
+
+          {/* Lane 2: Bitcoin Peer-to-Peer */}
+          <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/20 via-zinc-950 to-zinc-950 p-4 sm:p-5 shadow-lg">
+            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-2.5">
+                <div className="rounded-lg bg-emerald-500/20 p-2 text-emerald-300">
+                  <Globe2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h5 className="font-bold text-sm text-zinc-100 sm:text-base">
+                    {t({ en: "Bitcoin Peer-to-Peer Network", ti: "መዘዛዊ (P2P) ቢትኮይን መርበብ" }, isTi)}
+                  </h5>
+                  <p className="text-xs text-zinc-400">
+                    Alice 🔑 ══════ [Global Peer Nodes & Miners] ══════→ Bob 🔑
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <div>
+                {btcProgress === 100 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400 bg-emerald-500/25 px-3 py-1 text-xs font-bold text-emerald-200 shadow">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+                    {t({ en: "CONFIRMED ON-CHAIN (~10 min)", ti: "ኣብ ውሽጢ 10 ደቓይቕ ተረጋጊጹ!" }, isTi)}
+                  </span>
+                ) : btcProgress > 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-cyan-500/40 bg-cyan-500/20 px-3 py-1 text-xs font-semibold text-cyan-200">
+                    <Zap className="h-3.5 w-3.5 text-cyan-400 animate-bounce" />
+                    {t({ en: "Broadcasting across peer nodes...", ti: "ናብ መላእ ዓለም ይዘርጋሕ ኣሎ..." }, isTi)}
+                  </span>
+                ) : (
+                  <span className="text-xs text-zinc-500">
+                    {t({ en: "Ready to sign & broadcast", ti: "ብምስጢራዊ ቁልፊ ክፍረም ድሉው" }, isTi)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-emerald-300 transition-all duration-500 shadow-sm"
+                  style={{ width: `${btcProgress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Metrics */}
+            <div className="mt-4 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Settlement Time", ti: "ዝወስዶ ግዜ" }, isTi)}
+                </span>
+                <p className="font-bold text-emerald-300">
+                  {t({ en: "~10 Minutes (Next Block)", ti: "~10 ደቓይቕ (ቀጻሊ ብሎክ)" }, isTi)}
+                </p>
+              </div>
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Network Miner Fee", ti: "ናይ ዕደና ክፍሊት" }, isTi)}
+                </span>
+                <p className="font-bold text-cyan-300">&lt; $0.40 (Pure Sats)</p>
+              </div>
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Final Delivery", ti: "ተቐባሊ ዝረኸቦ" }, isTi)}
+                </span>
+                <p className="font-bold text-emerald-200">
+                  150,000 Sats (100% of principal)
+                </p>
+              </div>
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-2.5">
+                <span className="text-[10px] uppercase text-zinc-500">
+                  {t({ en: "Censorship Vulnerability", ti: "ናይ ምእጋድ ሓደጋ" }, isTi)}
+                </span>
+                <p className="font-bold text-emerald-400">
+                  {t({ en: "Zero (No Middleman)", ti: "ዜሮ (ማእከላይ የለን)" }, isTi)}
+                </p>
+              </div>
+            </div>
+
+            {/* Censorship Test for BTC */}
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-emerald-500/20 pt-3">
+              <span className="text-xs text-zinc-400">
+                {t(
+                  {
+                    en: "Can a government or bank stop this transaction?",
+                    ti: "መንግስቲ ወይ ባንኪ ነዚ ትራንዛክሽን ደው ከብሎ ይኽእል ድዩ?",
+                  },
+                  isTi
+                )}
+              </span>
+              <button
+                type="button"
+                onClick={attemptBtcCensor}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/50 bg-cyan-500/15 px-3 py-1.5 text-xs font-semibold text-cyan-200 hover:bg-cyan-500/25"
+              >
+                <ShieldCheck className="h-3.5 w-3.5 text-cyan-400" />
+                {t({ en: "Attempt to Censor Bitcoin Transfer", ti: "ቢትኮይን ንምዕጋት ፈትን" }, isTi)}
+              </button>
+            </div>
+
+            {btcCensorAttempted && (
+              <div className="mt-3 rounded-lg border border-emerald-400/50 bg-emerald-950/40 p-3 text-xs text-emerald-200 animate-fadeIn">
+                <div className="flex items-center gap-2 font-bold text-emerald-300">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>
+                    {t(
+                      {
+                        en: "Censorship Blocked: Network Rebuffed Intervention!",
+                        ti: "ምዕጋት ኣይተኻእለን: እቲ መርበብ ንምዕጋት ዝተገብረ ፈተነ ነጺግዎ!",
+                      },
+                      isTi
+                    )}
+                  </span>
+                </div>
+                <p className="mt-1 text-[11px] leading-relaxed text-zinc-300">
+                  {t(
+                    {
+                      en: "Alice's signature is mathematically valid. No CEO, politician, or bank server has the cryptographic key to rewrite the block or cancel the broadcast.",
+                      ti: "ናይ ኣሊስ ፌርማ ብሒሳብ ቅኑዕ ስለዝኾነ፡ ማንም ፕረዚደንት፡ ባንክ ወይ በዓል ስልጣን ነቲ ትራንዛክሽን ናይ ምዕጋት ወይ ናይ ምድምሳስ ቁልፊ የብሉን።",
+                    },
+                    isTi
+                  )}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Key Takeaway Card */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-xs text-zinc-300">
+            <span className="font-bold text-amber-400">
+              {t({ en: "The Fundamental Lesson:", ti: "ቀንዲ ትምህርቲ:" }, isTi)}
+            </span>{" "}
+            {t(
+              {
+                en: "Traditional money transmission relies on trusted third parties who extract rent, dictate business hours, and can seize funds. Bitcoin acts as pure peer-to-peer electronic cash — permissionless, borderless, and mathematically settled.",
+                ti: "ባህላዊ ምስግጋር ገንዘብ ኣብ ማእከላይ ትካላት ዝምርኮስ ኮይኑ፡ ልዑል ክፍሊት የኽፍል፡ ናይ ስራሕ ሰዓታት ይውስን፡ ገንዘብካ እውን ክዓግት ይኽእል። ቢትኮይን ግን መዛኑ ንመዛኑ (P2P) ዝኾነ ናጻ፡ ዶብ ዘይብሉ፡ ብሒሳብ ዝተረጋገጸ ዲጂታላዊ ጥረ ገንዘብ እዩ።",
+              },
+              isTi
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ================= TAB 2: CENTRALIZED DEEP DIVE ================= */}
+      {activeTab === "centralized" && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
-            {/* Step 1 */}
             <div
               className={`rounded-xl border p-3 transition-all ${
-                step >= 1
+                centralizedStep >= 1
                   ? "border-amber-500/50 bg-amber-950/20 text-amber-200"
                   : "border-zinc-800 bg-zinc-950 text-zinc-400"
               }`}
@@ -517,26 +917,25 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
               </p>
             </div>
 
-            {/* Step 2 */}
             <div
               className={`rounded-xl border p-3 transition-all ${
-                censorshipTriggered
+                singleBankFrozen
                   ? "border-rose-500 bg-rose-950/40 text-rose-200"
-                  : step >= 2
+                  : centralizedStep >= 2
                   ? "border-amber-500/50 bg-amber-950/20 text-amber-200"
                   : "border-zinc-800 bg-zinc-950 text-zinc-400"
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold">2. SWIFT / Clearing</span>
-                {censorshipTriggered ? (
+                {singleBankFrozen ? (
                   <ShieldAlert className="h-4 w-4 text-rose-400 animate-pulse" />
                 ) : (
                   <Building2 className="h-4 w-4 text-zinc-400" />
                 )}
               </div>
               <p className="mt-2 text-[11px] leading-tight">
-                {censorshipTriggered
+                {singleBankFrozen
                   ? t(
                       {
                         en: "FLAGGED / FROZEN: 'Cross-border sanction match or missing intermediary license.'",
@@ -554,10 +953,9 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
               </p>
             </div>
 
-            {/* Step 3 */}
             <div
               className={`rounded-xl border p-3 transition-all ${
-                step >= 3
+                centralizedStep >= 3
                   ? "border-amber-500/50 bg-amber-950/20 text-amber-200"
                   : "border-zinc-800 bg-zinc-950 text-zinc-400"
               }`}
@@ -577,10 +975,9 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
               </p>
             </div>
 
-            {/* Step 4 */}
             <div
               className={`rounded-xl border p-3 transition-all ${
-                step >= 4
+                centralizedStep >= 4
                   ? "border-emerald-500/50 bg-emerald-950/20 text-emerald-200"
                   : "border-zinc-800 bg-zinc-950 text-zinc-400"
               }`}
@@ -601,23 +998,22 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
             </div>
           </div>
 
-          {/* Controls */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               type="button"
-              disabled={censorshipTriggered || step >= 4}
-              onClick={() => setStep((s) => Math.min(s + 1, 4))}
+              disabled={singleBankFrozen || centralizedStep >= 4}
+              onClick={() => setCentralizedStep((s) => Math.min(s + 1, 4))}
               className="rounded-lg bg-amber-500/20 border border-amber-500/50 px-4 py-2 text-xs font-semibold text-amber-200 hover:bg-amber-500/30 disabled:opacity-40"
             >
-              {step === 0
+              {centralizedStep === 0
                 ? t({ en: "Initiate Bank Wire", ti: "ምስግጋር ባንኪ ጀምር" }, isTi)
-                : t({ en: `Advance Step (${step}/4)`, ti: `ንቕድሚት ቀጽል (${step}/4)` }, isTi)}
+                : t({ en: `Advance Step (${centralizedStep}/4)`, ti: `ንቕድሚት ቀጽል (${centralizedStep}/4)` }, isTi)}
             </button>
             <button
               type="button"
               onClick={() => {
-                setStep(2);
-                setCensorshipTriggered(true);
+                setCentralizedStep(2);
+                setSingleBankFrozen(true);
               }}
               className="rounded-lg bg-rose-500/20 border border-rose-500/50 px-3 py-2 text-xs font-semibold text-rose-200 hover:bg-rose-500/30"
             >
@@ -625,36 +1021,25 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
             </button>
             <button
               type="button"
-              onClick={() => resetSim("centralized")}
+              onClick={() => {
+                setCentralizedStep(0);
+                setSingleBankFrozen(false);
+              }}
               className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs text-zinc-400 hover:text-zinc-200"
             >
               {t({ en: "Reset", ti: "ዳግማይ ጀምር" }, isTi)}
             </button>
           </div>
-
-          <div className="rounded-lg border border-zinc-800 bg-black/40 p-3 text-xs text-zinc-300">
-            <span className="font-semibold text-rose-400">
-              {t({ en: "The Centralized Trade-off:", ti: "ናይ ማእከላይ ባንኪ ድሩትነት:" }, isTi)}
-            </span>{" "}
-            {t(
-              {
-                en: "Every intermediary has the power to seize, delay, freeze, or censor the funds. You need their permission to use your own money.",
-                ti: "ኣብ መንጎ ዘሎ ነፍሲ ወከፍ ማእከላይ ትካል ገንዘብካ ናይ ምእጋድ፡ ምድንጓይ፡ ወይ ምኽልካል ምሉእ ስልጣን ኣለዎ። ናትካ ገንዘብ ንምጥቃም ናቶም ፍቓድ የድልየካ።",
-              },
-              isTi
-            )}
-          </div>
         </div>
       )}
 
-      {/* P2P Pipeline */}
-      {mode === "p2p" && (
+      {/* ================= TAB 3: P2P DEEP DIVE ================= */}
+      {activeTab === "p2p" && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {/* Step 1 */}
             <div
               className={`rounded-xl border p-3 transition-all ${
-                step >= 1
+                p2pStep >= 1
                   ? "border-cyan-500/50 bg-cyan-950/20 text-cyan-200"
                   : "border-zinc-800 bg-zinc-950 text-zinc-400"
               }`}
@@ -674,10 +1059,9 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
               </p>
             </div>
 
-            {/* Step 2 */}
             <div
               className={`rounded-xl border p-3 transition-all ${
-                step >= 2
+                p2pStep >= 2
                   ? "border-cyan-500/50 bg-cyan-950/20 text-cyan-200"
                   : "border-zinc-800 bg-zinc-950 text-zinc-400"
               }`}
@@ -697,10 +1081,9 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
               </p>
             </div>
 
-            {/* Step 3 */}
             <div
               className={`rounded-xl border p-3 transition-all ${
-                step >= 3
+                p2pStep >= 3
                   ? "border-emerald-500/50 bg-emerald-950/20 text-emerald-200"
                   : "border-zinc-800 bg-zinc-950 text-zinc-400"
               }`}
@@ -721,44 +1104,34 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
             </div>
           </div>
 
-          {/* Controls */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               type="button"
-              disabled={step >= 3}
-              onClick={() => setStep((s) => Math.min(s + 1, 3))}
+              disabled={p2pStep >= 3}
+              onClick={() => setP2pStep((s) => Math.min(s + 1, 3))}
               className="rounded-lg bg-emerald-500/20 border border-emerald-500/50 px-4 py-2 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/30 disabled:opacity-40"
             >
-              {step === 0
+              {p2pStep === 0
                 ? t({ en: "Broadcast P2P Transaction", ti: "ናይ ቢትኮይን ምስግጋር ፈኑ" }, isTi)
-                : t({ en: `Confirm Next Block (${step}/3)`, ti: `ብሎክ ኣረጋግጽ (${step}/3)` }, isTi)}
+                : t({ en: `Confirm Next Block (${p2pStep}/3)`, ti: `ብሎክ ኣረጋግጽ (${p2pStep}/3)` }, isTi)}
             </button>
             <button
               type="button"
-              onClick={() => resetSim("p2p")}
+              onClick={() => setP2pStep(0)}
               className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs text-zinc-400 hover:text-zinc-200"
             >
               {t({ en: "Reset", ti: "ዳግማይ ጀምር" }, isTi)}
             </button>
-          </div>
-
-          <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/15 p-3 text-xs text-emerald-200">
-            <span className="font-semibold text-emerald-400">
-              {t({ en: "The Peer-to-Peer Breakthrough:", ti: "ናይ መዘዛዊ መርበብ ዓወት:" }, isTi)}
-            </span>{" "}
-            {t(
-              {
-                en: "No one can close the network on weekends, seize the transfer, or charge confiscatory intermediary fees. Digital cash operates like physical cash handed over person-to-person.",
-                ti: "ቀዳመ-ሰንበት ዝዕጾ ባንኪ የለን፡ ማንም ገንዘብካ ክዓግት ወይ ልዑል ክፍሊት ክቖርጽ ኣይኽእልን። ልክዕ ከም ናይ ኢድ ጥረ ገንዘብ ብቐጥታ ካብ ኢድ ናብ ኢድ ይሰጋገር።",
-              },
-              isTi
-            )}
           </div>
         </div>
       )}
     </section>
   );
 }
+
+/* =========================================================================
+   5.2 The Three Pillars of Bitcoin
+   ========================================================================= */
 
 /* =========================================================================
    5.2 The Three Pillars of Bitcoin
@@ -772,14 +1145,14 @@ type NodeLocation = {
 };
 
 const initialNodes: NodeLocation[] = [
-  { id: "n1", city: "Nairobi", country: "Kenya", online: true },
-  { id: "n2", city: "Lagos", country: "Nigeria", online: true },
-  { id: "n3", city: "Asmara", country: "Eritrea", online: true },
-  { id: "n4", city: "Frankfurt", country: "Germany", online: true },
-  { id: "n5", city: "Tokyo", country: "Japan", online: true },
-  { id: "n6", city: "São Paulo", country: "Brazil", online: true },
-  { id: "n7", city: "New York", country: "USA", online: true },
-  { id: "n8", city: "Johannesburg", country: "South Africa", online: true },
+  { id: 'n1', city: 'Nairobi', country: 'Kenya', online: true },
+  { id: 'n2', city: 'Lagos', country: 'Nigeria', online: true },
+  { id: 'n3', city: 'Asmara', country: 'Eritrea', online: true },
+  { id: 'n4', city: 'Frankfurt', country: 'Germany', online: true },
+  { id: 'n5', city: 'Tokyo', country: 'Japan', online: true },
+  { id: 'n6', city: 'São Paulo', country: 'Brazil', online: true },
+  { id: 'n7', city: 'New York', country: 'USA', online: true },
+  { id: 'n8', city: 'Johannesburg', country: 'South Africa', online: true },
 ];
 
 function ThreePillarsExplorer({ isTi }: { isTi: boolean }) {
