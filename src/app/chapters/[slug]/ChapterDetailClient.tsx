@@ -81,6 +81,18 @@ const Chapter4InteractiveLesson = dynamic(
   }
 );
 
+const Chapter5InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter5InteractiveLesson").then((module) => module.Chapter5InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 5 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -430,6 +442,15 @@ function TigrinyaChapterLesson({
             ) : null}
             {chapter.slug === "from-crisis-to-innovation" && heading.startsWith("4.2") ? (
               <Chapter4InteractiveLesson module="timestamp_chain" isTi={true} />
+            ) : null}
+            {chapter.slug === "the-birth-of-bitcoin" && heading.startsWith("5.1") ? (
+              <Chapter5InteractiveLesson module="genesis_whitepaper" isTi={true} />
+            ) : null}
+            {chapter.slug === "the-birth-of-bitcoin" && heading.startsWith("5.2") ? (
+              <>
+                <Chapter5InteractiveLesson module="p2p_vs_centralized" isTi={true} />
+                <Chapter5InteractiveLesson module="three_pillars" isTi={true} />
+              </>
             ) : null}
           </ChapterSectionAnimated>
         );
@@ -1690,6 +1711,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "from-crisis-to-innovation" && sectionIdx === 2 ? (
                 <Chapter4InteractiveLesson module="timestamp_chain" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-birth-of-bitcoin" && sectionIdx === 1 ? (
+                <Chapter5InteractiveLesson module="genesis_whitepaper" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "the-birth-of-bitcoin" && sectionIdx === 2 ? (
+                <>
+                  <Chapter5InteractiveLesson module="p2p_vs_centralized" isTi={isTi} />
+                  <Chapter5InteractiveLesson module="three_pillars" isTi={isTi} />
+                </>
               ) : null}
               </React.Fragment>
               );
