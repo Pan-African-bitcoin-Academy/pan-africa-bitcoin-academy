@@ -758,7 +758,7 @@ function PeerToPeerSimulator({ isTi }: { isTi: boolean }) {
                     {t({ en: "Bitcoin Peer-to-Peer Network", ti: "መዘዛዊ (P2P) ቢትኮይን መርበብ" }, isTi)}
                   </h5>
                   <p className="text-xs text-zinc-400">
-                    Alice 🔑 ══════ [Global Peer Nodes & Miners] ══════→ Bob 🔑
+                    Alice [Signed Key] ══════ [Global Peer Nodes & Miners] ══════→ Bob [Public Address]
                   </p>
                 </div>
               </div>
@@ -1184,20 +1184,6 @@ function ThreePillarsExplorer({ isTi }: { isTi: boolean }) {
   // Pillar 2: Transparency state
   const [showIdentity, setShowIdentity] = useState(false);
 
-  // Pillar 3: Scarcity Halving slider
-  const [epochIndex, setEpochIndex] = useState(4); // default 2024 (epoch 4)
-
-  const epochs = [
-    { year: 2009, reward: "50 BTC", mined: "10,500,000", pct: "50.0%", era: "Genesis era" },
-    { year: 2012, reward: "25 BTC", mined: "15,750,000", pct: "75.0%", era: "1st Halving" },
-    { year: 2016, reward: "12.5 BTC", mined: "18,375,000", pct: "87.5%", era: "2nd Halving" },
-    { year: 2020, reward: "6.25 BTC", mined: "19,687,500", pct: "93.75%", era: "3rd Halving" },
-    { year: 2024, reward: "3.125 BTC", mined: "20,343,750", pct: "96.87%", era: "4th Halving (Current)" },
-    { year: 2028, reward: "1.5625 BTC", mined: "20,671,875", pct: "98.43%", era: "5th Halving" },
-    { year: 2140, reward: "0 BTC", mined: "21,000,000", pct: "100.0%", era: "Final Halving (End of Issuance)" },
-  ];
-
-  const currentEpoch = epochs[epochIndex];
 
   return (
     <section className={panelClass} aria-label="The Three Pillars of Bitcoin">
@@ -1461,90 +1447,92 @@ function ThreePillarsExplorer({ isTi }: { isTi: boolean }) {
       {/* Pillar 3 Content */}
       {pillar === "scarcity" && (
         <div className="space-y-4">
-          <p className="text-xs text-zinc-300">
+          {/* Intro */}
+          <p className="text-sm text-zinc-300 leading-relaxed">
             {t(
               {
-                en: "Unlike fiat currencies which central banks print endlessly, Bitcoin has an absolute mathematical hard cap of 21,000,000 coins. Every 210,000 blocks (~4 years), the block subsidy cuts in half:",
-                ti: "ማእከላይ ባንክታት ብዘይ ገደብ ዝሓትምዎ ፊያት ገንዘብ ዘይኮነስ፡ ቢትኮይን 21,000,000 ጥራይ ዝውሰን ቀዋሚ ቁጽሪ ኣለዎ። ኣብ ነፍሲ ወከፍ 4 ዓመት (210,000 ብሎክስ) ሓድሽ ዝወሃብ ብፍርቂ ይጎድል:",
+                en: "Unlike fiat currencies that central banks can print without limit, Bitcoin has an absolute mathematical hard cap of 21,000,000 coins — enforced by code and shared by every node on the network.",
+                ti: "ማእከላይ ባንክታት ብዘይ ዝኾነ ገደብ ዝሓትምዎ ፊያት ገንዘብ ዘይኮነስ፡ ቢትኮይን ቀዋሚ ሒሳባዊ ዝለዓለ ቁጽሪ 21,000,000 ሳንቲም ጥራይ ኣለዎ — እዚ ብኮድ ዝተተግበረን ብነፍሲ ወከፍ ኖድ ናይቲ መርበብ ዝካፈልን እዩ።",
               },
               isTi
             )}
           </p>
 
-          {/* Halving Selector */}
-          <div className="rounded-xl border border-amber-500/30 bg-zinc-950 p-4">
-            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center border-b border-zinc-800 pb-3">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-                  {currentEpoch.era} · {currentEpoch.year}
-                </span>
-                <h5 className="mt-0.5 text-base font-bold text-zinc-100">
-                  Block Reward: <span className="text-amber-300">{currentEpoch.reward}</span>
-                </h5>
+          {/* Fact cards */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {/* Hard Cap */}
+            <div className="rounded-xl border border-amber-500/30 bg-zinc-900 p-4 flex flex-col gap-1">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 mb-1">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
               </div>
-              <div className="text-right">
-                <span className="text-xs text-zinc-400">Total Coins Mined:</span>
-                <p className="text-sm font-mono font-bold text-emerald-300">
-                  {currentEpoch.mined} / 21,000,000 ({currentEpoch.pct})
-                </p>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mt-4">
-              <div className="flex justify-between text-[11px] text-zinc-400 mb-1">
-                <span>0 BTC</span>
-                <span>21,000,000 BTC (Hard Limit)</span>
-              </div>
-              <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-800">
-                <div
-                  className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-500"
-                  style={{ width: currentEpoch.pct }}
-                />
-              </div>
-            </div>
-
-            {/* Slider */}
-            <div className="mt-5">
-              <label htmlFor="epoch-range" className="text-xs font-medium text-zinc-400">
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                {t({ en: "Absolute Hard Cap", ti: "ቀዋሚ ዝለዓለ ዳርጋ" }, isTi)}
+              </p>
+              <p className="text-sm text-zinc-200 font-mono font-bold">21,000,000 BTC</p>
+              <p className="text-xs text-zinc-400">
                 {t(
-                  {
-                    en: "Slide through Halving Epochs (2009 to 2140):",
-                    ti: "ናይ ምጉዳል መድረኻት ምረጽ (2009 ክሳብ 2140):",
-                  },
+                  { en: "No government or bank can ever increase this limit.", ti: "ዝኾነ መንግስቲ ወይ ባንኪ እዚ ዳርጋ ዘይቕይሮ ኮይኑ ይጸንሕ።" },
                   isTi
                 )}
-              </label>
-              <input
-                id="epoch-range"
-                type="range"
-                min={0}
-                max={epochs.length - 1}
-                value={epochIndex}
-                onChange={(e) => setEpochIndex(Number(e.target.value))}
-                className="mt-2 w-full accent-amber-400 cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-zinc-500 mt-1">
-                {epochs.map((ep, i) => (
-                  <span
-                    key={ep.year}
-                    className={i === epochIndex ? "font-bold text-amber-300" : ""}
-                  >
-                    {ep.year}
-                  </span>
-                ))}
+              </p>
+            </div>
+
+            {/* Already Mined */}
+            <div className="rounded-xl border border-emerald-500/30 bg-zinc-900 p-4 flex flex-col gap-1">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mb-1">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="m14 12-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9" />
+                  <path d="M21 3a16 16 0 0 0-8.5 2.5l5.5 5.5A16 16 0 0 0 21 3Z" />
+                  <path d="M3 21l3-3" />
+                </svg>
               </div>
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                {t({ en: "Already Mined (2024)", ti: "ድሮ ዝተዓደለ (2024)" }, isTi)}
+              </p>
+              <p className="text-sm text-zinc-200 font-mono font-bold">~93%</p>
+              <p className="text-xs text-zinc-400">
+                {t(
+                  { en: "Over 93% of all Bitcoin already distributed to miners.", ti: "ልዕሊ 93% ካብ ኩሉ ቢትኮይን ድሮ ናብ ዕደናውያን ተዓዲሉ ኣሎ።" },
+                  isTi
+                )}
+              </p>
+            </div>
+
+            {/* Halving */}
+            <div className="rounded-xl border border-cyan-500/30 bg-zinc-900 p-4 flex flex-col gap-1">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mb-1">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 22h14" />
+                  <path d="M5 2h14" />
+                  <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
+                  <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
+                </svg>
+              </div>
+              <p className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                {t({ en: "Halving Every ~4 Years", ti: "ኣብ ነፍሲ ወከፍ ~4 ዓመት ምጉዳል" }, isTi)}
+              </p>
+              <p className="text-sm text-zinc-200 font-mono font-bold">210,000 {t({ en: "blocks", ti: "ብሎክስ" }, isTi)}</p>
+              <p className="text-xs text-zinc-400">
+                {t(
+                  { en: "New issuance cuts in half, making Bitcoin increasingly scarce over time.", ti: "ሓድሽ ዝወሃብ ቢትኮይን ብፍርቂ ይጎድል፡ ምስ ግዜ ኣጸጋሚ ይኸውን።" },
+                  isTi
+                )}
+              </p>
             </div>
           </div>
 
-          <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-200">
+          {/* Callout */}
+          <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-4 text-xs text-amber-200">
             <span className="font-semibold text-amber-300">
               {t({ en: "Mathematical Certainty:", ti: "ሒሳባዊ ርግጸኝነት:" }, isTi)}
             </span>{" "}
             {t(
               {
-                en: "Over 93% of all Bitcoin has already been mined. By year 2140, the final satoshi will be minted, and miners will be rewarded solely through transaction fees. No government decree or bank crisis can ever increase the 21 million limit.",
-                ti: "ልዕሊ 93% ካብ ኩሉ ቢትኮይን ድሮ ተዓዲሉ ተወዲኡ እዩ። ኣብ 2140 እታ ናይ መወዳእታ ሳት ምስ ወጸት፡ ዕደናውያን ብናይ ምስግጋር ክፍሊት ጥራይ ይኽፈሉ። ማንም መንግስቲ ወይ ባንኪ ካብ 21 ሚልዮን ንላዕሊ ክውስኽ ኣይክእልን።",
+                en: "Bitcoin's scarcity is enforced by mathematics and consensus — not by any person, company, or government. Explore the full Halving schedule in the Mining chapter.",
+                ti: "ዋሕዲ ቢትኮይን ብሒሳብን ምስምምዓትን ዝተተግበረ እዩ — ብዝኾነ ሰብ፡ ኩባንያ ወይ መንግስቲ ዘይኮነስ። ናይ ምጉዳል ፕሮግራም ሙሉእ ዝርዝር ኣብ ምዕራፍ ዕደና ዕዘበሉ።",
               },
               isTi
             )}
