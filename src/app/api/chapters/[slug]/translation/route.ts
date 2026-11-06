@@ -44,7 +44,7 @@ export async function GET(
 
     return Response.json(
       { content, title },
-      { headers: { "Cache-Control": "public, max-age=3600" } },
+      { headers: { "Cache-Control": "no-cache, no-store, must-revalidate" } },
     );
   } catch (error) {
     console.error(`Failed to load Tigrinya chapter translation for ${slug}.`, error);

@@ -48,53 +48,91 @@ But Bitcoin was different. Satoshi's invention solved the hardest problem: how t
 > ሳቶሺ ስሙ ዘይምግላጹ ኮነ ኢሉ ክኸውን ይኽእል እዩ - መንግስታት ነቲ ፈጣሪ ዒላማ ከይገብርዎን እቲ ቴክኖሎጂ ባዕሉ ክዛረብ ንምግባርን። ነቲ ኦሪጅናል 9 ገጻት ዘለዎ ሰነድ ንምንባብ [ቢትኮይን ዋይትፔፐር ኣውርድ](https://bitcoin.org/bitcoin.pdf)።
 
 ### 5.2 Bitcoin as Peer-to-Peer Electronic Cash / 5.2 ቢትኮይን ከም መዛኑ ኤሌክትሮኒካዊ ጥረ ገንዘብ
-So, how does Bitcoin work?  
-ስለዚ፡ ቢትኮይን ከመይ ይሰርሕ?
 
-Instead of a bank keeping the ledger (a record of who owns what), Bitcoin uses a public ledger called the blockchain. This ledger is stored and updated by thousands of computers all over the world. Anyone can see it, but no one can secretly change it.  
-ባንክ ኣብ ክንዲ ነቲ መዝገብ (መን እንታይ ከም ዝውንን መዝገብ) ዝሕዞ፡ ቢትኮይን ብሎክቸይን ዝበሃል ህዝባዊ መዝገብ ይጥቀም። እዚ መዝገብ እዚ ኣብ መላእ ዓለም ብዝርከባ ብኣሽሓት ዝቑጸራ ኮምፒዩተራት ዝኽዘንን ዝመሓየሽን እዩ። ዝኾነ ሰብ ክርእዮ ይኽእል እዩ፡ ብሕቡእ ግን ክቕይሮ ዝኽእል የለን።
+#### How Does Bitcoin Work? / ስለዚ፡ ቢትኮይን ከመይ ይሰርሕ?
 
-When you send Bitcoin, you don't need a bank's approval. You simply use your private key to sign the transaction, proving it's yours. The network checks it, confirms it, and adds it to the blockchain. Once confirmed, it can't be reversed or erased.  
-ቢትኮይን ክትሰድድ ከለኻ ናይ ባንክ ፍቓድ ኣየድልየካን እዩ። በቃ ነቲ ትራንዛክሽን ንምፍራም ናይ ብሕቲ መፍትሕካ ትጥቀም፣ ናትካ ምዃኑ ተረጋግጽ። እቲ ኔትወርክ ይምርምሮ፡ የረጋግጾ፡ ናብቲ ብሎክቸይን ድማ ይውስኾ። ሓንሳብ ምስ ተረጋገጸ፡ ንድሕሪት ክምለስ ወይ ክድምሰስ ኣይክእልን እዩ።
+Instead of a bank keeping the ledger (a record of who owns what) in secret, Bitcoin uses a public ledger called the blockchain. This ledger is stored and updated by thousands of independent computers (nodes) all over the world. Anyone can see it, but no one can secretly change it.  
+ባንክ ኣብ ክንዲ ነቲ ናይ ሕሳብ መዝገብ (መን እንታይ ከም ዝውንን) ብሕቡእ ዝሕዞ፡ ቢትኮይን **ብሎክቸይን** ዝበሃል ሓባራዊ ህዝባዊ መዝገብ ይጥቀም። እዚ መዝገብ እዚ ኣብ መላእ ዓለም ብዝርከባ ብኣሽሓት ዝቑጸራ ናጻ ኮምፒዩተራት (Nodes) ዝኽዘንን ዝመሓየሽን እዩ። ዝኾነ ሰብ ክርእዮ ይኽእል እዩ፡ ብሕቡእ ግን ክቕይሮ ዝኽእል የለን።
 
-This makes Bitcoin truly peer-to-peer electronic cash — just like handing over cash in person, but now possible over the internet, instantly, across borders, without middlemen.  
-እዚ ድማ ንቢትኮይን ብሓቂ መዛኑ ንመዛኑ ዝኸውን ኤሌክትሮኒካዊ ጥረ ገንዘብ ይገብሮ - ልክዕ ከምቲ ብኣካል ጥረ ገንዘብ ምሃብ፡ ሕጂ ግን ብኢንተርነት፡ ብቕጽበት፡ ስግር ዶባት፡ ብዘይ መንጎኛታት ዝከኣል እዩ።
+Sending Bitcoin happens in **3 simple steps**:  
+ምስግጋር ቢትኮይን ብ**3 ቀለልቲ ስጉምትታት** ይፍጸም:
 
-But Bitcoin was not just another type of money. It introduced three revolutionary features:  
-ቢትኮይን ግን ካልእ ዓይነት ገንዘብ ጥራይ ኣይነበረን። ሰለስተ ሰውራዊ መለለዪታት ኣተኣታትዩ፤
+1. **Sign / ምፍራም:** You don't need a bank's permission. You simply sign the transaction with your private key to prove ownership.  
+   ቢትኮይን ክትሰድድ ከለኻ ናይ ባንክ ፍቓድ ኣየድልየካን። በቃ ነቲ ትራንዛክሽን ብናይ ብሕቲ መፍትሕካ (Private Key) ፈሪምካ ናትካ ምዃኑ ተረጋግጽ።
+2. **Verify / ምምርማር:** The global network verifies the signed message against network rules.  
+   እቲ ዓለማዊ መርበብ ሓበሬታ ነቲ ዝተፈረመ መልእኽቲ ይምርምሮ፡ ሕግታት ይኽተል ከም ዘሎን ሒሳቡ ቅኑዕ ምዃኑን የረጋግጽ።
+3. **Confirm / ምምዝጋብ:** It is permanently added to the blockchain ledger and cannot be reversed or erased.  
+   ናብቲ ብሎክቸይን ይውሰኽ። ሓንሳብ ምስ ተረጋገጸ፡ ንድሕሪት ክምለስ ወይ ክድምሰስ ፈጺሙ ኣይክእልን።
 
-For the first time in history, humanity had a tool to store and transfer value without relying on trust in powerful institutions.  
-ወዲ ሰብ ኣብ ታሪኽ ንመጀመርታ ግዜ ኣብ ሓያላት ትካላት ኣብ ምትእምማን ከይተጸግዐ ዋጋ ዝዕቅብን ዘሰጋግርን መሳርሒ ነይርዎ።
+> **Peer-to-Peer Electronic Cash / መዛኑ ንመዛኑ ኤሌክትሮኒካዊ ጥረ ገንዘብ:**  
+> This makes Bitcoin truly peer-to-peer electronic cash — just like handing physical cash in person, but over the internet, instantly, across borders, without intermediaries.  
+> እዚ ድማ ንቢትኮይን ብሓቂ መዛኑ ንመዛኑ ዝኸውን ኤሌክትሮኒካዊ ጥረ ገንዘብ ይገብሮ — ልክዕ ከምቲ ብኣካል ጥረ ገንዘብ ምሃብ፡ ሕጂ ግን ብኢንተርነት፡ ብቕጽበት፡ ስግር ዶባት፡ ብዘይ ዝኾነ መንጎኛ ባንኪ ዝከኣል እዩ።
 
-#### Decentralization Explained / ዘይማእከላዊ ምሕደራ ክግለጽ
-In a centralized system, one organization or authority has the final say. For example, a bank controls your account balance and decides whether a transaction is allowed. If that authority fails, is corrupted, or changes its rules, users must accept the outcome.  
-ኣብ ማእከላይ ስርዓት፡ ሓደ ትካል ወይ በዓል መዚ ናይ መወዳእታ ድምጺ ኣለዎ። ንኣብነት ሓደ ባንክ ሚዛን ሕሳብካ ይቆጻጸርን ሓደ ትራንዛክሽን ይፍቀድ ድዩ ኣይፍቀድን ይውስን። እቲ ስልጣን እንተፈሺሉ፡ እንተተበላሽዩ ወይ ሕግታቱ እንተቐይሩ፡ ተጠቀምቲ ነቲ ውጽኢት ክቕበልዎ ኣለዎም።
+Bitcoin introduced three revolutionary pillars that allow humanity to store and transfer value without relying on trusted institutions:  
+ቢትኮይን ግን ካልእ ዓይነት ገንዘብ ጥራይ ኣይነበረን። ወዲ ሰብ ኣብ ታሪኽ ንመጀመርታ ግዜ ኣብ ሓያላት ትካላት ኣብ ምትእምማን ከይተጸግዐ ዋጋ ዝዕቅብን ዘሰጋግርን መሳርሒ ንኽረክብ ዘኽኣሉ ሰለስተ ሰውራዊ ዓንደ-ሕንጻታት ኣተኣታትዩ፤
 
-Bitcoin is decentralized, meaning no single entity is in charge. Thousands of independent computers around the world run the Bitcoin software and keep identical copies of the system's records. These participants voluntarily follow the same rules. If someone tries to cheat or change the rules, the rest of the network simply rejects it.  
-ቢትኮይን ዘይተማእከለ እዩ፣ ማለት ዝኾነ ሓደ ኣካል ሓላፍነት የብሉን። ኣብ መላእ ዓለም ዝርከባ ኣሽሓት ነጻ ኮምፒዩተራት ነቲ ቢትኮይን ሶፍትዌር ዘካይዳ ኮይነን ተመሳሳሊ ቅዳሓት መዛግብቲ ናይቲ ስርዓት ይሕዛ። እዞም ተሳተፍቲ ብወለንታኦም ተመሳሳሊ ሕግታት ይኽተሉ። ሓደ ሰብ ከታልል ወይ ሕግታት ክቕይር እንተፈቲኑ፡ ዝተረፉ ኣባላት መርበብ ሓበሬታ ጥራይ እዮም ዝነጽግዎ።
+---
 
-Decentralization matters because it removes single points of failure. There is no central switch to turn Bitcoin off, no single company to pressure, and no individual who can rewrite the rules. Power is distributed across the network rather than concentrated in a single location.  
-ዘይምምሕዳራዊ ምሕደራ ኣገዳሲ ዝኾነሉ ምኽንያት ድማ ንጽል ነጥብታት ውድቀት ስለዘወግድ እዩ። ንቢትኮይን ዘጥፍእ ማእከላይ መቐየሪ የለን፡ ጸቕጢ ዝገብር ሓደ ኩባንያ የለን፡ ከምኡ’ውን ነቲ ሕግታት ዳግማይ ክጽሕፎ ዝኽእል ውልቀሰብ የለን። ሓይሊ ኣብ ሓደ ቦታ ካብ ዝተዋህለለ ኣብ መላእ ኔትወርክ ይዝርጋሕ።
+#### 1. Decentralization Explained / ዘይማእከላዊ ምሕደራ ክግለጽ
 
-#### Transparency Without Identity / ግሉጽነት ብዘይ መንነት
-Bitcoin is built on transparency. Every transaction that has ever occurred is recorded on a public ledger called the blockchain. Anyone, anywhere in the world, can inspect this ledger and verify that the rules are being followed. This openness creates trust without requiring a central authority.  
-ቢትኮይን ኣብ ግሉጽነት ዝተሃንጸ እዩ። ኩሉ ዝተፈጸመ ትራንዛክሽን ኣብ ብሎክቸይን ዝበሃል ህዝባዊ መዝገብ ይምዝገብ። ዝኾነ ሰብ፡ ኣብ ዝኾነ ቦታ ዓለም፡ ነዚ መዝገብ መዝገብ ፈቲሹ፡ እቲ ሕግታት ይኽተል ከምዘሎ ከረጋግጽ ይኽእል። እዚ ክፉትነት ማእከላይ በዓል ስልጣን ከየድለየ ምትእምማን ይፈጥር።
+In a centralized system, one entity has final authority. A bank controls your balance and decides which transactions are permitted. If that institution fails or changes its rules, users suffer.  
+ኣብ ባህላዊ ማእከላይ ስርዓት፡ ሓደ ትካል ወይ በዓል መዚ ናይ መወዳእታ ድምጺ ኣለዎ። ንኣብነት ሓደ ባንክ ሚዛን ሕሳብካ ይቆጻጸርን ሓደ ትራንዛክሽን ይፍቀድ ድዩ ኣይፍቀድን ይውስን። እቲ ስልጣን እንተፈሺሉ፡ እንተተበላሽዩ ወይ ሕግታቱ እንተቐይሩ፡ ተጠቀምቲ ነቲ ውጽኢት ክቕበልዎ ኣለዎም።
 
-However, transparency does not mean personal identity is exposed. Bitcoin transactions are linked to addresses, not names. You can see that the value moved from one address to another, but you cannot automatically know who owns those addresses. This is called pseudonymity.  
-ይኹን እምበር ግሉጽነት ማለት ውልቃዊ መንነት ይቃላዕ ማለት ኣይኮነን። ትራንዛክሽን ቢትኮይን ምስ ኣድራሻታት እምበር ምስ ኣስማት ዝተኣሳሰር ኣይኮነን። እቲ ዋጋ ካብ ሓደ ኣድራሻ ናብ ካልእ ኣድራሻ ከም ዝተሰጋገረ ክትዕዘብ ትኽእል ኢኻ፡ እንተኾነ ግን መን ከም ዝውንን እቶም ኣድራሻታት ብኣውቶማቲክ ክትፈልጥ ኣይትኽእልን ኢኻ። እዚ ድማ ቅጽል ስም ይበሃል።
+Bitcoin is **decentralized** — no single entity is in charge:  
+ቢትኮይን ግን **ዘይተማእከለ** እዩ — ማለት ዝኾነ ሓደ ኣካል ወይ ማእከል ሓላፍነት የብሉን:
 
-This balance is important: the system is open enough to be trusted, yet private enough to avoid revealing personal identity by default.  
-እዚ ሚዛን እዚ ኣገዳሲ እዩ: እቲ ስርዓት ንኽትኣምኖ እኹል ክፉት እዩ፣ ገና ግን ብነባሪ ውልቃዊ መንነት ንኸይገልጽ እኹል ብሕታዊ እዩ።
+- **Thousands of independent copies:** Thousands of computers run the Bitcoin software and maintain identical ledgers worldwide.  
+  **ኣሽሓት ናጻ መዛግብቲ:** ኣብ መላእ ዓለም ዝርከባ ኣሽሓት ነጻ ኮምፒዩተራት ነቲ ቢትኮይን ሶፍትዌር ዘካይዳ ኮይነን ተመሳሳሊ ቅዳሓት መዛግብቲ ናይቲ ስርዓት ይሕዛ።
+- **Voluntary consensus rules:** Participants follow the same rules voluntarily. Any invalid rule change is automatically rejected.  
+  **ወለንታዊ ሕጊ:** እዞም ተሳተፍቲ ብወለንታኦም ተመሳሳሊ ሕግታት ይኽተሉ። ሓደ ሰብ ከታልል ወይ ሕግታት ክቕይር እንተፈቲኑ፡ ዝተረፉ ኣባላት መርበብ ሓበሬታ ጥራይ እዮም ዝነጽግዎ።
+- **No single point of failure:** There is no central switch to turn Bitcoin off, no single company to coerce, and no single person who can rewrite rules.  
+  **ንጽል ነጥቢ ውድቀት የለን:** ንቢትኮይን ዘጥፍእ ማእከላይ መቐየሪ (Kill Switch) የለን፡ ጸቕጢ ዝገብር ሓደ ኩባንያ የለን፡ ከምኡ’ውን ነቲ ሕግታት ዳግማይ ክጽሕፎ ዝኽእል ውልቀሰብ የለን።
 
-#### Scarcity / ዋሕዲ
-Scarcity is one of Bitcoin's most important properties. Bitcoin has a fixed maximum supply of 21 million coins. This limit is enforced by code and shared by every participant in the network. No one has the authority to change it.  
-ስእነት ሓደ ካብቶም ኣገደስቲ ባህርያት ቢትኮይን እዩ። ቢትኮይን ውሱን ዝለዓለ ቀረብ 21 ሚልዮን ሳንቲም ኣለዎ። እዚ ገደብ ብኮድ ዝትግበርን ብነፍሲ ወከፍ ተሳታፊ ናይቲ መርበብ ዝካፈልን እዩ። ክቕይሮ ስልጣን ዘለዎ ሰብ የለን።
+| Feature / መዳይ | Centralized (Bank) / ማእከላይ ስርዓት | Decentralized Bitcoin / ዘይማእከላይ ቢትኮይን |
+| :--- | :--- | :--- |
+| **Authority / ስልጣን** | One bank or government has final say / ሓደ ባንኪ ወይ በዓል መዚ ናይ መወዳእታ ድምጺ ኣለዎ | Shared across thousands of global nodes / ኣብ መላእ ዓለም ብዝርከቡ ኣሽሓት ናጻ ኖድስ ዝካፈል |
+| **Failure / ውድቀት** | Central outage shuts down all users / እቲ ማእከላይ ትካል እንተፈሺሉ ኩሉ ይዕጸው | Network operates even if hundreds of nodes fail / ሓደ ወይ ኣማኢት ኖድስ እንተ ወደቑ’ውን መርበብ ይቕጽል |
+| **Control / ምቁጽጻር** | Account can be frozen or restricted / ሚዛንካ ክዕጾ ወይ ክእገድ ይኽእል | Only private keys can sign transactions / ብዘይ ናይ ብሕቲ መፍትሕካ ማንም ገንዘብካ ክዓግት ኣይክእልን |
 
-In traditional systems, money can be created endlessly, which often leads to inflation and loss of purchasing power. Bitcoin's scarcity is predictable and transparent. New bitcoins are released at a decreasing rate, making the supply increasingly hard to obtain over time.  
-ኣብ ባህላዊ ስርዓታት ገንዘብ መወዳእታ ዘይብሉ ክፍጠር ይኽእል እዩ፣ እዚ ድማ መብዛሕትኡ ግዜ ናብ ዝቕባበን ምጥፋእ ዓቕሚ ምዕዳግን የስዕብ። ዋሕዲ ቢትኮይን ክትግምቶ ዝከኣልን ግሉጽን እዩ። ሓደስቲ ቢትኮይን ብዝነከየ ፍጥነት ይለቐቑ፡ እዚ ድማ ምስ ግዜ እቲ ቀረብ ንምርካብ ኣጸጋሚ ይገብሮ።
+---
 
-Because of this enforced scarcity, Bitcoin is often compared to digital gold. Its value is not based on promises, but on mathematical certainty. Scarcity encourages long-term thinking and protects the system from arbitrary expansion.  
-ብሰንኪ እዚ ዝተገደደ ሕጽረት፡ ቢትኮይን መብዛሕትኡ ግዜ ምስ ዲጂታላዊ ወርቂ ይነጻጸር። ዋጋኡ ኣብ መብጽዓታት ዘይኮነስ ኣብ ሒሳባዊ ርግጸኝነት ዝተመርኮሰ እዩ። ዋሕዲ ንነዊሕ እዋን ዝጸንሕ ኣተሓሳስባ ዘተባብዕን ነቲ ስርዓት ካብ ፍቓደኛ ምስፍሕፋሕ ዝከላኸልን እዩ።
+#### 2. Transparency Without Identity / ግሉጽነት ብዘይ መንነት
+
+Bitcoin is built on absolute transparency. Every transaction is permanently recorded on the public blockchain for anyone to verify.  
+ቢትኮይን ኣብ ፍጹም ግሉጽነት ዝተሃንጸ እዩ። ኩሉ ዝተፈጸመ ትራንዛክሽን ኣብ ብሎክቸይን ዝበሃል ህዝባዊ መዝገብ ይምዝገብ። ዝኾነ ሰብ፡ ኣብ ዝኾነ ቦታ ዓለም፡ ነዚ መዝገብ ፈቲሹ፡ እቲ ሕግታት ይኽተል ከምዘሎ ከረጋግጽ ይኽእል። እዚ ክፉትነት ማእከላይ በዓል ስልጣን ከየድለየ ምትእምማን ይፈጥር።
+
+However, transparency does not expose personal identity:  
+ይኹን እምበር ግሉጽነት ማለት **ውልቃዊ መንነት ይቃላዕ ማለት ኣይኮነን**:
+
+- **What is transparent:** Amounts, dates, addresses, and mathematical proofs are visible to everyone.  
+  **እንታይ ግሉጽ እዩ?** መጠን ገንዘብ፡ ዕለት፡ ናይ ስግግር ኣድራሻታትን ሒሳባዊ ሚዛንን ንኹሉ ሰብ ግሉጽ እዩ።
+- **What is private:** Transactions link to cryptographic addresses, not names, IDs, or phone numbers. This is called **pseudonymity**.  
+  **እንታይ ምስጢር እዩ?** ትራንዛክሽን ቢትኮይን ምስ ኣድራሻታት እምበር ምስ ኣስማት፡ መንነት ወይ ፓስፖርት ዝተኣሳሰር ኣይኮነን። እዚ ድማ **ስም-ኣልቦነት (Pseudonymity)** ይበሃል።
+
+> **Balanced Openness & Privacy / ሚዛን ግሉጽነትን ምስጢራውነትን:**  
+> The system is open enough to be trustless and audited, yet private enough by default to protect individual sovereignty.  
+> እዚ ሚዛን እዚ ኣገዳሲ እዩ: እቲ ስርዓት ንኽትኣምኖ እኹል ክፉት እዩ፣ ገና ግን ብነባሪ ውልቃዊ መንነት ንኸይገልጽ እኹል ብሕታዊ እዩ።
+
+---
+
+#### 3. Mathematical Scarcity / ውሱን ዋሕዲ (21 Million Cap)
+
+Scarcity is one of Bitcoin's foundational pillars. Traditional currencies can be inflated arbitrarily, devaluing purchasing power.  
+ስእነት ወይ ዋሕዲ ሓደ ካብቶም ኣገደስቲ ባህርያት ቢትኮይን እዩ። ኣብ ባህላዊ ስርዓታት ገንዘብ ብድላይ ሰበ-ስልጣን መወዳእታ ዘይብሉ ክፍጠር ይኽእል እዩ፣ እዚ ድማ መብዛሕትኡ ግዜ ናብ ዝቕባበን ምጥፋእ ዓቕሚ ምዕዳግን የስዕብ።
+
+Bitcoin introduces immutable, programmatic scarcity:  
+ቢትኮይን ግን **ሒሳባዊ ውሱንነት** ኣለዎ:
+
+- **21 Million Hard Cap:** An absolute maximum of 21,000,000 coins enforced strictly in code by every consensus node.  
+  **ቀዋሚ ዝለዓለ ገደብ:** ቢትኮይን ውሱን ዝለዓለ ቀረብ 21 ሚልዮን ሳንቲም ኣለዎ። እዚ ገደብ ብኮድ ዝትግበርን ብነፍሲ ወከፍ ተሳታፊ ናይቲ መርበብ ዝካፈልን እዩ። ክቕይሮ ስልጣን ዘለዎ ሰብ የለን።
+- **Predictable Issuance:** Issuance is transparent and reduces over time through halvings every 210,000 blocks.  
+  **ግሉጽን ትጽቢት ዝግበረሉን ቀረብ:** ዋሕዲ ቢትኮይን ክትግምቶ ዝከኣልን ግሉጽን እዩ። ሓደስቲ ቢትኮይን ብዝነከየ ፍጥነት ይለቐቑ፡ እዚ ድማ ምስ ግዜ እቲ ቀረብ ንምርካብ ኣጸጋሚ ይገብሮ።
+- **Digital Gold:** Bitcoin's value is derived from mathematical certainty and consensus, protecting it from arbitrary debasement.  
+  **ዲጂታላዊ ወርቂ:** ብሰንኪ እዚ ዝተገደደ ሕጽረት፡ ቢትኮይን መብዛሕትኡ ግዜ ምስ ዲጂታላዊ ወርቂ ይነጻጸር። ዋጋኡ ኣብ መብጽዓታት ዘይኮነስ ኣብ ሒሳባዊ ርግጸኝነት ዝተመርኮሰ እዩ።
+
+> **Mathematical Certainty / ሒሳባዊ ርግጸኝነት:**  
+> Scarcity fosters long-term preservation of value and guards the monetary network against unilateral political inflation.  
+> ዋሕዲ ንነዊሕ እዋን ዝጸንሕ ኣተሓሳስባ ዘተባብዕን ነቲ ስርዓት ካብ ፍቓደኛ ምስፍሕፋሕ ዝከላኸልን እዩ። ማንም መንግስቲ ወይ ማእከላይ ባንኪ ነዚ ገደብ ክጥሕሶ ኣይክእልን።
 
 ---
 

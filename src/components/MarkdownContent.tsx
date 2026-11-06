@@ -157,6 +157,12 @@ export function MarkdownContent({ content, highlightTerms = [], variant = 'defau
         h3: ({ node, ...props }) => (
           <h3 className="group mb-3 mt-7 text-lg sm:text-xl font-bold text-amber-300 flex items-center gap-2.5 transition-all duration-300 hover:text-amber-200 hover:translate-x-1 before:content-[''] before:w-1.5 before:h-5 before:bg-gradient-to-b before:from-amber-400 before:to-orange-500 before:rounded-full before:shrink-0 before:transition-all before:duration-300 group-hover:before:h-6 group-hover:before:shadow-[0_0_8px_rgba(251,191,36,0.6)]" {...props} />
         ),
+        h4: ({ node, ...props }) => (
+          <h4 className="group mb-3 mt-6 text-base sm:text-lg font-bold text-cyan-300 flex items-center gap-2 border-b border-zinc-800/80 pb-2 transition-colors duration-200 hover:text-cyan-200 before:content-[''] before:w-1.5 before:h-4 before:bg-cyan-400 before:rounded-full before:shrink-0" {...props} />
+        ),
+        h5: ({ node, ...props }) => (
+          <h5 className="mb-2 mt-4 text-sm sm:text-base font-semibold text-zinc-100 flex items-center gap-1.5" {...props} />
+        ),
         p: ({ node, children, ...props }: any) => {
           const imageNodes = node?.children?.filter(
             (child: any) => child.tagName === 'img' || (child.type === 'element' && child.tagName === 'img')
