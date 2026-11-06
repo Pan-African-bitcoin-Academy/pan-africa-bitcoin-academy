@@ -231,8 +231,8 @@ function CandleChart({ data }: { data: MarketCandle[] }) {
         const y = top + (plotHeight * index) / 4;
         return (
           <g key={index}>
-            <line x1={left} x2={width - right} y1={y} y2={y} stroke="#334155" strokeDasharray="3 3" />
-            <text x={left - 8} y={y + 4} textAnchor="end" fill="#94a3b8" fontSize="12">
+            <line x1={left} x2={width - right} y1={y} y2={y} stroke="#e4e4e7" strokeDasharray="3 3" />
+            <text x={left - 8} y={y + 4} textAnchor="end" fill="#71717a" fontSize="12">
               {formatCurrency(price, 0)}
             </text>
           </g>
@@ -365,7 +365,7 @@ function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#f97602] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
+      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#f97602] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#e06800] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
     >
       {children}
     </button>
@@ -380,7 +380,7 @@ function Panel({
   className?: string;
 }) {
   return (
-    <section className={`min-w-0 rounded-2xl border border-white/10 bg-slate-950/75 p-4 shadow-xl sm:p-6 ${className}`}>
+    <section className={`min-w-0 rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-xs ${className}`}>
       {children}
     </section>
   );
@@ -396,16 +396,16 @@ function Field({
   hint?: string;
 }) {
   return (
-    <label className="grid min-w-0 gap-2 text-sm font-medium text-slate-200">
+    <label className="grid min-w-0 gap-2 text-sm font-medium text-zinc-700">
       {label}
       {children}
-      {hint && <span className="text-xs font-normal text-slate-400">{hint}</span>}
+      {hint && <span className="text-xs font-normal text-zinc-500">{hint}</span>}
     </label>
   );
 }
 
 const inputClass =
-  'min-h-11 w-full min-w-0 rounded-xl border border-white/15 bg-slate-900 px-3 py-2 text-base text-white outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20';
+  'min-h-11 w-full min-w-0 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 outline-none transition focus:border-[#f97602] focus:ring-2 focus:ring-orange-500/20 shadow-xs placeholder:text-zinc-400';
 
 export default function DcaExperience() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -954,29 +954,34 @@ export default function DcaExperience() {
   }, [authLoading, isAuthenticated, section]);
 
   return (
-    <main className="min-h-screen w-full bg-slate-950/60">
-      <div className="mx-auto w-full max-w-[1600px] px-3 pb-16 pt-6 sm:px-5 lg:px-8 lg:pt-10">
+    <main className="relative min-h-screen w-full bg-[#FFFFFF] text-zinc-900">
+      {/* Subtle Bitcoin illustration watermark adapted to clean white theme */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-[url('/images/bitcoin-bg.jpg')] bg-cover bg-center bg-fixed opacity-[0.035] mix-blend-multiply"
+        aria-hidden="true"
+      />
+      <div className="relative z-10 mx-auto w-full max-w-[1600px] px-3 pb-16 pt-6 sm:px-5 lg:px-8 lg:pt-10">
       <header className="mb-6 flex flex-col gap-5 lg:mb-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-orange-400/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-orange-200">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">
             <Coins className="h-4 w-4" aria-hidden="true" />
             PBA learning tool
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl lg:text-5xl">
             Bitcoin DCA, made <span className="text-[#f97602]">clear.</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600 sm:text-base">
             Learn the approach, explore historical data, and organize a hypothetical plan or purchases you enter yourself.
           </p>
         </div>
-        <div className="flex items-start gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/5 p-3 text-xs leading-5 text-cyan-100 sm:max-w-sm">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" aria-hidden="true" />
+        <div className="flex items-start gap-2 rounded-xl border border-cyan-200 bg-cyan-50/70 p-3 text-xs leading-5 text-cyan-900 sm:max-w-sm">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" aria-hidden="true" />
           <p>No trading, payments, wallet connection, or bitcoin custody. Your records are not verified by PBA.</p>
         </div>
       </header>
 
       <nav aria-label="DCA sections" className="-mx-3 mb-6 overflow-x-auto px-3 sm:mx-0 sm:px-0">
-        <div className="flex min-w-max gap-2 rounded-2xl border border-white/10 bg-slate-950/70 p-2">
+        <div className="flex min-w-max gap-1.5 rounded-2xl border border-zinc-200 bg-zinc-100/80 p-1.5 shadow-xs">
           {sectionLinks.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -989,16 +994,16 @@ export default function DcaExperience() {
                   ? `${label} (sign in required)`
                   : undefined
               }
-              className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition ${
+              className={`inline-flex min-h-10 items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition active:scale-[0.98] ${
                 section === id
-                  ? 'bg-orange-500 text-white'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  ? 'bg-[#f97602] text-white shadow-xs'
+                  : 'text-zinc-600 hover:bg-white hover:text-zinc-900'
               }`}
             >
               <Icon className="h-4 w-4" aria-hidden="true" />
               {label}
               {(id === 'planner' || id === 'dashboard') && !isAuthenticated && (
-                <LockKeyhole className="h-3.5 w-3.5 opacity-70" aria-hidden="true" />
+                <LockKeyhole className="h-3.5 w-3.5 text-zinc-400" aria-hidden="true" />
               )}
             </button>
           ))}
@@ -1006,24 +1011,24 @@ export default function DcaExperience() {
       </nav>
 
       {errorMessage && (
-        <div role="alert" className="mb-4 flex items-start gap-2 rounded-xl border border-red-400/30 bg-red-950/50 p-3 text-sm text-red-100">
+        <div role="alert" className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-900">
           <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           {errorMessage}
         </div>
       )}
       {notice && (
-        <div role="status" className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-950/40 p-3 text-sm text-emerald-100">
+        <div role="status" className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
           <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
           {notice}
         </div>
       )}
       {!authLoading && !isAuthenticated && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-orange-400/20 bg-orange-400/5 px-3 py-2 text-sm text-slate-300">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-orange-200 bg-orange-50/70 px-3 py-2 text-sm text-zinc-800">
           <p>Sign in is required to use the DCA planner and My dashboard.</p>
           <button
             type="button"
             onClick={() => setSignInModalOpen(true)}
-            className="font-semibold text-orange-300 underline decoration-orange-300/50 underline-offset-4 hover:text-orange-200"
+            className="font-semibold text-[#f97602] underline decoration-orange-300 underline-offset-4 hover:text-[#d46200]"
           >
             Sign in
           </button>
@@ -1034,14 +1039,13 @@ export default function DcaExperience() {
         <div className="space-y-5">
           {marketError && <MarketError message={marketError} onRetry={() => void loadMarket(marketDays)} />}
           <div className="grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
-            <Panel className="relative overflow-hidden">
-              <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl" />
+            <Panel className="border-zinc-200 bg-white">
               <div className="relative">
-                <p className="text-sm font-semibold text-orange-200">A steady schedule. A clearer picture.</p>
-                <h2 className="mt-3 max-w-2xl text-2xl font-bold leading-tight text-white sm:text-3xl">
+                <p className="text-sm font-semibold text-[#f97602]">A steady schedule. A clearer picture.</p>
+                <h2 className="mt-2 max-w-2xl text-2xl font-bold leading-tight text-zinc-900 sm:text-3xl">
                   Understand the trade-offs before you make a plan.
                 </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
                   DCA is a way of scheduling purchases—not a way to avoid risk or predict bitcoin’s price. Start with the short lessons, then test a hypothetical schedule with historical data.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
@@ -1051,7 +1055,7 @@ export default function DcaExperience() {
                   <button
                     type="button"
                     onClick={() => setSectionAndScroll('simulator')}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/10"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-bold text-zinc-800 shadow-xs transition hover:bg-zinc-50 active:scale-[0.98]"
                   >
                     Explore a historical simulation
                   </button>
@@ -1091,11 +1095,11 @@ export default function DcaExperience() {
             />
           </div>
 
-          <Panel className="flex flex-col gap-4 border-orange-400/20 bg-orange-950/20 sm:flex-row sm:items-start">
-            <Lightbulb className="h-5 w-5 shrink-0 text-orange-300" aria-hidden="true" />
+          <Panel className="flex flex-col gap-4 border-orange-200 bg-orange-50/60 sm:flex-row sm:items-start">
+            <Lightbulb className="h-5 w-5 shrink-0 text-[#f97602]" aria-hidden="true" />
             <div>
-              <h2 className="font-semibold text-white">What DCA does—and does not do</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-300">
+              <h2 className="font-semibold text-zinc-900">What DCA does—and does not do</h2>
+              <p className="mt-1 text-sm leading-6 text-zinc-600">
                 Regular purchases can spread entry points over time. They cannot guarantee gains, prevent losses, or make bitcoin suitable for every person. This is educational information, not financial advice.
               </p>
             </div>
@@ -1106,44 +1110,44 @@ export default function DcaExperience() {
       {section === 'learn' && (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
           <Panel>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-300">Learn DCA</p>
-            <h2 className="mt-2 text-2xl font-bold text-white">A beginner’s guide to recurring purchases</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Learn DCA</p>
+            <h2 className="mt-2 text-2xl font-bold text-zinc-900">A beginner’s guide to recurring purchases</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
               Open each lesson at your own pace. The examples describe hypothetical activity; they are not recommendations to buy bitcoin.
             </p>
-            <div className="mt-5 divide-y divide-white/10">
+            <div className="mt-5 divide-y divide-zinc-200">
               {lessons.map((lesson, index) => (
                 <details key={lesson.title} className="group py-4">
-                  <summary className="flex cursor-pointer list-none items-center gap-3 text-left font-semibold text-white marker:hidden">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-400/10 text-sm text-orange-200">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 text-left font-semibold text-zinc-900 marker:hidden">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-[#f97602]">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <span className="flex-1">{lesson.title}</span>
-                    <span className="text-slate-400 transition group-open:rotate-45" aria-hidden="true">+</span>
+                    <span className="text-zinc-400 font-bold text-lg transition group-open:rotate-45" aria-hidden="true">+</span>
                   </summary>
-                  <p className="ml-11 mt-3 max-w-3xl text-sm leading-6 text-slate-300">{lesson.body}</p>
+                  <p className="ml-11 mt-3 max-w-3xl text-sm leading-6 text-zinc-600">{lesson.body}</p>
                 </details>
               ))}
             </div>
           </Panel>
           <div className="space-y-4">
             <Panel>
-              <BookOpen className="h-5 w-5 text-orange-300" aria-hidden="true" />
-              <h3 className="mt-3 font-semibold text-white">Quick knowledge check</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
+              <BookOpen className="h-5 w-5 text-[#f97602]" aria-hidden="true" />
+              <h3 className="mt-3 font-semibold text-zinc-900">Quick knowledge check</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
                 Does a regular bitcoin purchase schedule guarantee that you will make a profit?
               </p>
-              <details className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3">
-                <summary className="cursor-pointer text-sm font-semibold text-orange-200">Show answer</summary>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
+              <details className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
+                <summary className="cursor-pointer text-sm font-semibold text-[#f97602]">Show answer</summary>
+                <p className="mt-2 text-sm leading-6 text-zinc-600">
                   No. DCA changes purchase timing, but it does not remove price risk or guarantee a positive return.
                 </p>
               </details>
             </Panel>
-            <Panel className="border-red-300/20">
-              <CircleAlert className="h-5 w-5 text-red-300" aria-hidden="true" />
-              <h3 className="mt-3 font-semibold text-white">Risk reminder</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
+            <Panel className="border-red-200 bg-red-50/50">
+              <CircleAlert className="h-5 w-5 text-red-600" aria-hidden="true" />
+              <h3 className="mt-3 font-semibold text-zinc-900">Risk reminder</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
                 Bitcoin is volatile. Consider your circumstances and local regulations, and do not risk money needed for essentials.
               </p>
             </Panel>
@@ -1158,9 +1162,9 @@ export default function DcaExperience() {
         <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
           <Panel>
             <div className="mb-5">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-300">Hypothetical plan</p>
-              <h2 className="mt-2 text-2xl font-bold text-white">{editingPlanId ? 'Edit your plan' : 'Build a DCA plan'}</h2>
-              <p className="mt-2 text-sm text-slate-400">This tool schedules ideas only. It never makes a purchase.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Hypothetical plan</p>
+              <h2 className="mt-2 text-2xl font-bold text-zinc-900">{editingPlanId ? 'Edit your plan' : 'Build a DCA plan'}</h2>
+              <p className="mt-2 text-sm text-zinc-500">This tool schedules ideas only. It never makes a purchase.</p>
             </div>
             <form onSubmit={handleSavePlan} className="grid gap-4 sm:grid-cols-2">
               <Field label="Plan name">
@@ -1194,7 +1198,7 @@ export default function DcaExperience() {
                   {saving ? 'Saving…' : editingPlanId ? <><Check className="h-4 w-4" /> Update plan</> : <><Plus className="h-4 w-4" /> Save plan</>}
                 </PrimaryButton>
                 {editingPlanId && (
-                  <button type="button" className="min-h-11 rounded-xl border border-white/15 px-4 text-sm text-white hover:bg-white/10" onClick={() => { setEditingPlanId(null); setPlanName(''); }}>
+                  <button type="button" className="min-h-11 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs" onClick={() => { setEditingPlanId(null); setPlanName(''); }}>
                     Cancel editing
                   </button>
                 )}
@@ -1204,38 +1208,38 @@ export default function DcaExperience() {
 
           <div className="space-y-5">
             <Panel>
-              <h3 className="font-semibold text-white">Plan estimate</h3>
-              <p className="mt-1 text-xs leading-5 text-slate-400">Contribution totals are schedule arithmetic. BTC uses today’s price only as an illustration—not a forecast.</p>
+              <h3 className="font-semibold text-zinc-900">Plan estimate</h3>
+              <p className="mt-1 text-xs leading-5 text-zinc-500">Contribution totals are schedule arithmetic. BTC uses today’s price only as an illustration—not a forecast.</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <Metric label="Scheduled purchases" value={String(planSchedule.length + (planInitialAmount > 0 ? 1 : 0))} />
                 <Metric label="Planned contributions" value={formatCurrency(plannedContributions)} />
                 <Metric label="Estimated fees" value={formatCurrency(plannedFees)} />
                 <Metric label="Illustrative BTC" value={estimatedBtc === null ? 'Market unavailable' : formatBtc(estimatedBtc)} />
               </div>
-              {market && <p className="mt-3 text-xs text-slate-500">Illustration uses {formatCurrency(market.currentPrice)} per BTC, fetched {new Date(market.lastUpdated).toLocaleString()}.</p>}
+              {market && <p className="mt-3 text-xs text-zinc-400">Illustration uses {formatCurrency(market.currentPrice)} per BTC, fetched {new Date(market.lastUpdated).toLocaleString()}.</p>}
             </Panel>
 
             <Panel>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-semibold text-white">Your plans</h3>
-                  <p className="mt-1 text-xs text-slate-400">{plans.length} saved plan{plans.length === 1 ? '' : 's'}</p>
+                  <h3 className="font-semibold text-zinc-900">Your plans</h3>
+                  <p className="mt-1 text-xs text-zinc-500">{plans.length} saved plan{plans.length === 1 ? '' : 's'}</p>
                 </div>
-                <CalendarDays className="h-5 w-5 text-orange-300" aria-hidden="true" />
+                <CalendarDays className="h-5 w-5 text-[#f97602]" aria-hidden="true" />
               </div>
               {plans.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-white/15 p-4 text-sm text-slate-400">Your saved plans will appear here.</p>
+                <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">Your saved plans will appear here.</p>
               ) : (
                 <div className="space-y-3">
                   {plans.map((plan) => (
-                    <article key={plan.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                    <article key={plan.id} className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-3">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <h4 className="break-words font-semibold text-white">{plan.name}</h4>
-                          <p className="mt-1 text-sm text-slate-300">
+                          <h4 className="break-words font-semibold text-zinc-900">{plan.name}</h4>
+                          <p className="mt-1 text-sm text-zinc-600">
                             {formatCurrency(plan.contributionAmount)} · {plan.frequency} · {formatDate(plan.startDate)} – {formatDate(plan.endDate)}
                           </p>
-                          <p className="mt-1 text-xs capitalize text-slate-400">
+                          <p className="mt-1 text-xs capitalize text-zinc-500">
                             {plan.status}{plan.status === 'active' && ` · next date ${getNextPurchaseDate(plan.startDate, plan.frequency) ?? 'not scheduled'}`}
                           </p>
                         </div>
@@ -1250,7 +1254,7 @@ export default function DcaExperience() {
                           <IconButton label="Delete plan" onClick={() => void deletePlan(plan)}><Trash2 /></IconButton>
                         </div>
                       </div>
-                      {plan.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-slate-400">{plan.notes}</p>}
+                      {plan.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{plan.notes}</p>}
                     </article>
                   ))}
                 </div>
@@ -1265,12 +1269,12 @@ export default function DcaExperience() {
           <Panel>
             <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-300">Historical what-if</p>
-                <h2 className="mt-2 text-2xl font-bold text-white">Test a schedule against historical prices</h2>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Historical what-if</p>
+                <h2 className="mt-2 text-2xl font-bold text-zinc-900">Test a schedule against historical prices</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
                   Hypothetically buy at each scheduled date using the nearest available historical price. Price gaps over three days are skipped and shown in the results.
                 </p>
-                <p className="mt-2 text-xs text-slate-400">
+                <p className="mt-2 text-xs text-zinc-500">
                   Historical market-price data from January 2020 onward{historicalPriceSource ? ` · Source: ${historicalPriceSource}` : ''}.
                 </p>
               </div>
@@ -1278,7 +1282,7 @@ export default function DcaExperience() {
                 type="button"
                 onClick={() => void loadHistoricalPrices()}
                 disabled={historicalPriceLoading}
-                className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 px-3 text-sm text-slate-200 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 text-sm font-semibold text-zinc-700 shadow-xs hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <RefreshCw className="h-4 w-4" aria-hidden="true" /> {historicalPriceLoading ? 'Loading history…' : 'Reload history from 2020'}
               </button>
@@ -1312,7 +1316,7 @@ export default function DcaExperience() {
           {!historicalPriceLoading && !historicalPriceError && simulation && (
             <>
               {simulation.purchases.length === 0 ? (
-                <Panel><p className="text-sm text-slate-300">No scheduled purchases could be matched to the available price history. Choose dates from January 2020 onward.</p></Panel>
+                <Panel><p className="text-sm text-zinc-600">No scheduled purchases could be matched to the available price history. Choose dates from January 2020 onward.</p></Panel>
               ) : (
                 <>
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -1324,26 +1328,26 @@ export default function DcaExperience() {
                   <Panel>
                     <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
                       <div>
-                        <h3 className="font-semibold text-white">Contributions and hypothetical value</h3>
-                        <p className="mt-1 text-xs text-slate-400">Value is calculated using the period-end price. Past performance does not predict future results.</p>
+                        <h3 className="font-semibold text-zinc-900">Contributions and hypothetical value</h3>
+                        <p className="mt-1 text-xs text-zinc-500">Value is calculated using the period-end price. Past performance does not predict future results.</p>
                       </div>
-                      <p className="text-xs text-slate-400">Fees: {formatCurrency(simulation.totalFees)} · End price: {formatCurrency(simulation.endPrice)}</p>
+                      <p className="text-xs text-zinc-500">Fees: {formatCurrency(simulation.totalFees)} · End price: {formatCurrency(simulation.endPrice)}</p>
                     </div>
                     <div className="h-72 w-full min-w-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={simulation.purchases}>
-                          <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-                          <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 11 }} minTickGap={30} />
-                          <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={52} />
-                          <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#fff' }} formatter={(value) => formatCurrency(Number(value))} />
+                          <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
+                          <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} minTickGap={30} />
+                          <YAxis tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={52} />
+                          <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => formatCurrency(Number(value))} />
                           <Legend />
-                          <Area type="monotone" dataKey="cumulativeContribution" name="Contributions" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.12} />
-                          <Area type="monotone" dataKey="portfolioValue" name="Hypothetical value" stroke="#f97602" fill="#f97602" fillOpacity={0.15} />
+                          <Area type="monotone" dataKey="cumulativeContribution" name="Contributions" stroke="#71717a" fill="#71717a" fillOpacity={0.08} />
+                          <Area type="monotone" dataKey="portfolioValue" name="Hypothetical value" stroke="#f97602" fill="#f97602" fillOpacity={0.12} />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
                     {simulation.skippedPurchases > 0 && (
-                      <p className="mt-3 flex items-start gap-2 text-sm text-amber-200">
+                      <p className="mt-3 flex items-start gap-2 text-sm text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
                         <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                         {simulation.skippedPurchases} scheduled purchase{simulation.skippedPurchases === 1 ? ' was' : 's were'} skipped because no nearby historical price was available.
                       </p>
@@ -1351,17 +1355,17 @@ export default function DcaExperience() {
                   </Panel>
                   <Panel>
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <h3 className="font-semibold text-white">Historical purchase schedule</h3>
-                      <p className="text-xs text-slate-400">{simulation.purchases.length} matched purchases</p>
+                      <h3 className="font-semibold text-zinc-900">Historical purchase schedule</h3>
+                      <p className="text-xs text-zinc-500">{simulation.purchases.length} matched purchases</p>
                     </div>
                     <div className="max-h-80 overflow-auto">
                       <table className="w-full min-w-[560px] text-left text-sm">
-                        <thead className="sticky top-0 bg-slate-900 text-xs uppercase text-slate-400">
+                        <thead className="sticky top-0 bg-zinc-100 text-xs uppercase text-zinc-600 border-b border-zinc-200">
                           <tr><th className="p-3">Date</th><th className="p-3">Price</th><th className="p-3">Contribution</th><th className="p-3">BTC</th><th className="p-3">Fees</th></tr>
                         </thead>
                         <tbody>
                           {simulation.purchases.map((item, index) => (
-                            <tr key={`${item.date}-${index}`} className="border-t border-white/10 text-slate-200">
+                            <tr key={`${item.date}-${index}`} className="border-t border-zinc-200 text-zinc-800 hover:bg-zinc-50">
                               <td className="p-3">{formatDate(item.date)}</td><td className="p-3">{formatCurrency(item.price)}</td><td className="p-3">{formatCurrency(item.contribution)}</td><td className="p-3">{item.btc.toFixed(8)}</td><td className="p-3">{formatCurrency(item.fees)}</td>
                             </tr>
                           ))}
@@ -1374,9 +1378,9 @@ export default function DcaExperience() {
             </>
           )}
           {!historicalPriceLoading && !historicalPriceError && !simulation && (
-            <Panel><p className="text-sm text-slate-300">Enter a positive contribution and a valid date range to view a simulation.</p></Panel>
+            <Panel><p className="text-sm text-zinc-600">Enter a positive contribution and a valid date range to view a simulation.</p></Panel>
           )}
-          <p className="text-xs leading-5 text-slate-500">
+          <p className="text-xs leading-5 text-zinc-400">
             Historical market-price samples from {historicalPriceSource || 'Blockchain.com'}. Simulation ignores exchange spreads, taxes, withdrawals, and individual execution differences. This is hypothetical analysis, not a recommendation.
           </p>
         </div>
@@ -1386,13 +1390,13 @@ export default function DcaExperience() {
         <div className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-300">Manual records only</p>
-              <h2 className="mt-2 text-2xl font-bold text-white">Your purchase journal</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Manual records only</p>
+              <h2 className="mt-2 text-2xl font-bold text-zinc-900">Your purchase journal</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
                 Enter purchases you made independently. PBA does not verify, control, or hold any bitcoin represented here.
               </p>
             </div>
-            <button type="button" onClick={exportPurchases} disabled={!purchases.length} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/15 px-4 text-sm font-semibold text-white hover:bg-white/10 disabled:opacity-40">
+            <button type="button" onClick={exportPurchases} disabled={!purchases.length} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 shadow-xs hover:bg-zinc-50 disabled:opacity-40">
               <Download className="h-4 w-4" aria-hidden="true" /> Export CSV
             </button>
           </div>
@@ -1407,7 +1411,7 @@ export default function DcaExperience() {
 
           <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
             <Panel>
-              <h3 className="mb-4 font-semibold text-white">{editingPurchaseId ? 'Edit purchase record' : 'Record a purchase'}</h3>
+              <h3 className="mb-4 font-semibold text-zinc-900">{editingPurchaseId ? 'Edit purchase record' : 'Record a purchase'}</h3>
               <form onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <Field label="Purchase date">
                   <input className={inputClass} type="date" value={purchaseDate} onChange={(event) => setPurchaseDate(event.target.value)} required />
@@ -1434,7 +1438,7 @@ export default function DcaExperience() {
                   <PrimaryButton type="submit" disabled={saving}>
                     {saving ? 'Saving…' : editingPurchaseId ? 'Update record' : 'Save purchase'}
                   </PrimaryButton>
-                  {editingPurchaseId && <button type="button" onClick={resetPurchaseForm} className="min-h-11 rounded-xl border border-white/15 px-4 text-sm text-white hover:bg-white/10">Cancel</button>}
+                  {editingPurchaseId && <button type="button" onClick={resetPurchaseForm} className="min-h-11 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs">Cancel</button>}
                 </div>
               </form>
             </Panel>
@@ -1443,35 +1447,35 @@ export default function DcaExperience() {
               {purchaseHistory.length > 0 && (
                 <>
                   <Panel>
-                    <h3 className="mb-1 font-semibold text-white">Portfolio value vs. recorded spending</h3>
-                    <p className="mb-4 text-xs text-slate-400">Portfolio value uses the current BTC price for every entry date.</p>
+                    <h3 className="mb-1 font-semibold text-zinc-900">Portfolio value vs. recorded spending</h3>
+                    <p className="mb-4 text-xs text-zinc-500">Portfolio value uses the current BTC price for every entry date.</p>
                     <div className="h-56 w-full min-w-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={purchaseHistory}>
-                          <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-                          <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 11 }} minTickGap={30} />
-                          <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={48} />
-                          <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#fff' }} formatter={(value) => formatCurrency(Number(value))} />
+                          <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
+                          <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} minTickGap={30} />
+                          <YAxis tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={48} />
+                          <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => formatCurrency(Number(value))} />
                           <Legend />
-                          <Area type="monotone" dataKey="contributions" name="Spending and fees" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.1} />
-                          <Area type="monotone" dataKey="value" name="Current-price value" stroke="#f97602" fill="#f97602" fillOpacity={0.14} />
+                          <Area type="monotone" dataKey="contributions" name="Spending and fees" stroke="#71717a" fill="#71717a" fillOpacity={0.08} />
+                          <Area type="monotone" dataKey="value" name="Current-price value" stroke="#f97602" fill="#f97602" fillOpacity={0.12} />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
                   </Panel>
                   <Panel>
-                    <h3 className="mb-1 font-semibold text-white">Bitcoin accumulation and average cost</h3>
-                    <p className="mb-4 text-xs text-slate-400">Average cost includes recorded fees. Values reflect manual entries only.</p>
+                    <h3 className="mb-1 font-semibold text-zinc-900">Bitcoin accumulation and average cost</h3>
+                    <p className="mb-4 text-xs text-zinc-500">Average cost includes recorded fees. Values reflect manual entries only.</p>
                     <div className="h-56 w-full min-w-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={purchaseHistory}>
-                          <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-                          <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 11 }} minTickGap={30} />
-                          <YAxis yAxisId="btc" tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(value: number) => value.toFixed(4)} width={55} />
-                          <YAxis yAxisId="price" orientation="right" tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={60} />
-                          <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#fff' }} />
+                          <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
+                          <XAxis dataKey="date" tick={{ fill: '#71717a', fontSize: 11 }} minTickGap={30} />
+                          <YAxis yAxisId="btc" tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => value.toFixed(4)} width={55} />
+                          <YAxis yAxisId="price" orientation="right" tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={60} />
+                          <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                           <Legend />
-                          <Line yAxisId="btc" type="monotone" dataKey="btc" name="Accumulated BTC" stroke="#22d3ee" dot={false} />
+                          <Line yAxisId="btc" type="monotone" dataKey="btc" name="Accumulated BTC" stroke="#0284c7" dot={false} />
                           <Line yAxisId="price" type="monotone" dataKey="averagePrice" name="Average acquisition price" stroke="#f97602" dot={false} />
                         </LineChart>
                       </ResponsiveContainer>
@@ -1481,22 +1485,22 @@ export default function DcaExperience() {
               )}
               {plans.length > 0 && (
                 <Panel>
-                  <h3 className="mb-3 font-semibold text-white">Plan progress</h3>
+                  <h3 className="mb-3 font-semibold text-zinc-900">Plan progress</h3>
                   <div className="space-y-3">
                     {plans.filter((plan) => plan.status !== 'archived').map((plan) => {
                       const allDates = getScheduledDates(plan.startDate, plan.endDate, plan.frequency);
                       const completed = allDates.filter((date) => date <= todayInputValue()).length;
                       const progress = allDates.length ? Math.min(100, completed / allDates.length * 100) : 0;
                       return (
-                        <div key={plan.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                        <div key={plan.id} className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-3">
                           <div className="flex items-center justify-between gap-3">
-                            <span className="min-w-0 break-words text-sm font-semibold text-white">{plan.name}</span>
-                            <span className="shrink-0 text-xs capitalize text-slate-400">{plan.status}</span>
+                            <span className="min-w-0 break-words text-sm font-semibold text-zinc-900">{plan.name}</span>
+                            <span className="shrink-0 text-xs capitalize text-zinc-500">{plan.status}</span>
                           </div>
-                          <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                          <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-200">
                             <div className="h-full rounded-full bg-orange-400" style={{ width: `${progress}%` }} />
                           </div>
-                          <p className="mt-2 text-xs text-slate-400">
+                          <p className="mt-2 text-xs text-zinc-500">
                             {completed} of {allDates.length} scheduled dates · next {getNextPurchaseDate(plan.startDate, plan.frequency) ?? 'none'}
                           </p>
                         </div>
@@ -1507,14 +1511,14 @@ export default function DcaExperience() {
               )}
               {monthlyData.length > 0 && (
                 <Panel>
-                  <h3 className="mb-4 font-semibold text-white">Monthly manual contributions</h3>
+                  <h3 className="mb-4 font-semibold text-zinc-900">Monthly manual contributions</h3>
                   <div className="h-56 w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={monthlyData}>
-                        <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-                        <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                        <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={48} />
-                        <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, color: '#fff' }} formatter={(value) => formatCurrency(Number(value))} />
+                        <CartesianGrid stroke="#e4e4e7" strokeDasharray="3 3" />
+                        <XAxis dataKey="label" tick={{ fill: '#71717a', fontSize: 11 }} />
+                        <YAxis tick={{ fill: '#71717a', fontSize: 11 }} tickFormatter={(value: number) => `$${Math.round(value)}`} width={48} />
+                        <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e4e4e7', borderRadius: 12, color: '#18181b', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value) => formatCurrency(Number(value))} />
                         <Bar dataKey="contributions" name="Spending and fees" fill="#f97602" radius={[5, 5, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -1523,28 +1527,28 @@ export default function DcaExperience() {
               )}
               <Panel>
                 <div className="mb-4 flex items-center justify-between gap-3">
-                  <div><h3 className="font-semibold text-white">Purchase records</h3><p className="mt-1 text-xs text-slate-400">{purchases.length} manual entries</p></div>
-                  <LockKeyhole className="h-4 w-4 text-cyan-300" aria-hidden="true" />
+                  <div><h3 className="font-semibold text-zinc-900">Purchase records</h3><p className="mt-1 text-xs text-zinc-500">{purchases.length} manual entries</p></div>
+                  <LockKeyhole className="h-4 w-4 text-cyan-600" aria-hidden="true" />
                 </div>
                 {purchases.length === 0 ? (
-                  <p className="rounded-xl border border-dashed border-white/15 p-4 text-sm text-slate-400">No manual purchase records yet.</p>
+                  <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">No manual purchase records yet.</p>
                 ) : (
                   <div className="space-y-3">
                     {purchases.map((purchase) => (
-                      <article key={purchase.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                      <article key={purchase.id} className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-3">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div>
-                            <h4 className="font-semibold text-white">{formatDate(purchase.purchaseDate)}</h4>
-                            <p className="mt-1 text-sm text-slate-300">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
-                            <p className="mt-1 text-xs text-slate-400">Price {formatCurrency(purchase.btcPrice)} · Fees {formatCurrency(purchase.feesUsd)}</p>
-                            {purchase.transactionId && <p className="mt-1 break-all text-xs text-slate-500">ID: {purchase.transactionId}</p>}
+                            <h4 className="font-semibold text-zinc-900">{formatDate(purchase.purchaseDate)}</h4>
+                            <p className="mt-1 text-sm text-zinc-700">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
+                            <p className="mt-1 text-xs text-zinc-500">Price {formatCurrency(purchase.btcPrice)} · Fees {formatCurrency(purchase.feesUsd)}</p>
+                            {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">ID: {purchase.transactionId}</p>}
                           </div>
                           <div className="flex gap-1">
                             <IconButton label="Edit purchase" onClick={() => beginPurchaseEdit(purchase)}><Pencil /></IconButton>
                             <IconButton label="Delete purchase" onClick={() => void deletePurchase(purchase)}><Trash2 /></IconButton>
                           </div>
                         </div>
-                        {purchase.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-slate-400">{purchase.notes}</p>}
+                        {purchase.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{purchase.notes}</p>}
                       </article>
                     ))}
                   </div>
@@ -1559,11 +1563,11 @@ export default function DcaExperience() {
         <div className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-300">Bitcoin market</p>
-              <h2 className="mt-2 text-2xl font-bold text-white">BTC / USD overview</h2>
-              <p className="mt-2 text-sm text-slate-400">Market data is provided for context and may be delayed or temporarily unavailable.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Bitcoin market</p>
+              <h2 className="mt-2 text-2xl font-bold text-zinc-900">BTC / USD overview</h2>
+              <p className="mt-2 text-sm text-zinc-500">Market data is provided for context and may be delayed or temporarily unavailable.</p>
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate-300">
+            <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
               Range
               <select className={`${inputClass} w-auto`} value={marketDays} onChange={(event) => setMarketDays(event.target.value)}>
                 <option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option><option value="180">180 days</option><option value="365">1 year</option>
@@ -1580,23 +1584,23 @@ export default function DcaExperience() {
           <Panel>
             <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
               <div>
-                <h3 className="font-semibold text-white">Bitcoin historical price</h3>
-                <p className="mt-1 text-xs text-slate-400">USD · OHLC candlesticks</p>
-                <p className="mt-1 text-xs text-slate-500">4-hour candles up to 30 days; 4-day candles for longer ranges.</p>
+                <h3 className="font-semibold text-zinc-900">Bitcoin historical price</h3>
+                <p className="mt-1 text-xs text-zinc-500">USD · OHLC candlesticks</p>
+                <p className="mt-1 text-xs text-zinc-400">4-hour candles up to 30 days; 4-day candles for longer ranges.</p>
               </div>
-              {market && <p className="text-xs text-slate-400">Updated {new Date(market.lastUpdated).toLocaleString()}</p>}
+              {market && <p className="text-xs text-zinc-400">Updated {new Date(market.lastUpdated).toLocaleString()}</p>}
             </div>
             {marketLoading ? <LoadingPanel text="Loading market prices…" /> : marketCandles.length ? (
               <div className="h-80 w-full min-w-0">
                 <CandleChart data={marketCandles} />
               </div>
-            ) : <p className="py-12 text-center text-sm text-slate-400">{market?.candleError ?? 'No market chart data is available right now.'}</p>}
-            {market && <p className="mt-3 text-xs text-slate-500">Source: {market.source}. Data is not guaranteed to be real time.</p>}
+            ) : <p className="py-12 text-center text-sm text-zinc-500">{market?.candleError ?? 'No market chart data is available right now.'}</p>}
+            {market && <p className="mt-3 text-xs text-zinc-400">Source: {market.source}. Data is not guaranteed to be real time.</p>}
           </Panel>
         </div>
       )}
 
-      <footer className="mt-8 rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-xs leading-5 text-slate-400 sm:p-5">
+      <footer className="mt-8 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-xs leading-5 text-zinc-500 sm:p-5 shadow-xs">
         Bitcoin is volatile and you could lose some or all of the value of any purchase. Dollar-cost averaging does not eliminate risk or guarantee returns. PBA provides educational and analytical tools only—not financial advice, trading, custody, payments, or verification of manually entered records. Historical outcomes are hypothetical and do not predict future performance.
       </footer>
       <AuthModal
@@ -1631,9 +1635,9 @@ function Metric({
   value: string;
 }) {
   return (
-    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-3">
-      <p className="text-xs text-slate-400">{label}</p>
-      <p className="mt-1 break-words text-base font-bold text-white">{value}</p>
+    <div className="min-w-0 rounded-xl border border-zinc-200 bg-zinc-50/70 p-3">
+      <p className="text-xs font-medium text-zinc-500">{label}</p>
+      <p className="mt-1 break-words text-base font-bold text-zinc-900">{value}</p>
     </div>
   );
 }
@@ -1648,10 +1652,10 @@ function MetricPanel({
   detail?: string;
 }) {
   return (
-    <Panel className="p-4">
-      <p className="text-xs font-medium text-slate-400">{label}</p>
-      <p className="mt-2 break-words text-xl font-bold text-white">{value}</p>
-      {detail && <p className="mt-1 text-xs text-slate-400">{detail}</p>}
+    <Panel className="p-4 bg-white border-zinc-200 shadow-xs">
+      <p className="text-xs font-medium text-zinc-500">{label}</p>
+      <p className="mt-2 break-words text-xl font-bold text-zinc-900">{value}</p>
+      {detail && <p className="mt-1 text-xs text-zinc-500">{detail}</p>}
     </Panel>
   );
 }
@@ -1670,29 +1674,32 @@ function MarketSnapshot({
   onOpen: () => void;
 }) {
   return (
-    <Panel className="flex min-h-[230px] flex-col">
+    <Panel className="flex min-h-[230px] flex-col border-zinc-200 bg-white">
       <div className="flex items-center justify-between gap-3">
-        <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Bitcoin market</p><p className="mt-1 text-xs text-slate-500">BTC / USD</p></div>
-        <Activity className="h-5 w-5 text-orange-300" aria-hidden="true" />
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Bitcoin market</p>
+          <p className="mt-0.5 text-xs text-zinc-400">BTC / USD</p>
+        </div>
+        <Activity className="h-5 w-5 text-[#f97602]" aria-hidden="true" />
       </div>
       {loading ? (
-        <p className="mt-6 animate-pulse text-2xl font-bold text-slate-400">Loading price…</p>
+        <p className="mt-6 animate-pulse text-2xl font-bold text-zinc-400">Loading price…</p>
       ) : market ? (
         <>
-          <p className="mt-5 text-3xl font-bold tracking-tight text-white">{formatCurrency(market.currentPrice)}</p>
-          <p className={`mt-2 flex items-center gap-1 text-sm font-semibold ${(market.change24h ?? 0) >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+          <p className="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{formatCurrency(market.currentPrice)}</p>
+          <p className={`mt-2 flex items-center gap-1 text-sm font-semibold ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
             {(market.change24h ?? 0) >= 0 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
             {market.change24h == null ? '24-hour change unavailable' : `${market.change24h >= 0 ? '+' : ''}${market.change24h.toFixed(2)}% over 24 hours`}
           </p>
-          <p className="mt-auto pt-4 text-xs text-slate-500">Updated {new Date(market.lastUpdated).toLocaleTimeString()}</p>
+          <p className="mt-auto pt-4 text-xs text-zinc-400">Updated {new Date(market.lastUpdated).toLocaleTimeString()}</p>
         </>
       ) : (
         <div className="mt-5">
-          <p className="text-sm text-amber-200">{error || 'Market data unavailable.'}</p>
-          <button type="button" onClick={onRetry} className="mt-3 min-h-10 rounded-lg border border-white/15 px-3 text-sm text-white hover:bg-white/10">Retry</button>
+          <p className="text-sm text-amber-800">{error || 'Market data unavailable.'}</p>
+          <button type="button" onClick={onRetry} className="mt-3 min-h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs">Retry</button>
         </div>
       )}
-      <button type="button" onClick={onOpen} className="mt-4 inline-flex min-h-10 items-center gap-2 self-start text-sm font-semibold text-orange-200 hover:text-orange-100">
+      <button type="button" onClick={onOpen} className="mt-4 inline-flex min-h-10 items-center gap-2 self-start text-sm font-semibold text-[#f97602] hover:text-[#d46200]">
         View market details <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </button>
     </Panel>
@@ -1713,11 +1720,11 @@ function InfoCard({
   onClick: () => void;
 }) {
   return (
-    <Panel>
-      <p className="text-xs font-bold tracking-[0.16em] text-orange-300">{number}</p>
-      <h3 className="mt-2 text-lg font-bold text-white">{title}</h3>
-      <p className="mt-2 min-h-12 text-sm leading-6 text-slate-300">{text}</p>
-      <button type="button" onClick={onClick} className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-orange-200 hover:text-orange-100">
+    <Panel className="border-zinc-200 bg-white shadow-xs hover:border-orange-300/60 transition-colors">
+      <p className="text-xs font-bold tracking-[0.16em] text-[#f97602]">{number}</p>
+      <h3 className="mt-2 text-lg font-bold text-zinc-900">{title}</h3>
+      <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-600">{text}</p>
+      <button type="button" onClick={onClick} className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-[#f97602] hover:text-[#d46200]">
         {action} <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </button>
     </Panel>
@@ -1734,7 +1741,7 @@ function IconButton({
   onClick: () => void;
 }) {
   return (
-    <button type="button" aria-label={label} title={label} onClick={onClick} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-slate-300 transition hover:border-orange-300/40 hover:bg-orange-300/10 hover:text-white">
+    <button type="button" aria-label={label} title={label} onClick={onClick} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-[#f97602] shadow-2xs">
       <span className="[&>svg]:h-4 [&>svg]:w-4">{children}</span>
     </button>
   );
@@ -1742,7 +1749,7 @@ function IconButton({
 
 function LoadingPanel({ text }: { text: string }) {
   return (
-    <div className="flex min-h-24 items-center justify-center gap-2 text-sm text-slate-400">
+    <div className="flex min-h-24 items-center justify-center gap-2 text-sm text-zinc-500">
       <RefreshCw className="h-4 w-4 animate-spin" aria-hidden="true" /> {text}
     </div>
   );
@@ -1750,9 +1757,9 @@ function LoadingPanel({ text }: { text: string }) {
 
 function MarketError({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/25 bg-amber-950/30 p-3 text-sm text-amber-100">
+    <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
       <span className="flex min-w-0 items-start gap-2"><CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{message}</span>
-      <button type="button" onClick={onRetry} className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg border border-amber-200/20 px-3 font-semibold hover:bg-white/5">
+      <button type="button" onClick={onRetry} className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 text-xs font-semibold text-amber-900 hover:bg-amber-100 shadow-2xs">
         <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" /> Retry
       </button>
     </div>
