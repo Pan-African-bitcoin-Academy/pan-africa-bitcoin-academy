@@ -14,6 +14,7 @@ export interface ScheduledPurchase {
   cumulativeContribution: number;
   cumulativeBtc: number;
   portfolioValue: number;
+  historicalValue: number;
 }
 
 export interface DcaSimulation {
@@ -144,6 +145,7 @@ export function simulateDca({
       cumulativeContribution: totalContributions,
       cumulativeBtc: totalBtc,
       portfolioValue: 0,
+      historicalValue: totalBtc * pricePoint.price,
     });
   }
 

@@ -20,7 +20,10 @@ import {
   CircleAlert,
   Clock3,
   Coins,
+  Copy,
   Download,
+  Key,
+  LogOut,
   Gauge,
   Lightbulb,
   LockKeyhole,
@@ -32,7 +35,8 @@ import {
   Trash2,
   Wallet,
 } from 'lucide-react';
-import { AuthModal } from '@/components/AuthModal';
+import { CryptoAuthModal } from '@/components/dca/CryptoAuthModal';
+import { LinkCryptoKeyModal } from '@/components/dca/LinkCryptoKeyModal';
 import { ForgotPasswordModal } from '@/components/ForgotPasswordModal';
 import {
   Area,
@@ -57,6 +61,7 @@ import {
   type DcaFrequency,
   type DcaSimulation,
   type PricePoint,
+  type ScheduledPurchase,
 } from './dca-calculations';
 
 type Section = 'overview' | 'learn' | 'planner' | 'simulator' | 'dashboard' | 'market';
@@ -479,7 +484,16 @@ function SimulationTooltip({ active, payload, valuationMode }: SimulationTooltip
 }
 
 export default function DcaExperience() {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, profile, sessionEmail, logout } = useAuth();
+  const [linkKeyModalOpen, setLinkKeyModalOpen] = useState(false);
+  const [copiedAccountKey, setCopiedAccountKey] = useState(false);
+
+  const isCryptoUser = Boolean(
+    sessionEmail?.startsWith('pba_acc_') ||
+    profile?.email?.includes('@crypto.pba') ||
+    profile?.studentId?.startsWith('pba_acc_')
+  );
+  const cryptoAccountId = profile?.studentId || (sessionEmail?.startsWith('pba_acc_') ? sessionEmail.split('@')[0] : null);
   const [section, setSection] = useState<Section>('overview');
   const [plans, setPlans] = useState<DcaPlan[]>([]);
   const [purchases, setPurchases] = useState<DcaPurchase[]>([]);
@@ -1095,14 +1109,68 @@ export default function DcaExperience() {
         </div>
       )}
       {!authLoading && !isAuthenticated && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-orange-200 bg-orange-50/70 px-3 py-2 text-sm text-zinc-800">
-          <p>Sign in is required to use the DCA planner and My dashboard.</p>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-orange-200 bg-orange-50/70 p-3.5 text-sm text-zinc-800">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f97602] text-white shrink-0">
+              <Key className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="font-semibold text-zinc-900">Email-Free Cryptographic Accounts Available</p>
+              <p className="text-xs text-zinc-600">Access the DCA planner and dashboard with a private account key. No KYC, email, or personal data required.</p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setSignInModalOpen(true)}
-            className="font-semibold text-[#f97602] underline decoration-orange-300 underline-offset-4 hover:text-[#d46200]"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#f97602] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-[#d46200] transition cursor-pointer"
           >
-            Sign in
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Access DCA Account
+          </button>
+        </div>
+      )}
+      {!authLoading && isAuthenticated && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-50/80 px-3.5 py-2.5 text-xs text-zinc-700">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
+            {isCryptoUser ? (
+              <span className="flex flex-wrap items-center gap-1.5">
+                <span className="font-semibold text-zinc-800">Authenticated via Private Key:</span>
+                <span className="font-mono bg-white px-2 py-0.5 rounded border border-zinc-200 text-zinc-900">{cryptoAccountId}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (cryptoAccountId) {
+                      navigator.clipboard.writeText(cryptoAccountId);
+                      setCopiedAccountKey(true);
+                      setTimeout(() => setCopiedAccountKey(false), 2000);
+                    }
+                  }}
+                  className="text-[#f97602] hover:underline cursor-pointer"
+                >
+                  {copiedAccountKey ? 'Copied' : 'Copy ID'}
+                </button>
+              </span>
+            ) : (
+              <span className="flex flex-wrap items-center gap-1.5">
+                <span>Signed in as <strong className="text-zinc-900">{profile?.email || sessionEmail}</strong></span>
+                <button
+                  type="button"
+                  onClick={() => setLinkKeyModalOpen(true)}
+                  className="ml-2 font-medium text-[#f97602] underline decoration-orange-300 hover:text-[#d46200] cursor-pointer"
+                >
+                  Link Private Key (Email-Free Access)
+                </button>
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => void logout()}
+            className="font-medium text-zinc-500 hover:text-zinc-900 transition flex items-center gap-1 cursor-pointer"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            Sign Out
           </button>
         </div>
       )}
@@ -1793,15 +1861,20 @@ export default function DcaExperience() {
       <footer className="mt-8 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-xs leading-5 text-zinc-500 sm:p-5 shadow-xs">
         Bitcoin is volatile and you could lose some or all of the value of any purchase. Dollar-cost averaging does not eliminate risk or guarantee returns. PBA provides educational and analytical tools only—not financial advice, trading, custody, payments, or verification of manually entered records. Historical outcomes are hypothetical and do not predict future performance.
       </footer>
-      <AuthModal
+      <CryptoAuthModal
         isOpen={signInModalOpen}
         onClose={() => setSignInModalOpen(false)}
-        mode="signin"
-        redirectAfterLogin={null}
         onForgotPassword={(email) => {
           setForgotPasswordEmail(email);
           setSignInModalOpen(false);
           setForgotPasswordOpen(true);
+        }}
+      />
+      <LinkCryptoKeyModal
+        isOpen={linkKeyModalOpen}
+        onClose={() => setLinkKeyModalOpen(false)}
+        onSuccess={(accId) => {
+          setNotice(`Linked private key ${accId.slice(0, 16)}… successfully.`);
         }}
       />
       <ForgotPasswordModal

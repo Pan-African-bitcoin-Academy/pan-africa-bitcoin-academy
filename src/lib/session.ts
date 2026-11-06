@@ -191,7 +191,7 @@ export function clearAdminCookie(res: NextResponse) {
 
 // Helper functions for student
 export function requireStudent(req: NextRequest) {
-  const session = getSession(req, 'student');
+  const session = getSession(req, 'student') || getSession(req, 'admin');
   if (!session) return null;
   return {
     userId: session.userId,
