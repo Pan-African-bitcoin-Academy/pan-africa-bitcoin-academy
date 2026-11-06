@@ -2,8 +2,8 @@
   "hero": {
     "title": "ኣብ ትምህርትና ተጸንበር",
     "subtitle_prefix": "ኣብ Pan-Africa Bitcoin Academy ንምጽንባር ኣመልክት፣ ከምኡውን ",
-        "subtitle_suffix": " ናብ ፋይናንሳዊ ርእሰ-ምቁጽጻር ዘብጽሓካ ጉዕዞኻ።",
-        "subtitle_bold": "ጀምር"
+    "subtitle_suffix": " ናብ ፋይናንሳዊ ርእሰ-ምቁጽጻር ዘብጽሓካ ጉዕዞኻ።",
+    "subtitle_bold": "ጀምር"
   },
   "form": {
     "heading": "መመልከቲ ቅጥዒ",
@@ -28,7 +28,17 @@
       "seats_available_suffix": "ክፉት ቦታታት",
       "btn_full": "ምሉእ እዩ",
       "btn_selected": "ተመሪጹ",
-      "btn_select": "ጉጅለ ትምህርቲ ምረጽ"
+      "btn_select": "ጉጅለ ትምህርቲ ምረጽ",
+      "filter_open": "ክፉታት ጥራይ",
+      "filter_all": "ኩሎም ጉጅለታት",
+      "filter_completed": "ዝተዛዘሙ",
+      "view_carousel": "ዝዝወር ርእየት",
+      "view_grid": "ሰሌዳ ርእየት",
+      "scroll_prev": "ናብ ዝሓለፈ",
+      "scroll_next": "ናብ ዝቕጽል",
+      "level_beginner": "ጀማሪ (Beginner)",
+      "level_intermediate": "ማእከላይ (Intermediate)",
+      "level_advanced": "ምዕቡል (Advanced)"
     },
     "personal_details": {
       "first_name_label": "ስም",

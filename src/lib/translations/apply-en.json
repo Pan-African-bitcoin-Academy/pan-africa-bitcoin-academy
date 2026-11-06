@@ -28,7 +28,17 @@
       "seats_available_suffix": "seats available",
       "btn_full": "Full",
       "btn_selected": "Selected",
-      "btn_select": "Select cohort"
+      "btn_select": "Select cohort",
+      "filter_open": "Open for Enrollment",
+      "filter_all": "All Cohorts",
+      "filter_completed": "Completed",
+      "view_carousel": "Carousel View",
+      "view_grid": "Grid View",
+      "scroll_prev": "Previous Cohort",
+      "scroll_next": "Next Cohort",
+      "level_beginner": "Beginner",
+      "level_intermediate": "Intermediate",
+      "level_advanced": "Advanced"
     },
     "personal_details": {
       "first_name_label": "First Name",

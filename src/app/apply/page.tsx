@@ -14,6 +14,7 @@ import { FormGrid } from '@/components/ui';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getApplyCopy } from '@/lib/translations/apply';
+import { CohortSelector } from '@/components/CohortSelector';
 
 interface Cohort {
   id: string;
@@ -291,7 +292,7 @@ export default function ApplyPage() {
   const normalizeLevel = (level: string | undefined): string => {
     if (!level) return '';
     const normalized = level.trim().toLowerCase();
-    if (normalized === 'beginner') return 'beginner';
+    if (normalized === 'beginner' || normalized === 'begginer') return 'beginner';
     if (normalized === 'intermediate') return 'intermediate';
     if (normalized === 'advanced') return 'advanced';
     return normalized;
@@ -548,160 +549,23 @@ export default function ApplyPage() {
                       <p>{t.form.learning_pace.self_paced_box_desc}</p>
                     </div>
                   ) : (
-                    <div className="space-y-4 border-b border-zinc-800 pb-6">
-                      <div>
-                        <h3 className="text-lg font-semibold text-zinc-50">{t.form.cohorts.heading}</h3>
-                        <p className="mt-1 text-sm text-zinc-500">{t.form.cohorts.subheading}</p>
-                      </div>
-                      {cohortsLoading ? (
-                        <div className="flex items-center justify-center py-12 text-cyan-400">{t.form.cohorts.loading}</div>
-                      ) : cohortsError ? (
-                        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-300">
-                          {cohortsError}
-                        </div>
-                      ) : cohorts.length === 0 ? (
-                        <div className="rounded-xl border border-zinc-700/50 bg-zinc-900/30 py-12 text-center text-zinc-400">
-                          {t.form.cohorts.empty}
-                        </div>
-                      ) : (
-                        <div className="relative">
-                          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-zinc-950/90 to-transparent z-10" aria-hidden />
-                          <div
-                            className="overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-hide py-2 -mx-2 px-2 sm:-mx-4 sm:px-4"
-                            style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}
-                          >
-                            <div className="flex gap-5 w-max min-w-full pb-1">
-                              {cohorts.map((cohort, index) => {
-                                const statusLower = (cohort.status || '').toLowerCase();
-                                const isCompleted = statusLower === 'completed' || statusLower === 'ended';
-                                const isActive = statusLower === 'active' || statusLower === 'live';
-                                const isUpcoming = statusLower === 'upcoming' || (!isCompleted && !isActive);
-                                const seatsPct = cohort.seats ? Math.round((cohort.available / cohort.seats) * 100) : 0;
-                                const levelLabel = cohort.level ? cohort.level.charAt(0).toUpperCase() + cohort.level.slice(1).toLowerCase() : 'Beginner';
-                                const isCardSelected = selectedCohort === cohort.id;
-
-                                return (
-                                  <div
-                                    key={cohort.id}
-                                    className={cn(
-                                      "cohort-card-entrance flex-shrink-0 w-[88vw] sm:w-[44vw] lg:w-[340px] transition-all duration-300 scroll-ml-4 sm:scroll-ml-6 rounded-2xl overflow-hidden",
-                                      isCardSelected &&
-                                        "ring-2 ring-amber-400/90 ring-offset-2 ring-offset-zinc-950 shadow-[0_0_36px_rgba(245,158,11,0.35),0_0_72px_rgba(234,179,8,0.12)]"
-                                    )}
-                                    style={{ scrollSnapAlign: 'start', animationDelay: `${index * 80}ms` }}
-                                  >
-                                    <div
-                                      className={cn(
-                                        "h-full rounded-2xl border bg-zinc-900/90 p-5 flex flex-col transition-[box-shadow,border-color] duration-300",
-                                        isCardSelected &&
-                                          "border-amber-400/75 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.2),0_0_28px_rgba(245,158,11,0.18)]",
-                                        !isCardSelected && isCompleted && "border-zinc-700/60 opacity-80",
-                                        !isCardSelected && isActive && "border-emerald-500/40 shadow-[0_0_24px_rgba(16,185,129,0.12)]",
-                                        !isCardSelected && isUpcoming && !isCompleted && "border-cyan-400/30"
-                                      )}
-                                    >
-                                      <div className="flex items-center justify-between gap-2 mb-4">
-                                        <span
-                                          className={cn(
-                                            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide",
-                                            isCompleted && "bg-zinc-600/40 text-zinc-400",
-                                            isActive && "bg-emerald-500/25 text-emerald-300",
-                                            isUpcoming && "bg-cyan-500/25 text-cyan-300"
-                                          )}
-                                        >
-                                          {isActive && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />}
-                                          {isCompleted ? t.form.cohorts.status_completed : isActive ? t.form.cohorts.status_active : t.form.cohorts.status_upcoming}
-                                        </span>
-                                        <span
-                                          className={cn(
-                                            "rounded-full px-2.5 py-1 text-xs font-medium",
-                                            cohort.level?.toLowerCase() === 'intermediate' && "bg-amber-500/20 text-amber-300",
-                                            cohort.level?.toLowerCase() === 'advanced' && "bg-purple-500/20 text-purple-300",
-                                            (cohort.level?.toLowerCase() === 'beginner' || !cohort.level) && "bg-blue-500/20 text-blue-300",
-                                            cohort.level?.toLowerCase() && !['beginner', 'intermediate', 'advanced'].includes(cohort.level?.toLowerCase()) && "bg-cyan-500/20 text-cyan-300"
-                                          )}
-                                        >
-                                          {levelLabel}
-                                        </span>
-                                      </div>
-
-                                      <h3 className="text-lg font-bold text-zinc-50 mb-1">{cohort.name}</h3>
-                                      <p className="text-sm text-zinc-500 mb-4">
-                                        {cohort.startDate} → {cohort.endDate}
-                                      </p>
-
-                                      <div className="flex items-center gap-4 text-sm mb-4">
-                                        <span className="text-zinc-400">
-                                          <span className="font-semibold text-zinc-200">{cohort.sessions}</span> {t.form.cohorts.sessions_suffix}
-                                        </span>
-                                        <span className="text-zinc-500">·</span>
-                                        <span
-                                          className={
-                                            cohort.available === 0
-                                              ? "text-zinc-500"
-                                              : isCardSelected
-                                                ? "text-amber-400"
-                                                : "text-cyan-400"
-                                          }
-                                        >
-                                          <span className="font-semibold">{cohort.available}</span> / {cohort.seats} {t.form.cohorts.seats_suffix}
-                                        </span>
-                                      </div>
-
-                                      <div className="mb-4 h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
-                                        <div
-                                          className={cn(
-                                            "h-full rounded-full transition-all",
-                                            cohort.available === 0 && "bg-zinc-600",
-                                            cohort.available > 0 && seatsPct <= 20 && "bg-amber-500/80",
-                                            cohort.available > 0 && seatsPct > 20 && !isCardSelected && "bg-cyan-500/80",
-                                            cohort.available > 0 && seatsPct > 20 && isCardSelected && "bg-gradient-to-r from-amber-500 to-amber-400"
-                                          )}
-                                          style={{ width: `${100 - seatsPct}%` }}
-                                          aria-hidden
-                                        />
-                                      </div>
-
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          if (cohort.available === 0) return;
-                                          setSelectedCohort(cohort.id);
-                                          const normalizedLevel = normalizeLevel(cohort.level);
-                                          setFormData((prev) => ({
-                                            ...prev,
-                                            preferredCohort: cohort.id,
-                                            experienceLevel: normalizedLevel,
-                                          }));
-                                        }}
-                                        onMouseDown={(e) => e.stopPropagation()}
-                                        disabled={cohort.available === 0}
-                                        className={cn(
-                                          "mt-auto w-full rounded-xl py-3 text-sm font-semibold transition-all duration-300",
-                                          cohort.available === 0
-                                            ? "cursor-not-allowed bg-zinc-800 text-zinc-500"
-                                            : isCardSelected
-                                              ? "bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-[0_0_24px_rgba(245,158,11,0.45)] hover:from-amber-300 hover:to-amber-400"
-                                              : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
-                                        )}
-                                      >
-                                        {cohort.available === 0
-                                          ? t.form.cohorts.btn_full
-                                          : isCardSelected
-                                            ? t.form.cohorts.btn_selected
-                                            : t.form.cohorts.btn_select}
-                                      </button>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <CohortSelector
+                      cohorts={cohorts}
+                      loading={cohortsLoading}
+                      error={cohortsError}
+                      selectedCohort={selectedCohort}
+                      onSelectCohort={(cohort) => {
+                        setSelectedCohort(cohort.id);
+                        const normalizedLevel = normalizeLevel(cohort.level);
+                        setFormData((prev) => ({
+                          ...prev,
+                          preferredCohort: cohort.id,
+                          experienceLevel: normalizedLevel,
+                        }));
+                      }}
+                      t={t}
+                      isTi={language === 'ti'}
+                    />
                   )}
 
                   {/* First Name and Last Name */}

@@ -28,7 +28,17 @@
       "seats_available_suffix": "",
       "btn_full": "",
       "btn_selected": "",
-      "btn_select": ""
+      "btn_select": "",
+      "filter_open": "",
+      "filter_all": "",
+      "filter_completed": "",
+      "view_carousel": "",
+      "view_grid": "",
+      "scroll_prev": "",
+      "scroll_next": "",
+      "level_beginner": "",
+      "level_intermediate": "",
+      "level_advanced": ""
     },
     "personal_details": {
       "first_name_label": "",
