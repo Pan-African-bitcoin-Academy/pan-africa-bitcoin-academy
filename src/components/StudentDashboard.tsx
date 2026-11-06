@@ -7,6 +7,7 @@ import { chaptersContent } from '@/content/chaptersContent';
 import { Download, Book, FileText, Calendar as CalendarIcon, Video, FileCheck, Users, GraduationCap, Clock, ExternalLink, TrendingDown, RotateCcw, X, BookOpen } from 'lucide-react';
 import { toLocalCalendarDate } from '@/lib/calendarDate';
 import { DcaAccumulationWidget } from '@/components/DcaAccumulationWidget';
+import { AccountSecuritySection } from './dashboard/AccountSecuritySection';
 // Lazy load heavy components
 const Calendar = lazy(() => import('./Calendar').then(mod => ({ default: mod.Calendar })));
 const CertificateImageSection = lazy(() => import('./CertificateImageSection').then(mod => ({ default: mod.CertificateImageSection })));
@@ -188,7 +189,7 @@ interface StudentDashboardProps {
 }
 
 export function StudentDashboard({ userData }: StudentDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'certification' | 'leaderboard'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'certification' | 'leaderboard' | 'security'>('overview');
   const [studentData, setStudentData] = useState<any | null>(null);
   const [satsTotals, setSatsTotals] = useState<{ paid: number; pending: number }>({ paid: 0, pending: 0 });
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
@@ -1492,6 +1493,16 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
           >
             Leaderboard
           </button>
+          <button
+            onClick={() => setActiveTab('security')}
+            className={`px-4 py-2 font-medium transition ${
+              activeTab === 'security'
+                ? 'border-b-2 border-orange-400 text-orange-400'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            Account Security
+          </button>
         </div>
 
         {activeTab === 'overview' && (
@@ -2261,6 +2272,7 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
             {loading && (
               <div className="mb-3 text-sm text-zinc-400">Loading leaderboard...</div>
             )}
+
             {!loading && leaderboard.length === 0 && (
               <div className="mb-3 text-sm text-zinc-400">No leaderboard data yet.</div>
             )}
@@ -2307,6 +2319,12 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'security' && (
+          <div className="mt-4">
+            <AccountSecuritySection userData={userData} />
           </div>
         )}
       </div>

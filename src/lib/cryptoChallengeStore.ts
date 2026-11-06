@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { supabaseAdmin } from './supabase';
 
 interface StoredChallenge {
   challenge: string;
@@ -6,8 +7,8 @@ interface StoredChallenge {
   expiresAt: number;
 }
 
-// In-memory challenge store with auto-expiry
-const challengeStore = new Map<string, StoredChallenge>();
+// In-memory fallback store
+const fallbackChallengeStore = new Map<string, StoredChallenge>();
 
 // Rate limiter tracking: key -> timestamps[]
 const rateLimits = new Map<string, number[]>();
@@ -16,13 +17,13 @@ const CHALLENGE_TTL_MS = 60 * 1000; // 60 seconds TTL
 const MAX_REQUESTS_PER_MINUTE = 15;
 
 /**
- * Clean up expired challenges periodically
+ * Clean up expired rate limits and fallback challenges
  */
 function cleanupExpired() {
   const now = Date.now();
-  for (const [key, item] of challengeStore.entries()) {
+  for (const [key, item] of fallbackChallengeStore.entries()) {
     if (item.expiresAt < now) {
-      challengeStore.delete(key);
+      fallbackChallengeStore.delete(key);
     }
   }
 
@@ -55,9 +56,10 @@ export function checkRateLimit(identifier: string): boolean {
 }
 
 /**
- * Issue a new cryptographic challenge for an account
+ * Issue a new cryptographic challenge for an account.
+ * Persists to Supabase `crypto_challenges` table with fallback to in-memory store.
  */
-export function issueChallenge(accountId: string): { challenge: string; expiresAt: number } {
+export async function issueChallenge(accountId: string): Promise<{ challenge: string; expiresAt: number }> {
   cleanupExpired();
 
   // 32 cryptographically secure random bytes
@@ -65,36 +67,97 @@ export function issueChallenge(accountId: string): { challenge: string; expiresA
   const challenge = `pba_auth_${randomBytes.toString('hex')}`;
   const expiresAt = Date.now() + CHALLENGE_TTL_MS;
 
-  challengeStore.set(challenge, {
-    challenge,
-    accountId,
-    expiresAt,
-  });
+  // Persist to database for multi-instance / serverless consistency
+  try {
+    const { error } = await supabaseAdmin.from('crypto_challenges').insert({
+      account_id: accountId,
+      challenge,
+      expires_at: new Date(expiresAt).toISOString(),
+      used: false,
+    });
+
+    if (error) {
+      console.warn('Failed to insert challenge into DB, using fallback memory store:', error.message);
+      fallbackChallengeStore.set(challenge, {
+        challenge,
+        accountId,
+        expiresAt,
+      });
+    }
+  } catch (err) {
+    console.warn('Database error while issuing challenge, using fallback memory store:', err);
+    fallbackChallengeStore.set(challenge, {
+      challenge,
+      accountId,
+      expiresAt,
+    });
+  }
 
   return { challenge, expiresAt };
 }
 
 /**
  * Consume a challenge for verification.
- * Strictly single-use: deletes the challenge immediately to prevent replays.
+ * Strictly single-use: marks used in DB immediately to prevent replays.
  */
-export function consumeChallenge(challenge: string, accountId: string): boolean {
+export async function consumeChallenge(challenge: string, accountId: string): Promise<boolean> {
   cleanupExpired();
-  const stored = challengeStore.get(challenge);
 
-  if (!stored) {
-    return false; // Challenge not found or already used
+  if (!challenge || !accountId) {
+    return false;
   }
 
-  // Remove immediately (single use)
-  challengeStore.delete(challenge);
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('crypto_challenges')
+      .select('id, account_id, expires_at, used')
+      .eq('challenge', challenge)
+      .maybeSingle();
+
+    if (!error && data) {
+      if (data.used) {
+        return false; // Replay attack detected
+      }
+
+      if (new Date(data.expires_at).getTime() < Date.now()) {
+        return false; // Expired
+      }
+
+      if (data.account_id.toLowerCase() !== accountId.toLowerCase()) {
+        return false; // Account ID mismatch
+      }
+
+      // Atomically mark as used
+      const { error: updateError } = await supabaseAdmin
+        .from('crypto_challenges')
+        .update({ used: true })
+        .eq('id', data.id)
+        .eq('used', false);
+
+      if (updateError) {
+        return false;
+      }
+
+      return true;
+    }
+  } catch (err) {
+    console.warn('Database error while consuming challenge, checking fallback memory store:', err);
+  }
+
+  // Check fallback store
+  const stored = fallbackChallengeStore.get(challenge);
+  if (!stored) {
+    return false;
+  }
+
+  fallbackChallengeStore.delete(challenge);
 
   if (stored.expiresAt < Date.now()) {
-    return false; // Expired
+    return false;
   }
 
   if (stored.accountId.toLowerCase() !== accountId.toLowerCase()) {
-    return false; // Account ID mismatch
+    return false;
   }
 
   return true;

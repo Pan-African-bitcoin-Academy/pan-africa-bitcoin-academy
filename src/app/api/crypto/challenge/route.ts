@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const { challenge, expiresAt } = issueChallenge(accountId);
+  const { challenge, expiresAt } = await issueChallenge(accountId);
 
   return NextResponse.json({
     challenge,

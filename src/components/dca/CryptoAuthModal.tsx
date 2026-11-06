@@ -460,9 +460,7 @@ export function CryptoAuthModal({
                 <p className="font-mono text-xs break-all text-zinc-900 bg-white p-2.5 rounded-lg border border-zinc-200 select-all">
                   {generatedBundle?.identity.accountId ?? 'Generating keypair…'}
                 </p>
-                <p className="text-[11px] text-zinc-500">
-                  This public identifier is derived mathematically from your public key and identifies your DCA records.
-                </p>
+
               </div>
 
               {/* Step 2: Passphrase & Backup Download */}

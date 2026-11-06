@@ -77,7 +77,7 @@ async function testFullFlow() {
   console.log('✓ Account profile inserted into database. ID:', newProfile.id);
 
   console.log('\n=== TEST 4: Challenge-Response Authentication ===');
-  const { challenge, expiresAt } = issueChallenge(bundle.identity.accountId);
+  const { challenge, expiresAt } = await issueChallenge(bundle.identity.accountId);
   console.log('Issued Challenge:', challenge);
   console.log('Expires in:', (expiresAt - Date.now()) / 1000, 'seconds');
 
@@ -86,7 +86,7 @@ async function testFullFlow() {
   console.log('Signature generated:', signature.slice(0, 30) + '...');
 
   // Consume challenge (single use)
-  const isChallengeValid = consumeChallenge(challenge, bundle.identity.accountId);
+  const isChallengeValid = await consumeChallenge(challenge, bundle.identity.accountId);
   if (!isChallengeValid) {
     throw new Error('Challenge validation failed!');
   }
@@ -100,7 +100,7 @@ async function testFullFlow() {
   console.log('✓ Cryptographic signature verified successfully against registered public key.');
 
   console.log('\n=== TEST 5: Replay Protection ===');
-  const replayAttempt = consumeChallenge(challenge, bundle.identity.accountId);
+  const replayAttempt = await consumeChallenge(challenge, bundle.identity.accountId);
   if (replayAttempt) {
     throw new Error('Replay attack should have been rejected!');
   }

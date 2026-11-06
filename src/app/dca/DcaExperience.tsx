@@ -1054,7 +1054,7 @@ export default function DcaExperience() {
             PBA learning tool
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl lg:text-5xl">
-            Bitcoin DCA, made <span className="text-[#f97602]">clear.</span>
+            Keep stacking <span className="text-[#f97602]">sats.</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600 sm:text-base">
             Learn the approach, explore historical data, and organize a hypothetical plan or purchases you enter yourself.

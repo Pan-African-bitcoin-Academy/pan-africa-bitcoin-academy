@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { Eye, EyeOff, Check, Circle, X } from 'lucide-react';
+import { Eye, EyeOff, Check, Circle, X, Key } from 'lucide-react';
+import { CryptoLoginTab } from '@/components/auth/CryptoLoginTab';
+import { CryptoRegisterTab } from '@/components/auth/CryptoRegisterTab';
 import { validatePassword } from '@/lib/passwordValidation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -22,6 +24,24 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
   const t = getAuthCopy(language);
 
   const [isSignIn, setIsSignIn] = useState(mode === 'signin');
+  const [authMethod, setAuthMethod] = useState<'email' | 'crypto'>('email');
+
+  const handleCryptoSuccess = (data: { accountId: string; userId: string; email?: string }) => {
+    try {
+      localStorage.setItem('profileEmail', data.email || data.accountId);
+      window.dispatchEvent(new Event('storage'));
+    } catch {
+      // ignore
+    }
+    onClose();
+    if (redirectAfterLogin === null) {
+      // stay on page
+    } else if (redirectAfterLogin) {
+      window.location.href = redirectAfterLogin;
+    } else {
+      window.location.href = '/dashboard';
+    }
+  };
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -376,6 +396,47 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
           </p>
         </div>
 
+        {/* Auth Method Selector */}
+        <div className="flex rounded-xl bg-zinc-950/80 p-1 border border-zinc-800 mb-6">
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMethod('email');
+              setServerError(null);
+            }}
+            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition cursor-pointer ${
+              authMethod === 'email'
+                ? 'bg-zinc-800 text-white shadow-sm border border-zinc-700'
+                : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            Email & Password
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMethod('crypto');
+              setServerError(null);
+            }}
+            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              authMethod === 'crypto'
+                ? 'bg-[#f97602] text-white shadow-sm'
+                : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            <Key className="h-3.5 w-3.5" />
+            Private Key
+          </button>
+        </div>
+
+        {authMethod === 'crypto' ? (
+          isSignIn ? (
+            <CryptoLoginTab onSuccess={handleCryptoSuccess} />
+          ) : (
+            <CryptoRegisterTab onSuccess={handleCryptoSuccess} />
+          )
+        ) : (
+          <>
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
           {!isSignIn && (
@@ -680,6 +741,9 @@ export function AuthModal({ isOpen, onClose, mode, onForgotPassword, redirectAft
               </button>
             )}
           </div>
+        )}
+
+          </>
         )}
 
         {/* Switch mode */}

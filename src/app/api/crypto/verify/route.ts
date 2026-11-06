@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 1: Validate & consume challenge (single-use replay protection)
-    const isValidChallenge = consumeChallenge(challenge, accountId);
+    const isValidChallenge = await consumeChallenge(challenge, accountId);
     if (!isValidChallenge) {
       return NextResponse.json(
         { error: 'Authentication challenge expired or invalid. Please request a new challenge.' },
@@ -34,39 +34,90 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 2: Fetch registered public key for this account
-    const syntheticEmail = `${accountId}@crypto.pba`;
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .select('id, name, email, student_id, password_hash, status')
-      .or(`student_id.eq.${accountId},email.eq.${syntheticEmail}`)
+    // Step 2: Fetch registered public key
+    let publicKeySpki: string | null = null;
+    let targetProfileId: string | null = null;
+    let userProfile: any = null;
+
+    // First attempt: Check crypto_accounts table
+    const { data: cryptoAcc, error: cryptoAccError } = await supabaseAdmin
+      .from('crypto_accounts')
+      .select('id, account_id, public_key, algorithm, profile_id, status')
+      .eq('account_id', accountId)
       .maybeSingle();
 
-    if (profileError || !profile) {
+    if (cryptoAcc && cryptoAcc.public_key) {
+      if (cryptoAcc.status === 'suspended') {
+        return NextResponse.json({ error: 'This account has been suspended.' }, { status: 403 });
+      }
+
+      publicKeySpki = cryptoAcc.public_key;
+      targetProfileId = cryptoAcc.profile_id;
+
+      if (targetProfileId) {
+        const { data: prof } = await supabaseAdmin
+          .from('profiles')
+          .select('id, name, email, student_id, status')
+          .eq('id', targetProfileId)
+          .maybeSingle();
+        userProfile = prof;
+      }
+    }
+
+    // Fallback: If not found in crypto_accounts, check profiles table
+    if (!publicKeySpki) {
+      const syntheticEmail = `${accountId}@crypto.pba`;
+      const { data: profile, error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .select('id, name, email, student_id, password_hash, status')
+        .or(`student_id.eq.${accountId},email.eq.${syntheticEmail}`)
+        .maybeSingle();
+
+      if (profileError || !profile) {
+        return NextResponse.json(
+          { error: 'No registered account found with this Account ID. Please create an account first.' },
+          { status: 404 },
+        );
+      }
+
+      if (profile.status === 'suspended') {
+        return NextResponse.json({ error: 'This account has been suspended.' }, { status: 403 });
+      }
+
+      const passwordHash = profile.password_hash || '';
+      if (!passwordHash.startsWith('CRYPTO:')) {
+        return NextResponse.json(
+          { error: 'This account does not have a linked cryptographic key. Please sign in with your email and password.' },
+          { status: 400 },
+        );
+      }
+
+      const parts = passwordHash.split(':');
+      publicKeySpki = parts[2];
+      targetProfileId = profile.id;
+      userProfile = profile;
+
+      // Auto-backfill to crypto_accounts for future lookups
+      if (publicKeySpki && profile.id) {
+        try {
+          await supabaseAdmin.from('crypto_accounts').insert({
+            account_id: accountId,
+            public_key: publicKeySpki,
+            algorithm: 'ECDSA-P256',
+            profile_id: profile.id,
+            status: 'active',
+          });
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    if (!publicKeySpki || !userProfile) {
       return NextResponse.json(
-        { error: 'No registered account found with this Account ID. Please create an account first.' },
+        { error: 'Registered public key or account profile could not be retrieved.' },
         { status: 404 },
       );
-    }
-
-    if (profile.status === 'suspended') {
-      return NextResponse.json({ error: 'This account has been suspended.' }, { status: 403 });
-    }
-
-    // Extract public key from password_hash field (format: "CRYPTO:ECDSA-P256:<spki>")
-    const passwordHash = profile.password_hash || '';
-    if (!passwordHash.startsWith('CRYPTO:')) {
-      return NextResponse.json(
-        { error: 'This account was not registered with a cryptographic key. Please use email sign in or migrate your account.' },
-        { status: 400 },
-      );
-    }
-
-    const parts = passwordHash.split(':');
-    const publicKeySpki = parts[2];
-
-    if (!publicKeySpki) {
-      return NextResponse.json({ error: 'Malformed registered public key.' }, { status: 500 });
     }
 
     // Step 3: Cryptographically verify signature against registered public key
@@ -82,14 +133,16 @@ export async function POST(request: NextRequest) {
     const now = Date.now();
     const response = NextResponse.json({
       ok: true,
-      accountId: profile.student_id || accountId,
-      userId: profile.id,
+      accountId: userProfile.student_id || accountId,
+      userId: userProfile.id,
+      email: userProfile.email,
+      name: userProfile.name,
       message: 'Authenticated successfully.',
     });
 
     setStudentCookie(response, {
-      userId: profile.id,
-      email: profile.student_id || accountId,
+      userId: userProfile.id,
+      email: userProfile.email || accountId,
       issuedAt: now,
       lastActive: now,
       rememberMe: true,
