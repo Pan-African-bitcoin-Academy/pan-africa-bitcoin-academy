@@ -38,22 +38,11 @@ You should never take a screenshot of your seed phrase, store it in your phone, 
 In Bitcoin, there is no "forgot password" button and no customer support that can help you recover lost funds. Your seed phrase is your money, and protecting it is your responsibility. Treat it like physical cash or gold—once it's gone, it's gone.  
 ኣብ ቢትኮይን፡ "forgot password" ዝብል መጠወቒን ዝጠፍአ ገንዘብ ንምምላስ ክሕግዘካ ዝኽእል ናይ ዓማዊል ደገፍን የለን። ዘርኢ ሓረግካ ገንዘብካ እዩ፡ ምሕላው ድማ ሓላፍነትካ እዩ። ከም ኣካላዊ ጥረ ገንዘብ ወይ ወርቂ ጌርካ ርኣዮ-ሓንሳብ ምስ ጠፍአ፡ ጠፊኡ እዩ።
 
-Example of a 24-word seed phrase:  
-ናይ 24 ቃላት ዘርኢ ሓረግ ኣብነት:
-```
-1. adult      7. absorb     13. adapt      19. address
-2. ahead      8. alert      14. airport    20. account
-3. alarm      9. absurd     15. acquire    21. accuse
-4. agent     10. achieve    16. ability    22. acid
-5. aisle     11. action     17. about      23. acoustic
-6. alien     12. age        18. absent     24. across
-```
-
-> **⚠️ Warning / መጠንቀቕታ፤**  
+> **Warning / መጠንቀቕታ፤**  
 > If someone gets your seed phrase, they can take your coins without asking. Never share it, photograph it, or store it digitally.  
 > ሓደ ሰብ ናይ ዘርኢ ሓረግካ እንተረኺቡ፡ ከይሓተተ ሳንቲምካ ክወስድ ይኽእል እዩ። ፈጺምካ ሼር ኣይትግበር፡ ስእሊ ኣይትስኣሎ፡ ወይ ብዲጂታል ኣይትኽዘን።
 
-> **💡 Tip / ምኽሪ፤**  
+> **Tip / ምኽሪ፤**  
 > Write your seed phrase on paper, check spelling twice, and store it in a safe place where fire, water, and curious eyes can't reach.  
 > ሓረግ ዘርእኻ ኣብ ወረቐት ጽሓፍ፡ ኣጸሓሕፋ ክልተ ግዜ መርምር፡ ሓዊ፡ ማይን ንኽፈልጡ ዝደልዩ ኣዒንቲ ኣብ ዘይበጽሖ ውሑስ ቦታ ድማ ኣቐምጦ።
 
@@ -79,7 +68,7 @@ This system is based on cryptography, but you don't need to be a mathematician t
 - **Private = proof of ownership.**  
   ናይ ብሕቲ = መርትዖ ዋንነት።
 
-> **⚠️ Warning / መጠንቀቕታ፤**  
+> **Warning / መጠንቀቕታ፤**  
 > If you lose your private key, you lose access to your Bitcoin forever. There is no recovery. This is why backing up your seed phrase is critical.  
 > ናይ ብሕቲ መፍትሕካ እንተ ጠፊኡካ፡ ንሓዋሩ ናብ ቢትኮይንካ ክትረኽቦ ትስእን። ምሕዋይ የለን። ነዚ እዩ ድማ ነቲ ዘርኢ ሓረግካ ምድጋፍ ወሳኒ ዝኸውን።
 

@@ -93,6 +93,18 @@ const Chapter5InteractiveLesson = dynamic(
   }
 );
 
+const Chapter6InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter6InteractiveLesson").then((module) => module.Chapter6InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 6 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -452,6 +464,12 @@ function TigrinyaChapterLesson({
                 <Chapter5InteractiveLesson module="network_topology" isTi={true} />
                 <Chapter5InteractiveLesson module="three_pillars" isTi={true} />
               </>
+            ) : null}
+            {chapter.slug === "keys-and-transactions" && heading.startsWith("6.1") ? (
+              <Chapter6InteractiveLesson module="mailbox_keys" isTi={true} />
+            ) : null}
+            {chapter.slug === "keys-and-transactions" && heading.startsWith("6.2") ? (
+              <Chapter6InteractiveLesson module="p2p_pipeline" isTi={true} />
             ) : null}
           </ChapterSectionAnimated>
         );
@@ -1722,6 +1740,12 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                   <Chapter5InteractiveLesson module="network_topology" isTi={isTi} />
                   <Chapter5InteractiveLesson module="three_pillars" isTi={isTi} />
                 </>
+              ) : null}
+              {chapter.slug === "keys-and-transactions" && sectionIdx === 2 ? (
+                <Chapter6InteractiveLesson module="mailbox_keys" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "keys-and-transactions" && sectionIdx === 3 ? (
+                <Chapter6InteractiveLesson module="p2p_pipeline" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
