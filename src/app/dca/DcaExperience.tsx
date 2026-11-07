@@ -1939,17 +1939,10 @@ export default function DcaExperience() {
                     )}
                   </div>
                   {editingPurchaseId && (
-                    <div className="mt-3 rounded-xl border border-orange-200/90 bg-orange-50/80 p-2.5 text-xs text-orange-950 flex items-center justify-between gap-2 animate-in fade-in duration-200">
+                    <div className="mt-3 rounded-xl border border-orange-200/90 bg-orange-50/80 p-2.5 text-xs text-orange-950 animate-in fade-in duration-200">
                       <span className="font-medium">
                         Now editing this record. Adjust any field below and click <strong>Update record</strong>.
                       </span>
-                      <button
-                        type="button"
-                        onClick={resetPurchaseForm}
-                        className="shrink-0 rounded-lg bg-white border border-orange-200 px-2 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-orange-50 cursor-pointer shadow-2xs"
-                      >
-                        Cancel
-                      </button>
                     </div>
                   )}
                 </div>
