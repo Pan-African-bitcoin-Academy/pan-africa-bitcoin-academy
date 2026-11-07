@@ -1,7 +1,10 @@
 import {
   generateAccountKeypair,
-  createEncryptedBackup,
-  restoreFromEncryptedBackup,
+  createKeyBackup,
+  restoreFromKeyBackup,
+  exportRawPrivateKey,
+  importRawPrivateKey,
+  deriveAccountIdFromPrivateKey,
   signChallenge,
   verifySignature,
   deriveAccountIdFromSpki,
@@ -37,24 +40,24 @@ async function testFullFlow() {
   }
   console.log('✓ Account ID matches public key SHA-256 derivation.');
 
-  console.log('\n=== TEST 2: Passphrase Backup & Restoration ===');
-  const passphrase = 'test-secure-passphrase-888';
-  const backup = await createEncryptedBackup(bundle.privateKey, bundle.identity.accountId, passphrase);
-  console.log('Encrypted backup created. Ciphertext length:', backup.ciphertext.length);
+  console.log('\n=== TEST 2: Passphrase-Free Key Backup & Nostr-Style Derivation ===');
+  const backup = await createKeyBackup(bundle.privateKey, bundle.identity.accountId);
+  console.log('Key backup created. Account ID:', backup.accountId);
 
-  const restored = await restoreFromEncryptedBackup(backup, passphrase);
+  const restored = await restoreFromKeyBackup(backup);
   if (restored.accountId !== bundle.identity.accountId) {
     throw new Error('Restored account ID mismatch!');
   }
-  console.log('✓ Restored private key from backup successfully with passphrase.');
+  console.log('✓ Restored private key from key file backup successfully (zero passphrase).');
 
-  // Test wrong passphrase
-  try {
-    await restoreFromEncryptedBackup(backup, 'wrong-passphrase');
-    throw new Error('Should have failed with wrong passphrase!');
-  } catch (err) {
-    console.log('✓ Correctly rejected wrong passphrase:', err.message);
+  // Test Nostr-style raw private key import & auto-derivation
+  const rawKeyStr = await exportRawPrivateKey(bundle.privateKey);
+  const importedKey = await importRawPrivateKey(rawKeyStr);
+  const autoDerived = await deriveAccountIdFromPrivateKey(importedKey);
+  if (autoDerived.accountId !== bundle.identity.accountId) {
+    throw new Error('Auto-derived account ID from raw private key mismatch!');
   }
+  console.log('✓ Nostr-style raw private key auto-derived identical Account ID:', autoDerived.accountId);
 
   console.log('\n=== TEST 3: Database Registration Envelope (No KYC) ===');
   const syntheticEmail = `${bundle.identity.accountId}@crypto.pba`;
