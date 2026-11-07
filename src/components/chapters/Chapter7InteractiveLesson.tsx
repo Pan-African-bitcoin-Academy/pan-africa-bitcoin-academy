@@ -23,7 +23,6 @@ import {
   Flame,
   Search,
 } from "lucide-react";
-import { LiveBlockchainData } from "@/components/LiveBlockchainData";
 
 /* ─────────── Shared helpers ─────────── */
 
@@ -636,7 +635,6 @@ interface ChainBlock {
 }
 
 function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
-  const [activeTab, setActiveTab] = useState<"simulator" | "live_mempool">("simulator");
   const [blocks, setBlocks] = useState<ChainBlock[]>([]);
   const [pendingMempoolTxs, setPendingMempoolTxs] = useState<string[]>([
     "Alice → Bob 0.42 BTC",
@@ -768,52 +766,17 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
           </h4>
         </div>
 
-        {/* View mode toggle */}
-        <div className="flex rounded-lg border border-zinc-800 bg-zinc-900 p-1">
-          <button
-            type="button"
-            onClick={() => setActiveTab("simulator")}
-            className={`rounded-md px-3 py-1 text-xs font-semibold transition cursor-pointer ${
-              activeTab === "simulator"
-                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            ⛓ {t({ en: "Chain Simulator", ti: "ናይ ሰንሰለት ሲሙሌተር" }, isTi)}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("live_mempool")}
-            className={`rounded-md px-3 py-1 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
-              activeTab === "live_mempool"
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            {t({ en: "Live Bitcoin Blocks", ti: "ህያው ናይ ቢትኮይን ብሎኮች" }, isTi)}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={resetChain}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white cursor-pointer"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          {t({ en: "Reset Chain", ti: "ሰንሰለት ዳግማይ ኣበግስ" }, isTi)}
+        </button>
       </div>
 
-      {activeTab === "live_mempool" ? (
-        <div className="space-y-3">
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-xs text-emerald-300 flex items-center gap-2">
-            <Radio className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>
-              {t(
-                {
-                  en: "Displaying real live Bitcoin mainnet blocks and pending mempool transactions in real time:",
-                  ti: "ናይ ሓቂ ህያው ናይ ቢትኮይን ሜይንኔት ብሎኮችን ሜምፑልን ብቐጥታ የርኢ:",
-                },
-                isTi
-              )}
-            </span>
-          </div>
-          <LiveBlockchainData />
-        </div>
-      ) : (
-        <div>
+      <div>
           <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
             {t(
               {
@@ -1011,8 +974,7 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
               </button>
             </div>
           )}
-        </div>
-      )}
+      </div>
     </section>
   );
 }
