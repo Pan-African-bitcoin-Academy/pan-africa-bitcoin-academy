@@ -117,6 +117,18 @@ const Chapter7InteractiveLesson = dynamic(
   }
 );
 
+const Chapter8InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter8InteractiveLesson").then((module) => module.Chapter8InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 8 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1770,6 +1782,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "blockchain-basics" && sectionIdx === 4 ? (
                 <Chapter7InteractiveLesson module="mining_puzzle" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "exchange-software-wallet" && sectionIdx === 0 ? (
+                <Chapter8InteractiveLesson module="exchange_onramp" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "exchange-software-wallet" && sectionIdx === 1 ? (
+                <Chapter8InteractiveLesson module="seed_backup_lab" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "exchange-software-wallet" && sectionIdx === 2 ? (
+                <Chapter8InteractiveLesson module="send_receive_playground" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "exchange-software-wallet" && sectionIdx === 3 ? (
+                <Chapter8InteractiveLesson module="privacy_inspector" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
