@@ -261,11 +261,30 @@ export async function exportRawPrivateKey(privateKey: CryptoKey): Promise<string
 }
 
 /**
- * Import raw PKCS#8 private key from base64url
+ * Import raw PKCS#8 or JWK private key from string.
+ * Supports base64url PKCS#8 strings and JSON JWK strings.
  */
-export async function importRawPrivateKey(base64url: string): Promise<CryptoKey> {
+export async function importRawPrivateKey(input: string): Promise<CryptoKey> {
   const subtle = getSubtle();
-  const pkcs8Bytes = base64UrlToBytes(base64url.trim());
+  const trimmed = input.trim();
+
+  // If input is a JSON string (JWK)
+  if (trimmed.startsWith('{')) {
+    try {
+      const jwk = JSON.parse(trimmed);
+      return await subtle.importKey(
+        'jwk',
+        jwk,
+        { name: 'ECDSA', namedCurve: 'P-256' },
+        true,
+        ['sign'],
+      );
+    } catch {
+      // Fallback to base64url pkcs8
+    }
+  }
+
+  const pkcs8Bytes = base64UrlToBytes(trimmed);
   return subtle.importKey(
     'pkcs8',
     pkcs8Bytes as unknown as BufferSource,
@@ -273,6 +292,31 @@ export async function importRawPrivateKey(base64url: string): Promise<CryptoKey>
     true,
     ['sign'],
   );
+}
+
+/**
+ * Automatically derive the public Account ID from an imported private key.
+ * Mirrors Nostr's behavior where providing a private key automatically yields the public identity.
+ */
+export async function deriveAccountIdFromPrivateKey(
+  privateKey: CryptoKey,
+): Promise<{ accountId: string; publicKeySpki: string }> {
+  const subtle = getSubtle();
+  const jwk = await subtle.exportKey('jwk', privateKey);
+  const pubJwk = { kty: 'EC', crv: 'P-256', x: jwk.x, y: jwk.y };
+  const pubKey = await subtle.importKey(
+    'jwk',
+    pubJwk,
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    true,
+    ['verify'],
+  );
+  const spki = await subtle.exportKey('spki', pubKey);
+  const accountId = await deriveAccountIdFromSpki(new Uint8Array(spki));
+  return {
+    accountId,
+    publicKeySpki: bytesToBase64Url(new Uint8Array(spki)),
+  };
 }
 
 /**

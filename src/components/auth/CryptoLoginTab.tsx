@@ -15,6 +15,7 @@ import {
 import {
   restoreFromEncryptedBackup,
   importRawPrivateKey,
+  deriveAccountIdFromPrivateKey,
   signChallenge,
   type EncryptedKeyBackup,
 } from '@/lib/cryptoAuth';
@@ -30,7 +31,6 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
   const [passphrase, setPassphrase] = useState('');
   const [showPassphrase, setShowPassphrase] = useState(false);
   const [rawKeyInput, setRawKeyInput] = useState('');
-  const [rawAccountIdInput, setRawAccountIdInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -84,11 +84,10 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
         if (!rawKeyInput.trim()) {
           throw new Error('Please paste your private key string.');
         }
-        if (!rawAccountIdInput.trim()) {
-          throw new Error('Please enter your Account ID (starts with pba_acc_).');
-        }
         privateKey = await importRawPrivateKey(rawKeyInput.trim());
-        accountId = rawAccountIdInput.trim();
+        // Auto-derive Account ID directly from private key (like Nostr derives npub from nsec)
+        const derived = await deriveAccountIdFromPrivateKey(privateKey);
+        accountId = derived.accountId;
       }
 
       // Step 1: Request dynamic short-lived challenge
@@ -236,31 +235,27 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
         ) : (
           <>
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
-                Account ID (starts with pba_acc_)
-              </label>
-              <input
-                type="text"
-                value={rawAccountIdInput}
-                onChange={(e) => setRawAccountIdInput(e.target.value)}
-                placeholder="pba_acc_..."
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-medium text-zinc-300">
+                  Private Key String / JWK JSON
+                </label>
+                <span className="text-[10px] text-zinc-500">Auto-derives Account ID</span>
+              </div>
+              <textarea
+                value={rawKeyInput}
+                onChange={(e) => setRawKeyInput(e.target.value)}
+                placeholder="Paste your raw private key string here..."
+                rows={4}
                 required
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs font-mono text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
               />
             </div>
-
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
-                Private Key String / JWK JSON
-              </label>
-              <textarea
-                value={rawKeyInput}
-                onChange={(e) => setRawKeyInput(e.target.value)}
-                placeholder="Paste raw base64url private key or JWK..."
-                rows={3}
-                required
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs font-mono text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
-              />
+        
+            <div className="rounded-lg border border-amber-200/80 bg-amber-50/70 p-2.5 text-[11px] text-amber-800 space-y-1">
+              <p className="font-medium">💡 Don't have a raw key string?</p>
+              <p className="text-amber-700">
+                Switch to the <strong>Encrypted Backup File</strong> tab above and select your <code>.json</code> backup file instead. The raw key string is only needed if you specifically exported it.
+              </p>
             </div>
           </>
         )}

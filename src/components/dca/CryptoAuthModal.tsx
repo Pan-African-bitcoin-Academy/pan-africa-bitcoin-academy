@@ -23,7 +23,9 @@ import {
   generateAccountKeypair,
   createEncryptedBackup,
   restoreFromEncryptedBackup,
+  exportRawPrivateKey,
   importRawPrivateKey,
+  deriveAccountIdFromPrivateKey,
   signChallenge,
   type GeneratedAccountBundle,
   type EncryptedKeyBackup,
@@ -56,6 +58,9 @@ export function CryptoAuthModal({
   const [confirmNoCustody, setConfirmNoCustody] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [rawKeyString, setRawKeyString] = useState<string>('');
+  const [copiedRawKey, setCopiedRawKey] = useState(false);
+  const [showRawKey, setShowRawKey] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
 
   // Login flow state
@@ -106,6 +111,8 @@ export function CryptoAuthModal({
       setErrorMessage(null);
       const bundle = await generateAccountKeypair();
       setGeneratedBundle(bundle);
+      const raw = await exportRawPrivateKey(bundle.privateKey);
+      setRawKeyString(raw);
       setHasDownloadedBackup(false);
       setConfirmSavedBackup(false);
       setConfirmNoCustody(false);
@@ -256,11 +263,9 @@ export function CryptoAuthModal({
         if (!rawPrivateKeyInput.trim()) {
           throw new Error('Please enter your private account key string.');
         }
-        if (!loginAccountIdInput.trim()) {
-          throw new Error('Please enter your Account ID (starts with pba_acc_).');
-        }
         privateKey = await importRawPrivateKey(rawPrivateKeyInput.trim());
-        accountId = loginAccountIdInput.trim();
+        const derived = await deriveAccountIdFromPrivateKey(privateKey);
+        accountId = derived.accountId;
       }
 
       // Step 1: Request dynamic challenge from server
@@ -462,6 +467,46 @@ export function CryptoAuthModal({
                 </p>
 
               </div>
+                {/* Optional: Raw Private Key String (Advanced) */}
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setShowRawKey(!showRawKey)}
+                      className="text-[11px] font-semibold text-zinc-600 uppercase tracking-wide flex items-center gap-1.5 hover:text-zinc-900 cursor-pointer"
+                    >
+                      <Key className="h-3 w-3 text-[#f97602]" />
+                      {showRawKey ? 'Hide Raw Private Key String' : 'View Raw Private Key String (Advanced)'}
+                    </button>
+                    {showRawKey && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (rawKeyString) {
+                            navigator.clipboard.writeText(rawKeyString);
+                            setCopiedRawKey(true);
+                            setTimeout(() => setCopiedRawKey(false), 2000);
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 text-[11px] text-[#f97602] hover:underline cursor-pointer"
+                      >
+                        {copiedRawKey ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                        {copiedRawKey ? 'Copied' : 'Copy Key'}
+                      </button>
+                    )}
+                  </div>
+                  {showRawKey && (
+                    <>
+                      <p className="text-[11px] text-zinc-500">
+                        This is your raw unencrypted base64url private key string. You can paste this directly into the &quot;Paste Raw Key&quot; sign-in tab.
+                      </p>
+                      <p className="font-mono text-[11px] text-zinc-800 break-all select-all bg-white p-2.5 rounded-lg border border-zinc-200 max-h-24 overflow-y-auto">
+                        {rawKeyString || 'Generating...'}
+                      </p>
+                    </>
+                  )}
+                </div>
+
 
               {/* Step 2: Passphrase & Backup Download */}
               <div className="space-y-3 rounded-xl border border-orange-200/80 bg-orange-50/40 p-4">
@@ -646,23 +691,14 @@ export function CryptoAuthModal({
               ) : (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
-                      Public Account ID
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="pba_acc_..."
-                      value={loginAccountIdInput}
-                      onChange={(e) => setLoginAccountIdInput(e.target.value)}
-                      className="w-full font-mono rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
-                      Raw Private Key (Base64url PKCS#8)
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-semibold text-zinc-700">
+                        Raw Private Key (Base64url PKCS#8)
+                      </label>
+                      <span className="text-[10px] text-zinc-400">Auto-derives Account ID</span>
+                    </div>
                     <textarea
-                      rows={3}
+                      rows={4}
                       placeholder="Paste your private key string..."
                       value={rawPrivateKeyInput}
                       onChange={(e) => setRawPrivateKeyInput(e.target.value)}

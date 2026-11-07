@@ -7,6 +7,7 @@ import {
   Lock,
   Download,
   Check,
+  Copy,
   AlertCircle,
   Eye,
   EyeOff,
@@ -18,6 +19,7 @@ import {
 import {
   generateAccountKeypair,
   createEncryptedBackup,
+  exportRawPrivateKey,
   type GeneratedAccountBundle,
 } from '@/lib/cryptoAuth';
 
@@ -35,6 +37,9 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
   const [showPassphrase, setShowPassphrase] = useState(false);
 
   const [bundle, setBundle] = useState<GeneratedAccountBundle | null>(null);
+  const [rawKeyString, setRawKeyString] = useState<string>('');
+  const [copiedRawKey, setCopiedRawKey] = useState(false);
+  const [showRawKey, setShowRawKey] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [confirmSaved, setConfirmSaved] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -65,6 +70,8 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
       // Generate keypair in browser
       const newBundle = await generateAccountKeypair();
       setBundle(newBundle);
+      const raw = await exportRawPrivateKey(newBundle.privateKey);
+      setRawKeyString(raw);
 
       // Create encrypted backup
       const backup = await createEncryptedBackup(
@@ -262,6 +269,46 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
               {bundle.identity.accountId}
             </p>
           </div>
+          {/* Optional: Raw Private Key String (Advanced) */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setShowRawKey(!showRawKey)}
+                className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide flex items-center gap-1.5 hover:text-white cursor-pointer"
+              >
+                <Key className="h-3 w-3 text-[#f97602]" />
+                {showRawKey ? 'Hide Raw Private Key String' : 'View Raw Private Key String (Advanced)'}
+              </button>
+              {showRawKey && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (rawKeyString) {
+                      navigator.clipboard.writeText(rawKeyString);
+                      setCopiedRawKey(true);
+                      setTimeout(() => setCopiedRawKey(false), 2000);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] text-[#f97602] hover:underline cursor-pointer"
+                >
+                  {copiedRawKey ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  {copiedRawKey ? 'Copied' : 'Copy Key'}
+                </button>
+              )}
+            </div>
+            {showRawKey && (
+              <>
+                <p className="text-[11px] text-zinc-500">
+                  This is your raw base64url private key string. You can save this to paste into the &quot;Paste Raw Key&quot; sign-in tab.
+                </p>
+                <p className="font-mono text-[11px] text-zinc-300 break-all select-all bg-zinc-900 p-2.5 rounded-lg border border-zinc-800 max-h-24 overflow-y-auto">
+                  {rawKeyString || 'Generating...'}
+                </p>
+              </>
+            )}
+          </div>
+
 
           <label className="flex items-start gap-2 cursor-pointer select-none text-xs text-zinc-300">
             <input
