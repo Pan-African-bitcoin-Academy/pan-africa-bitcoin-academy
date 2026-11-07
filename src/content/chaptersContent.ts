@@ -1204,13 +1204,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Label transactions immediately when you receive them. Future you will thank present you for the clarity.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/utxosize.jpg",
-            alt: "Labeling transactions and UTXO size",
-            caption: "Labeling transactions and UTXOs for future spending",
-          },
-        ],
       },
       {
         heading: "10.2 Basic Privacy Habits (Avoid Reuse; Payment Flow Awareness)",

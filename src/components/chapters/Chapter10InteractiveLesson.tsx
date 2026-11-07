@@ -30,6 +30,9 @@ import {
   Send,
   HelpCircle,
   Download,
+  Split,
+  Scale,
+  XCircle,
 } from "lucide-react";
 
 /* ─────────── Shared helpers ─────────── */
@@ -56,36 +59,48 @@ function AddressVerificationLab({ isTi }: AddressVerificationProps) {
   const [malwareActive, setMalwareActive] = useState<boolean>(false);
   const [copiedAddress, setCopiedAddress] = useState<string>("");
   const [copiedToast, setCopiedToast] = useState<boolean>(false);
-  const [verifiedOnDevice, setVerifiedOnDevice] = useState<boolean | null>(null);
   const [pastedAddress, setPastedAddress] = useState<string>("");
+  const [decisionOutcome, setDecisionOutcome] = useState<"approved_safe" | "approved_stolen" | "rejected_saved" | "rejected_false_alarm" | null>(null);
 
   const handleCopy = () => {
-    // If malware is active, it swaps the clipboard to attacker's address!
+    // If malware is active, it silently swaps the clipboard to attacker's address!
     const effective = malwareActive ? malwareAddress : genuineAddress;
     setCopiedAddress(effective);
     setCopiedToast(true);
+    setDecisionOutcome(null);
     setTimeout(() => setCopiedToast(false), 2000);
   };
 
   const handlePaste = () => {
-    if (!copiedAddress) {
-      setPastedAddress(malwareActive ? malwareAddress : genuineAddress);
-    } else {
-      setPastedAddress(copiedAddress);
-    }
-    setVerifiedOnDevice(null);
+    const effective = copiedAddress || (malwareActive ? malwareAddress : genuineAddress);
+    setPastedAddress(effective);
+    setDecisionOutcome(null);
   };
 
-  const handleVerify = (deviceMatches: boolean) => {
-    setVerifiedOnDevice(deviceMatches);
+  const handleApproveSend = () => {
+    if (!pastedAddress) return;
+    if (pastedAddress === malwareAddress) {
+      setDecisionOutcome("approved_stolen");
+    } else {
+      setDecisionOutcome("approved_safe");
+    }
+  };
+
+  const handleRejectMismatch = () => {
+    if (!pastedAddress) return;
+    if (pastedAddress === malwareAddress) {
+      setDecisionOutcome("rejected_saved");
+    } else {
+      setDecisionOutcome("rejected_false_alarm");
+    }
   };
 
   const handleReset = () => {
     setMalwareActive(false);
     setCopiedAddress("");
     setCopiedToast(false);
-    setVerifiedOnDevice(null);
     setPastedAddress("");
+    setDecisionOutcome(null);
   };
 
   return (
@@ -128,7 +143,7 @@ function AddressVerificationLab({ isTi }: AddressVerificationProps) {
       <p className="mt-3 text-sm text-zinc-300">
         {t(
           {
-            en: "Malicious background software (clipboard clippers) can silently watch your clipboard and swap Bitcoin addresses with an attacker's lookalike. Always verify the address on your hardware device's trusted screen.",
+            en: "Malicious background software (clipboard clippers) can silently watch your clipboard and swap Bitcoin addresses with an attacker's lookalike. Always verify the address on your hardware device's trusted screen before sending.",
             ti: "ናይ ስርቂ ሶፍትዌር (ክሊፕቦርድ ቫይረስ) ኣብ ኮምፒተርካ ተሓቢኡ ዝተቐድሐ ኣድራሻ ብናይ ሰራቒ ኣድራሻ ብስቕታ ይቕይሮ። ኣብ ናይ ሃርድዌር መሳርሒኻ ስክሪን ብጥንቃቐ ምርጋጽ ፈጺሙ ዘይተርፍ ልምዲ እዩ።",
           },
           isTi
@@ -148,7 +163,7 @@ function AddressVerificationLab({ isTi }: AddressVerificationProps) {
             setMalwareActive((prev) => !prev);
             setCopiedAddress("");
             setPastedAddress("");
-            setVerifiedOnDevice(null);
+            setDecisionOutcome(null);
           }}
           className={`rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
             malwareActive
@@ -259,29 +274,31 @@ function AddressVerificationLab({ isTi }: AddressVerificationProps) {
               </span>
             </div>
             <div className="text-[10px] text-zinc-400 flex items-center justify-between pt-1 border-t border-zinc-800/80">
-              <span>{t({ en: "First 8 chars: bc1q9v8k", ti: "ቀዳሞት 8 ፊደላት" }, isTi)}</span>
-              <span>{t({ en: "Last 8 chars: q8v601a", ti: "ዳሕሮት 8 ፊደላት" }, isTi)}</span>
+              <span>{t({ en: "First 8 chars: bc1q9v8k", ti: "ቀዳሞት 8 ፊደላት: bc1q9v8k" }, isTi)}</span>
+              <span>{t({ en: "Last 8 chars: q8v601a", ti: "ዳሕሮት 8 ፊደላት: q8v601a" }, isTi)}</span>
             </div>
           </div>
 
-          {/* Device Verification Check action */}
+          {/* Clear Decision Action: Approve or Reject */}
           {pastedAddress && (
             <div className="space-y-2 pt-1">
               <span className="text-xs text-zinc-300 block font-medium">
-                {t({ en: "Does the pasted address match your hardware screen?", ti: "እቲ ዝጠቐዕካዮ ኣድራሻ ምስ ናይ ሃርድዌር ስክሪን ይሰማማዕ ድዩ?" }, isTi)}
+                {t({ en: "Compare the pasted address with your hardware screen. What do you do?", ti: "እቲ ዝጠቐዕካዮ ኣድራሻ ምስ ናይ ሃርድዌር ስክሪን ኣረኣእዮ። እንታይ ትገብር?" }, isTi)}
               </span>
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={() => handleVerify(pastedAddress === genuineAddress)}
-                  className="rounded-lg border border-emerald-500/50 bg-emerald-950/30 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-900/40 cursor-pointer"
+                  onClick={handleApproveSend}
+                  className="rounded-lg border border-emerald-500/50 bg-emerald-950/40 py-2.5 px-2 text-xs font-bold text-emerald-300 hover:bg-emerald-900/50 transition cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {t({ en: "✓ Yes, Exact Match", ti: "✓ እወ፡ ልክዕ ይሰማማዕ" }, isTi)}
+                  <Send className="h-3.5 w-3.5" />
+                  {t({ en: "Approve & Send", ti: "ኣጽድቕን ስደድን" }, isTi)}
                 </button>
                 <button
-                  onClick={() => handleVerify(false)}
-                  className="rounded-lg border border-red-500/50 bg-red-950/30 py-2 text-xs font-semibold text-red-300 hover:bg-red-900/40 cursor-pointer"
+                  onClick={handleRejectMismatch}
+                  className="rounded-lg border border-red-500/50 bg-red-950/40 py-2.5 px-2 text-xs font-bold text-red-300 hover:bg-red-900/50 transition cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {t({ en: "✕ No, Address Mismatch!", ti: "✕ ኣይፋል፡ ኣይሰማማዕን!" }, isTi)}
+                  <XCircle className="h-3.5 w-3.5" />
+                  {t({ en: "Reject (Mismatch!)", ti: "ንጸግ (ኣይሰማማዕን!)" }, isTi)}
                 </button>
               </div>
             </div>
@@ -290,46 +307,66 @@ function AddressVerificationLab({ isTi }: AddressVerificationProps) {
       </div>
 
       {/* Verification Feedback Banner */}
-      {verifiedOnDevice !== null && (
+      {decisionOutcome && (
         <div
           className={`mt-4 rounded-xl border p-4 flex items-start gap-3 ${
-            pastedAddress === malwareAddress && !verifiedOnDevice
-              ? "border-emerald-500/50 bg-emerald-950/20 text-emerald-300"
-              : pastedAddress === malwareAddress && verifiedOnDevice
-              ? "border-red-500/50 bg-red-950/20 text-red-300"
-              : "border-emerald-500/50 bg-emerald-950/20 text-emerald-300"
+            decisionOutcome === "approved_stolen"
+              ? "border-red-500/60 bg-red-950/30 text-red-300"
+              : decisionOutcome === "rejected_saved"
+              ? "border-emerald-500/60 bg-emerald-950/30 text-emerald-300"
+              : decisionOutcome === "approved_safe"
+              ? "border-emerald-500/60 bg-emerald-950/30 text-emerald-300"
+              : "border-amber-500/60 bg-amber-950/30 text-amber-300"
           }`}
         >
-          {pastedAddress === malwareAddress && !verifiedOnDevice ? (
+          {decisionOutcome === "approved_stolen" ? (
             <>
-              <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              <ShieldAlert className="h-6 w-6 text-red-400 shrink-0 mt-0.5" />
               <div className="text-xs space-y-1">
-                <span className="font-bold text-emerald-300 text-sm">
-                  {t({ en: "Attack Defeated! Funds Saved!", ti: "መጥቃዕቲ ተፈሺሉ! ገንዘብካ ድሒኑ!" }, isTi)}
+                <span className="font-bold text-red-300 text-sm">
+                  {t({ en: "CRITICAL FAILURE: Funds Stolen by Hacker!", ti: "ሓደገኛ ውድቀት፦ ገንዘብካ ብሰራቒ ተሰሪቑ!" }, isTi)}
                 </span>
-                <p className="text-zinc-300">
+                <p className="text-red-200/90 leading-relaxed">
                   {t(
                     {
-                      en: "Clipboard malware swapped the address to the hacker's address ending in 'h4ckr'. Because you checked your hardware device screen, you caught the deception before broadcasting any bitcoin!",
-                      ti: "እቲ ቫይረስ ነቲ ኣድራሻ ብናይ ሰራቒ ኣድራሻ ('h4ckr' ዝውዳእ) ቀይርዎ ነይሩ። ኣብ ሃርድዌርካ ብምርኣይካ ነቲ ስርቂ ቅድሚ ገንዘብ ምስዳድካ ኣፍሺልካዮ!",
+                      en: "You clicked 'Approve & Send', but the clipboard malware had secretly swapped the address to the attacker's lookalike (ending in 'h4ckr'). Because you didn't check the hardware screen's last 8 characters, your Bitcoin was sent to the attacker irreversibly!",
+                      ti: "ኣጽዲቕካ ሰዲድካዮ፡ ግን እቲ ክሊፕቦርድ ቫይረስ ነቲ ኣድራሻ ብናይ ሰራቒ ኣድራሻ ('h4ckr') ቀይርዎ ነይሩ። ናይ ሃርድዌርካ ስክሪን ከየረጋገጽካ ብምስዳድካ ቢትኮይንካ ንሓዋሩ ተሰሪቑ!",
                     },
                     isTi
                   )}
                 </p>
               </div>
             </>
-          ) : pastedAddress === malwareAddress && verifiedOnDevice ? (
+          ) : decisionOutcome === "rejected_saved" ? (
             <>
-              <ShieldAlert className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+              <ShieldCheck className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
               <div className="text-xs space-y-1">
-                <span className="font-bold text-red-300 text-sm">
-                  {t({ en: "Critical Mistake: Stolen Coins!", ti: "ሓደገኛ ጌጋ፦ ገንዘብ ተሰሪቑ!" }, isTi)}
+                <span className="font-bold text-emerald-300 text-sm">
+                  {t({ en: "ATTACK DEFEATED! Funds Saved by Hardware Screen Check!", ti: "መጥቃዕቲ ፈሺሉ! ብምርግጋጽካ ገንዘብካ ድሒኑ!" }, isTi)}
                 </span>
-                <p className="text-red-200/90">
+                <p className="text-zinc-200 leading-relaxed">
                   {t(
                     {
-                      en: "The pasted address was modified by clipboard malware! Always check the first 8 and last 8 characters on the hardware screen carefully before confirming.",
-                      ti: "እቲ ዝጠቐዕካዮ ኣድራሻ ብቫይረስ ዝተለወጠ እዩ ነይሩ! ኣብ ናይ ሃርድዌር ስክሪን ዘለዉ ቀዳሞትን ዳሕሮትን ፊደላት ወትሩ ብጥንቃቐ ኣረጋግጽ።",
+                      en: "Clipboard malware swapped the address to the attacker's fake address ending in 'h4ckr'. Because you checked your hardware device screen and noticed the mismatch, you rejected the payment before any coins were lost!",
+                      ti: "እቲ ቫይረስ ነቲ ኣድራሻ ብናይ ሰራቒ ኣድራሻ ('h4ckr') ቀይርዎ ነይሩ። ኣብ ናይ ሃርድዌር ስክሪን ብምርኣይካ ዘይምስምማዕ ኣስተውዒልካ ነቲ ክፍሊት ኣፍሺልካዮ!",
+                    },
+                    isTi
+                  )}
+                </p>
+              </div>
+            </>
+          ) : decisionOutcome === "approved_safe" ? (
+            <>
+              <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="text-xs space-y-1">
+                <span className="font-bold text-emerald-300 text-sm">
+                  {t({ en: "Clean & Safe Transaction Broadcasted!", ti: "ጽሩይን ውሑስን ክፍሊት ተሰዲዱ!" }, isTi)}
+                </span>
+                <p className="text-zinc-200">
+                  {t(
+                    {
+                      en: "The address pasted matched your hardware screen exactly ('q8v601a'). Safe Bitcoin hygiene confirmed.",
+                      ti: "እቲ ዝጠቐዕካዮ ኣድራሻ ምስ ናይ ሃርድዌር ስክሪን ልክዕ ተሰማሚዑ ('q8v601a')። ውሑስ ናይ ቢትኮይን ጽሬት ተረጋጊጹ።",
                     },
                     isTi
                   )}
@@ -338,16 +375,16 @@ function AddressVerificationLab({ isTi }: AddressVerificationProps) {
             </>
           ) : (
             <>
-              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="h-6 w-6 text-amber-400 shrink-0 mt-0.5" />
               <div className="text-xs space-y-1">
-                <span className="font-bold text-emerald-300 text-sm">
-                  {t({ en: "Address Verified & Safe!", ti: "ኣድራሻ ተረጋጊጹን ውሑስን እዩ!" }, isTi)}
+                <span className="font-bold text-amber-300 text-sm">
+                  {t({ en: "False Alarm (Address was actually genuine)", ti: "ጌጋ መጠንቀቕታ (እቲ ኣድራሻ ሓቀኛ እዩ ነይሩ)" }, isTi)}
                 </span>
-                <p className="text-zinc-300">
+                <p className="text-zinc-200">
                   {t(
                     {
-                      en: "The address on the software screen matches your hardware wallet trusted screen exactly. It is safe to receive funds.",
-                      ti: "ኣብ ስክሪን ዝረአ ኣድራሻ ምስ ናይ ሃርድዌር ዋሌትካ ልክዕ ይሰማማዕ። ሕጂ ገንዘብ ክትቕበል ውሑስ እዩ።",
+                      en: "The pasted address was actually your genuine hardware address. However, being overly cautious is always better than sending blindly!",
+                      ti: "እቲ ኣድራሻ ብሓቂ ናትካ ሓቀኛ ኣድራሻ እዩ ነይሩ። ይኹን እምበር ብዕዉር ካብ ምስዳድ ጥንቁቕ ምዃን ወትሩ ዝሓሸ እዩ!",
                     },
                     isTi
                   )}
@@ -362,257 +399,344 @@ function AddressVerificationLab({ isTi }: AddressVerificationProps) {
 }
 
 /* =========================================================================
-   Module 2: UTXO Journal & Labeling Workbench (Section 10.1)
-   Theme: "Labeling transactions and UTXOs for future spending"
+   Module 2: Understanding Transaction Size & UTXO Flowchart (Section 10.1)
+   Theme: "Understanding Transaction Size: Transaction A vs Transaction B"
+   (Directly modeled on the uploaded mempool.space infographic)
    ========================================================================= */
 
-interface UtxoLabelingProps {
+interface UtxoSizeFlowchartProps {
   isTi: boolean;
 }
 
-interface JournalEntry {
-  id: string;
-  txid: string;
-  amountBtc: number;
-  date: string;
-  label: string;
-  category: "kyc" | "p2p" | "savings" | "income" | "unlabeled";
-  notes: string;
-}
+function UtxoSizeFlowchartAndLabeling({ isTi }: UtxoSizeFlowchartProps) {
+  const [sliderInputs, setSliderInputs] = useState<number>(3);
+  const [activeTab, setActiveTab] = useState<"flowchart" | "journal">("flowchart");
 
-function UtxoLabelingWorkbench({ isTi }: UtxoLabelingProps) {
-  const initialEntries: JournalEntry[] = [
-    {
-      id: "tx-1",
-      txid: "8c3b...4e91",
-      amountBtc: 0.05,
-      date: "2026-10-15",
-      label: "",
-      category: "unlabeled",
-      notes: "",
-    },
-    {
-      id: "tx-2",
-      txid: "2f10...7a88",
-      amountBtc: 0.015,
-      date: "2026-10-28",
-      label: "",
-      category: "unlabeled",
-      notes: "",
-    },
-    {
-      id: "tx-3",
-      txid: "99e4...1b5c",
-      amountBtc: 0.008,
-      date: "2026-11-02",
-      label: "",
-      category: "unlabeled",
-      notes: "",
-    },
-  ];
-
-  const [entries, setEntries] = useState<JournalEntry[]>(initialEntries);
-  const [exportedJson, setExportedJson] = useState<string | null>(null);
-
-  const handleUpdate = (id: string, label: string, category: JournalEntry["category"], notes: string) => {
-    setEntries((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, label, category, notes } : e))
-    );
-  };
-
-  const handleExportBip329 = () => {
-    // BIP329 format mock
-    const bip329Export = entries.map((e) => ({
-      type: "tx",
-      ref: e.txid,
-      label: e.label || "Unlabeled",
-      category: e.category,
-      amount_btc: e.amountBtc,
-      date: e.date,
-    }));
-    setExportedJson(JSON.stringify(bip329Export, null, 2));
-  };
-
-  const handleReset = () => {
-    setEntries(initialEntries);
-    setExportedJson(null);
-  };
-
-  const labeledCount = entries.filter((e) => e.label.trim().length > 0).length;
+  // Dynamic vBytes calculation
+  const calculatedVb = 10 + sliderInputs * 68 + 2 * 31; // Native SegWit
+  const calculatedSatFee = calculatedVb * 20; // 20 sat/vB
+  const calculatedUsdFee = (calculatedSatFee / 100000000) * 85000;
 
   return (
     <div className={panelClass}>
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-            <Tag className="h-5 w-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400">
+            <Layers className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
+              <span className="rounded-full bg-purple-500/10 px-2.5 py-0.5 text-xs font-semibold text-purple-400">
                 {t({ en: "Section 10.1 Interactive", ti: "ክፍሊ 10.1 መስተጋብራዊ" }, isTi)}
               </span>
               <span className="text-xs text-zinc-400">
-                {t({ en: "BIP-329 & Financial Hygiene", ti: "BIP-329ን ምዕቃብ መዝገብን" }, isTi)}
+                {t({ en: "Mempool Transaction Size & UTXO Bundles", ti: "ናይ ትራንዛክሽን ስፍሓትን ሳንቲማትን" }, isTi)}
               </span>
             </div>
             <h3 className="text-lg font-bold text-zinc-100">
               {t(
                 {
-                  en: "UTXO Journal: Labeling Transactions for Future Peace of Mind",
-                  ti: "ናይ UTXO መዝገብ፦ ንመጻኢ ዕድጊ ሳንቲማት ምምላኽ",
+                  en: "Understanding Transaction Size: Why Input Count Dictates Fees",
+                  ti: "ናይ ትራንዛክሽን ስፍሓት ምርዳእ፦ ስለምንታይ በዝሒ ሳንቲማት ክፍሊት ይውስን",
                 },
                 isTi
               )}
             </h3>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white cursor-pointer"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            {t({ en: "Reset Labels", ti: "መዛግብቲ ምለስ" }, isTi)}
-          </button>
-        </div>
       </div>
 
       <p className="mt-3 text-sm text-zinc-300 leading-relaxed">
         {t(
           {
-            en: "Without labels, a Bitcoin wallet is just a confusing list of random cryptographic hex codes. Labeling transactions immediately when they arrive turns raw UTXOs into an organized financial journal and prevents dangerous coin mix-ups.",
-            ti: "ብዘይ ምልክት፡ ናይ ቢትኮይን ዋሌትካ ዝተሓላለኸ ናይ ኮዳት ዝርዝር ጥራይ እዩ ዝኸውን። ሳንቲም ኣብ ዝኣተወሉ እዋን ቀልጢፍካ ምልክት ምግባር ንዋሌትካ ስርዓት የትሕዞ፡ ሓደገኛ ምትሕውዋስ ሳንቲማት ድማ ይከላኸል።",
+            en: "Why is labeling and managing UTXOs so important? Because Bitcoin fees depend on virtual size (vBytes), not amount. Compare Transaction A (clean, 3 inputs) with Transaction B (bloated, 17 dust inputs) below:",
+            ti: "ንUTXOs ምልክት ምግባርን ምምሕዳርን ስለምንታይ ኣገዳሲ ኮይኑ? ናይ ቢትኮይን ክፍሊት ኣብ ናይ ዳታ ስፍሓት (vBytes) እምበር ኣብ መጠን ገንዘብ ስለዘይተመርኮሰ እዩ። ትራንዛክሽን Aን ትራንዛክሽን Bን ኣነጻጽር፦",
           },
           isTi
         )}
       </p>
 
-      {/* Progress pill */}
-      <div className="mt-4 flex items-center justify-between rounded-xl bg-zinc-900/60 p-3 border border-zinc-800 text-xs">
-        <div className="flex items-center gap-2">
-          <Tag className="h-4 w-4 text-amber-400" />
-          <span className="text-zinc-300">
-            {t({ en: "Labeling Progress:", ti: "ናይ ምልክት ገስጋስ፦" }, isTi)}{" "}
-            <strong className="text-amber-400 font-bold">{labeledCount} / {entries.length} UTXOs Labeled</strong>
-          </span>
-        </div>
+      {/* Tabs */}
+      <div className="mt-4 flex flex-wrap gap-2 border-b border-zinc-800 pb-2">
         <button
-          onClick={handleExportBip329}
-          className="flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 cursor-pointer"
+          onClick={() => setActiveTab("flowchart")}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+            activeTab === "flowchart"
+              ? "bg-purple-500 text-white shadow-sm"
+              : "bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+          }`}
         >
-          <Download className="h-3.5 w-3.5" />
-          {t({ en: "Export BIP-329 Labels", ti: "BIP-329 ምልክታት ኣውጽእ" }, isTi)}
+          <Split className="h-3.5 w-3.5" />
+          {t({ en: "1. Transaction Size Flowchart (Tx A vs Tx B)", ti: "1. ናይ ትራንዛክሽን ስፍሓት ፍሰት (Tx A vs Tx B)" }, isTi)}
+        </button>
+        <button
+          onClick={() => setActiveTab("journal")}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+            activeTab === "journal"
+              ? "bg-purple-500 text-white shadow-sm"
+              : "bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Tag className="h-3.5 w-3.5" />
+          {t({ en: "2. UTXO Labeling & Prevention Journal", ti: "2. መዝገብ ምልክትን መከላከልን" }, isTi)}
         </button>
       </div>
 
-      {/* UTXO Cards to Label */}
-      <div className="mt-4 space-y-3">
-        {entries.map((entry, idx) => (
-          <div
-            key={entry.id}
-            className={`rounded-xl border p-4 transition ${
-              entry.label
-                ? "border-amber-500/40 bg-zinc-900/60"
-                : "border-zinc-800 bg-zinc-900/30"
-            }`}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2 mb-3">
-              <div className="flex items-center gap-2">
-                <span className="rounded bg-zinc-800 px-2 py-0.5 font-mono text-[11px] text-zinc-400">
-                  UTXO #{idx + 1}
-                </span>
-                <span className="font-mono text-xs text-zinc-500">{entry.txid}</span>
-                <span className="text-[11px] text-zinc-500">· {entry.date}</span>
+      {activeTab === "flowchart" && (
+        <div className="mt-4 space-y-5">
+          {/* Side by side comparison: Transaction A vs Transaction B matching user's image */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Transaction A Card */}
+            <div className="rounded-2xl border border-cyan-500/40 bg-zinc-950 p-4 space-y-3 relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-cyan-500/20 px-2 py-0.5 text-xs font-bold text-cyan-300">
+                    Transaction A (Lean & Clean)
+                  </span>
+                </div>
+                <span className="text-[10px] text-zinc-500 font-mono">Credit: mempool.space</span>
               </div>
-              <div className="text-sm font-bold font-mono text-amber-400">
-                {entry.amountBtc} BTC{" "}
-                <span className="text-xs font-normal text-zinc-400">
-                  ({(entry.amountBtc * 100000000).toLocaleString()} sats)
-                </span>
+
+              {/* Graphic Flow Representation */}
+              <div className="relative rounded-xl border border-zinc-800 bg-black p-4 flex items-center justify-between">
+                {/* 3 Input streams */}
+                <div className="space-y-2 w-1/3">
+                  <div className="text-[10px] font-mono text-cyan-400 font-bold uppercase mb-1">
+                    Input UTXOs (3)
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="h-1.5 w-full rounded-full bg-cyan-500/70" />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="h-1.5 w-full rounded-full bg-cyan-500/70" />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="h-1.5 w-full rounded-full bg-cyan-500/70" />
+                  </div>
+                </div>
+
+                {/* Funnel Center */}
+                <div className="flex flex-col items-center justify-center px-3">
+                  <div className="rounded-full border border-cyan-500/50 bg-cyan-950/60 p-2.5 text-cyan-300 shadow-md">
+                    <ArrowRight className="h-5 w-5" />
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-400 mt-1">258 vB</span>
+                </div>
+
+                {/* 2 Output streams */}
+                <div className="space-y-3 w-1/3 text-right">
+                  <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase mb-1">
+                    Outputs (2)
+                  </div>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="h-1.5 w-full rounded-full bg-emerald-500/70" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                  </div>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="h-1.5 w-full rounded-full bg-emerald-500/70" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Exact Stats matching uploaded image */}
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
+                <div className="rounded bg-zinc-900/80 p-2">
+                  <span className="text-[10px] text-zinc-400 block">{t({ en: "Number of UTXO Inputs:", ti: "በዝሒ ኢንፑትስ፦" }, isTi)}</span>
+                  <span className="text-zinc-100 font-bold text-sm">3 inputs</span>
+                </div>
+                <div className="rounded bg-zinc-900/80 p-2">
+                  <span className="text-[10px] text-zinc-400 block">{t({ en: "Transaction Size:", ti: "ናይ ዳታ ስፍሓት፦" }, isTi)}</span>
+                  <span className="text-cyan-400 font-bold text-sm">258 virtual bytes</span>
+                </div>
+                <div className="rounded bg-zinc-900/80 p-2">
+                  <span className="text-[10px] text-zinc-400 block">{t({ en: "Transaction Amt:", ti: "ዝተላእከ መጠን፦" }, isTi)}</span>
+                  <span className="text-zinc-100 font-bold text-sm">0.26 BTC ($22.1k)</span>
+                </div>
+                <div className="rounded bg-zinc-900/80 p-2 border border-emerald-500/30">
+                  <span className="text-[10px] text-emerald-400 block font-bold">{t({ en: "Transaction Fee:", ti: "ክፍሊት፦" }, isTi)}</span>
+                  <span className="text-emerald-300 font-bold text-sm">$6.63 USD (0.03%)</span>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label className="text-[11px] text-zinc-400 block mb-1">
-                  {t({ en: "Label / Memo:", ti: "ናይቲ ክፍሊት ምልክት፦" }, isTi)}
-                </label>
-                <input
-                  type="text"
-                  value={entry.label}
-                  placeholder={
-                    idx === 0
-                      ? t({ en: "e.g. Salary from Company", ti: "ንኣብነት፦ ናይ ወርሒ ደሞዝ" }, isTi)
-                      : idx === 1
-                      ? t({ en: "e.g. P2P Cash with Dawit", ti: "ንኣብነት፦ ካብ ዳዊት ብጥረ ገንዘብ" }, isTi)
-                      : t({ en: "e.g. Hardware Wallet Cold Storage", ti: "ንኣብነት፦ ናይ ሃርድዌር ዋሌት ዕቋር" }, isTi)
-                  }
-                  onChange={(e) => handleUpdate(entry.id, e.target.value, entry.category, entry.notes)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-100 focus:border-amber-500 focus:outline-none"
-                />
+            {/* Transaction B Card */}
+            <div className="rounded-2xl border border-red-500/40 bg-zinc-950 p-4 space-y-3 relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-red-500/20 px-2 py-0.5 text-xs font-bold text-red-300">
+                    Transaction B (Bloated Dust Trap)
+                  </span>
+                </div>
+                <span className="text-[10px] text-zinc-500 font-mono">Credit: mempool.space</span>
               </div>
 
-              <div>
-                <label className="text-[11px] text-zinc-400 block mb-1">
-                  {t({ en: "Privacy Category:", ti: "ናይ ውልቃውነት መደብ፦" }, isTi)}
-                </label>
-                <select
-                  value={entry.category}
-                  onChange={(e) =>
-                    handleUpdate(entry.id, entry.label, e.target.value as JournalEntry["category"], entry.notes)
-                  }
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-200 focus:border-amber-500 focus:outline-none"
-                >
-                  <option value="unlabeled">{t({ en: "— Choose Category —", ti: "— መደብ ምረጽ —" }, isTi)}</option>
-                  <option value="kyc">{t({ en: "KYC Exchange (Tied to ID)", ti: "KYC ኤክስቸንጅ (መንነት ዘለዎ)" }, isTi)}</option>
-                  <option value="p2p">{t({ en: "P2P Trade (Non-KYC)", ti: "P2P ንግዲ (መንነት ዘይብሉ)" }, isTi)}</option>
-                  <option value="income">{t({ en: "Earned Income / Salary", ti: "ዝተረኽበ ደሞዝ" }, isTi)}</option>
-                  <option value="savings">{t({ en: "Deep Cold Savings", ti: "ቀዋሚ ናይ ዕቋር ሳንቲም" }, isTi)}</option>
-                </select>
+              {/* Graphic Flow Representation */}
+              <div className="relative rounded-xl border border-zinc-800 bg-black p-4 flex items-center justify-between">
+                {/* 17 Input streams crowded */}
+                <div className="space-y-0.5 w-1/3 max-h-[85px] overflow-hidden pr-1">
+                  <div className="text-[10px] font-mono text-red-400 font-bold uppercase mb-1">
+                    Input UTXOs (17)
+                  </div>
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                      <span className="h-1 w-full rounded-full bg-red-500/60" />
+                    </div>
+                  ))}
+                  <span className="text-[9px] text-red-400 italic block mt-0.5">+ 8 more inputs...</span>
+                </div>
+
+                {/* Funnel Center */}
+                <div className="flex flex-col items-center justify-center px-3">
+                  <div className="rounded-full border border-red-500/50 bg-red-950/60 p-2.5 text-red-300 shadow-md">
+                    <ArrowRight className="h-5 w-5" />
+                  </div>
+                  <span className="text-[10px] font-mono text-red-400 mt-1 font-bold">1,570 vB</span>
+                </div>
+
+                {/* 2 Output streams */}
+                <div className="space-y-3 w-1/3 text-right">
+                  <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase mb-1">
+                    Outputs (2)
+                  </div>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="h-1.5 w-full rounded-full bg-emerald-500/70" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                  </div>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="h-1.5 w-full rounded-full bg-emerald-500/70" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="text-[11px] text-zinc-400 block mb-1">
-                  {t({ en: "Spending Rule / Notes:", ti: "ናይ መጻኢ ኣጠቓቕማ ትእዛዝ፦" }, isTi)}
-                </label>
-                <input
-                  type="text"
-                  value={entry.notes}
-                  placeholder={t({ en: "e.g. Do not merge with P2P coins", ti: "ንኣብነት፦ ምስ P2P ሳንቲማት ኣይትሕወሶ" }, isTi)}
-                  onChange={(e) => handleUpdate(entry.id, entry.label, entry.category, e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-xs text-zinc-100 focus:border-amber-500 focus:outline-none"
-                />
+              {/* Exact Stats matching uploaded image */}
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
+                <div className="rounded bg-zinc-900/80 p-2">
+                  <span className="text-[10px] text-zinc-400 block">{t({ en: "Number of UTXO Inputs:", ti: "በዝሒ ኢንፑትስ፦" }, isTi)}</span>
+                  <span className="text-red-400 font-bold text-sm">17 inputs</span>
+                </div>
+                <div className="rounded bg-zinc-900/80 p-2">
+                  <span className="text-[10px] text-zinc-400 block">{t({ en: "Transaction Size:", ti: "ናይ ዳታ ስፍሓት፦" }, isTi)}</span>
+                  <span className="text-red-400 font-bold text-sm">1,570 virtual bytes</span>
+                </div>
+                <div className="rounded bg-zinc-900/80 p-2">
+                  <span className="text-[10px] text-zinc-400 block">{t({ en: "Transaction Amt:", ti: "ዝተላእከ መጠን፦" }, isTi)}</span>
+                  <span className="text-zinc-100 font-bold text-sm">0.15 BTC ($12.7k)</span>
+                </div>
+                <div className="rounded bg-zinc-900/80 p-2 border border-red-500/40 bg-red-950/20">
+                  <span className="text-[10px] text-red-400 block font-bold">{t({ en: "Transaction Fee:", ti: "ክፍሊት፦" }, isTi)}</span>
+                  <span className="text-red-300 font-bold text-sm">$61.37 USD (10x higher!)</span>
+                </div>
               </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Export modal / view */}
-      {exportedJson && (
-        <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950 p-4 space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-zinc-300">
-            <span>{t({ en: "BIP-329 Standard Label Export File (Encrypted / Portable):", ti: "ናይ BIP-329 መለለዪ ፋይል፦" }, isTi)}</span>
-            <button
-              onClick={() => setExportedJson(null)}
-              className="text-zinc-500 hover:text-white"
-            >
-              ✕
-            </button>
+          {/* Key Insight Takeaway */}
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-200 flex items-start gap-3">
+            <Sparkles className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold text-amber-300">
+                {t({ en: "The Core Lesson from Mempool Data:", ti: "ቀንዲ ትምህርቲ ካብዚ ዳታ፦" }, isTi)}
+              </span>
+              <p className="mt-1 leading-relaxed text-zinc-300">
+                {t(
+                  {
+                    en: "Transaction B sent 40% LESS money than Transaction A, yet paid nearly 10X HIGHER in fees! Why? Because Transaction B pulled in 17 tiny fragmented coins. Labeling your UTXOs ensures you know your coin sizes and avoid accidentally bundling 17 micro-coins during fee spikes.",
+                    ti: "ትራንዛክሽን B ካብ ትራንዛክሽን A ብ40% ዝወሓደ ገንዘብ እናሰደደ፡ ብ10 ዕጽፊ ዝለዓለ ክፍሊት ከፊሉ! ስለምንታይ? 17 ደቂቕ ሳንቲማት ስለዝሓወሰ እዩ። ንሳንቲማትካ ምልክት ምግባር ዓቐኖም ንኽትፈልጥን ኣብ ናይ ክፍሊት ንህረት ከይትውሓጥን ይሕግዘካ።",
+                  },
+                  isTi
+                )}
+              </p>
+            </div>
           </div>
-          <pre className="rounded-lg bg-zinc-900 p-3 font-mono text-[11px] text-amber-300 overflow-x-auto max-h-40">
-            {exportedJson}
-          </pre>
-          <div className="text-[11px] text-zinc-500">
+
+          {/* Interactive Pipe Funnel Slider */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+                <Sliders className="h-3.5 w-3.5" />
+                {t({ en: "Interactive Pipe Funnel Simulator: Test Input Count Weight", ti: "ናይ መስመር ፈተነ፦ በዝሒ ሳንቲማት ክፍሊት ከመይ ከምዝውስኽ ፈትን" }, isTi)}
+              </span>
+              <span className="font-mono text-xs text-purple-300 font-bold">
+                {sliderInputs} {sliderInputs === 1 ? "Input UTXO" : "Input UTXOs"}
+              </span>
+            </div>
+
+            <input
+              type="range"
+              min={1}
+              max={25}
+              value={sliderInputs}
+              onChange={(e) => setSliderInputs(Number(e.target.value))}
+              className="w-full accent-purple-500 cursor-pointer"
+            />
+
+            <div className="grid grid-cols-3 gap-2 text-xs font-mono pt-1 text-center">
+              <div className="rounded-lg bg-zinc-950 p-2 border border-zinc-800">
+                <span className="text-[10px] text-zinc-500 block uppercase">Weight</span>
+                <span className="text-zinc-100 font-bold">{calculatedVb} vBytes</span>
+              </div>
+              <div className="rounded-lg bg-zinc-950 p-2 border border-zinc-800">
+                <span className="text-[10px] text-zinc-500 block uppercase">Sat Fee (20 sat/vB)</span>
+                <span className="text-amber-400 font-bold">{calculatedSatFee.toLocaleString()} sats</span>
+              </div>
+              <div className="rounded-lg bg-zinc-950 p-2 border border-zinc-800">
+                <span className="text-[10px] text-zinc-500 block uppercase">USD Fee</span>
+                <span className={`font-bold ${sliderInputs > 10 ? "text-red-400" : "text-emerald-400"}`}>
+                  ${calculatedUsdFee.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "journal" && (
+        <div className="mt-4 space-y-4">
+          <p className="text-xs text-zinc-400 leading-relaxed">
             {t(
               {
-                en: "BIP-329 lets you move labels between Sparrow, Specter, BlueWallet, and other tools without exposing your private keys.",
-                ti: "BIP-329 ብዘይካ ምስጢራዊ መፍትሕካ ምግላጽ፡ መዛግብቲ ኣብ መንጎ ዝተፈላለዩ ዋሌታት ንምስግጋር የኽእል።",
+                en: "Label your incoming UTXOs below with their source and amount. When you spend later, your wallet UI will clearly show you which coins are large and safe to spend without triggering Transaction B's 17-input bloat:",
+                ti: "ኣብ ታሕቲ ንዘለዉ ሳንቲማትካ ምልክት ግበረሎም። ጸኒሕካ ክትከፍል ከለኻ ናይ ትራንዛክሽን B ዓይነት 17 ሳንቲማት ናይ ምሕዋስ ጌጋ ከይትገብር ብንጹር ይሕግዘካ፦",
               },
               isTi
             )}
+          </p>
+
+          <div className="space-y-2.5">
+            {[
+              { id: "u-1", txid: "4c1a...89bf", btc: "0.25 BTC", sat: "25,000,000 sats", defaultLabel: "Exchange DCA Purchase (Large UTXO)", tag: "Large UTXO (Safe)" },
+              { id: "u-2", txid: "7f29...a10e", btc: "0.005 BTC", sat: "500,000 sats", defaultLabel: "P2P Tutoring Income", tag: "Medium UTXO" },
+              { id: "u-3", txid: "3e01...99cd", btc: "0.0001 BTC", sat: "10,000 sats", defaultLabel: "Micro Faucet Dust (Do not spend alone!)", tag: "Dust UTXO" },
+            ].map((u) => (
+              <div key={u.id} className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs text-zinc-400 font-semibold">{u.txid}</span>
+                    <span className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] text-purple-300 font-mono">
+                      {u.tag}
+                    </span>
+                  </div>
+                  <div className="font-mono text-xs text-zinc-200 mt-1 font-bold">
+                    {u.btc} ({u.sat})
+                  </div>
+                </div>
+
+                <div className="w-full sm:w-1/2">
+                  <input
+                    type="text"
+                    defaultValue={u.defaultLabel}
+                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-200 focus:border-purple-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -1023,7 +1147,7 @@ export function Chapter10InteractiveLesson({
     case "address_verification_lab":
       return <AddressVerificationLab isTi={isTi} />;
     case "utxo_labeling_workbench":
-      return <UtxoLabelingWorkbench isTi={isTi} />;
+      return <UtxoSizeFlowchartAndLabeling isTi={isTi} />;
     case "payment_flow_simulator":
       return <PaymentFlowSimulator isTi={isTi} />;
     case "hygiene_audit_checklist":
