@@ -105,6 +105,18 @@ const Chapter6InteractiveLesson = dynamic(
   }
 );
 
+const Chapter7InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter7InteractiveLesson").then((module) => module.Chapter7InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 7 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1746,6 +1758,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "keys-and-transactions" && sectionIdx === 3 ? (
                 <Chapter6InteractiveLesson module="p2p_pipeline" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "blockchain-basics" && sectionIdx === 1 ? (
+                <Chapter7InteractiveLesson module="block_formation" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "blockchain-basics" && sectionIdx === 2 ? (
+                <Chapter7InteractiveLesson module="hash_fingerprint" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "blockchain-basics" && sectionIdx === 3 ? (
+                <Chapter7InteractiveLesson module="build_chain" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "blockchain-basics" && sectionIdx === 4 ? (
+                <Chapter7InteractiveLesson module="mining_puzzle" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
