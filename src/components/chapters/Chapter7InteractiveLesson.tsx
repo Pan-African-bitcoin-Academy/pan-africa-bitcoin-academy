@@ -145,34 +145,60 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
     setIsSealed(false);
   };
 
+  // Full Restart / Reset handler
+  const resetSimulator = () => {
+    setAvailableMempool(INITIAL_MEMPOOL_TXS);
+    setSelectedTxs([INITIAL_MEMPOOL_TXS[0], INITIAL_MEMPOOL_TXS[1]]);
+    setNonce(1048576);
+    setTimestamp(new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC");
+    setIsSealed(false);
+    setShowAddTx(false);
+    setCustomSender("");
+    setCustomReceiver("");
+    setCustomAmount("");
+  };
+
   const totalFeesSats = selectedTxs.reduce((sum, tx) => sum + tx.feeSats, 0);
   const totalBtcMoved = selectedTxs.reduce((sum, tx) => sum + tx.amountBtc, 0);
 
   return (
-    <section className={panelClass} aria-label="Block Formation Simulator">
-      {/* Header */}
-      <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-400">
-          {t(
-            { en: "7.0 Interactive: Anatomy of a Bitcoin Block", ti: "7.0 ተሳታፊ: ውቅር ናይ ቢትኮይን ብሎክ" },
-            isTi
-          )}
-        </p>
-        <h4 className="mt-1 text-lg font-bold text-zinc-100 sm:text-xl">
-          {t(
-            { en: "Assemble a Block from the Mempool", ti: "ካብ ሜምፑል ብሎክ ኣዳሉ" },
-            isTi
-          )}
-        </h4>
-        <p className="mt-1 text-xs text-zinc-400">
-          {t(
-            {
-              en: "A Bitcoin block is made of two parts: the Block Header (metadata & cryptographic proof) and the Block Body (coinbase reward + user transactions chosen from the mempool).",
-              ti: "ናይ ቢትኮይን ብሎክ ካብ ክልተ ኣካላት ዝቖመ እዩ: ርእሲ ብሎክ (Block Header) ከምኡ'ውን ናይ ግብረ-መልስታት ዝርዝር (Block Body).",
-            },
-            isTi
-          )}
-        </p>
+    <section className={panelClass} aria-label={t({ en: "Block Formation Simulator", ti: "ሲሙሌተር ምስራሕ ብሎክ" }, isTi)}>
+      {/* Header with Restart Button */}
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-zinc-800 pb-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-400">
+            {t(
+              { en: "7.0 Interactive: Anatomy of a Bitcoin Block", ti: "7.0 ተሳታፊ: ውቅር ናይ ቢትኮይን ብሎክ" },
+              isTi
+            )}
+          </p>
+          <h4 className="mt-1 text-lg font-bold text-zinc-100 sm:text-xl">
+            {t(
+              { en: "Assemble a Block from the Mempool", ti: "ካብ ሜምፑል ብሎክ ኣዳሉ" },
+              isTi
+            )}
+          </h4>
+          <p className="mt-1 text-xs text-zinc-400 max-w-2xl leading-relaxed">
+            {t(
+              {
+                en: "A Bitcoin block is made of two parts: the Block Header (metadata & cryptographic proof) and the Block Body (coinbase reward + user transactions chosen from the mempool).",
+                ti: "ናይ ቢትኮይን ብሎክ ካብ ክልተ ኣካላት ዝቖመ እዩ: ርእሲ ብሎክ (Block Header - መረዳእታን ናይ ክሪፕቶግራፊ መረጋገጽን) ከምኡ'ውን ኣካል ብሎክ (Block Body - ናይ ዓፋኝ ስልማትን ካብ ሜምፑል ዝተሓርዩ ግብረ-መልስታትን).",
+              },
+              isTi
+            )}
+          </p>
+        </div>
+
+        {/* Restart Simulator Button */}
+        <button
+          type="button"
+          onClick={resetSimulator}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-cyan-500/50 hover:bg-zinc-800 hover:text-cyan-300 transition cursor-pointer shrink-0 shadow-xs"
+          title={t({ en: "Reset simulator to initial state", ti: "ነቲ ሲሙሌተር ናብ መጀመርታ መልሶ" }, isTi)}
+        >
+          <RotateCcw className="h-3.5 w-3.5 text-cyan-400" />
+          {t({ en: "Restart Simulator", ti: "ሲሙሌተር ደግም" }, isTi)}
+        </button>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
@@ -217,15 +243,16 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
                       <div className="font-semibold text-zinc-200">
                         {tx.sender} → {tx.receiver}
                       </div>
-                      <div className="text-[11px] text-zinc-400">
-                        {tx.amountBtc} BTC · Fee: <span className="text-cyan-400 font-mono">+{tx.feeSats} sats</span>
+                      <div className="text-[11px] text-zinc-400 font-mono">
+                        {tx.amountBtc} BTC · {t({ en: "Fee:", ti: "ክፍሊት:" }, isTi)}{" "}
+                        <span className="text-cyan-400 font-bold">+{tx.feeSats.toLocaleString()} sats</span>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => addTxToBlock(tx)}
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 cursor-pointer transition"
-                      title="Add to block"
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 cursor-pointer transition shadow-2xs"
+                      title={t({ en: "Add to block", ti: "ናብ ብሎክ ወስኽ" }, isTi)}
                     >
                       <Plus className="h-3.5 w-3.5" />
                     </button>
@@ -249,7 +276,7 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     type="text"
-                    placeholder="Sender (e.g. You)"
+                    placeholder={t({ en: "Sender (e.g. You)", ti: "ሰዳዲ (ንኣብነት፡ ንስኻ)" }, isTi)}
                     value={customSender}
                     onChange={(e) => setCustomSender(e.target.value)}
                     className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-200 text-xs"
@@ -257,7 +284,7 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
                   />
                   <input
                     type="text"
-                    placeholder="Receiver (e.g. Merchant)"
+                    placeholder={t({ en: "Receiver (e.g. Merchant)", ti: "ተቐባሊ (ንኣብነት፡ ነጋዳይ)" }, isTi)}
                     value={customReceiver}
                     onChange={(e) => setCustomReceiver(e.target.value)}
                     className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-200 text-xs"
@@ -268,7 +295,7 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
                   type="number"
                   step="0.001"
                   min="0.001"
-                  placeholder="Amount in BTC (e.g. 0.15)"
+                  placeholder={t({ en: "Amount in BTC (e.g. 0.15)", ti: "መጠን ብቢትኮይን (ንኣብነት፡ 0.15)" }, isTi)}
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
                   className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-200 text-xs"
@@ -324,7 +351,7 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
                 </div>
               </div>
               <span className="rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 text-[10px] font-bold text-cyan-300">
-                Candidate Block
+                {t({ en: "Candidate Block", ti: "ሕጹይ ብሎክ" }, isTi)}
               </span>
             </div>
 
@@ -333,26 +360,28 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-purple-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                   <FileCode className="h-3.5 w-3.5 text-purple-400" />
-                  Block Header (80 Bytes)
+                  {t({ en: "Block Header (80 Bytes)", ti: "ርእሲ ብሎክ (80 ባይትስ)" }, isTi)}
                 </span>
-                <span className="text-[10px] text-zinc-500">What Miners Hash</span>
+                <span className="text-[10px] text-zinc-500 font-mono">
+                  {t({ en: "What Miners Hash", ti: "ዓፋኝታት ዝሓስብዎ (Hash ዝገብርዎ)" }, isTi)}
+                </span>
               </div>
 
               <div className="space-y-1.5 font-mono text-[11px]">
                 <div className="flex items-center justify-between bg-zinc-900/60 p-1.5 rounded">
-                  <span className="text-zinc-500">Previous Block Hash:</span>
+                  <span className="text-zinc-500">{t({ en: "Previous Block Hash:", ti: "ናይ ቀዳማይ ብሎክ ሃሽ:" }, isTi)}</span>
                   <span className="text-zinc-400 truncate max-w-[200px]" title={prevHash}>{shortHash(prevHash, 16)}</span>
                 </div>
                 <div className="flex items-center justify-between bg-zinc-900/60 p-1.5 rounded">
-                  <span className="text-zinc-500">Merkle Root Hash:</span>
+                  <span className="text-zinc-500">{t({ en: "Merkle Root Hash:", ti: "መርከል ሩት (Merkle Root) ሃሽ:" }, isTi)}</span>
                   <span className="text-cyan-300 truncate max-w-[200px]" title={merkleRoot}>{shortHash(merkleRoot, 16)}</span>
                 </div>
                 <div className="flex items-center justify-between bg-zinc-900/60 p-1.5 rounded">
-                  <span className="text-zinc-500">Timestamp:</span>
+                  <span className="text-zinc-500">{t({ en: "Timestamp:", ti: "ናይ ግዜ መዝገብ:" }, isTi)}</span>
                   <span className="text-zinc-300">{timestamp || "Loading..."}</span>
                 </div>
                 <div className="flex items-center justify-between bg-zinc-900/60 p-1.5 rounded">
-                  <span className="text-zinc-500">Nonce:</span>
+                  <span className="text-zinc-500">{t({ en: "Nonce:", ti: "ኖንስ (Nonce):" }, isTi)}</span>
                   <span className="text-amber-400 font-bold">{nonce.toLocaleString()}</span>
                 </div>
               </div>
@@ -362,14 +391,14 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
             <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-3.5 text-xs space-y-2">
               <span className="font-bold text-cyan-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                 <Coins className="h-3.5 w-3.5 text-cyan-400" />
-                Block Body (Transactions List)
+                {t({ en: "Block Body (Transactions List)", ti: "ኣካል ብሎክ (ዝርዝር ግብረ-መልስታት)" }, isTi)}
               </span>
 
               {/* Tx 0: Coinbase transaction */}
               <div className="rounded-lg border border-amber-500/40 bg-amber-950/20 p-2 flex items-center justify-between font-mono text-[11px]">
                 <div>
-                  <span className="font-bold text-amber-300">Tx 0 (Coinbase):</span>{" "}
-                  <span className="text-zinc-300">New issuance + fees</span>
+                  <span className="font-bold text-amber-300">{t({ en: "Tx 0 (Coinbase):", ti: "ግብረ-መልሲ 0 (ኮይንበይስ):" }, isTi)}</span>{" "}
+                  <span className="text-zinc-300">{t({ en: "New issuance + fees", ti: "ሓድሽ ምውጻእ + ክፍሊታት" }, isTi)}</span>
                 </div>
                 <span className="font-bold text-amber-400">
                   +{(coinbaseReward + totalFeesSats / 1e8).toFixed(5)} BTC
@@ -384,7 +413,7 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
                     className="flex items-center justify-between rounded bg-zinc-900/80 px-2.5 py-1.5 font-mono text-[11px] border border-zinc-800/80"
                   >
                     <span className="text-zinc-400">
-                      Tx {idx + 1}: <strong className="text-zinc-200">{tx.sender}</strong> → {tx.receiver}
+                      {t({ en: "Tx", ti: "ግብረ-መልሲ" }, isTi)} {idx + 1}: <strong className="text-zinc-200">{tx.sender}</strong> → {tx.receiver}
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-zinc-300 font-semibold">{tx.amountBtc} BTC</span>
@@ -392,7 +421,7 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
                         type="button"
                         onClick={() => removeTxFromBlock(tx)}
                         className="text-zinc-500 hover:text-red-400 text-xs px-1 cursor-pointer"
-                        title="Remove from block"
+                        title={t({ en: "Remove from block", ti: "ካብ ብሎክ ኣውጽእ" }, isTi)}
                       >
                         ×
                       </button>
@@ -405,25 +434,27 @@ function BlockFormationSimulator({ isTi }: { isTi: boolean }) {
 
           {/* Computed Block Hash output */}
           <div className="mt-4 pt-3 border-t border-zinc-800">
-            <div className="flex items-center justify-between mb-1 text-xs">
+            <div className="flex items-center justify-between mb-1.5 text-xs">
               <span className="font-semibold text-zinc-400 flex items-center gap-1">
                 <Hash className="h-3.5 w-3.5 text-cyan-400" />
-                Resulting Block Hash:
+                {t({ en: "Resulting Block Hash:", ti: "ዝወጸ ናይ ብሎክ ሃሽ:" }, isTi)}
               </span>
               <button
                 type="button"
                 onClick={() => setIsSealed(true)}
-                className={`rounded px-2.5 py-1 text-[11px] font-bold cursor-pointer transition ${
+                className={`rounded px-3 py-1 text-[11px] font-bold cursor-pointer transition ${
                   isSealed
                     ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300"
                     : "bg-cyan-500 border border-cyan-400 text-zinc-950 hover:bg-cyan-400"
                 }`}
               >
-                {isSealed ? "✓ Block Sealed" : "Seal & Hash Block"}
+                {isSealed
+                  ? t({ en: "✓ Block Sealed", ti: "✓ ብሎክ ተዓጽዩ" }, isTi)
+                  : t({ en: "Seal & Hash Block", ti: "ብሎክ ዕጾን ሃሽ ግበርን" }, isTi)}
               </button>
             </div>
             <p className="font-mono text-xs text-cyan-200 break-all select-all bg-zinc-950 p-2.5 rounded-lg border border-cyan-500/20">
-              {blockHash || "Computing..."}
+              {blockHash || (isTi ? "ይሕሰብ ኣሎ..." : "Computing...")}
             </p>
           </div>
         </div>
@@ -480,7 +511,7 @@ function HashFingerprintLab({ isTi }: { isTi: boolean }) {
   ];
 
   return (
-    <section className={panelClass} aria-label="Hash Fingerprint Lab">
+    <section className={panelClass} aria-label={t({ en: "Hash Fingerprint Lab", ti: "ላብ ናይ ሃሽ ዓሻራ" }, isTi)}>
       <div className="mb-4">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-400">
           {t(
@@ -494,7 +525,7 @@ function HashFingerprintLab({ isTi }: { isTi: boolean }) {
             isTi
           )}
         </h4>
-        <p className="mt-1 text-xs text-zinc-400">
+        <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
           {t(
             {
               en: "A cryptographic hash is a one-way digital fingerprint. Type anything below and watch how a single letter change completely scrambles the resulting 256 bits.",
@@ -533,7 +564,7 @@ function HashFingerprintLab({ isTi }: { isTi: boolean }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-zinc-100 font-mono focus:border-purple-500 focus:outline-hidden focus:ring-2 focus:ring-purple-500/20"
-          placeholder="Type anything..."
+          placeholder={t({ en: "Type anything...", ti: "ዝኾነ ጽሑፍ ጽሓፍ..." }, isTi)}
         />
       </div>
 
@@ -543,7 +574,7 @@ function HashFingerprintLab({ isTi }: { isTi: boolean }) {
           <div className="flex items-center gap-2">
             <Hash className="h-4 w-4 text-purple-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
-              SHA-256 {t({ en: "Hash Output (256 bits / 64 hex characters)", ti: "ናይ ሃሽ ውጽኢት" }, isTi)}
+              SHA-256 {t({ en: "Hash Output (256 bits / 64 hex characters)", ti: "ናይ ሃሽ ውጽኢት (256 ቢትስ / 64 ሄክስ)" }, isTi)}
             </span>
           </div>
           <button
@@ -552,11 +583,11 @@ function HashFingerprintLab({ isTi }: { isTi: boolean }) {
             className="inline-flex items-center gap-1 text-[11px] text-purple-400 hover:text-purple-300 cursor-pointer"
           >
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-            {copied ? "Copied" : "Copy"}
+            {copied ? (isTi ? "ተቐዲሑ" : "Copied") : (isTi ? "ቕዳሕ" : "Copy")}
           </button>
         </div>
         <p className="font-mono text-sm text-purple-200 break-all select-all leading-relaxed bg-zinc-950 p-3 rounded-lg border border-purple-500/20">
-          {hash || "Computing..."}
+          {hash || (isTi ? "ይሕሰብ ኣሎ..." : "Computing...")}
         </p>
 
         {prevHash && diffCount > 0 && (
@@ -568,7 +599,7 @@ function HashFingerprintLab({ isTi }: { isTi: boolean }) {
             <p className="text-xs font-semibold text-amber-400 mt-2 flex items-center gap-1.5">
               <Zap className="h-3.5 w-3.5" />
               {diffCount} / 64 {t({ en: "hex characters flipped", ti: "ናይ ሄክስ ፊደላት ተቐዪሮም" }, isTi)}{" "}
-              ({Math.round((diffCount / 64) * 100)}% avalanche)
+              ({Math.round((diffCount / 64) * 100)}% {t({ en: "avalanche", ti: "ምልውዋጥ" }, isTi)})
             </p>
           </div>
         )}
@@ -719,7 +750,7 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
   const hasTamper = blocks.some((b) => b.tampered);
 
   return (
-    <section className={panelClass} aria-label="Build a Blockchain Simulator">
+    <section className={panelClass} aria-label={t({ en: "Build a Blockchain Simulator", ti: "ሲሙሌተር ምህናጽ ብሎክቸይን" }, isTi)}>
       {/* Tab bar header */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-800 pb-3">
         <div>
@@ -783,7 +814,7 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
         </div>
       ) : (
         <div>
-          <p className="text-xs text-zinc-400 mb-4">
+          <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
             {t(
               {
                 en: "Each block locks in the cryptographic hash of the previous block. Pack pending transactions from the mempool to extend the chain, or click any past block to test what happens when someone attempts to tamper with historical records.",
@@ -809,7 +840,7 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
               type="button"
               onClick={mineAndAppendBlock}
               disabled={hasTamper}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500 bg-cyan-500/20 px-3.5 py-1.5 text-xs font-bold text-cyan-200 hover:bg-cyan-500/30 disabled:opacity-40 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500 bg-cyan-500/20 px-3.5 py-1.5 text-xs font-bold text-cyan-200 hover:bg-cyan-500/30 disabled:opacity-40 transition cursor-pointer shadow-xs"
             >
               <Pickaxe className="h-3.5 w-3.5 text-cyan-400" />
               {t({ en: "Mine Next Block into Chain", ti: "ቀጻሊ ብሎክ ጽዒንካ ናብ ሰንሰለት ወስኽ" }, isTi)}
@@ -839,7 +870,7 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
                       />
                       {(prevMismatch || isBroken) && (
                         <span className="text-[9px] text-red-400 font-bold mt-0.5 uppercase tracking-wider">
-                          Broken Link
+                          {t({ en: "Broken Link", ti: "ስቡር መላግቦ" }, isTi)}
                         </span>
                       )}
                     </div>
@@ -857,10 +888,10 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
                     }`}
                     title={
                       block.index === 0
-                        ? "Genesis block (immutable anchor)"
+                        ? (isTi ? "ጀነሲስ ብሎክ (ምቕያር ኣይከኣልን)" : "Genesis block (immutable anchor)")
                         : hasTamper
-                          ? "Reset chain to restore integrity"
-                          : "Click to tamper with this block's data"
+                          ? (isTi ? "ምሉእነት ንምምላስ ሰንሰለት ደግም" : "Reset chain to restore integrity")
+                          : (isTi ? "ነዚ ብሎክ ክትቅይር ጠውቕ" : "Click to tamper with this block's data")
                     }
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -869,28 +900,34 @@ function BuildChainWithMempoolSimulator({ isTi }: { isTi: boolean }) {
                       </span>
                       {isBroken ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] font-bold text-red-300">
-                          <AlertTriangle className="h-3 w-3" /> Invalid
+                          <AlertTriangle className="h-3 w-3" /> {t({ en: "Invalid", ti: "ዘይቅቡል" }, isTi)}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                          <CheckCircle2 className="h-3 w-3" /> Valid
+                          <CheckCircle2 className="h-3 w-3" /> {t({ en: "Valid", ti: "ቅቡል" }, isTi)}
                         </span>
                       )}
                     </div>
 
                     <div className="space-y-1.5 font-mono text-[11px]">
                       <div>
-                        <span className="text-zinc-500 text-[10px] block">Transactions:</span>
+                        <span className="text-zinc-500 text-[10px] block">
+                          {t({ en: "Transactions:", ti: "ግብረ-መልስታት:" }, isTi)}
+                        </span>
                         <p className="text-zinc-300 truncate font-sans font-medium">{block.data}</p>
                       </div>
                       <div className="pt-1 border-t border-zinc-800">
-                        <span className="text-zinc-500 text-[10px] block">Previous Hash (Link):</span>
+                        <span className="text-zinc-500 text-[10px] block">
+                          {t({ en: "Previous Hash (Link):", ti: "ቀዳማይ ሃሽ (መላግቦ):" }, isTi)}
+                        </span>
                         <p className={`truncate ${prevMismatch ? "text-red-400 line-through font-bold" : "text-zinc-400"}`}>
                           {shortHash(block.prevHash, 14)}
                         </p>
                       </div>
                       <div>
-                        <span className="text-zinc-500 text-[10px] block">Block Hash:</span>
+                        <span className="text-zinc-500 text-[10px] block">
+                          {t({ en: "Block Hash:", ti: "ናይ ብሎክ ሃሽ:" }, isTi)}
+                        </span>
                         <p className={`truncate font-bold ${isBroken ? "text-red-400" : "text-cyan-300"}`}>
                           {shortHash(block.hash, 14)}
                         </p>
@@ -1065,7 +1102,7 @@ function MiniMiningPuzzle({ isTi }: { isTi: boolean }) {
   }, []);
 
   return (
-    <section className={panelClass} aria-label="Proof of Work Mining Puzzle">
+    <section className={panelClass} aria-label={t({ en: "Proof of Work Mining Puzzle", ti: "ናይ ስራሕ መረጋገጺ ናይ ምጽዓን ጸወታ" }, isTi)}>
       <div className="mb-4">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-400">
           {t(
@@ -1079,7 +1116,7 @@ function MiniMiningPuzzle({ isTi }: { isTi: boolean }) {
             isTi
           )}
         </h4>
-        <p className="mt-1 text-xs text-zinc-400">
+        <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
           {t(
             {
               en: "Miners cannot predict what hash will come out. They must iterate through a counter called the 'nonce' millions of times until they discover a hash that meets the network difficulty target (leading zeros).",
@@ -1093,16 +1130,16 @@ function MiniMiningPuzzle({ isTi }: { isTi: boolean }) {
       {/* Block under construction */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 mb-4 space-y-2 text-xs">
         <div className="flex items-center justify-between text-zinc-400 font-mono text-[11px]">
-          <span className="text-zinc-500">Prev Block Hash:</span>
+          <span className="text-zinc-500">{t({ en: "Prev Block Hash:", ti: "ናይ ቅድሚኡ ብሎክ ሃሽ:" }, isTi)}</span>
           <span className="text-zinc-400 truncate max-w-[280px]">{shortHash(prevHash, 24)}</span>
         </div>
         <div className="flex items-center justify-between text-zinc-400 font-mono text-[11px]">
-          <span className="text-zinc-500">Block Data:</span>
+          <span className="text-zinc-500">{t({ en: "Block Data:", ti: "ናይ ብሎክ ዳታ:" }, isTi)}</span>
           <span className="text-zinc-300 truncate max-w-[280px]">{blockData}</span>
         </div>
         <div className="flex items-center justify-between pt-2 border-t border-zinc-800">
           <span className="text-amber-400 font-bold uppercase tracking-wider text-[11px]">
-            Nonce (The Golden Number):
+            {t({ en: "Nonce (The Golden Number):", ti: "ኖንስ (እቲ ፍሉይ ቁጽሪ):" }, isTi)}
           </span>
           <span className="font-mono text-xl font-extrabold text-amber-300">
             {nonce.toLocaleString()}
@@ -1137,7 +1174,7 @@ function MiniMiningPuzzle({ isTi }: { isTi: boolean }) {
                   : "bg-zinc-800 border border-zinc-700 text-zinc-400 hover:border-amber-500/40 disabled:opacity-40"
               }`}
             >
-              {"0".repeat(d)}… <span className="text-[10px] text-zinc-500 font-sans">({d} zero{d > 1 ? "s" : ""})</span>
+              {"0".repeat(d)}… <span className="text-[10px] text-zinc-500 font-sans">({d} {isTi ? "ዜሮታት" : (d > 1 ? "zeros" : "zero")})</span>
             </button>
           ))}
         </div>
@@ -1170,7 +1207,7 @@ function MiniMiningPuzzle({ isTi }: { isTi: boolean }) {
           </div>
 
           <div className="text-[11px] font-mono text-zinc-500">
-            Target: <strong className="text-amber-400">{target}</strong>…
+            {t({ en: "Target:", ti: "ዕላማ:" }, isTi)} <strong className="text-amber-400">{target}</strong>…
           </div>
         </div>
 
@@ -1185,9 +1222,9 @@ function MiniMiningPuzzle({ isTi }: { isTi: boolean }) {
           <div className="mt-2.5 flex items-center justify-between text-[11px] text-zinc-500">
             <span className="flex items-center gap-1.5 text-amber-400">
               <Cpu className="h-3.5 w-3.5 animate-spin" />
-              Mining in progress…
+              {t({ en: "Mining in progress…", ti: "ምጽዓን ይካየድ ኣሎ…" }, isTi)}
             </span>
-            <span>Speed: {hashRate.toLocaleString()} H/s</span>
+            <span>{t({ en: "Speed:", ti: "ፍጥነት:" }, isTi)} {hashRate.toLocaleString()} H/s</span>
           </div>
         )}
       </div>
@@ -1237,7 +1274,8 @@ function MiniMiningPuzzle({ isTi }: { isTi: boolean }) {
 
         {(attempts > 0 || solved) && (
           <div className="text-xs text-zinc-400 font-mono">
-            Attempts: <strong className="text-zinc-100">{attempts.toLocaleString()}</strong>
+            {t({ en: "Attempts:", ti: "ፈተነታት:" }, isTi)}{" "}
+            <strong className="text-zinc-100">{attempts.toLocaleString()}</strong>
           </div>
         )}
       </div>

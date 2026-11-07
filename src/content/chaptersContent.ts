@@ -887,13 +887,6 @@ export const chaptersContent: ChapterContent[] = [
         paragraphs: [
           "The term 'blockchain' comes from the way blocks are connected. Each new block points back to the one before it, forming a long chain of history. Block 2 points to Block 1, Block 3 points to Block 2, and so on. This simple design makes the entire system extremely strong. If someone wanted to change something profound in the past, they wouldn't just have to fix that one block — they would need to rebuild every block after it as well. For all practical purposes, that's impossible.",
         ],
-        images: [
-          {
-            src: "/images/book_images/block.jpeg",
-            alt: "Diagram showing blocks linked in a chain, each pointing to the previous block",
-            caption: "Blocks linked in a chain - each depends on the previous",
-          },
-        ],
       },
       {
         heading: "7.3 Who Adds the Blocks?",
