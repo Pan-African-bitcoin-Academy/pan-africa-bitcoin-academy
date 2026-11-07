@@ -41,6 +41,34 @@ export function Chapter8Assignment({ assignmentId }: Chapter8AssignmentProps) {
   const [studentInputs, setStudentInputs] = useState<string[]>(Array(12).fill(''));
   const [reflection, setReflection] = useState('');
   const [seedSaved, setSeedSaved] = useState(false);
+  const [isWindowBlurred, setIsWindowBlurred] = useState(false);
+  const [securityWarning, setSecurityWarning] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleBlur = () => setIsWindowBlurred(true);
+    const handleFocus = () => setIsWindowBlurred(false);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === 'PrintScreen' ||
+        ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P'))
+      ) {
+        setIsWindowBlurred(true);
+        setSecurityWarning('Screenshots and printing are disabled to protect your seed phrase. Write these words down on physical paper.');
+        setTimeout(() => setSecurityWarning(null), 4000);
+      }
+    };
+
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
   
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -270,11 +298,16 @@ export function Chapter8Assignment({ assignmentId }: Chapter8AssignmentProps) {
           <div className="space-y-4">
             <div className="p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
               <h4 className="text-sm font-semibold text-zinc-300 mb-3">Your Original Seed Phrase:</h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700">
+              <div
+                className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700 select-none"
+                style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                onContextMenu={(e) => e.preventDefault()}
+                onCopy={(e) => e.preventDefault()}
+              >
                 {seedPhrase.map((word, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500 w-6">{index + 1}.</span>
-                    <code className="flex-1 font-mono text-sm text-zinc-200">{word}</code>
+                  <div key={index} className="flex items-center gap-2 pointer-events-none select-none">
+                    <span className="text-xs text-zinc-500 w-6 select-none">{index + 1}.</span>
+                    <code className="flex-1 font-mono text-sm text-zinc-200 select-none">{word}</code>
                   </div>
                 ))}
               </div>
@@ -352,13 +385,80 @@ export function Chapter8Assignment({ assignmentId }: Chapter8AssignmentProps) {
             </div>
             <p className="text-xs text-zinc-400">Write down these 12 words in order. You'll need to restore them in Step 2.</p>
             {!seedSaved ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700">
-                {seedPhrase.map((word, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500 w-6">{index + 1}.</span>
-                    <code className="flex-1 font-mono text-sm text-zinc-200">{word}</code>
+              <div
+                className="relative select-none"
+                style={{
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  MozUserSelect: 'none',
+                  msUserSelect: 'none',
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  setSecurityWarning('Right-click & copying are disabled for seed phrase security.');
+                  setTimeout(() => setSecurityWarning(null), 3000);
+                }}
+                onCopy={(e) => {
+                  e.preventDefault();
+                  setSecurityWarning('Copying is disabled for seed phrase security. Write these words on physical paper.');
+                  setTimeout(() => setSecurityWarning(null), 3000);
+                }}
+                onCut={(e) => {
+                  e.preventDefault();
+                  setSecurityWarning('Copying is disabled for seed phrase security.');
+                  setTimeout(() => setSecurityWarning(null), 3000);
+                }}
+                onDragStart={(e) => e.preventDefault()}
+              >
+                {/* Security warning toast if triggered */}
+                {securityWarning && (
+                  <div className="mb-2 rounded-lg border border-amber-500/50 bg-amber-950/80 p-2 text-xs text-amber-200 shadow-lg flex items-center justify-between">
+                    <span>🛡️ {securityWarning}</span>
+                    <button
+                      type="button"
+                      onClick={() => setSecurityWarning(null)}
+                      className="ml-2 text-zinc-400 hover:text-white"
+                    >
+                      ✕
+                    </button>
                   </div>
-                ))}
+                )}
+
+                {/* Print fallback */}
+                <div className="hidden print:block p-4 text-xs font-mono text-zinc-400 border border-zinc-700 rounded bg-zinc-950">
+                  •••••••• (Seed phrase hidden during printing for security. Write it down on paper.)
+                </div>
+
+                {/* 12 words grid */}
+                <div
+                  className={`grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700 print:hidden transition-all duration-200 ${
+                    isWindowBlurred ? 'blur-md opacity-25 pointer-events-none' : ''
+                  }`}
+                >
+                  {seedPhrase.map((word, index) => (
+                    <div key={index} className="flex items-center gap-2 pointer-events-none select-none">
+                      <span className="text-xs text-zinc-500 w-6 select-none">{index + 1}.</span>
+                      <code className="flex-1 font-mono text-sm text-zinc-200 select-none">
+                        {word}
+                      </code>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Defocus overlay if window loses focus or screenshot tool is active */}
+                {isWindowBlurred && (
+                  <div
+                    onClick={() => setIsWindowBlurred(false)}
+                    className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded border border-amber-500/40 bg-zinc-950/90 p-4 text-center cursor-pointer select-none"
+                  >
+                    <span className="text-sm font-semibold text-amber-300 mb-1">
+                      🔒 Defocused / Screen-Capture Protection Active
+                    </span>
+                    <span className="text-xs text-zinc-400">
+                      Words hidden while window is inactive or screen-capture tool is active. Click here to resume viewing.
+                    </span>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700">
