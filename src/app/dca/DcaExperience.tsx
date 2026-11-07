@@ -15,6 +15,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   BookOpen,
+  Calculator,
   CalendarDays,
   Check,
   CircleAlert,
@@ -396,17 +397,22 @@ function Field({
   label,
   children,
   hint,
+  action,
 }: {
   label: string;
   children: ReactNode;
-  hint?: string;
+  hint?: ReactNode;
+  action?: ReactNode;
 }) {
   return (
-    <label className="grid min-w-0 gap-2 text-sm font-medium text-zinc-700">
-      {label}
+    <div className="grid min-w-0 gap-2 text-sm font-medium text-zinc-700">
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate">{label}</span>
+        {action}
+      </div>
       {children}
-      {hint && <span className="text-xs font-normal text-zinc-500">{hint}</span>}
-    </label>
+      {hint && <div className="text-xs font-normal text-zinc-500">{hint}</div>}
+    </div>
   );
 }
 
@@ -680,6 +686,60 @@ export default function DcaExperience() {
   const [purchaseFees, setPurchaseFees] = useState('0');
   const [purchaseTxid, setPurchaseTxid] = useState('');
   const [purchaseNotes, setPurchaseNotes] = useState('');
+  const [isBtcManual, setIsBtcManual] = useState(false);
+
+  const calculateBtc = (amt: string, prc: string) => {
+    const a = parseFloat(amt);
+    const p = parseFloat(prc);
+    if (Number.isFinite(a) && a > 0 && Number.isFinite(p) && p > 0) {
+      const btc = a / p;
+      return btc.toFixed(8).replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.0+$/, '');
+    }
+    return '';
+  };
+
+  const calculatedBtcFromInputs = useMemo(() => {
+    return calculateBtc(purchaseAmount, purchasePrice);
+  }, [purchaseAmount, purchasePrice]);
+
+  const handleAmountChange = (val: string) => {
+    setPurchaseAmount(val);
+    if (!isBtcManual) {
+      const calc = calculateBtc(val, purchasePrice);
+      if (calc) setPurchaseBtc(calc);
+    }
+  };
+
+  const handlePriceChange = (val: string) => {
+    setPurchasePrice(val);
+    if (!isBtcManual) {
+      const calc = calculateBtc(purchaseAmount, val);
+      if (calc) setPurchaseBtc(calc);
+    }
+  };
+
+  const handleBtcChange = (val: string) => {
+    setPurchaseBtc(val);
+    setIsBtcManual(true);
+  };
+
+  const handleApplyCalculatedBtc = () => {
+    if (calculatedBtcFromInputs) {
+      setPurchaseBtc(calculatedBtcFromInputs);
+      setIsBtcManual(false);
+    }
+  };
+
+  const handleUseCurrentSpotPrice = () => {
+    if (market?.currentPrice) {
+      const spotStr = market.currentPrice.toFixed(2);
+      setPurchasePrice(spotStr);
+      if (!isBtcManual) {
+        const calc = calculateBtc(purchaseAmount, spotStr);
+        if (calc) setPurchaseBtc(calc);
+      }
+    }
+  };
   const [marketDays, setMarketDays] = useState('180');
   const [valuationMode, setValuationMode] = useState<'historical' | 'endPrice'>('historical');
 
@@ -1129,6 +1189,7 @@ export default function DcaExperience() {
     setPurchaseFees('0');
     setPurchaseTxid('');
     setPurchaseNotes('');
+    setIsBtcManual(false);
   };
 
   const beginPurchaseEdit = (purchase: DcaPurchase) => {
@@ -1141,6 +1202,7 @@ export default function DcaExperience() {
     setPurchaseFees(String(purchase.feesUsd));
     setPurchaseTxid(purchase.transactionId);
     setPurchaseNotes(purchase.notes);
+    setIsBtcManual(true);
   };
 
   const deletePurchase = async (purchase: DcaPurchase) => {
@@ -1843,13 +1905,57 @@ export default function DcaExperience() {
                   <input className={inputClass} type="date" value={purchaseDate} onChange={(event) => setPurchaseDate(event.target.value)} required />
                 </Field>
                 <Field label="Amount spent (USD)">
-                  <input className={inputClass} type="number" min="0.01" step="0.01" value={purchaseAmount} onChange={(event) => setPurchaseAmount(event.target.value)} required />
+                  <input className={inputClass} type="number" min="0.01" step="0.01" value={purchaseAmount} onChange={(event) => handleAmountChange(event.target.value)} placeholder="e.g. 100" required />
                 </Field>
-                <Field label="Bitcoin price at purchase (USD)">
-                  <input className={inputClass} type="number" min="0.01" step="0.01" value={purchasePrice} onChange={(event) => setPurchasePrice(event.target.value)} required />
+                <Field
+                  label="Bitcoin price at purchase (USD)"
+                  action={
+                    market?.currentPrice ? (
+                      <button
+                        type="button"
+                        onClick={handleUseCurrentSpotPrice}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#f97602] hover:underline cursor-pointer"
+                        title="Use current spot price"
+                      >
+                        <Coins className="h-3 w-3" />
+                        Use spot ({formatCurrency(market.currentPrice, 0)})
+                      </button>
+                    ) : null
+                  }
+                >
+                  <input className={inputClass} type="number" min="0.01" step="0.01" value={purchasePrice} onChange={(event) => handlePriceChange(event.target.value)} placeholder="e.g. 120000" required />
                 </Field>
-                <Field label="BTC received" hint="Enter the amount shown in your independent purchase record.">
-                  <input className={inputClass} type="number" min="0.00000001" step="0.00000001" value={purchaseBtc} onChange={(event) => setPurchaseBtc(event.target.value)} required />
+                <Field
+                  label="BTC received"
+                  action={
+                    calculatedBtcFromInputs ? (
+                      <button
+                        type="button"
+                        onClick={handleApplyCalculatedBtc}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#f97602] hover:underline cursor-pointer"
+                        title="Recalculate exact BTC: Amount spent ÷ Price"
+                      >
+                        <Calculator className="h-3 w-3" />
+                        {isBtcManual ? 'Recalculate (Amount ÷ Price)' : 'Auto-calculated'}
+                      </button>
+                    ) : null
+                  }
+                  hint={
+                    calculatedBtcFromInputs ? (
+                      <div className="flex flex-col gap-0.5 text-[11px] text-zinc-500 mt-1">
+                        <span className="font-mono text-zinc-700">
+                          Formula: ${Number(purchaseAmount || 0).toLocaleString()} ÷ ${Number(purchasePrice || 0).toLocaleString()} = <strong className="text-[#f97602] font-bold">{calculatedBtcFromInputs} BTC</strong>
+                        </span>
+                        {isBtcManual && purchaseBtc !== calculatedBtcFromInputs && (
+                          <span className="text-amber-600 font-medium">Custom override active. Click &quot;Recalculate&quot; above to re-apply formula.</span>
+                        )}
+                      </div>
+                    ) : (
+                      'Enter amount & price to auto-calculate, or enter the amount shown on your exchange receipt.'
+                    )
+                  }
+                >
+                  <input className={inputClass} type="number" min="0.00000001" step="0.00000001" value={purchaseBtc} onChange={(event) => handleBtcChange(event.target.value)} placeholder="e.g. 0.00083333" required />
                 </Field>
                 <Field label="Transaction fees (USD)">
                   <input className={inputClass} type="number" min="0" step="0.01" value={purchaseFees} onChange={(event) => setPurchaseFees(event.target.value)} />
