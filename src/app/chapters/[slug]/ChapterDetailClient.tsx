@@ -153,6 +153,18 @@ const Chapter10InteractiveLesson = dynamic(
   }
 );
 
+const Chapter11InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter11InteractiveLesson").then((module) => module.Chapter11InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 11 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1842,6 +1854,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
                   <Chapter10InteractiveLesson module="payment_flow_simulator" isTi={isTi} />
                   <Chapter10InteractiveLesson module="hygiene_audit_checklist" isTi={isTi} />
                 </>
+              ) : null}
+              {chapter.slug === "hardware-signers" && sectionIdx === 1 ? (
+                <Chapter11InteractiveLesson module="threat_model_sandbox" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "hardware-signers" && sectionIdx === 2 ? (
+                <Chapter11InteractiveLesson module="passphrase_vault_lab" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "hardware-signers" && sectionIdx === 3 ? (
+                <Chapter11InteractiveLesson module="psbt_signing_pipeline" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
