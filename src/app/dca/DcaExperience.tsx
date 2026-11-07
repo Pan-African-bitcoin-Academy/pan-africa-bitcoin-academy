@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent,
   type ReactNode,
@@ -687,6 +688,7 @@ export default function DcaExperience() {
   const [purchaseTxid, setPurchaseTxid] = useState('');
   const [purchaseNotes, setPurchaseNotes] = useState('');
   const [isBtcManual, setIsBtcManual] = useState(false);
+  const purchaseFormRef = useRef<HTMLDivElement>(null);
 
   const calculateBtc = (amt: string, prc: string) => {
     const a = parseFloat(amt);
@@ -1203,6 +1205,9 @@ export default function DcaExperience() {
     setPurchaseTxid(purchase.transactionId);
     setPurchaseNotes(purchase.notes);
     setIsBtcManual(true);
+    setTimeout(() => {
+      purchaseFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 60);
   };
 
   const deletePurchase = async (purchase: DcaPurchase) => {
@@ -1898,9 +1903,57 @@ export default function DcaExperience() {
           {!market && <MarketError message={marketError || 'Current market price is unavailable; portfolio value cannot be calculated.'} onRetry={() => void loadMarket('180')} />}
 
           <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-            <Panel>
-              <h3 className="mb-4 font-semibold text-zinc-900">{editingPurchaseId ? 'Edit purchase record' : 'Record a purchase'}</h3>
-              <form onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+            <div ref={purchaseFormRef} className="scroll-mt-6">
+              <Panel className={cn("transition-all duration-300", editingPurchaseId && "ring-2 ring-[#f97602] border-[#f97602]/60 shadow-lg shadow-orange-500/10")}>
+                <div className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {editingPurchaseId ? (
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100 text-[#f97602]">
+                          <Pencil className="h-4 w-4" />
+                        </span>
+                      ) : (
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
+                          <Plus className="h-4 w-4" />
+                        </span>
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-zinc-900">
+                          {editingPurchaseId ? 'Edit purchase record' : 'Record a purchase'}
+                        </h3>
+                        {editingPurchaseId && (
+                          <p className="text-xs text-[#f97602] font-medium">
+                            Updating entry from {formatDate(purchaseDate)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {editingPurchaseId && (
+                      <button
+                        type="button"
+                        onClick={resetPurchaseForm}
+                        className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 underline cursor-pointer"
+                      >
+                        Cancel edit
+                      </button>
+                    )}
+                  </div>
+                  {editingPurchaseId && (
+                    <div className="mt-3 rounded-xl border border-orange-200/90 bg-orange-50/80 p-2.5 text-xs text-orange-950 flex items-center justify-between gap-2 animate-in fade-in duration-200">
+                      <span className="font-medium">
+                        Now editing this record. Adjust any field below and click <strong>Update record</strong>.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={resetPurchaseForm}
+                        className="shrink-0 rounded-lg bg-white border border-orange-200 px-2 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-orange-50 cursor-pointer shadow-2xs"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <form onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <Field label="Purchase date">
                   <input className={inputClass} type="date" value={purchaseDate} onChange={(event) => setPurchaseDate(event.target.value)} required />
                 </Field>
@@ -1974,6 +2027,7 @@ export default function DcaExperience() {
                 </div>
               </form>
             </Panel>
+          </div>
 
             <div className="space-y-5">
               {purchaseHistory.length > 0 && (
@@ -2332,23 +2386,47 @@ export default function DcaExperience() {
                   <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">No manual purchase records yet.</p>
                 ) : (
                   <div className="space-y-3">
-                    {purchases.map((purchase) => (
-                      <article key={purchase.id} className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-3">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
-                            <h4 className="font-semibold text-zinc-900">{formatDate(purchase.purchaseDate)}</h4>
-                            <p className="mt-1 text-sm text-zinc-700">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
-                            <p className="mt-1 text-xs text-zinc-500">Price {formatCurrency(purchase.btcPrice)} · Fees {formatCurrency(purchase.feesUsd)}</p>
-                            {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">ID: {purchase.transactionId}</p>}
+                    {purchases.map((purchase) => {
+                      const isCurrentEditing = editingPurchaseId === purchase.id;
+                      return (
+                        <article
+                          key={purchase.id}
+                          className={cn(
+                            "rounded-xl border p-3 transition-all duration-200",
+                            isCurrentEditing
+                              ? "border-[#f97602] bg-orange-50/60 ring-2 ring-[#f97602]/40 shadow-xs"
+                              : "border-zinc-200 bg-zinc-50/70 hover:bg-zinc-50"
+                          )}
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold text-zinc-900">{formatDate(purchase.purchaseDate)}</h4>
+                                {isCurrentEditing && (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-[#f97602] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider animate-pulse">
+                                    Editing
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-1 text-sm text-zinc-700">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
+                              <p className="mt-1 text-xs text-zinc-500">Price {formatCurrency(purchase.btcPrice)} · Fees {formatCurrency(purchase.feesUsd)}</p>
+                              {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">ID: {purchase.transactionId}</p>}
+                            </div>
+                            <div className="flex gap-1">
+                              <IconButton
+                                label={isCurrentEditing ? "Currently editing this record" : "Edit purchase"}
+                                onClick={() => beginPurchaseEdit(purchase)}
+                                className={isCurrentEditing ? "bg-orange-100 text-[#f97602] border-orange-300 ring-1 ring-[#f97602]/30" : ""}
+                              >
+                                <Pencil />
+                              </IconButton>
+                              <IconButton label="Delete purchase" onClick={() => void deletePurchase(purchase)}><Trash2 /></IconButton>
+                            </div>
                           </div>
-                          <div className="flex gap-1">
-                            <IconButton label="Edit purchase" onClick={() => beginPurchaseEdit(purchase)}><Pencil /></IconButton>
-                            <IconButton label="Delete purchase" onClick={() => void deletePurchase(purchase)}><Trash2 /></IconButton>
-                          </div>
-                        </div>
-                        {purchase.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{purchase.notes}</p>}
-                      </article>
-                    ))}
+                          {purchase.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{purchase.notes}</p>}
+                        </article>
+                      );
+                    })}
                   </div>
                 )}
               </Panel>
@@ -2538,13 +2616,15 @@ function IconButton({
   children,
   label,
   onClick,
+  className = '',
 }: {
   children: ReactNode;
   label: string;
   onClick: () => void;
+  className?: string;
 }) {
   return (
-    <button type="button" aria-label={label} title={label} onClick={onClick} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-[#f97602] shadow-2xs">
+    <button type="button" aria-label={label} title={label} onClick={onClick} className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-[#f97602] shadow-2xs ${className}`}>
       <span className="[&>svg]:h-4 [&>svg]:w-4">{children}</span>
     </button>
   );
