@@ -141,6 +141,18 @@ const Chapter9InteractiveLesson = dynamic(
   }
 );
 
+const Chapter10InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter10InteractiveLesson").then((module) => module.Chapter10InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 10 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1818,6 +1830,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "utxos-fees-coin-control" && sectionIdx === 3 ? (
                 <Chapter9InteractiveLesson module="consolidation_time_machine" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "good-bitcoin-hygiene" && sectionIdx === 1 ? (
+                <Chapter10InteractiveLesson module="address_verification_lab" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "good-bitcoin-hygiene" && sectionIdx === 2 ? (
+                <Chapter10InteractiveLesson module="utxo_labeling_workbench" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "good-bitcoin-hygiene" && sectionIdx === 3 ? (
+                <>
+                  <Chapter10InteractiveLesson module="payment_flow_simulator" isTi={isTi} />
+                  <Chapter10InteractiveLesson module="hygiene_audit_checklist" isTi={isTi} />
+                </>
               ) : null}
               </React.Fragment>
               );
