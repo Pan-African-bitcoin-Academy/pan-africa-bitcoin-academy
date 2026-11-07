@@ -129,6 +129,18 @@ const Chapter8InteractiveLesson = dynamic(
   }
 );
 
+const Chapter9InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter9InteractiveLesson").then((module) => module.Chapter9InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 9 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1794,6 +1806,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "exchange-software-wallet" && sectionIdx === 3 ? (
                 <Chapter8InteractiveLesson module="privacy_inspector" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "utxos-fees-coin-control" && sectionIdx === 1 ? (
+                <Chapter9InteractiveLesson module="utxo_lifecycle" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "utxos-fees-coin-control" && sectionIdx === 2 ? (
+                <>
+                  <Chapter9InteractiveLesson module="fee_vbytes_lab" isTi={isTi} />
+                  <Chapter9InteractiveLesson module="coin_control_cockpit" isTi={isTi} />
+                </>
+              ) : null}
+              {chapter.slug === "utxos-fees-coin-control" && sectionIdx === 3 ? (
+                <Chapter9InteractiveLesson module="consolidation_time_machine" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
