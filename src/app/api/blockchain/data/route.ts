@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         }
       } else if (type === 'blocks') {
         // Fetch confirmed blocks only
-        const response = await fetch('https://mempool.space/api/blocks', {
+        const response = await fetch('https://mempool.space/api/v1/blocks', {
           signal: controller.signal,
           headers: upstreamHeaders,
         });
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
             signal: controller.signal,
             headers: upstreamHeaders,
           }),
-          fetch('https://mempool.space/api/blocks', {
+          fetch('https://mempool.space/api/v1/blocks', {
             signal: controller.signal,
             headers: upstreamHeaders,
           }),
