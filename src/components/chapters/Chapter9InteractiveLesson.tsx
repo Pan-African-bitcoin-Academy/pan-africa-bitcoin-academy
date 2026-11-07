@@ -24,6 +24,7 @@ import {
   Lock,
   Unlock,
   Info,
+  Check,
 } from "lucide-react";
 
 /* ─────────── Shared helpers ─────────── */
@@ -58,28 +59,55 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
   ];
 
   const [walletCoins, setWalletCoins] = useState<SimulatedUtxo[]>(initialCoins);
-  const [selectedCoinId, setSelectedCoinId] = useState<string>("c1");
+  const [selectedCoinIds, setSelectedCoinIds] = useState<string[]>(["c1"]);
   const [spendAmount, setSpendAmount] = useState<number>(35000);
   const [modelMode, setModelMode] = useState<"utxo" | "account">("utxo");
   const [lastTx, setLastTx] = useState<{
+    numInputs: number;
     inputSpent: number;
     payment: number;
     change: number;
     fee: number;
   } | null>(null);
 
-  const selectedCoin = walletCoins.find((c) => c.id === selectedCoinId) || walletCoins[0];
-  const minerFee = 1000; // 1,000 sats
+  const selectedCoins = walletCoins.filter((c) => selectedCoinIds.includes(c.id));
   const totalBalance = walletCoins.reduce((acc, c) => acc + c.amount, 0);
+  const totalSelectedAmount = selectedCoins.reduce((acc, c) => acc + c.amount, 0);
 
-  const canSpend = selectedCoin && spendAmount > 0 && spendAmount + minerFee <= selectedCoin.amount;
-  const changeAmount = selectedCoin ? Math.max(0, selectedCoin.amount - spendAmount - minerFee) : 0;
+  // Dynamic miner fee based on number of inputs (each extra input adds ~68 vB)
+  const minerFee = selectedCoins.length <= 1 ? 1000 : 1000 + (selectedCoins.length - 1) * 300;
+
+  const maxSpendable = Math.max(0, totalSelectedAmount - minerFee);
+  const isOverBudget = selectedCoins.length === 0 || spendAmount + minerFee > totalSelectedAmount;
+  const canSpend = selectedCoins.length > 0 && spendAmount > 0 && !isOverBudget;
+  const changeAmount = canSpend ? totalSelectedAmount - spendAmount - minerFee : 0;
+
+  // Toggle coin in/out of the transaction input set (Coin Control)
+  const handleToggleCoin = (coinId: string) => {
+    setLastTx(null);
+    let nextIds: string[];
+    if (selectedCoinIds.includes(coinId)) {
+      nextIds = selectedCoinIds.filter((id) => id !== coinId);
+    } else {
+      nextIds = [...selectedCoinIds, coinId];
+    }
+    setSelectedCoinIds(nextIds);
+
+    const nextCoins = walletCoins.filter((c) => nextIds.includes(c.id));
+    const nextTotal = nextCoins.reduce((acc, c) => acc + c.amount, 0);
+    const nextFee = nextCoins.length <= 1 ? 1000 : 1000 + (nextCoins.length - 1) * 300;
+    const nextMax = Math.max(0, nextTotal - nextFee);
+
+    if (spendAmount > nextMax && nextMax > 0) {
+      setSpendAmount(Math.min(15000, nextMax));
+    }
+  };
 
   const handleExecuteSpend = () => {
-    if (!canSpend || !selectedCoin) return;
+    if (!canSpend || selectedCoins.length === 0) return;
 
-    // Remove the spent coin
-    const remainingCoins = walletCoins.filter((c) => c.id !== selectedCoin.id);
+    // Remove all consumed coins
+    const remainingCoins = walletCoins.filter((c) => !selectedCoinIds.includes(c.id));
 
     // If there is change, add a new change UTXO
     const newCoins = [...remainingCoins];
@@ -94,20 +122,28 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
 
     setWalletCoins(newCoins);
     setLastTx({
-      inputSpent: selectedCoin.amount,
+      numInputs: selectedCoins.length,
+      inputSpent: totalSelectedAmount,
       payment: spendAmount,
       change: changeAmount,
       fee: minerFee,
     });
 
+    // Reset selection and spend amount intelligently
     if (newCoins.length > 0) {
-      setSelectedCoinId(newCoins[0].id);
+      const nextCoin = newCoins[0];
+      setSelectedCoinIds([nextCoin.id]);
+      const nextMax = Math.max(1000, nextCoin.amount - 1000);
+      setSpendAmount(Math.min(10000, nextMax));
+    } else {
+      setSelectedCoinIds([]);
+      setSpendAmount(0);
     }
   };
 
   const handleReset = () => {
     setWalletCoins(initialCoins);
-    setSelectedCoinId("c1");
+    setSelectedCoinIds(["c1"]);
     setSpendAmount(35000);
     setLastTx(null);
   };
@@ -126,7 +162,7 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
                 {t({ en: "Section 9.0 Interactive", ti: "ክፍሊ 9.0 መስተጋብራዊ" }, isTi)}
               </span>
               <span className="text-xs text-zinc-400">
-                {t({ en: "UTXO vs Account Model", ti: "ናይ UTXO ሞዴል ምስ ናይ ባንኪ ሕሳብ" }, isTi)}
+                {t({ en: "UTXO vs Account Model & Multi-Input Spending", ti: "ናይ UTXO ሞዴል ምስ ናይ ባንኪ ሕሳብን ምውህሃድ ሳንቲማትን" }, isTi)}
               </span>
             </div>
             <h3 className="text-lg font-bold text-zinc-100">
@@ -152,8 +188,8 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
       <p className="mt-3 text-sm text-zinc-300 leading-relaxed">
         {t(
           {
-            en: "Your Bitcoin wallet does not store a single balance number. Instead, it holds independent unspent coins (UTXOs). When you spend, you must spend a whole coin, receive change back, and pay a miner fee.",
-            ti: "ናይ ቢትኮይን ዋሌትካ ሓደ ቁጽሪ ባላንስ ኣየቐምጥን። ኣብ ክንድኡ ነናጻ ዝኾኑ ዘይተኸፍሉ ሳንቲማት (UTXOs) ይሕዝ። ክትከፍል ከለኻ ሙሉእ ሳንቲም ተጥፍእ፡ ተመላሲ ትቕበል፡ ክፍሊት ማይነር ድማ ትኸፍል።",
+            en: "Your Bitcoin wallet does not store a single balance number. Instead, it holds independent unspent coins (UTXOs). You can spend a single coin, or combine multiple coins together (Coin Control) to fund a larger payment, receiving fresh change back to your wallet.",
+            ti: "ናይ ቢትኮይን ዋሌትካ ሓደ ቁጽሪ ባላንስ ኣየቐምጥን። ኣብ ክንድኡ ነናጻ ዝኾኑ ዘይተኸፍሉ ሳንቲማት (UTXOs) ይሕዝ። ሓደ ሳንቲም ክትከፍል ወይ ድማ ንዓቢ ክፍሊት ሓያሎ ሳንቲማት ኣወሃሂድካ ክትከፍል ትኽእል፡ ተመላሲ ሳንቲም ድማ ናብ ዋሌትካ ይምለስ።",
           },
           isTi
         )}
@@ -209,10 +245,10 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
       ) : (
         <div className="mt-4 space-y-4">
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
                 <Coins className="h-3.5 w-3.5" />
-                {t({ en: "Available UTXOs in Your Wallet:", ti: "ኣብ ዋሌትካ ዘለዉ UTXOs፦" }, isTi)}
+                {t({ en: "Available UTXOs in Your Wallet (Click one or multiple coins to select inputs):", ti: "ኣብ ዋሌትካ ዘለዉ ሳንቲማት (ሓደ ወይ ሓያሎ ንምምራጽ ጠውቕ)፦" }, isTi)}
               </span>
               <span className="text-xs font-mono text-zinc-400">
                 {t({ en: "Total Spendable:", ti: "ጠቕላላ ዘሎ፦" }, isTi)}{" "}
@@ -222,24 +258,30 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {walletCoins.map((coin, index) => {
-                const isSelected = coin.id === selectedCoin?.id;
+                const isSelected = selectedCoinIds.includes(coin.id);
+                const isChangeCoin = coin.id.startsWith("change_");
                 return (
                   <button
                     key={coin.id}
-                    onClick={() => setSelectedCoinId(coin.id)}
+                    onClick={() => handleToggleCoin(coin.id)}
                     className={`rounded-xl border p-3.5 text-left transition cursor-pointer relative ${
                       isSelected
-                        ? "border-amber-500 bg-amber-500/10 shadow-md ring-1 ring-amber-500/30"
-                        : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700"
+                        ? "border-amber-500 bg-amber-500/10 shadow-md ring-2 ring-amber-500/40"
+                        : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 opacity-80 hover:opacity-100"
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-1.5">
                       <span className="text-[10px] font-mono text-zinc-500 uppercase">
-                        UTXO #{index + 1}
+                        {isChangeCoin ? "Fresh Change Coin" : `UTXO #${index + 1}`}
                       </span>
-                      {isSelected && (
-                        <span className="rounded bg-amber-500 text-zinc-950 px-1.5 py-0.2 text-[9px] font-bold uppercase">
+                      {isSelected ? (
+                        <span className="rounded bg-amber-500 text-zinc-950 px-2 py-0.5 text-[9px] font-bold uppercase flex items-center gap-1">
+                          <Check className="h-2.5 w-2.5 stroke-[3]" />
                           {t({ en: "Selected Input", ti: "ዝተመርጸ" }, isTi)}
+                        </span>
+                      ) : (
+                        <span className="rounded bg-zinc-800 text-zinc-400 px-2 py-0.5 text-[9px] font-medium hover:text-zinc-200">
+                          {t({ en: "+ Combine", ti: "+ ወስኽ" }, isTi)}
                         </span>
                       )}
                     </div>
@@ -257,14 +299,20 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
           </div>
 
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 space-y-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <Split className="h-3.5 w-3.5 text-cyan-400" />
-              {t({ en: "Construct Payment & Watch Coin Splitting:", ti: "ክፍሊት ስራሕን ምምቃል ሳንቲምን ተዓዘብ፦" }, isTi)}
+            <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex flex-wrap items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5">
+                <Split className="h-3.5 w-3.5 text-cyan-400" />
+                {t({ en: "Construct Payment & Watch Coin Splitting:", ti: "ክፍሊት ስራሕን ምምቃል ሳንቲምን ተዓዘብ፦" }, isTi)}
+              </span>
+              <span className="font-mono text-[11px] text-zinc-400">
+                {t({ en: "Max spendable from selected inputs:", ti: "ካብ ዝተመርጹ ዝለዓለ ዝኽፈል፦" }, isTi)}{" "}
+                <strong className="text-amber-300">{maxSpendable.toLocaleString()} sats</strong>
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-zinc-400">
+                <label className="text-xs text-zinc-400 block mb-1">
                   {t({ en: "Amount to Send to Merchant (sats):", ti: "ናብ ነጋዳይ ዝስደድ መጠን (ሳትስ)፦" }, isTi)}
                 </label>
                 <input
@@ -272,81 +320,185 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
                   min={1000}
                   step={1000}
                   value={spendAmount}
-                  onChange={(e) => setSpendAmount(Math.max(1000, Number(e.target.value)))}
-                  className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-mono text-zinc-100 focus:border-amber-500 focus:outline-none"
+                  onChange={(e) => setSpendAmount(Math.max(0, Number(e.target.value)))}
+                  className={`w-full rounded-lg border px-3 py-2 text-sm font-mono text-zinc-100 focus:outline-none ${
+                    isOverBudget
+                      ? "border-red-500 bg-red-950/20 text-red-200"
+                      : "border-zinc-700 bg-zinc-950 focus:border-amber-500"
+                  }`}
                 />
+
+                {/* Quick preset buttons */}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setSpendAmount(15000)}
+                    className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-300 hover:bg-zinc-700 cursor-pointer"
+                  >
+                    15,000 sats
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSpendAmount(Math.floor(maxSpendable * 0.5))}
+                    className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-300 hover:bg-zinc-700 cursor-pointer"
+                  >
+                    50% ({Math.floor(maxSpendable * 0.5).toLocaleString()})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSpendAmount(maxSpendable)}
+                    className="rounded bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] text-amber-300 hover:bg-amber-500/30 cursor-pointer font-bold"
+                  >
+                    {t({ en: "Max Spendable", ti: "ሙሉእ ብሙሉእ" }, isTi)} ({maxSpendable.toLocaleString()})
+                  </button>
+                </div>
               </div>
 
               <div className="rounded-lg bg-zinc-950 p-3 border border-zinc-800 text-xs font-mono space-y-1">
                 <div className="flex justify-between text-zinc-400">
-                  <span>{t({ en: "Input Selected:", ti: "ዝተመርጸ ሳንቲም፦" }, isTi)}</span>
-                  <span className="text-zinc-200">{selectedCoin?.amount.toLocaleString()} sats</span>
+                  <span>
+                    {t({ en: "Inputs Selected:", ti: "ዝተመርጹ ሳንቲማት፦" }, isTi)}{" "}
+                    <span className="text-[10px] text-amber-400 font-bold">({selectedCoins.length} {selectedCoins.length === 1 ? "coin" : "coins"})</span>
+                  </span>
+                  <span className="text-zinc-200 font-bold">{totalSelectedAmount.toLocaleString()} sats</span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
                   <span>{t({ en: "Merchant Payment:", ti: "ንነጋዳይ፦" }, isTi)}</span>
-                  <span className="text-cyan-400">-{spendAmount.toLocaleString()} sats</span>
+                  <span className={isOverBudget ? "text-red-400 font-bold" : "text-cyan-400 font-bold"}>
+                    -{spendAmount.toLocaleString()} sats
+                  </span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
-                  <span>{t({ en: "Estimated Miner Fee:", ti: "ክፍሊት ማይነር፦" }, isTi)}</span>
-                  <span className="text-red-400">-{minerFee.toLocaleString()} sats</span>
+                  <span>
+                    {t({ en: "Estimated Miner Fee:", ti: "ክፍሊት ማይነር፦" }, isTi)}{" "}
+                    {selectedCoins.length > 1 && <span className="text-[9px] text-zinc-500">(+{300 * (selectedCoins.length - 1)} for {selectedCoins.length} inputs)</span>}
+                  </span>
+                  <span className="text-red-400 font-bold">-{minerFee.toLocaleString()} sats</span>
                 </div>
                 <div className="pt-1 border-t border-zinc-800 flex justify-between font-bold">
-                  <span className="text-emerald-400">{t({ en: "Change Returned:", ti: "ተመላሲ ሳንቲም፦" }, isTi)}</span>
-                  <span className="text-emerald-400">+{changeAmount.toLocaleString()} sats</span>
+                  <span className={isOverBudget ? "text-red-400" : "text-emerald-400"}>
+                    {isOverBudget
+                      ? t({ en: "Deficit (Cannot Fund):", ti: "ጎደሎ (ክኽፈል ኣይክእልን)፦" }, isTi)
+                      : t({ en: "Change Returned:", ti: "ተመላሲ ሳንቲም፦" }, isTi)}
+                  </span>
+                  <span className={isOverBudget ? "text-red-400" : "text-emerald-400"}>
+                    {isOverBudget
+                      ? `-${(spendAmount + minerFee - totalSelectedAmount).toLocaleString()} sats`
+                      : `+${changeAmount.toLocaleString()} sats`}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
-              <div className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-3">
-                {t({ en: "On-Chain Transaction Mechanics:", ti: "ናይ ብሎክቸይን ትራንዛክሽን መስርሕ፦" }, isTi)}
+            {/* If Over Budget: Show clear error card explaining WHY */}
+            {isOverBudget ? (
+              <div className="rounded-xl border border-red-500/40 bg-red-950/20 p-4 space-y-2">
+                <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
+                  <AlertTriangle className="h-5 w-5" />
+                  <span>
+                    {selectedCoins.length === 0
+                      ? t({ en: "No UTXOs Selected! Pick at least 1 coin above.", ti: "ዝተመርጸ ሳንቲም የለን! ካብ ላዕሊ እንተወሓደ 1 ሳንቲም ምረጽ።" }, isTi)
+                      : t({ en: "Impossible Transaction: Selected UTXOs Insufficient!", ti: "ዘይከኣል ትራንዛክሽን፦ እዞም ሳንቲማት ኣይኣክሉን!" }, isTi)}
+                  </span>
+                </div>
+                {selectedCoins.length > 0 && (
+                  <p className="text-xs text-zinc-300 leading-relaxed">
+                    {t(
+                      {
+                        en: `Your selected ${selectedCoins.length} coin(s) total ${totalSelectedAmount.toLocaleString()} sats, but your payment of ${spendAmount.toLocaleString()} sats + ${minerFee.toLocaleString()} sat miner fee requires ${(spendAmount + minerFee).toLocaleString()} sats. In Bitcoin, inputs must ALWAYS equal or exceed outputs plus fees (Inputs = Outputs + Fee).`,
+                        ti: `ዝመረጽካዮም ${selectedCoins.length} ሳንቲማት ብድምር ${totalSelectedAmount.toLocaleString()} ሳትስ ጥራይ እዮም ዝሕዙ፡ ንስኻ ግን ${spendAmount.toLocaleString()} ሳትስ ክፍሊትን ${minerFee.toLocaleString()} ክፍሊት ማይነርን (ጠቕላላ ${(spendAmount + minerFee).toLocaleString()} ሳትስ) ክትሰድድ ትደሊ ኣለኻ። ኣብ ቢትኮይን እቲ ሳንቲም ዘይብሉ ገንዘብ ካብ ባዶ ምፍጣር ፈጺሙ ኣይከኣልን!`,
+                      },
+                      isTi
+                    )}
+                  </p>
+                )}
+                <div className="text-[11px] text-amber-300 font-semibold pt-1">
+                  💡 {t(
+                    {
+                      en: `To fix this: Lower the payment to ${maxSpendable.toLocaleString()} sats, or click another coin above to combine inputs (Coin Control)!`,
+                      ti: `ነዚ ንምእራም፦ ክፍሊትካ ናብ ${maxSpendable.toLocaleString()} ሳትስ ኣውርዶ፡ ወይ ካልእ ሳንቲም ብምውሳኽ ኣወሃሂድካ ክፈል (Coin Control)!`,
+                    },
+                    isTi
+                  )}
+                </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <div className="w-full sm:w-1/3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-2.5 text-center">
-                  <div className="text-[10px] text-amber-400 font-bold uppercase">{t({ en: "1 Input Consumed", ti: "1 ዝጠፍእ ሳንቲም" }, isTi)}</div>
-                  <div className="font-mono font-bold text-zinc-100 mt-1">
-                    {selectedCoin?.amount.toLocaleString()} sats
+            ) : (
+              /* Valid Transaction Mechanics: Conservation of Satoshis */
+              <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between border-b border-zinc-800 pb-2 gap-2">
+                  <div className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                    {t({ en: "On-Chain Transaction Mechanics (Inputs = Outputs + Fee):", ti: "ናይ ትራንዛክሽን መስርሕ (ዝኣተወ = ዝወጸ + ክፍሊት)፦" }, isTi)}
                   </div>
-                  <div className="text-[10px] text-zinc-400 mt-0.5">{t({ en: "Completely destroyed", ti: "ሙሉእ ብሙሉእ ይጠፍእ" }, isTi)}</div>
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold">
+                    {totalSelectedAmount.toLocaleString()} sats IN = {(spendAmount + changeAmount + minerFee).toLocaleString()} sats OUT + FEE ✓
+                  </span>
                 </div>
 
-                <ArrowRight className="h-5 w-5 text-zinc-500 shrink-0 hidden sm:block" />
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div className="w-full sm:w-1/2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-center space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-amber-400 font-bold uppercase">
+                        {selectedCoins.length} {selectedCoins.length === 1 ? "Input Consumed" : "Inputs Consumed"}
+                      </span>
+                      <span className="font-mono font-bold text-zinc-100 text-sm">
+                        {totalSelectedAmount.toLocaleString()} sats
+                      </span>
+                    </div>
 
-                <div className="w-full sm:w-2/3 space-y-2">
-                  <div className="flex items-center justify-between rounded-lg border border-cyan-500/40 bg-cyan-950/20 px-3 py-1.5">
-                    <span className="text-cyan-300 font-medium">{t({ en: "Output 1: Merchant Payment", ti: "ውጽኢት 1፦ ክፍሊት ነጋዳይ" }, isTi)}</span>
-                    <span className="font-mono font-bold text-cyan-400">{spendAmount.toLocaleString()} sats</span>
+                    {/* Breakdown of each consumed coin */}
+                    <div className="space-y-1 text-left pt-1 border-t border-amber-500/20">
+                      {selectedCoins.map((coin, idx) => (
+                        <div key={coin.id} className="flex justify-between items-center text-[10px] font-mono bg-black/40 px-2 py-1 rounded">
+                          <span className="text-zinc-400">
+                            {coin.id.startsWith("change_") ? "Change Coin" : `Coin #${idx + 1}`} ({coin.txid.slice(0, 7)}...):
+                          </span>
+                          <span className="text-amber-300 font-bold">-{coin.amount.toLocaleString()} sats</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-[10px] text-zinc-400 italic text-center">
+                      {t({ en: "All selected inputs are completely destroyed/spent", ti: "ኩሎም ዝተመርጹ ሳንቲማት ሙሉእ ብሙሉእ ይጠፍኡ" }, isTi)}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-950/20 px-3 py-1.5">
-                    <span className="text-emerald-300 font-medium">{t({ en: "Output 2: Fresh Change UTXO", ti: "ውጽኢት 2፦ ሓድሽ ተመላሲ ሳንቲም" }, isTi)}</span>
-                    <span className="font-mono font-bold text-emerald-400">{changeAmount.toLocaleString()} sats</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-lg border border-red-500/30 bg-red-950/20 px-3 py-1 text-[11px]">
-                    <span className="text-zinc-400">{t({ en: "Implicit Miner Fee", ti: "ክፍሊት ማይነር" }, isTi)}</span>
-                    <span className="font-mono text-red-300">{minerFee.toLocaleString()} sats</span>
+
+                  <ArrowRight className="h-5 w-5 text-zinc-500 shrink-0 hidden sm:block" />
+
+                  <div className="w-full sm:w-1/2 space-y-2">
+                    <div className="flex items-center justify-between rounded-lg border border-cyan-500/40 bg-cyan-950/20 px-3 py-1.5">
+                      <span className="text-cyan-300 font-medium">{t({ en: "Output 1: Merchant Payment", ti: "ውጽኢት 1፦ ክፍሊት ነጋዳይ" }, isTi)}</span>
+                      <span className="font-mono font-bold text-cyan-400">{spendAmount.toLocaleString()} sats</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-950/20 px-3 py-1.5">
+                      <span className="text-emerald-300 font-medium">{t({ en: "Output 2: Fresh Change UTXO", ti: "ውጽኢት 2፦ ሓድሽ ተመላሲ ሳንቲም" }, isTi)}</span>
+                      <span className="font-mono font-bold text-emerald-400">{changeAmount.toLocaleString()} sats</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border border-red-500/30 bg-red-950/20 px-3 py-1 text-[11px]">
+                      <span className="text-zinc-400">{t({ en: "Implicit Miner Fee", ti: "ክፍሊት ማይነር" }, isTi)}</span>
+                      <span className="font-mono text-red-300">{minerFee.toLocaleString()} sats</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <button
               onClick={handleExecuteSpend}
               disabled={!canSpend}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-400 disabled:opacity-40 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-400 disabled:opacity-40 cursor-pointer shadow-lg"
             >
               <Split className="h-4 w-4" />
               {canSpend
                 ? t(
                     {
-                      en: `Broadcast Spend of ${selectedCoin?.amount.toLocaleString()} sats coin`,
-                      ti: `ናይ ${selectedCoin?.amount.toLocaleString()} ሳትስ ሳንቲም ከፊልካ ስደድ`,
+                      en: `Broadcast Spend of ${selectedCoins.length} ${selectedCoins.length === 1 ? "coin" : "coins"} (${spendAmount.toLocaleString()} to Merchant + ${changeAmount.toLocaleString()} Change)`,
+                      ti: `ናይ ${selectedCoins.length} ሳንቲም ከፊልካ ስደድ (${spendAmount.toLocaleString()} ንነጋዳይ + ${changeAmount.toLocaleString()} ተመላሲ)`,
                     },
                     isTi
                   )
                 : t(
                     {
-                      en: "Selected UTXO too small for this amount + fee. Pick a larger coin.",
-                      ti: "ዝተመርጸ ሳንቲም ንኽፍሊት ኣይኣክልን። ዝዓበየ ምረጽ።",
+                      en: "Select sufficient UTXOs to cover payment + miner fee",
+                      ti: "ንኽፍሊትን ክፍሊት ማይነርን ዝኣክል ሳንቲማት ምረጽ",
                     },
                     isTi
                   )}
@@ -360,11 +512,11 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
                 <span className="font-bold text-emerald-300">
                   {t({ en: "Transaction Confirmed! New UTXOs Created:", ti: "ክፍሊት ተረጋጊጹ! ሓደስቲ ሳንቲማት ተፈጢሮም፦" }, isTi)}
                 </span>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
                   {t(
                     {
-                      en: `Your old ${lastTx.inputSpent.toLocaleString()} sat UTXO was spent. The merchant received ${lastTx.payment.toLocaleString()} sats, and a brand new ${lastTx.change.toLocaleString()} sat change UTXO was created in your wallet!`,
-                      ti: `እቲ ዝነበረካ ናይ ${lastTx.inputSpent.toLocaleString()} ሳትስ ሳንቲም ተጠቒምካዮ። እቲ ነጋዳይ ${lastTx.payment.toLocaleString()} ሳትስ ተቐቢሉ፡ ኣብ ዋሌትካ ድማ ናይ ${lastTx.change.toLocaleString()} ሳትስ ሓድሽ ተመላሲ ሳንቲም ተፈጢሩ!`,
+                      en: `Your ${lastTx.numInputs} selected UTXO(s) (${lastTx.inputSpent.toLocaleString()} sats total) were consumed. The merchant received ${lastTx.payment.toLocaleString()} sats, ${lastTx.fee.toLocaleString()} sat miner fee was paid, and a brand new ${lastTx.change.toLocaleString()} sat change UTXO was created in your wallet! The unselected coins remained 100% untouched.`,
+                      ti: `እቶም ዝመረጽካዮም ${lastTx.numInputs} ሳንቲማት (${lastTx.inputSpent.toLocaleString()} ሳትስ ድምር) ተጠቒምካዮም። እቲ ነጋዳይ ${lastTx.payment.toLocaleString()} ሳትስ ተቐቢሉ፡ ማይነር ${lastTx.fee.toLocaleString()} ሳትስ ወሲዱ፡ ኣብ ዋሌትካ ድማ ናይ ${lastTx.change.toLocaleString()} ሳትስ ሓድሽ ተመላሲ ሳንቲም ተፈጢሩ! እቶም ዘይተመርጹ ሳንቲማት ብፍጹም ኣይተተንከፉን።`,
                     },
                     isTi
                   )}
