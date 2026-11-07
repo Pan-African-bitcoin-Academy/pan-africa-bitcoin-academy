@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import {
   generateAccountKeypair,
-  createEncryptedBackup,
+  createKeyBackup,
   exportRawPrivateKey,
   type GeneratedAccountBundle,
 } from '@/lib/cryptoAuth';
@@ -30,9 +30,7 @@ interface GenerateKeyModalProps {
 
 export function GenerateKeyModal({ isOpen, onClose, onSuccess }: GenerateKeyModalProps) {
   const [bundle, setBundle] = useState<GeneratedAccountBundle | null>(null);
-  const [passphrase, setPassphrase] = useState('');
-  const [passphraseConfirm, setPassphraseConfirm] = useState('');
-  const [showPassphrase, setShowPassphrase] = useState(false);
+  
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [confirmSaved, setConfirmSaved] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
@@ -69,18 +67,9 @@ export function GenerateKeyModal({ isOpen, onClose, onSuccess }: GenerateKeyModa
 
   async function handleDownload() {
     if (!bundle) return;
-    if (!passphrase || passphrase.length < 8) {
-      setError('Passphrase must be at least 8 characters long.');
-      return;
-    }
-    if (passphrase !== passphraseConfirm) {
-      setError('Passphrases do not match.');
-      return;
-    }
-
     try {
       setError(null);
-      const backup = await createEncryptedBackup(bundle.privateKey, bundle.identity.accountId, passphrase);
+      const backup = await createKeyBackup(bundle.privateKey, bundle.identity.accountId);
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -227,66 +216,39 @@ export function GenerateKeyModal({ isOpen, onClose, onSuccess }: GenerateKeyModa
         </div>
 
 
-        {/* Step 1: Encrypt & Download */}
+        {/* Step 1: Download Key File */}
         <div className="space-y-3 rounded-xl border border-orange-500/20 bg-orange-500/5 p-4">
           <div className="flex items-center gap-2">
-            <Lock className="h-4 w-4 text-[#f97602]" />
+            <Key className="h-4 w-4 text-[#f97602]" />
             <h4 className="text-xs font-bold text-white uppercase tracking-wide">
-              Step 1: Set Passphrase & Download Backup
+              Step 1: Download Private Key File
             </h4>
           </div>
           <p className="text-xs text-zinc-400">
-            Set an encryption passphrase (minimum 8 characters) to protect your key file.
+            Download your account key file or copy your raw key string. You will need this key to sign in.
           </p>
 
-          <div className="space-y-2">
-            <div className="relative">
-              <input
-                type={showPassphrase ? 'text' : 'password'}
-                value={passphrase}
-                onChange={(e) => setPassphrase(e.target.value)}
-                placeholder="Encryption passphrase"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassphrase(!showPassphrase)}
-                className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-200 cursor-pointer"
-              >
-                {showPassphrase ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-              </button>
-            </div>
-
-            <input
-              type={showPassphrase ? 'text' : 'password'}
-              value={passphraseConfirm}
-              onChange={(e) => setPassphraseConfirm(e.target.value)}
-              placeholder="Confirm passphrase"
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
-            />
-
-            <button
-              type="button"
-              onClick={handleDownload}
-              className={`w-full inline-flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium transition cursor-pointer ${
-                hasDownloaded
-                  ? 'bg-emerald-950/60 border border-emerald-600 text-emerald-300'
-                  : 'bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white'
-              }`}
-            >
-              {hasDownloaded ? (
-                <>
-                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                  Backup Downloaded (Click to re-download)
-                </>
-              ) : (
-                <>
-                  <Download className="h-3.5 w-3.5 text-[#f97602]" />
-                  Encrypt & Download Key Backup (.json)
-                </>
-              )}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleDownload}
+            className={`w-full inline-flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition cursor-pointer ${
+              hasDownloaded
+                ? 'bg-emerald-950/60 border border-emerald-600 text-emerald-300'
+                : 'bg-[#f97602] hover:bg-[#e06800] text-white shadow-sm'
+            }`}
+          >
+            {hasDownloaded ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-emerald-400" />
+                Key File Downloaded (Click to re-download)
+              </>
+            ) : (
+              <>
+                <Download className="h-3.5 w-3.5" />
+                Download Account Key File (.json)
+              </>
+            )}
+          </button>
         </div>
 
         {/* Step 2: Confirm & Link */}
@@ -300,7 +262,7 @@ export function GenerateKeyModal({ isOpen, onClose, onSuccess }: GenerateKeyModa
               className="mt-0.5 rounded border-zinc-700 text-[#f97602] focus:ring-[#f97602] disabled:opacity-40"
             />
             <span>
-              I have downloaded and safely stored my encrypted key backup. I understand PBA cannot recover lost private keys.
+              I have saved my private key. I understand PBA cannot recover lost private keys.
             </span>
           </label>
 

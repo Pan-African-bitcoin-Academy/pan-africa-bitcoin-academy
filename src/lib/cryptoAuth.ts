@@ -30,6 +30,14 @@ export interface EncryptedKeyBackup {
   createdAt: string;
 }
 
+export interface AccountKeyBackup {
+  format: 'pba-account-key';
+  version: 1;
+  accountId: string;
+  privateKey: string; // base64url PKCS#8
+  createdAt: string;
+}
+
 export interface GeneratedAccountBundle {
   identity: CryptoAccountIdentity;
   privateKey: CryptoKey;
@@ -249,6 +257,56 @@ export async function restoreFromEncryptedBackup(
   } catch {
     throw new Error('Incorrect passphrase or corrupted backup file.');
   }
+}
+
+/**
+ * Create a simple, direct private key backup file without any passphrase.
+ * Nostr-like direct key ownership.
+ */
+export async function createKeyBackup(
+  privateKey: CryptoKey,
+  accountId: string,
+): Promise<AccountKeyBackup> {
+  const rawKey = await exportRawPrivateKey(privateKey);
+  return {
+    format: 'pba-account-key',
+    version: 1,
+    accountId,
+    privateKey: rawKey,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Restore private key directly from a key backup file with NO passphrase.
+ * Automatically derives accountId.
+ */
+export async function restoreFromKeyBackup(
+  backup: any,
+): Promise<{ privateKey: CryptoKey; accountId: string }> {
+  let keyString = '';
+  if (typeof backup === 'string') {
+    keyString = backup.trim();
+  } else if (backup && typeof backup === 'object') {
+    if (backup.privateKey && typeof backup.privateKey === 'string') {
+      keyString = backup.privateKey.trim();
+    } else if (backup.ciphertext) {
+      throw new Error('This appears to be an older password-encrypted backup file. Please use your raw private key string to sign in.');
+    } else {
+      keyString = JSON.stringify(backup);
+    }
+  }
+
+  if (!keyString) {
+    throw new Error('Could not read private key from the selected file.');
+  }
+
+  const privateKey = await importRawPrivateKey(keyString);
+  const derived = await deriveAccountIdFromPrivateKey(privateKey);
+  return {
+    privateKey,
+    accountId: (backup && backup.accountId) || derived.accountId,
+  };
 }
 
 /**

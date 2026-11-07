@@ -4,20 +4,17 @@ import { useState, useEffect } from 'react';
 import {
   Key,
   ShieldCheck,
-  Lock,
   Download,
   Check,
   Copy,
   AlertCircle,
-  Eye,
-  EyeOff,
   X,
   ArrowRight,
   RefreshCw,
 } from 'lucide-react';
 import {
   generateAccountKeypair,
-  createEncryptedBackup,
+  createKeyBackup,
   type GeneratedAccountBundle,
 } from '@/lib/cryptoAuth';
 
@@ -29,9 +26,7 @@ interface LinkCryptoKeyModalProps {
 
 export function LinkCryptoKeyModal({ isOpen, onClose, onSuccess }: LinkCryptoKeyModalProps) {
   const [bundle, setBundle] = useState<GeneratedAccountBundle | null>(null);
-  const [passphrase, setPassphrase] = useState('');
-  const [passphraseConfirm, setPassphraseConfirm] = useState('');
-  const [showPassphrase, setShowPassphrase] = useState(false);
+  
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [confirmSaved, setConfirmSaved] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
@@ -63,18 +58,9 @@ export function LinkCryptoKeyModal({ isOpen, onClose, onSuccess }: LinkCryptoKey
 
   async function handleDownload() {
     if (!bundle) return;
-    if (!passphrase || passphrase.length < 8) {
-      setError('Passphrase must be at least 8 characters long.');
-      return;
-    }
-    if (passphrase !== passphraseConfirm) {
-      setError('Passphrases do not match.');
-      return;
-    }
-
     try {
       setError(null);
-      const backup = await createEncryptedBackup(bundle.privateKey, bundle.identity.accountId, passphrase);
+      const backup = await createKeyBackup(bundle.privateKey, bundle.identity.accountId);
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -170,41 +156,19 @@ export function LinkCryptoKeyModal({ isOpen, onClose, onSuccess }: LinkCryptoKey
 
           <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 space-y-2.5">
             <span className="font-semibold text-zinc-800 flex items-center gap-1.5">
-              <Lock className="h-3.5 w-3.5 text-[#f97602]" />
-              Set Backup Passphrase
+              <Download className="h-3.5 w-3.5 text-[#f97602]" />
+              Account Key Backup
             </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div className="relative">
-                <input
-                  type={showPassphrase ? 'text' : 'password'}
-                  placeholder="Passphrase (min 8)"
-                  value={passphrase}
-                  onChange={(e) => setPassphrase(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-xs text-zinc-900 pr-7"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassphrase(!showPassphrase)}
-                  className="absolute right-2 top-2 text-zinc-400 hover:text-zinc-600 cursor-pointer"
-                >
-                  {showPassphrase ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                </button>
-              </div>
-              <input
-                type={showPassphrase ? 'text' : 'password'}
-                placeholder="Confirm passphrase"
-                value={passphraseConfirm}
-                onChange={(e) => setPassphraseConfirm(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-xs text-zinc-900"
-              />
-            </div>
+            <p className="text-[11px] text-zinc-600">
+              Download your account key file (.json) to log in instantly on any device without a password.
+            </p>
             <button
               type="button"
               onClick={handleDownload}
               className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#f97602] bg-white py-2 text-xs font-semibold text-[#f97602] hover:bg-orange-50 transition cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />
-              {hasDownloaded ? 'Re-Download Backup File (.json)' : 'Download Encrypted Backup (.json)'}
+              {hasDownloaded ? 'Re-Download Key File (.json)' : 'Download Key File (.json)'}
             </button>
           </div>
 

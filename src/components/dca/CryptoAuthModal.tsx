@@ -21,14 +21,14 @@ import {
 } from 'lucide-react';
 import {
   generateAccountKeypair,
-  createEncryptedBackup,
-  restoreFromEncryptedBackup,
+  restoreFromKeyBackup,
+  createKeyBackup,
   exportRawPrivateKey,
   importRawPrivateKey,
   deriveAccountIdFromPrivateKey,
   signChallenge,
   type GeneratedAccountBundle,
-  type EncryptedKeyBackup,
+  type AccountKeyBackup,
 } from '@/lib/cryptoAuth';
 
 interface CryptoAuthModalProps {
@@ -50,9 +50,7 @@ export function CryptoAuthModal({
 
   // Create flow state
   const [generatedBundle, setGeneratedBundle] = useState<GeneratedAccountBundle | null>(null);
-  const [createPassphrase, setCreatePassphrase] = useState('');
-  const [createPassphraseConfirm, setCreatePassphraseConfirm] = useState('');
-  const [showCreatePassphrase, setShowCreatePassphrase] = useState(false);
+  
   const [hasDownloadedBackup, setHasDownloadedBackup] = useState(false);
   const [confirmSavedBackup, setConfirmSavedBackup] = useState(false);
   const [confirmNoCustody, setConfirmNoCustody] = useState(false);
@@ -65,10 +63,9 @@ export function CryptoAuthModal({
 
   // Login flow state
   const [loginMethod, setLoginMethod] = useState<'file' | 'raw'>('file');
-  const [uploadedBackup, setUploadedBackup] = useState<EncryptedKeyBackup | null>(null);
+  const [uploadedBackup, setUploadedBackup] = useState<AccountKeyBackup | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState('');
-  const [loginPassphrase, setLoginPassphrase] = useState('');
-  const [showLoginPassphrase, setShowLoginPassphrase] = useState(false);
+  
   const [rawPrivateKeyInput, setRawPrivateKeyInput] = useState('');
   const [loginAccountIdInput, setLoginAccountIdInput] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -133,21 +130,12 @@ export function CryptoAuthModal({
 
   async function handleDownloadBackup() {
     if (!generatedBundle) return;
-    if (!createPassphrase || createPassphrase.length < 8) {
-      setErrorMessage('Passphrase must be at least 8 characters long to protect your key.');
-      return;
-    }
-    if (createPassphrase !== createPassphraseConfirm) {
-      setErrorMessage('Passphrase confirmation does not match.');
-      return;
-    }
 
     try {
       setErrorMessage(null);
-      const backup = await createEncryptedBackup(
+      const backup = await createKeyBackup(
         generatedBundle.privateKey,
         generatedBundle.identity.accountId,
-        createPassphrase,
       );
 
       const blob = new Blob([JSON.stringify(backup, null, 2)], {
@@ -163,7 +151,7 @@ export function CryptoAuthModal({
       URL.revokeObjectURL(url);
 
       setHasDownloadedBackup(true);
-      setSuccessMessage('Encrypted key backup downloaded safely. Keep this file in a secure location.');
+      setSuccessMessage('Account key backup downloaded safely. Keep this file in a secure location.');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to create backup file';
       setErrorMessage(msg);
@@ -226,7 +214,7 @@ export function CryptoAuthModal({
       try {
         const text = event.target?.result as string;
         const parsed = JSON.parse(text);
-        if (parsed.format !== 'pba-dca-encrypted-key' || !parsed.accountId) {
+        if ((parsed.format !== 'pba-dca-encrypted-key' && parsed.format !== 'pba-key-backup') || !parsed.accountId) {
           throw new Error('Unrecognized backup format. Please select a valid PBA account JSON file.');
         }
         setUploadedBackup(parsed);
@@ -251,12 +239,9 @@ export function CryptoAuthModal({
 
       if (loginMethod === 'file') {
         if (!uploadedBackup) {
-          throw new Error('Please select your encrypted PBA account JSON backup file.');
+          throw new Error('Please select your PBA account key JSON file.');
         }
-        if (!loginPassphrase) {
-          throw new Error('Please enter the passphrase used to encrypt your backup file.');
-        }
-        const restored = await restoreFromEncryptedBackup(uploadedBackup, loginPassphrase);
+        const restored = await restoreFromKeyBackup(uploadedBackup);
         privateKey = restored.privateKey;
         accountId = restored.accountId;
       } else {
@@ -513,38 +498,14 @@ export function CryptoAuthModal({
                 <div className="flex items-center gap-2">
                   <Lock className="h-4 w-4 text-[#f97602]" />
                   <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wide">
-                    Step 1: Encrypt & Download Key Backup
+                    Step 1: Download Private Key File
                   </h3>
                 </div>
                 <p className="text-xs text-zinc-600 leading-relaxed">
-                  Choose a passphrase to encrypt your private account key. You will need this backup file and passphrase whenever you sign in from another browser.
+                  Download your private key file or copy your raw key. You will need this key whenever you sign in from another browser.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div className="relative">
-                    <input
-                      type={showCreatePassphrase ? 'text' : 'password'}
-                      placeholder="Passphrase (min 8 chars)"
-                      value={createPassphrase}
-                      onChange={(e) => setCreatePassphrase(e.target.value)}
-                      className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-900 pr-8 focus:border-[#f97602] focus:outline-hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowCreatePassphrase(!showCreatePassphrase)}
-                      className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-600 cursor-pointer"
-                    >
-                      {showCreatePassphrase ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                    </button>
-                  </div>
-                  <input
-                    type={showCreatePassphrase ? 'text' : 'password'}
-                    placeholder="Confirm passphrase"
-                    value={createPassphraseConfirm}
-                    onChange={(e) => setCreatePassphraseConfirm(e.target.value)}
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
-                  />
-                </div>
+
 
                 <button
                   type="button"
@@ -552,7 +513,7 @@ export function CryptoAuthModal({
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-[#f97602] py-2.5 text-xs font-semibold text-[#f97602] shadow-xs hover:bg-orange-50 transition cursor-pointer"
                 >
                   <Download className="h-4 w-4" />
-                  {hasDownloadedBackup ? 'Re-Download Backup File (.json)' : 'Download Encrypted Key Backup (.json)'}
+                  {hasDownloadedBackup ? 'Re-Download Key File (.json)' : 'Download Private Key File (.json)'}
                 </button>
                 {hasDownloadedBackup && (
                   <p className="text-[11px] text-emerald-700 font-medium flex items-center gap-1.5">
@@ -665,28 +626,6 @@ export function CryptoAuthModal({
                       <FileCheck2 className="h-4 w-4 text-emerald-600 shrink-0" />
                     </div>
                   )}
-
-                  <div>
-                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
-                      Backup Decryption Passphrase
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showLoginPassphrase ? 'text' : 'password'}
-                        placeholder="Enter the passphrase used when saving"
-                        value={loginPassphrase}
-                        onChange={(e) => setLoginPassphrase(e.target.value)}
-                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowLoginPassphrase(!showLoginPassphrase)}
-                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
-                      >
-                        {showLoginPassphrase ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
                 </div>
               ) : (
                 <div className="space-y-3">

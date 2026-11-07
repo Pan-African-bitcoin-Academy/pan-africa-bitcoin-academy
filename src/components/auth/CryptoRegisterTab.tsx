@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import {
   generateAccountKeypair,
-  createEncryptedBackup,
+  createKeyBackup,
   exportRawPrivateKey,
   type GeneratedAccountBundle,
 } from '@/lib/cryptoAuth';
@@ -32,9 +32,7 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
   const [phone, setPhone] = useState('');
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
-  const [passphrase, setPassphrase] = useState('');
-  const [passphraseConfirm, setPassphraseConfirm] = useState('');
-  const [showPassphrase, setShowPassphrase] = useState(false);
+  
 
   const [bundle, setBundle] = useState<GeneratedAccountBundle | null>(null);
   const [rawKeyString, setRawKeyString] = useState<string>('');
@@ -56,31 +54,19 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
       setError('WhatsApp phone number is required for PBA cohort communications.');
       return;
     }
-    if (!passphrase || passphrase.length < 8) {
-      setError('Encryption passphrase must be at least 8 characters long.');
-      return;
-    }
-    if (passphrase !== passphraseConfirm) {
-      setError('Passphrases do not match.');
-      return;
-    }
 
     try {
       setLoading(true);
-      // Generate keypair in browser
       const newBundle = await generateAccountKeypair();
       setBundle(newBundle);
       const raw = await exportRawPrivateKey(newBundle.privateKey);
       setRawKeyString(raw);
 
-      // Create encrypted backup
-      const backup = await createEncryptedBackup(
+      const backup = await createKeyBackup(
         newBundle.privateKey,
         newBundle.identity.accountId,
-        passphrase,
       );
 
-      // Trigger download
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -93,7 +79,7 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
 
       setHasDownloaded(true);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to generate key backup';
+      const msg = err instanceof Error ? err.message : 'Failed to generate key';
       setError(msg);
     } finally {
       setLoading(false);
@@ -205,39 +191,7 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
             </div>
           </div>
 
-          <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 space-y-2">
-            <label className="block text-xs font-semibold text-white">
-              Set Key Backup Passphrase
-            </label>
-            <p className="text-[11px] text-zinc-400">
-              Your private key will be generated on your device and encrypted with this passphrase.
-            </p>
 
-            <div className="relative">
-              <input
-                type={showPassphrase ? 'text' : 'password'}
-                value={passphrase}
-                onChange={(e) => setPassphrase(e.target.value)}
-                placeholder="Passphrase (minimum 8 characters)"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassphrase(!showPassphrase)}
-                className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-200 cursor-pointer"
-              >
-                {showPassphrase ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-              </button>
-            </div>
-
-            <input
-              type={showPassphrase ? 'text' : 'password'}
-              value={passphraseConfirm}
-              onChange={(e) => setPassphraseConfirm(e.target.value)}
-              placeholder="Confirm passphrase"
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
-            />
-          </div>
 
           <button
             type="button"
@@ -318,7 +272,7 @@ export function CryptoRegisterTab({ onSuccess }: CryptoRegisterTabProps) {
               className="mt-0.5 rounded border-zinc-700 text-[#f97602] focus:ring-[#f97602]"
             />
             <span>
-              I have saved my encrypted backup file and remember my passphrase. I understand PBA cannot recover lost keys.
+              I have saved my private key file. I understand PBA cannot recover lost keys.
             </span>
           </label>
 

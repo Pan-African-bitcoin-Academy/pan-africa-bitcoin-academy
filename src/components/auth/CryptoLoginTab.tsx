@@ -13,11 +13,11 @@ import {
   FileCheck,
 } from 'lucide-react';
 import {
-  restoreFromEncryptedBackup,
+  restoreFromKeyBackup,
   importRawPrivateKey,
   deriveAccountIdFromPrivateKey,
   signChallenge,
-  type EncryptedKeyBackup,
+  type AccountKeyBackup,
 } from '@/lib/cryptoAuth';
 
 interface CryptoLoginTabProps {
@@ -26,10 +26,9 @@ interface CryptoLoginTabProps {
 
 export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
   const [loginMethod, setLoginMethod] = useState<'file' | 'raw'>('file');
-  const [uploadedBackup, setUploadedBackup] = useState<EncryptedKeyBackup | null>(null);
+  const [uploadedBackup, setUploadedBackup] = useState<AccountKeyBackup | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [passphrase, setPassphrase] = useState('');
-  const [showPassphrase, setShowPassphrase] = useState(false);
+  
   const [rawKeyInput, setRawKeyInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,8 +46,8 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
       try {
         const text = event.target?.result as string;
         const parsed = JSON.parse(text);
-        if (!parsed.accountId || !parsed.ciphertext) {
-          throw new Error('Unrecognized backup format. Please select a valid PBA account JSON file.');
+        if (!parsed.accountId && !parsed.privateKey && !parsed.ciphertext) {
+          throw new Error('Unrecognized format. Please select a valid PBA account key JSON file.');
         }
         setUploadedBackup(parsed);
       } catch (err: unknown) {
@@ -72,12 +71,9 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
 
       if (loginMethod === 'file') {
         if (!uploadedBackup) {
-          throw new Error('Please upload your encrypted PBA account backup (.json).');
+          throw new Error('Please select your PBA account key file (.json).');
         }
-        if (!passphrase) {
-          throw new Error('Please enter the decryption passphrase for this backup file.');
-        }
-        const restored = await restoreFromEncryptedBackup(uploadedBackup, passphrase);
+        const restored = await restoreFromKeyBackup(uploadedBackup);
         privateKey = restored.privateKey;
         accountId = restored.accountId;
       } else {
@@ -148,7 +144,7 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
               : 'text-zinc-400 hover:text-white'
           }`}
         >
-          Encrypted Backup File
+          Key File (.json)
         </button>
         <button
           type="button"
@@ -185,7 +181,7 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
           <>
             <div>
               <label className="block text-xs font-medium text-zinc-300 mb-1">
-                Account Key Backup File (.json)
+                Account Key File (.json)
               </label>
               <label className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-700 bg-zinc-950/60 p-4 text-center hover:border-[#f97602] transition cursor-pointer">
                 {uploadedFileName ? (
@@ -196,7 +192,7 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
                 ) : (
                   <div className="space-y-1">
                     <Upload className="h-5 w-5 mx-auto text-zinc-500" />
-                    <p className="text-xs text-zinc-300 font-medium">Click to select backup JSON file</p>
+                    <p className="text-xs text-zinc-300 font-medium">Click to select key file (.json)</p>
                     <p className="text-[11px] text-zinc-500">pba-account-*.json</p>
                   </div>
                 )}
@@ -209,28 +205,7 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
               </label>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
-                Backup Decryption Passphrase
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassphrase ? 'text' : 'password'}
-                  value={passphrase}
-                  onChange={(e) => setPassphrase(e.target.value)}
-                  placeholder="Enter your backup passphrase"
-                  required
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassphrase(!showPassphrase)}
-                  className="absolute right-2.5 top-2.5 text-zinc-400 hover:text-zinc-200 cursor-pointer"
-                >
-                  {showPassphrase ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                </button>
-              </div>
-            </div>
+
           </>
         ) : (
           <>
