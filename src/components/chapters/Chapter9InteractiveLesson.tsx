@@ -21,6 +21,9 @@ import {
   Flame,
   ArrowDownRight,
   ExternalLink,
+  Lock,
+  Unlock,
+  Info,
 } from "lucide-react";
 
 /* ─────────── Shared helpers ─────────── */
@@ -32,8 +35,8 @@ const panelClass =
   "rounded-2xl border border-zinc-800 bg-zinc-950/90 p-4 shadow-xl sm:p-6 my-6";
 
 /* =========================================================================
-   Module 1: UTXO Lifecycle & Change Simulator (Section 9.0)
-   Theme: "The Piggy Bank of Coins vs. Account Balance"
+   Module 1: UTXO Lifecycle & Interactive Tree Diagram (Section 9.0)
+   Theme: "What You Really Own — The UTXO Model (Tree of Spent & Unspent Coins)"
    ========================================================================= */
 
 interface UtxoLifecycleProps {
@@ -183,7 +186,6 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
       </div>
 
       {modelMode === "account" ? (
-        /* Traditional bank account view */
         <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
             {t({ en: "Traditional Bank Balance (Account Model):", ti: "ልሙድ ናይ ባንኪ ባላንስ (ናይ ሕሳብ ሞዴል)፦" }, isTi)}
@@ -205,9 +207,7 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
           </div>
         </div>
       ) : (
-        /* Bitcoin UTXO View */
         <div className="mt-4 space-y-4">
-          {/* Current wallet coins (Unspent Outputs) */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
@@ -256,7 +256,6 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
             </div>
           </div>
 
-          {/* Transaction Assembly Workbench */}
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 space-y-4">
             <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <Split className="h-3.5 w-3.5 text-cyan-400" />
@@ -298,13 +297,11 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
               </div>
             </div>
 
-            {/* Visual Flow diagram */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
               <div className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-3">
                 {t({ en: "On-Chain Transaction Mechanics:", ti: "ናይ ብሎክቸይን ትራንዛክሽን መስርሕ፦" }, isTi)}
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                {/* 1 Input */}
                 <div className="w-full sm:w-1/3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-2.5 text-center">
                   <div className="text-[10px] text-amber-400 font-bold uppercase">{t({ en: "1 Input Consumed", ti: "1 ዝጠፍእ ሳንቲም" }, isTi)}</div>
                   <div className="font-mono font-bold text-zinc-100 mt-1">
@@ -315,7 +312,6 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
 
                 <ArrowRight className="h-5 w-5 text-zinc-500 shrink-0 hidden sm:block" />
 
-                {/* 2 Outputs */}
                 <div className="w-full sm:w-2/3 space-y-2">
                   <div className="flex items-center justify-between rounded-lg border border-cyan-500/40 bg-cyan-950/20 px-3 py-1.5">
                     <span className="text-cyan-300 font-medium">{t({ en: "Output 1: Merchant Payment", ti: "ውጽኢት 1፦ ክፍሊት ነጋዳይ" }, isTi)}</span>
@@ -357,7 +353,6 @@ function UtxoLifecycleSimulator({ isTi }: UtxoLifecycleProps) {
             </button>
           </div>
 
-          {/* Last Transaction Result Banner */}
           {lastTx && (
             <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-3.5 flex items-start gap-3">
               <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
