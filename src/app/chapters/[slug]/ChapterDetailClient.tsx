@@ -225,6 +225,18 @@ const Chapter16InteractiveLesson = dynamic(
   }
 );
 
+const Chapter17InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter17InteractiveLesson").then((module) => module.Chapter17InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 17 multi-sig activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1980,6 +1992,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "full-node-opening-a-lightning-channel" && (section.heading.includes("16.2") || sectionIdx === 3) ? (
                 <Chapter16InteractiveLesson module="watchtower_penalty_simulator" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "multi-sig-collaborative-custody" && (section.heading.includes("17.0") || sectionIdx === 1) ? (
+                <Chapter17InteractiveLesson module="single_sig_vs_multi_sig" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "multi-sig-collaborative-custody" && (section.heading.includes("17.1") || sectionIdx === 2) ? (
+                <Chapter17InteractiveLesson module="mofn_quorum_simulator" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "multi-sig-collaborative-custody" && (section.heading.includes("17.2") || sectionIdx === 3) ? (
+                <Chapter17InteractiveLesson module="operational_playbook_workbench" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
