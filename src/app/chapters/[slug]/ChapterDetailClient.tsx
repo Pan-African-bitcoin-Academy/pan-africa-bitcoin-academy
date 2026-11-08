@@ -249,6 +249,18 @@ const Chapter18InteractiveLesson = dynamic(
   }
 );
 
+const Chapter19InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter19InteractiveLesson").then((module) => module.Chapter19InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 19 consolidation activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -2025,6 +2037,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "intro-to-bitcoin-script-optional-track" && (section.heading.includes("18.3") || sectionIdx === 4) ? (
                 <Chapter18InteractiveLesson module="transaction_lifecycle_flow" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "utxo-consolidation-privacy-risks" && (section.heading.includes("19.0") || sectionIdx === 1) ? (
+                <Chapter19InteractiveLesson module="mempool_fee_timing_analyzer" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "utxo-consolidation-privacy-risks" && (section.heading.includes("19.1") || sectionIdx === 2) ? (
+                <Chapter19InteractiveLesson module="privacy_cluster_heuristics" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "utxo-consolidation-privacy-risks" && (section.heading.includes("19.2") || sectionIdx === 3) ? (
+                <Chapter19InteractiveLesson module="strategic_spend_planner" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
