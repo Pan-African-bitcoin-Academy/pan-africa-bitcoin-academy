@@ -165,6 +165,18 @@ const Chapter11InteractiveLesson = dynamic(
   }
 );
 
+const Chapter12InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter12InteractiveLesson").then((module) => module.Chapter12InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 12 learning activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1863,6 +1875,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "hardware-signers" && sectionIdx === 3 ? (
                 <Chapter11InteractiveLesson module="psbt_signing_pipeline" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 1 ? (
+                <Chapter12InteractiveLesson module="block_explorer_lab" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 2 ? (
+                <Chapter12InteractiveLesson module="merkle_proof_visualizer" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 3 ? (
+                <Chapter12InteractiveLesson module="node_validator_sandbox" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 4 ? (
+                <Chapter12InteractiveLesson module="node_sync_calculator" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
