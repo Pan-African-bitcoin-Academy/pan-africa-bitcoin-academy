@@ -261,6 +261,18 @@ const Chapter19InteractiveLesson = dynamic(
   }
 );
 
+const Chapter20InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter20InteractiveLesson").then((module) => module.Chapter20InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 20 philosophy activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -2046,6 +2058,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "utxo-consolidation-privacy-risks" && (section.heading.includes("19.2") || sectionIdx === 3) ? (
                 <Chapter19InteractiveLesson module="strategic_spend_planner" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "why-bitcoin-philosophy-adoption" && (section.heading.includes("20.0") || sectionIdx === 1) ? (
+                <Chapter20InteractiveLesson module="monetary_frameworks_spectrum" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "why-bitcoin-philosophy-adoption" && (section.heading.includes("20.1") || sectionIdx === 2) ? (
+                <Chapter20InteractiveLesson module="protocol_vs_asset_lens" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "why-bitcoin-philosophy-adoption" && (section.heading.includes("20.2") || sectionIdx === 3) ? (
+                <Chapter20InteractiveLesson module="trust_minimized_beneficiaries_map" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
