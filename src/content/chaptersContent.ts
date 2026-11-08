@@ -1806,13 +1806,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Use Tor or a VPN when running a node to protect your privacy. Consider a dedicated device or VPS for better isolation.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/node-stack.svg",
-            alt: "Diagram showing Bitcoin Core + Lightning node setup",
-            caption: "Bitcoin Core + Lightning enables full sovereignty",
-          },
-        ],
       },
       {
         heading: "16.1 Opening and Closing Lightning Channels (Multi-Sig, Routing, Liquidity)",
@@ -1824,13 +1817,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "note",
             content: "Lightning channels lock funds in a 2-of-2 multi-sig. You need both inbound and outbound liquidity to use channels effectively.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/lightning-channel-open.svg",
-            alt: "Diagram showing Lightning channel opening process",
-            caption: "Opening a Lightning channel locks funds in multi-sig",
           },
         ],
       },

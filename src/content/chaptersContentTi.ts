@@ -549,13 +549,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "ንብሕትውናኻ ንምሕላው ኖድ ክትሰርሕ ከለኻ Tor ወይ VPN ተጠቐም። ንዝሓሸ ተነጽሎ ውፉይ መሳርሒ ወይ ቪፒኤስ ኣብ ግምት ኣእቱ።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/node-stack.png",
-            alt: "Diagram showing Bitcoin Core + Lightning node setup",
-            caption: "ቢትኮይን ኮር + ላይትኒንግ ምሉእ ልኡላውነት የኽእል",
-          },
-        ],
       },
       {
         heading: "16.1 ምኽፋትን ምዕጻውን ቻነላት ላይትኒንግ (Multi-Sig, Routing, Liquidity)",
@@ -567,13 +560,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "note",
             content: "ላይትኒንግ ቻነላት ገንዘብ ኣብ 2-of-2 multi-sig ይዓጽዉ። ቻነላት ብኣድማዒ መንገዲ ንምጥቃም ክልቲኡ ዝኣቱን ዝወጽእን ፈሳሲ የድልየካ።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/lightning-channel-open.png",
-            alt: "Diagram showing Lightning channel opening process",
-            caption: "Lightning channel ምኽፋት ገንዘብ ኣብ multi-sig ይዓጽዎ።",
           },
         ],
       },

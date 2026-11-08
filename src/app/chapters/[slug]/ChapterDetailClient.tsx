@@ -213,6 +213,18 @@ const Chapter15InteractiveLesson = dynamic(
   }
 );
 
+const Chapter16InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter16InteractiveLesson").then((module) => module.Chapter16InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 16 node activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1959,6 +1971,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "layer-2-sidechains-in-daily-life" && (section.heading.includes("15.3") || sectionIdx === 4) ? (
                 <Chapter15InteractiveLesson module="circular_economy_explorer" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "full-node-opening-a-lightning-channel" && (section.heading.includes("16.0") || sectionIdx === 1) ? (
+                <Chapter16InteractiveLesson module="node_stack_architect" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "full-node-opening-a-lightning-channel" && (section.heading.includes("16.1") || sectionIdx === 2) ? (
+                <Chapter16InteractiveLesson module="channel_lifecycle_workbench" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "full-node-opening-a-lightning-channel" && (section.heading.includes("16.2") || sectionIdx === 3) ? (
+                <Chapter16InteractiveLesson module="watchtower_penalty_simulator" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
