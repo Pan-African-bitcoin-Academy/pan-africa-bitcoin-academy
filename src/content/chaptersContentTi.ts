@@ -343,13 +343,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "ክብደት ኣብ ነፍሲ ወከፍ 2016 ብሎክታት ይስተኻኸል፣ ~10 ደቓይቕ ዝኸውን ናይ ብሎክ ግዜታት ንምዕቃብ፣ ለውጢ ኣብ ሓይሊ ዕደና ብዘየገድስ።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/difficulty-adjustment.png",
-            alt: "Chart showing Bitcoin difficulty adjustment over time",
-            caption: "ክብደት ናይ 10 ደቓይቕ ናይ ብሎክ ግዜ ንምዕቃብ ብኣውቶማቲክ ይስተኻኸል",
-          },
-        ],
       },
       {
         heading: "14.1 ፑል ዕደናን ሓደጋ ማእኸላይነትን (ስትራተም፣ ሞዴላት ክፍሊት፣ ሳንሱርሺፕ)",
@@ -362,13 +355,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "warning",
             content: "ዓበይቲ ናይ ዕደና ፑል ንትራንስክሽን ሳንሱር ክገብሩ ወይ ንፖሊሲ ኔትወርክ ክጸልዉ ይኽእሉ እዮም። ምትእኽኻብ ፑል ምክትታልን ንኣሽቱ ፑል ምድጋፍ ኣብ ግምት ምእታውን።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/mining-pool.png",
-            alt: "Diagram showing multiple miners connecting to a mining pool",
-            caption: "ናይ ዕደና ፑል ሓይሊ ሃሺንግ ኣወሃሂዶም ሽልማት ይካፈሉ።",
           },
         ],
       },
@@ -384,13 +370,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "ሽልማት ብሎክ እናነከየ ምስ ከደ፡ ድሕነት መርበብ ንምዕቃብ ክፍሊት ትራንዛክሽን ክዓቢ ኣለዎ። ጥዑይ ዕዳጋ ክፍሊት ንነዊሕ እዋን ዘላቕነት ቢትኮይን ኣገዳሲ እዩ።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/security-budget.png",
-            alt: "Chart showing the transition from block rewards to transaction fees over time",
-            caption: "ናይ ጸጥታ ባጀት: ካብ ሽልማት ብሎክ ናብ ክፍሊት ትራንዛክሽን ምስ ኣቢሉ",
-          },
-        ],
       },
       {
         heading: "14.3 ASIC ቀረብ ሰንሰለታትን ጂኦፖለቲካዊ ሓደጋታትን",
@@ -402,13 +381,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "warning",
             content: "ምትእኽኻብ ቀረብ ሰንሰለት ASICን ምትእኽኻብ ጂኦግራፍያዊ ዕደናን ክህልዉ ዝኽእሉ ሓደጋታት ይፈጥሩ። ንመርበብ ጽዓት ምብዛሕ ኣገዳሲ እዩ።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/asic.png",
-            alt: "Image of ASIC mining hardware",
-            caption: "ASIC ሃርድዌር: ፍሉይ ንዕደና ቢትኮይን ዝተዃነ፣ ግን ዝተዋህለለ ቀረብ ሰንሰለት ዘለዎ",
           },
         ],
       },

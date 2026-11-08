@@ -189,6 +189,18 @@ const Chapter13InteractiveLesson = dynamic(
   }
 );
 
+const Chapter14InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter14InteractiveLesson").then((module) => module.Chapter14InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 14 mining activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1911,6 +1923,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "proof-of-work-and-block-rewards" && (section.heading.includes("13.3") || sectionIdx === 4) ? (
                 <Chapter13InteractiveLesson module="subsidy_timeline_2140" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "mining-in-practice" && (section.heading.includes("14.0") || sectionIdx === 1) ? (
+                <Chapter14InteractiveLesson module="mining_cockpit" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "mining-in-practice" && (section.heading.includes("14.1") || sectionIdx === 2) ? (
+                <Chapter14InteractiveLesson module="mining_pool_simulator" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "mining-in-practice" && (section.heading.includes("14.2") || sectionIdx === 3) ? (
+                <Chapter14InteractiveLesson module="security_budget_analyzer" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "mining-in-practice" && (section.heading.includes("14.3") || sectionIdx === 4) ? (
+                <Chapter14InteractiveLesson module="asic_geopolitics_map" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );

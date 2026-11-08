@@ -1595,13 +1595,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Difficulty adjusts every 2016 blocks to maintain ~10-minute block times, regardless of mining power changes.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/difficulty-adjustment.svg",
-            alt: "Chart showing Bitcoin difficulty adjustment over time",
-            caption: "Difficulty automatically adjusts to maintain 10-minute block times",
-          },
-        ],
       },
       {
         heading: "14.1 Mining Pools and Centralization Risk (Stratum, Payout Models, Censorship)",
@@ -1614,13 +1607,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "warning",
             content: "Large mining pools could potentially censor transactions or influence network policy. Monitor pool concentration and consider supporting smaller pools.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/mining-pools.svg",
-            alt: "Diagram showing how mining pools combine hashing power",
-            caption: "Mining pools combine hashing power and share rewards",
           },
         ],
       },
