@@ -177,6 +177,18 @@ const Chapter12InteractiveLesson = dynamic(
   }
 );
 
+const Chapter13InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter13InteractiveLesson").then((module) => module.Chapter13InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 13 visual representations...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1887,6 +1899,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "verify-for-yourself-block-explorers-nodes" && (section.heading.includes("12.3") || sectionIdx === 4) ? (
                 <Chapter12InteractiveLesson module="node_sync_calculator" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "proof-of-work-and-block-rewards" && (section.heading.includes("13.0") || sectionIdx === 1) ? (
+                <Chapter13InteractiveLesson module="pow_asymmetry" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "proof-of-work-and-block-rewards" && (section.heading.includes("13.1") || sectionIdx === 2) ? (
+                <Chapter13InteractiveLesson module="coinbase_reward_anatomy" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "proof-of-work-and-block-rewards" && (section.heading.includes("13.2") || sectionIdx === 3) ? (
+                <Chapter13InteractiveLesson module="halving_schedule_curve" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "proof-of-work-and-block-rewards" && (section.heading.includes("13.3") || sectionIdx === 4) ? (
+                <Chapter13InteractiveLesson module="subsidy_timeline_2140" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );

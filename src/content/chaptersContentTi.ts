@@ -237,13 +237,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "መርትዖ ስራሕ ንመጥቃዕቲ ብቑጠባ ዘይርትዓዊ ይገብሮ። ናይ ምትላል ብሎክ ንምፍጣር ዝወጽእ ወጻኢታት ካብ ዝኾነ ክረኽቦ ዝኽእል መኽሰብ ኣዝዩ ዝዛይድ እዩ።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/pow.jpeg",
-            alt: "Diagram showing miners solving cryptographic puzzles to create blocks",
-            caption: "መርትዖ ስራሕ ክቡር ሓይልን ግን ከኣ ቀሊል ምርግጋጽ ዝሓትት እዩ።",
-          },
-        ],
       },
       {
         heading: "13.1 ዓዳንቲን ሽልማት ብሎክን (ሓድሽ ሳንቲም + ክፍሊት)",
@@ -255,13 +248,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "tip",
             content: "ሽልማት ብሎክ (ኣብዚ እዋን 3.125 ቢቲሲ) ተወሲኹዎ ክፍሊት ትራንዛክሽን ንዓዳንቲ ነቲ መርበብ ብቕንዕና ንኽውሕስዎ የተባብዕ።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/miners.jpeg",
-            alt: "Diagram showing block reward and fees going to miners",
-            caption: "ዓዳንቲ ሽልማት ብሎክን ክፍሊት ትራንዛክሽንን ይረኽቡ",
           },
         ],
       },
@@ -279,13 +265,6 @@ export const chaptersContentTi: ChapterContent[] = [
           
         ],
         
-        images: [
-          {
-            src: "/images/book_images/halving.png",
-            alt: "Bitcoin halving schedule and declining block reward",
-            caption: "ፍርቂ ምጉዳል መደብ ስራሕን ቀዋሚ ቀረብን — ኣብ ነፍሲ ወከፍ ~210,000 ብሎክ ዝንኪ ዝቕባበ",
-          },
-        ],
       },
       {
         heading: "13.3 ምዝዛም ክፍሊት (2140 ናይ ግዜ መስመር፤ ዕዳጋ ክፍሊት)",
@@ -297,13 +276,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "note",
             content: "ድሕሪ 2140 ዓዳንቲ ምሉእ ብምሉእ ኣብ ክፍሊት ትራንዛክሽን ክምርኮሱ እዮም። ጥዑይ ዕዳጋ ክፍሊት ንነዊሕ እዋን ዝፀንሕ ድሕንነት ኔትወርክ ኣገዳሲ እዩ።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/subsidy.jpeg",
-            alt: "Timeline showing the end of the block subsidy around 2140",
-            caption: "መወዳእታ ክፍሊት: ብ ~2140 ዓዳንቲ ምሉእ ብምሉእ ኣብ ክፍሊት ትራንዛክሽን ይምርኮሱ፣ ብጥዑይ ዕዳጋ ክፍሊት ዝድገፍ።",
           },
         ],
       },

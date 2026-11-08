@@ -1490,13 +1490,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Proof of Work makes attacks economically irrational. The cost of creating a fraudulent block far exceeds any potential gain.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/pow.jpeg",
-            alt: "Diagram showing miners solving cryptographic puzzles to create blocks",
-            caption: "Proof of Work requires expensive computation but easy verification",
-          },
-        ],
       },
       {
         heading: "13.1 Miners and Block Rewards (New Coins + Fees)",
@@ -1508,13 +1501,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "tip",
             content: "Block rewards (currently 3.125 BTC) plus transaction fees incentivize miners to secure the network honestly.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/miners.jpeg",
-            alt: "Diagram showing block reward and fees going to miners",
-            caption: "Miners receive block rewards and transaction fees",
           },
         ],
       },
@@ -1530,13 +1516,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Bitcoin's supply is fixed at 21 million coins. The halving schedule ensures predictable, declining inflation until 2140.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/halving.png",
-            alt: "Bitcoin halving schedule and declining block reward",
-            caption: "Halving schedule and fixed supply — declining inflation every ~210,000 blocks",
-          },
-        ],
       },
       {
         heading: "13.3 End of Subsidy (2140 Timeline; Fee Market)",
@@ -1548,13 +1527,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "note",
             content: "After 2140, miners will rely entirely on transaction fees. A healthy fee market is essential for long-term network security.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/subsidy.jpeg",
-            alt: "Timeline showing the end of the block subsidy around 2140",
-            caption: "End of subsidy: by ~2140 miners rely entirely on transaction fees, supported by a healthy fee market.",
           },
         ],
       },
