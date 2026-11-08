@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Code2,
   Clock,
@@ -21,6 +21,11 @@ import {
   Sparkles,
   FileCode,
   Info,
+  FastForward,
+  Hourglass,
+  Calendar,
+  Blocks,
+  XCircle,
 } from "lucide-react";
 
 interface Props {
@@ -30,14 +35,14 @@ interface Props {
 
 export function Chapter18InteractiveLesson({ module, isTi = false }: Props) {
   // ==========================================
-  // MODULE 1: SCRIPT TYPES EVOLUTION & STACK MACHINE
+  // MODULE 1: SCRIPT TYPES EVOLUTION
   // ==========================================
   if (module === "script_types_evolution") {
     return <ScriptTypesEvolutionSection isTi={isTi} />;
   }
 
   // ==========================================
-  // MODULE 2: TIMELOCKS & POLICY MATRIX (CLTV / CSV)
+  // MODULE 2: TIMELOCKS & LIVE INTERACTIVE SIMULATOR (CLTV / CSV)
   // ==========================================
   if (module === "timelock_policies_matrix") {
     return <TimelockPoliciesSection isTi={isTi} />;
@@ -61,11 +66,10 @@ export function Chapter18InteractiveLesson({ module, isTi = false }: Props) {
 }
 
 // -------------------------------------------------------------
-// MODULE 1: Script Types Evolution & Stack Machine Visualizer
+// MODULE 1: Script Types Evolution (Clean Comparison Matrix)
 // -------------------------------------------------------------
 function ScriptTypesEvolutionSection({ isTi }: { isTi: boolean }) {
   const [selectedType, setSelectedType] = useState<"p2pkh" | "p2sh" | "p2wpkh" | "p2tr">("p2wpkh");
-  const [stackStep, setStackStep] = useState(0);
 
   const scriptTypes = {
     p2pkh: {
@@ -75,11 +79,11 @@ function ScriptTypesEvolutionSection({ isTi }: { isTi: boolean }) {
       prefix: "1...",
       vbytes: "148 vB (avg 1-in-2-out)",
       witnessDiscount: "None (0%)",
-      privacy: isTi ? "ትሑት (ህዝባዊ ቁልፊ ይጋላጽ)" : "Low (Pubkey exposed at spend)",
+      privacy: isTi ? "ትሑት (ህዝባዊ ቁልፊ ኣብ ወጻኢ ይጋላጽ)" : "Low (Pubkey exposed at spend)",
       scriptPubKey: "OP_DUP OP_HASH160 <PubKeyHash> OP_EQUALVERIFY OP_CHECKSIG",
       unlocking: "<Sig> <PubKey>",
       summary: isTi
-        ? "እቲ ቀዳማይ መበቆላዊ ስክሪፕት እዩ። ህዝባዊ ቁልፍን ፊርማን ኣብ ውሽጢ ScriptSig ብሓባር ይለኣኹ፡ እዚ ድማ ናይ ትራንዛክሽን ዓቐንን ክፍሊትን የዕብዮ።"
+        ? "እቲ ቀዳማይ መበቆላዊ ስክሪፕት ቢትኮይን እዩ። ህዝባዊ ቁልፍን ፊርማን ኣብ ውሽጢ ScriptSig ብሓባር ይለኣኹ፡ እዚ ድማ ናይ ትራንዛክሽን ዓቐንን ክፍሊትን የዕብዮ።"
         : "The original Satoshi-era format. Signatures and public keys sit in the ScriptSig payload, occupying full non-discounted block space.",
     },
     p2sh: {
@@ -126,81 +130,6 @@ function ScriptTypesEvolutionSection({ isTi }: { isTi: boolean }) {
     },
   };
 
-  const stackExecutionSteps = [
-    {
-      title: isTi ? "0. ጽሩይ ስታክ (Initial State)" : "0. Initial Clean Stack",
-      opcode: "INIT",
-      stack: [],
-      explanation: isTi
-        ? "እቲ ናይ ቢትኮይን ስክሪፕት ስታክ ማሽን ጥራዩ ይጅምር።"
-        : "The Forth-like virtual stack machine starts completely empty.",
-      badge: "Stack: Empty",
-    },
-    {
-      title: isTi ? "1. ናይ ምኽፋት ዳታ ምእታው (Push Signature)" : "1. Push Signature from ScriptSig",
-      opcode: "<Sig>",
-      stack: ["30450221...<Sig>"],
-      explanation: isTi
-        ? "እቲ ወናኒ ዝፈረሞ ዲጂታል ፊርማ ናብቲ ስታክ ይድርበ።"
-        : "The spending transaction provides the cryptographic signature from the unlocking script.",
-      badge: "PUSH",
-    },
-    {
-      title: isTi ? "2. ህዝባዊ ቁልፊ ምእታው (Push Public Key)" : "2. Push Public Key",
-      opcode: "<PubKey>",
-      stack: ["30450221...<Sig>", "02c38f...<PubKey>"],
-      explanation: isTi
-        ? "እቲ ናይቲ ወናኒ ዝምጥን ህዝባዊ ቁልፊ ናብ ርእሲ እቲ ስታክ ይድርበ።"
-        : "The corresponding public key is placed on top of the signature.",
-      badge: "PUSH",
-    },
-    {
-      title: isTi ? "3. ቁልፊ ምዕጻፍ (OP_DUP)" : "3. Duplicate Top Item (OP_DUP)",
-      opcode: "OP_DUP",
-      stack: ["30450221...<Sig>", "02c38f...<PubKey>", "02c38f...<PubKey>"],
-      explanation: isTi
-        ? "OP_DUP ነቲ ኣብ ርእሲ ዘሎ ህዝባዊ ቁልፊ ብምቕዳሕ ክልተ ግዜ የቐምጦ።"
-        : "Duplicates the top item (PubKey). Now there are two identical public keys on top.",
-      badge: "OP_DUP",
-    },
-    {
-      title: isTi ? "4. ናይ ሃሽ ስሌት (OP_HASH160)" : "4. Hash Top Key (OP_HASH160)",
-      opcode: "OP_HASH160",
-      stack: ["30450221...<Sig>", "02c38f...<PubKey>", "ab841e...<ComputedHash>"],
-      explanation: isTi
-        ? "ነቲ ኣብ ርእሲ ዝነበረ ቁልፊ ብ SHA-256 ድሕሪኡ ብ RIPEMD-160 ሃሽ ይገብሮ።"
-        : "Applies SHA-256 followed by RIPEMD-160 to the top public key, deriving the 20-byte hash.",
-      badge: "HASH160",
-    },
-    {
-      title: isTi ? "5. ትጽቢት ዝግበረሉ ሃሽ ምእታው" : "5. Push Expected PubKeyHash",
-      opcode: "<ExpectedHash>",
-      stack: ["30450221...<Sig>", "02c38f...<PubKey>", "ab841e...<ComputedHash>", "ab841e...<ExpectedHash>"],
-      explanation: isTi
-        ? "እቲ ኣብ መበቆላዊ UTXO ተዓጽዩ ዝነበረ ScriptPubKey ሃሽ ናብ ስታክ ይኣቱ።"
-        : "The destination hash locked inside the UTXO's ScriptPubKey is pushed for comparison.",
-      badge: "PUSH HASH",
-    },
-    {
-      title: isTi ? "6. ሃሽ ምንጽጻር (OP_EQUALVERIFY)" : "6. Compare Hashes (OP_EQUALVERIFY)",
-      opcode: "OP_EQUALVERIFY",
-      stack: ["30450221...<Sig>", "02c38f...<PubKey>"],
-      explanation: isTi
-        ? "ክልቲኦም ሃሻት ማዕረ ምዃኖም የረጋግጽ። ማዕረ እንተኾይኖም ክልቲኦም ይወጹ። ዘይማዕረ እንተኾይኖም እቲ ስክሪፕት ብኡንብኡ ይፈሽል!"
-        : "Checks if ComputedHash == ExpectedHash. If true, both are popped. If false, validation aborts immediately!",
-      badge: "EQUALVERIFY (PASS)",
-    },
-    {
-      title: isTi ? "7. ፊርማ ምርግጋጽ (OP_CHECKSIG)" : "7. Validate Signature (OP_CHECKSIG)",
-      opcode: "OP_CHECKSIG",
-      stack: ["1 (TRUE)"],
-      explanation: isTi
-        ? "እቲ ፊርማ በቲ ህዝባዊ ቁልፍን ብዳታ ትራንዛክሽንን ቅኑዕ ምዃኑ ምስ ተረጋገጸ፡ ኣብ ስታክ 1 (TRUE) ይተርፍ። ትራንዛክሽን ቅቡል ይኸውን!"
-        : "Validates ECDSA/Schnorr signature against public key and transaction digest. Result: [ 1 ]. Valid spend!",
-      badge: "CHECKSIG -> SUCCESS",
-    },
-  ];
-
   return (
     <div className="my-6 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 sm:p-7 shadow-xl">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-4">
@@ -210,19 +139,19 @@ function ScriptTypesEvolutionSection({ isTi }: { isTi: boolean }) {
           </div>
           <div>
             <h3 className="text-base font-bold text-zinc-100 sm:text-lg">
-              {isTi ? "18.0 ዓይነታት ስክሪፕት ቢትኮይንን ናይ ስታክ ማሽን ዋሕዝን" : "18.0 Bitcoin Script Standards & Stack Machine"}
+              {isTi ? "18.0 ዓይነታት ስክሪፕት ቢትኮይን (P2PKH, P2WPKH, P2SH, P2TR)" : "18.0 Bitcoin Script Standards & Locking Types"}
             </h3>
             <p className="text-xs text-zinc-400">
-              {isTi ? "ካብ Legacy ክሳብ Taproot ዘሎ ዕቤት ምስ ስጉምቲ ብስጉምቲ ስታክ ፈተሻ" : "Evolution from Legacy to Taproot with step-by-step stack execution"}
+              {isTi ? "ካብ Legacy ክሳብ Taproot ዘሎ ናይ ክፍሊትን ብሕትውናን ዕቤት" : "Evolution from Legacy to Taproot: virtual size, fee discounts, and privacy trade-offs"}
             </p>
           </div>
         </div>
         <span className="rounded-full border border-orange-500/30 bg-orange-950/40 px-2.5 py-0.5 text-xs font-medium text-orange-300">
-          {isTi ? "ቴክኒካዊ መርመራ" : "Technical Deep Dive"}
+          {isTi ? "ናይ ስክሪፕት ደረጃታት" : "Script Standards"}
         </span>
       </div>
 
-      {/* Part 1: Evolution Comparison Tabs */}
+      {/* Evolution Tabs */}
       <div className="mt-5">
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -259,7 +188,7 @@ function ScriptTypesEvolutionSection({ isTi }: { isTi: boolean }) {
         </div>
 
         {/* Selected Type Specs */}
-        <div className="mt-4 rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-4">
+        <div className="mt-4 rounded-xl border border-zinc-800/80 bg-zinc-900/50 p-4 sm:p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
             <div>
               <span className="text-xs font-mono text-orange-400">{scriptTypes[selectedType].prefix}</span>
@@ -301,175 +230,97 @@ function ScriptTypesEvolutionSection({ isTi }: { isTi: boolean }) {
           </div>
         </div>
       </div>
-
-      {/* Part 2: Interactive Forth Stack Visualizer */}
-      <div className="mt-7 border-t border-zinc-800/80 pt-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <div>
-            <h4 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-              <Workflow className="w-4 h-4 text-orange-400" />
-              {isTi ? "ናይ ቢትኮይን ስታክ ማሽን ኣሰራርሓ (P2PKH Stack Evaluation)" : "Forth Stack Machine Visualizer (P2PKH Evaluation)"}
-            </h4>
-            <p className="text-xs text-zinc-400">
-              {isTi ? "ቢትኮይን ኖዳት ብኸመይ ነቲ ናይ ምዕጻውን ምኽፋትን ስክሪፕት ፈቲሾም ከም ዘጽድቕዎ ተመልከት" : "Watch how full nodes execute script instructions sequentially to validate a spend"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setStackStep((prev) => Math.max(0, prev - 1))}
-              disabled={stackStep === 0}
-              className="px-2.5 py-1 text-xs rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-700 transition"
-            >
-              {isTi ? "ንድሕሪት" : "Prev Step"}
-            </button>
-            <button
-              onClick={() => setStackStep((prev) => Math.min(stackExecutionSteps.length - 1, prev + 1))}
-              disabled={stackStep === stackExecutionSteps.length - 1}
-              className="flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-lg bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed transition"
-            >
-              <Play className="w-3 h-3 fill-current" />
-              {isTi ? "ቀጻሊ ስጉምቲ" : "Next Step"}
-            </button>
-            <button
-              onClick={() => setStackStep(0)}
-              title={isTi ? "ዳግማይ ጀምር" : "Reset Stack"}
-              className="p-1 text-xs rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-300 hover:text-white"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Stack State Canvas */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Left: Execution log */}
-          <div className="lg:col-span-7 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-orange-400">
-                {stackExecutionSteps[stackStep].title}
-              </span>
-              <span className="rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] text-zinc-300">
-                {stackExecutionSteps[stackStep].badge}
-              </span>
-            </div>
-
-            <div className="my-2 rounded bg-zinc-950 p-2.5 font-mono text-xs text-zinc-300 border border-zinc-800/80 flex items-center justify-between">
-              <span className="text-zinc-500">{isTi ? "ሕጂ ዝፍጸም ዘሎ ትእዛዝ፦" : "Current Opcode:"}</span>
-              <span className="text-orange-300 font-bold px-2 py-0.5 bg-orange-950/60 rounded border border-orange-500/30">
-                {stackExecutionSteps[stackStep].opcode}
-              </span>
-            </div>
-
-            <p className="text-xs text-zinc-300 leading-relaxed mt-3">
-              {stackExecutionSteps[stackStep].explanation}
-            </p>
-
-            {/* Stepper Progress Indicator */}
-            <div className="mt-4 flex gap-1.5">
-              {stackExecutionSteps.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setStackStep(idx)}
-                  className={`h-1.5 flex-1 rounded-full transition-all ${
-                    idx === stackStep
-                      ? "bg-orange-500"
-                      : idx < stackStep
-                      ? "bg-orange-900"
-                      : "bg-zinc-800"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Right: Visual Stack representation (Bottom to Top) */}
-          <div className="lg:col-span-5 rounded-xl border border-zinc-800 bg-zinc-950 p-4 flex flex-col justify-end min-h-[220px]">
-            <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2 text-center">
-              {isTi ? "ናይ ስታክ ባይታ (Stack Memory)" : "Stack Memory (LIFO)"}
-            </span>
-
-            <div className="flex flex-col-reverse gap-2 border-b-4 border-orange-500/40 pb-2">
-              {stackExecutionSteps[stackStep].stack.length === 0 ? (
-                <div className="text-center py-8 text-xs text-zinc-600 italic">
-                  {isTi ? "ስታክ ጥራዩ እዩ (Stack is empty)" : "Stack is currently empty"}
-                </div>
-              ) : (
-                stackExecutionSteps[stackStep].stack.map((item, idx) => {
-                  const isTop = idx === stackExecutionSteps[stackStep].stack.length - 1;
-                  return (
-                    <div
-                      key={idx}
-                      className={`rounded-lg px-3 py-2 font-mono text-xs flex items-center justify-between border transition-all ${
-                        isTop
-                          ? "border-orange-500/80 bg-orange-950/40 text-orange-200 shadow-md ring-1 ring-orange-500/30"
-                          : "border-zinc-800 bg-zinc-900 text-zinc-300"
-                      }`}
-                    >
-                      <span className="truncate mr-2">{item}</span>
-                      {isTop && (
-                        <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-orange-500 text-zinc-950 font-bold shrink-0">
-                          TOP
-                        </span>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            <div className="mt-2 text-center text-[10px] text-zinc-500">
-              {isTi ? "ትራንዛክሽን ቅቡል ዝኸውን እቲ ናይ መወዳእታ ስታክ [ 1 / TRUE ] ምስ ዝተርፍ ጥራይ እዩ" : "Execution succeeds when the script terminates with non-zero [ 1 / TRUE ] on top"}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
 
 // -------------------------------------------------------------
-// MODULE 2: Timelocks & Simple Policies (CLTV vs CSV)
+// MODULE 2: Interactive Timelock Simulator (CLTV & CSV Sandbox)
 // -------------------------------------------------------------
 function TimelockPoliciesSection({ isTi }: { isTi: boolean }) {
-  const [activeScenario, setActiveScenario] = useState<"vault" | "inheritance" | "lightning">("vault");
+  // Lock mode: "cltv_height" | "cltv_time" | "csv_relative"
+  const [lockMode, setLockMode] = useState<"cltv_height" | "cltv_time" | "csv_relative">("cltv_height");
+  
+  // Transaction State
+  const [spendAttemptError, setSpendAttemptError] = useState<string | null>(null);
+  const [spendSuccess, setSpendSuccess] = useState<boolean>(false);
 
-  const scenarios = {
-    vault: {
-      title: isTi ? "1. ናይ ቮልት ድሕነት (Anti-Theft Vault Delay)" : "1. Anti-Theft Vault Delay",
-      type: "Relative Timelock (CSV)",
-      opcode: "OP_CHECKSEQUENCEVERIFY",
-      rule: isTi
-        ? "ናይ ዕለታዊ ወጻኢ ብ 2 ቁልፍታት ብኡንብኡ ይፍቀድ፤ ወይ ድማ 1000 ብሎካት (7 መዓልቲ) CSV ምስ ሓለፈ ብመተካእታ ቁልፊ ይድሕን።"
-        : "2-of-2 keys can spend immediately. A single cold key can spend ONLY after 1,000 blocks (~7 days) CSV delay.",
-      attackDefense: isTi
-        ? "ስራቒ ነቲ ሓደ ቁልፊ እንተሰሪቕዎ፡ 1000 ብሎካት ክጽበ ይግደድ። ኣብዚ ናይ ምድንጓይ ግዜ እቲ ናይ ሓቂ ወናኒ ነቲ ገንዘብ ናብ ውሑስ ቦታ የሕልፎ!"
-        : "If an attacker compromises the hot key, they are trapped in a 7-day on-chain waiting period. The owner detects the pending spend and sweeps funds to safety using their emergency key!",
-      codeSnippet: `OP_IF\n  # Instant multi-sig\n  2 <KeyA> <KeyB> 2 OP_CHECKMULTISIG\nOP_ELSE\n  # Relative delay recovery\n  "1000" OP_CHECKSEQUENCEVERIFY OP_DROP\n  <ColdBackupKey> OP_CHECKSIG\nOP_ENDIF`,
-    },
-    inheritance: {
-      title: isTi ? "2. ናይ ውርሻ ግዜያዊ ካፕሱል (Inheritance Time-Capsule)" : "2. Inheritance Time-Capsule",
-      type: "Absolute Timelock (CLTV)",
-      opcode: "OP_CHECKLOCKTIMEVERIFY",
-      rule: isTi
-        ? "እቲ ወናኒ ዝኾነ ግዜ ከውጽእ ይኽእል። እቲ ወራሲ ግን ድሕሪ ዕለት 1 ጥሪ 2030 (CLTV) ጥራይ ገንዘብ ከንቀሳቕስ ይፍቀደሉ።"
-        : "Owner spends anytime with Key 1. Designated heir can spend with Key 2 ONLY after Unix timestamp Jan 1, 2030 (CLTV).",
-      attackDefense: isTi
-        ? "እቲ ወናኒ ብህይወት ከሎ ወራስቲ ገንዘብ ከውጽኡ ኣይኽእሉን። ወናኒ ዓቕሚ እንተስኢኑ ወይ እንተሞተ፡ ድሕሪ እቲ ዕለት እቲ ገንዘብ ብዘይ ሳልሳይ ወገን ይኽፈት።"
-        : "Heirs cannot touch funds before the target date. If the owner stays healthy, they refresh the UTXO to a future date. If incapacitated, the lock naturally expires.",
-      codeSnippet: `OP_IF\n  <OwnerKey> OP_CHECKSIG\nOP_ELSE\n  "2030-01-01" OP_CHECKLOCKTIMEVERIFY OP_DROP\n  <HeirKey> OP_CHECKSIG\nOP_ENDIF`,
-    },
-    lightning: {
-      title: isTi ? "3. ናይ ላይትኒንግ ቅጽዓት ቻነል (Lightning Revocation)" : "3. Lightning Revocation Window",
-      type: "Relative CSV Punishment",
-      opcode: "OP_CHECKSEQUENCEVERIFY",
-      rule: isTi
-        ? "ሓደ ወገን ብሓይሊ ቻነል እንተዓጽዩ፡ ገንዘቡ ንምውሳድ 144 ብሎካት CSV ክጽበ ኣለዎ። ኣብዚ ግዜ እቲ ካልኣይ ወገን ምግርጫው ከይህሉ ቅጽዓት ይወስድ።"
-        : "Unilateral channel close enforces a 144-block CSV delay on the broadcaster. During this window, the counterparty can claim a justice punishment if old state was broadcast.",
-      attackDefense: isTi
-        ? "ዝኾነ ዝሓለፈ ናይ ሓሶት ባላንስ ከጽድቕ ዝፈተነ ሰብ፡ ኣብቲ 144 ብሎካት ናይ መቕጻዕቲ ስክሪፕት ብምጥቃም ምሉእ ገንዘቡ ይምንጠል (ምግርጫው ይቕጻዕ)!"
-        : "Anyone attempting to broadcast an old channel balance is trapped in the CSV window, allowing the honest peer/watchtower to claim 100% of the channel funds as a penalty!",
-      codeSnippet: `OP_IF\n  # Revocation penalty path (Instant)\n  <RevocationPubKey> OP_CHECKSIG\nOP_ELSE\n  # Force-close delay path\n  "144" OP_CHECKSEQUENCEVERIFY OP_DROP\n  <DelayedPubKey> OP_CHECKSIG\nOP_ENDIF`,
-    },
+  // CLTV Height State: Current block height vs Target unlock height
+  const baseHeight = 890000;
+  const [currentHeight, setCurrentHeight] = useState<number>(baseHeight);
+  const targetUnlockHeight = baseHeight + 5; // Unlocks at 890,005
+
+  // CLTV Time State: Real-time countdown in seconds
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(60);
+  const [timerRunning, setTimerRunning] = useState<boolean>(false);
+
+  // CSV Relative State: Blocks since confirmation
+  const requiredCsvBlocks = 4;
+  const [csvConfirmations, setCsvConfirmations] = useState<number>(0);
+
+  // Countdown timer effect for CLTV Time
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timerRunning && secondsRemaining > 0) {
+      interval = setInterval(() => {
+        setSecondsRemaining((prev) => {
+          if (prev <= 1) {
+            setTimerRunning(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timerRunning, secondsRemaining]);
+
+  // Reset simulator
+  const handleReset = () => {
+    setCurrentHeight(baseHeight);
+    setSecondsRemaining(60);
+    setTimerRunning(false);
+    setCsvConfirmations(0);
+    setSpendAttemptError(null);
+    setSpendSuccess(false);
+  };
+
+  // Determine if unlocked based on mode
+  const isUnlocked =
+    lockMode === "cltv_height"
+      ? currentHeight >= targetUnlockHeight
+      : lockMode === "cltv_time"
+      ? secondsRemaining === 0
+      : csvConfirmations >= requiredCsvBlocks;
+
+  // Handle attempt to spend
+  const handleAttemptSpend = () => {
+    setSpendAttemptError(null);
+    if (!isUnlocked) {
+      if (lockMode === "cltv_height") {
+        setSpendAttemptError(
+          isTi
+            ? `🚫 ናይ ቢትኮይን ስምምዕ ሕጊ ጌጋ (Consensus Error): OP_CHECKLOCKTIMEVERIFY ፈሺሉ! ሕጂ ዘሎ ናይ ብሎክ ቁመት ${currentHeight.toLocaleString()} ካብቲ ዝድለ ቁመት ${targetUnlockHeight.toLocaleString()} ኣንኢሱ ይርከብ። እቲ ሳንቲም ብሒሳብ ተዓጽዩ ኣሎ!`
+            : `🚫 Consensus Rejection: OP_CHECKLOCKTIMEVERIFY failed! Current block height (${currentHeight.toLocaleString()}) is below target locktime (${targetUnlockHeight.toLocaleString()}). Full nodes reject this spend as invalid!`
+        );
+      } else if (lockMode === "cltv_time") {
+        setSpendAttemptError(
+          isTi
+            ? `🚫 ናይ ቢትኮይን ስምምዕ ሕጊ ጌጋ: OP_CHECKLOCKTIMEVERIFY ፈሺሉ! እቲ ናይ ግዜ ቆጸራ ገና ${secondsRemaining} ካልኢታት ይተርፎ ኣሎ። ቅድሚ እቲ ሰዓት ምብጻሑ ዋላ ሓደ ሰብ ነዚ ገንዘብ ከውጽኦ ኣይክእልን!`
+            : `🚫 Consensus Rejection: OP_CHECKLOCKTIMEVERIFY timestamp check failed! Target Unix time not yet reached (${secondsRemaining}s remaining). Coins are strictly frozen by consensus code!`
+        );
+      } else {
+        setSpendAttemptError(
+          isTi
+            ? `🚫 ናይ ቢትኮይን ስምምዕ ሕጊ ጌጋ: OP_CHECKSEQUENCEVERIFY ፈሺሉ! ካብ ምምስራቱ ዝሓለፈ ብሎካት ${csvConfirmations}/${requiredCsvBlocks} ጥራይ እዩ። ገና ${requiredCsvBlocks - csvConfirmations} ተወሳኺ ብሎካት ምጽባይ የድሊ!`
+            : `🚫 Consensus Rejection: OP_CHECKSEQUENCEVERIFY relative age check failed! UTXO has only ${csvConfirmations}/${requiredCsvBlocks} confirmations. Must wait ${requiredCsvBlocks - csvConfirmations} more blocks!`
+        );
+      }
+      setSpendSuccess(false);
+    } else {
+      setSpendAttemptError(null);
+      setSpendSuccess(true);
+    }
   };
 
   return (
@@ -481,123 +332,332 @@ function TimelockPoliciesSection({ isTi }: { isTi: boolean }) {
           </div>
           <div>
             <h3 className="text-base font-bold text-zinc-100 sm:text-lg">
-              {isTi ? "18.1 ናይ ግዜ ምዕጻውን ፖሊሲታትን (CLTV vs CSV)" : "18.1 Timelocks & Smart Policy Architectures"}
+              {isTi ? "18.1 ናይ ግዜ ምዕጻው ፈተነ (CLTV vs CSV Interactive Timelock Sandbox)" : "18.1 Timelock Simulator: Send & Countdown (CLTV vs CSV)"}
             </h3>
             <p className="text-xs text-zinc-400">
-              {isTi ? "ፍጹም (Absolute) vs ተዛማዲ (Relative) ናይ ግዜ ምዕጻው ኣብ ቮልታትን ላይትኒንግን" : "Absolute vs Relative timelock enforcement in vaults and Layer 2 protocols"}
+              {isTi ? "ቢትኮይን ብናይ ብሎክ ቁመት ወይ ግዜ ዓጽኻ ብቐጥታ ምስቲ ቆጸራ ፈትን" : "Lock bitcoin with absolute block height, calendar date, or relative confirmations with live countdown"}
             </p>
           </div>
         </div>
+
+        <button
+          onClick={handleReset}
+          className="flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white transition"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          {isTi ? "ዳግማይ ጀምር" : "Reset Simulator"}
+        </button>
       </div>
 
-      {/* Comparison Overview */}
-      <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-blue-300">
-              {isTi ? "ፍጹም ናይ ግዜ ምዕጻው (Absolute Timelocks)" : "Absolute Timelocks"}
-            </h4>
-            <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-blue-900/50 text-blue-200">
-              CLTV & nLockTime
-            </span>
-          </div>
-          <p className="mt-2 text-xs text-zinc-300 leading-relaxed">
-            {isTi
-              ? "ኣብ ፍጹም ናይ ዓውደ-ኣዋርሕ ዕለት (Unix Timestamp) ወይ ፍሉይ ናይ ብሎክ ቁጽሪ (Block Height) ዝምርኮስ እዩ። ቅድሚ እቲ ፍሉይ ግዜ ምብጻሑ እቲ ሳንቲም ብፍጹም ክውዕል ኣይክእልን።"
-              : "Locked until a specific calendar date (Unix epoch) or precise block height. The UTXO cannot be spent under any circumstances before that exact block or second occurs."}
-          </p>
-          <div className="mt-3 font-mono text-[11px] text-blue-300/90 bg-blue-950/60 p-2 rounded border border-blue-800/40">
-            OP_CHECKLOCKTIMEVERIFY (BIP65)
-          </div>
-        </div>
+      {/* Mode Selector */}
+      <div className="mt-5">
+        <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 block mb-2">
+          {isTi ? "ዓይነት ናይ ግዜ ምዕጻው ምረጽ፦" : "Choose Timelock Mechanism to Simulate:"}
+        </span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button
+            onClick={() => {
+              setLockMode("cltv_height");
+              handleReset();
+            }}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              lockMode === "cltv_height"
+                ? "border-orange-500 bg-orange-950/40 text-orange-200 ring-1 ring-orange-500/40 shadow-md"
+                : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-bold">CLTV: Block Height</span>
+              <Blocks className="w-4 h-4 text-orange-400" />
+            </div>
+            <p className="text-[11px] opacity-80">
+              {isTi ? "ፍጹም ናይ ብሎክ ቁመት (Lock until Block #)" : "Absolute lock until specific block height"}
+            </p>
+          </button>
 
-        <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-amber-300">
-              {isTi ? "ተዛማዲ ናይ ግዜ ምዕጻው (Relative Timelocks)" : "Relative Timelocks"}
-            </h4>
-            <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-amber-900/50 text-amber-200">
-              CSV & nSequence
-            </span>
-          </div>
-          <p className="mt-2 text-xs text-zinc-300 leading-relaxed">
-            {isTi
-              ? "እቲ ወላዲ UTXO ኣብ ብሎክቼይን ካብ ዝተረጋገጸሉ ግዜ ጀሚሩ ብዝቑጸር ብሎካት ይዕጸው። ንኣብነት፡ 'ካብ ዝተረጋገጸሉ ድሕሪ 144 ብሎካት (24 ሰዓት) ጥራይ ይፈቐድ'።"
-              : "Relative to when the parent UTXO was confirmed on-chain. Example: 'Only spendable after 144 blocks (~24 hours) have elapsed since its confirmation transaction'."}
-          </p>
-          <div className="mt-3 font-mono text-[11px] text-amber-300/90 bg-amber-950/60 p-2 rounded border border-amber-800/40">
-            OP_CHECKSEQUENCEVERIFY (BIP112)
-          </div>
+          <button
+            onClick={() => {
+              setLockMode("cltv_time");
+              handleReset();
+            }}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              lockMode === "cltv_time"
+                ? "border-blue-500 bg-blue-950/40 text-blue-200 ring-1 ring-blue-500/40 shadow-md"
+                : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-bold">CLTV: Countdown Timer</span>
+              <Calendar className="w-4 h-4 text-blue-400" />
+            </div>
+            <p className="text-[11px] opacity-80">
+              {isTi ? "ፍጹም ናይ ግዜ ቆጸራ (Lock until Date/Time)" : "Absolute lock until Unix timestamp / date"}
+            </p>
+          </button>
+
+          <button
+            onClick={() => {
+              setLockMode("csv_relative");
+              handleReset();
+            }}
+            className={`p-3 rounded-xl border text-left transition-all ${
+              lockMode === "csv_relative"
+                ? "border-amber-500 bg-amber-950/40 text-amber-200 ring-1 ring-amber-500/40 shadow-md"
+                : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-bold">CSV: Relative Blocks</span>
+              <Hourglass className="w-4 h-4 text-amber-400" />
+            </div>
+            <p className="text-[11px] opacity-80">
+              {isTi ? "ተዛማዲ ካብ ዝተረጋገጸሉ (Relative delay since spendable)" : "Relative delay after UTXO confirmation"}
+            </p>
+          </button>
         </div>
       </div>
 
-      {/* Interactive Policy Scenarios */}
-      <div className="mt-6 border-t border-zinc-800/80 pt-5">
-        <div className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
-          {isTi ? "ናይ ሓቂ ዓለም ናይ ፖሊሲ ኣብነታት መርምር፦" : "Explore Real-World Script Policies:"}
+      {/* Vault Status Cockpit */}
+      <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+          <div className="flex items-center gap-3">
+            <div className={`flex h-11 w-11 items-center justify-center rounded-xl border ${
+              isUnlocked
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                : "bg-rose-500/10 border-rose-500/30 text-rose-400"
+            }`}>
+              {isUnlocked ? <Unlock className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm sm:text-base font-bold text-zinc-100">
+                  UTXO: 0.05000000 BTC
+                </span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                  isUnlocked ? "bg-emerald-950 text-emerald-300 border border-emerald-800" : "bg-rose-950 text-rose-300 border border-rose-800"
+                }`}>
+                  {isUnlocked
+                    ? isTi ? "ተኸፊቱ (SPENDABLE)" : "UNLOCKED (SPENDABLE)"
+                    : isTi ? "ተዓጽዩ (FROZEN BY SCRIPT)" : "LOCKED (FROZEN BY SCRIPT)"}
+                </span>
+              </div>
+              <p className="text-xs text-zinc-400 font-mono mt-0.5">
+                Script: {lockMode.startsWith("cltv") ? "OP_CHECKLOCKTIMEVERIFY (CLTV)" : "OP_CHECKSEQUENCEVERIFY (CSV)"}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {(["vault", "inheritance", "lightning"] as const).map((key) => {
-            const sc = scenarios[key];
-            const isSelected = activeScenario === key;
-            return (
+        {/* Dynamic Countdown / Progress Display */}
+        <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Left: Progression & Live Action */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 flex flex-col justify-between">
+            {lockMode === "cltv_height" && (
+              <div>
+                <span className="text-xs font-semibold text-zinc-400 block mb-2">
+                  {isTi ? "ናይ ብሎክ ቁመት ምዕጻው (CLTV Block Height):" : "Block Height Lock Status:"}
+                </span>
+                <div className="flex items-baseline justify-between font-mono my-2">
+                  <div className="text-xs text-zinc-400">
+                    {isTi ? "ሕጂ ዘሎ ብሎክ፦" : "Current Height:"}
+                    <div className="text-base font-bold text-zinc-100">{currentHeight.toLocaleString()}</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-zinc-600" />
+                  <div className="text-xs text-orange-400 text-right">
+                    {isTi ? "ዝኽፈተሉ ብሎክ፦" : "Unlock Target:"}
+                    <div className="text-base font-bold text-orange-300">{targetUnlockHeight.toLocaleString()}</div>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                    <span>{isTi ? "ዝተረፈ ብሎካት፦" : "Remaining Blocks:"}</span>
+                    <span className="font-mono font-bold text-orange-300">
+                      {Math.max(0, targetUnlockHeight - currentHeight)} blocks (~{Math.max(0, (targetUnlockHeight - currentHeight) * 10)} min)
+                    </span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
+                    <div
+                      className="h-full bg-orange-500 transition-all duration-300"
+                      style={{
+                        width: `${Math.min(100, Math.max(0, ((currentHeight - baseHeight) / 5) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={() => setCurrentHeight((prev) => prev + 1)}
+                    disabled={isUnlocked}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    <Blocks className="w-3.5 h-3.5" />
+                    {isTi ? "+1 ብሎክ ኣፍሪ (Mine 1 Block)" : "Mine 1 Block (+1)"}
+                  </button>
+                  <button
+                    onClick={() => setCurrentHeight(targetUnlockHeight)}
+                    disabled={isUnlocked}
+                    className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-40 transition"
+                  >
+                    <FastForward className="w-3.5 h-3.5" />
+                    {isTi ? "ናብ መወዳእታ ዝለል" : "Fast-Forward"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {lockMode === "cltv_time" && (
+              <div>
+                <span className="text-xs font-semibold text-zinc-400 block mb-2">
+                  {isTi ? "ናይ ሰዓት ቆጸራ (Real-Time Unix Timestamp Countdown):" : "Timestamp Countdown Timer:"}
+                </span>
+
+                <div className="my-3 text-center py-3 bg-zinc-900 rounded-lg border border-zinc-800">
+                  <div className="font-mono text-3xl font-black text-blue-400 tracking-wider">
+                    00:{secondsRemaining < 10 ? `0${secondsRemaining}` : secondsRemaining}
+                  </div>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 block">
+                    {secondsRemaining === 0 ? "Target Timestamp Reached!" : "Seconds Remaining until Unlock"}
+                  </span>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setTimerRunning(!timerRunning)}
+                    disabled={secondsRemaining === 0}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 transition"
+                  >
+                    <Play className="w-3.5 h-3.5" />
+                    {timerRunning ? (isTi ? "ኣዕርፍ" : "Pause Timer") : (isTi ? "ቆጸራ ጀምር" : "Start Countdown")}
+                  </button>
+                  <button
+                    onClick={() => setSecondsRemaining((prev) => Math.max(0, prev - 15))}
+                    disabled={secondsRemaining === 0}
+                    className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-40 transition"
+                  >
+                    <FastForward className="w-3.5 h-3.5" />
+                    -15s
+                  </button>
+                  <button
+                    onClick={() => setSecondsRemaining(0)}
+                    disabled={secondsRemaining === 0}
+                    className="flex items-center justify-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-40 transition"
+                    title="Unlock Now"
+                  >
+                    0s
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {lockMode === "csv_relative" && (
+              <div>
+                <span className="text-xs font-semibold text-zinc-400 block mb-2">
+                  {isTi ? "ተዛማዲ ናይ ብሎክ ቆጸራ (Relative Confirmations):" : "Relative Confirmations (CSV):"}
+                </span>
+
+                <div className="my-2 p-3 bg-zinc-900 rounded-lg border border-zinc-800">
+                  <div className="flex justify-between items-center text-xs mb-2">
+                    <span className="text-zinc-400">{isTi ? "ካብ ምፍጣሩ ዝሓለፈ ምርጋጻት፦" : "Confirmations Elapsed:"}</span>
+                    <span className="font-mono text-amber-400 font-bold">
+                      {csvConfirmations} / {requiredCsvBlocks} blocks
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[1, 2, 3, 4].map((blockNum) => {
+                      const confirmed = csvConfirmations >= blockNum;
+                      return (
+                        <div
+                          key={blockNum}
+                          className={`p-2 rounded text-center text-xs font-mono font-bold border transition ${
+                            confirmed
+                              ? "bg-amber-950/80 border-amber-500 text-amber-300"
+                              : "bg-zinc-950 border-zinc-800 text-zinc-600"
+                          }`}
+                        >
+                          Block {blockNum}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="mt-3 flex gap-2">
+                  <button
+                    onClick={() => setCsvConfirmations((prev) => Math.min(requiredCsvBlocks, prev + 1))}
+                    disabled={isUnlocked}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-amber-600 text-white hover:bg-amber-500 disabled:opacity-40 transition"
+                  >
+                    <Blocks className="w-3.5 h-3.5" />
+                    {isTi ? "ተወሳኺ 1 ምርጋጽ ኣፍሪ (+1 Confirm)" : "+1 Confirmation"}
+                  </button>
+                  <button
+                    onClick={() => setCsvConfirmations(requiredCsvBlocks)}
+                    disabled={isUnlocked}
+                    className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:opacity-40 transition"
+                  >
+                    <FastForward className="w-3.5 h-3.5" />
+                    {isTi ? "ምሉእ ብሎካት" : "Complete (4/4)"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Spend Execution & Consensus Enforcement */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-semibold text-zinc-400 block mb-2">
+                {isTi ? "ናይ ወጻኢ ፈተነ (Spend Attempt on Network):" : "Transaction Spending Execution:"}
+              </span>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                {isTi
+                  ? "ቅድሚ እቲ ናይ ግዜ ወይ ቁመት ቆጸራ ምዝዛሙ ነዚ ሳንቲም ንምውጻእ ፈትን። ቢትኮይን ኖዳት ብኸመይ ንሕጊ ስምምዕ ከም ዘኽብርዎ ተመልከት።"
+                  : "Try broadcasting a spending transaction while the lock is active. Observe how full nodes enforce consensus rules without trusting anyone."}
+              </p>
+
+              {spendAttemptError && (
+                <div className="mt-3 p-3 rounded-lg border border-rose-500/50 bg-rose-950/40 text-rose-200 text-xs leading-relaxed flex items-start gap-2">
+                  <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                  <span>{spendAttemptError}</span>
+                </div>
+              )}
+
+              {spendSuccess && (
+                <div className="mt-3 p-3 rounded-lg border border-emerald-500/50 bg-emerald-950/40 text-emerald-200 text-xs leading-relaxed flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span>
+                    {isTi
+                      ? "🎉 ብዓወት ተፈሪሙን ተኸፊቱን! እቲ ናይ ግዜ ምዕጻው ተዛዚሙ እዩ። ኖዳት ነቲ ትራንዛክሽን ብምጽዳቕ ናብ ሜምፑል ኣእትዮምዎ!"
+                      : "🎉 Success! Timelock conditions fully satisfied! Full nodes accepted your unlocking script and admitted the 0.05 BTC spend to the mempool!"}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-zinc-800">
               <button
-                key={key}
-                onClick={() => setActiveScenario(key)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                  isSelected
-                    ? "border-orange-500 bg-orange-950/40 text-orange-200 shadow-md ring-1 ring-orange-500/30"
-                    : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+                onClick={handleAttemptSpend}
+                className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition ${
+                  isUnlocked
+                    ? "bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg shadow-emerald-950/50"
+                    : "bg-rose-700/80 text-white hover:bg-rose-600"
                 }`}
               >
-                {sc.title}
+                {isUnlocked ? (
+                  <>
+                    <Unlock className="w-4 h-4" />
+                    {isTi ? "ሳንቲምካ ወስድ (Claim 0.05 BTC Now)" : "Claim & Spend 0.05 BTC Now"}
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    {isTi ? "ቅድሚ ግዜኡ ንምውጻእ ፈትን (Attempt Early Spend)" : "Attempt Spend Now (Will Test Consensus)"}
+                  </>
+                )}
               </button>
-            );
-          })}
-        </div>
-
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-            <div>
-              <span className="font-mono text-xs text-orange-400 block mb-0.5">
-                {scenarios[activeScenario].opcode}
-              </span>
-              <h5 className="text-sm font-bold text-zinc-100">
-                {scenarios[activeScenario].title}
-              </h5>
-            </div>
-            <span className="rounded bg-zinc-800 px-2 py-0.5 text-[11px] text-zinc-300 shrink-0">
-              {scenarios[activeScenario].type}
-            </span>
-          </div>
-
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <span className="text-xs font-semibold text-zinc-400 block mb-1">
-                {isTi ? "ናይ ፖሊሲ ሕጊ (Spending Condition):" : "Policy Logic Condition:"}
-              </span>
-              <p className="text-xs text-zinc-300 leading-relaxed bg-zinc-950 p-2.5 rounded border border-zinc-800">
-                {scenarios[activeScenario].rule}
-              </p>
-
-              <span className="text-xs font-semibold text-emerald-400 block mt-3 mb-1 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                {isTi ? "ናይ ምክልኻል ብቕዓት (Defense Capability):" : "Security Guarantee:"}
-              </span>
-              <p className="text-xs text-zinc-300 leading-relaxed bg-emerald-950/20 p-2.5 rounded border border-emerald-900/30">
-                {scenarios[activeScenario].attackDefense}
-              </p>
-            </div>
-
-            <div>
-              <span className="text-xs font-semibold text-zinc-400 block mb-1 flex items-center gap-1.5">
-                <Code2 className="w-3.5 h-3.5 text-orange-400" />
-                {isTi ? "ናይ ስክሪፕት ኮድ (Bitcoin Script):" : "Script Implementation Structure:"}
-              </span>
-              <pre className="font-mono text-[11px] text-orange-300 bg-zinc-950 p-3 rounded-lg border border-zinc-800 overflow-x-auto leading-relaxed">
-                {scenarios[activeScenario].codeSnippet}
-              </pre>
             </div>
           </div>
         </div>
@@ -779,7 +839,7 @@ function TransactionLifecycleSection({ isTi }: { isTi: boolean }) {
     {
       phase: isTi ? "2. ምዕጻው (Lock)" : "2. Defining Output Locks",
       desc: isTi
-        ? "ነፍሲ ወከፍ tit-for-tat ውጽኢት ሓድሽ ናይ ምዕጻው ስክሪፕት (ScriptPubKey) ይዕጠቕ።"
+        ? "ነፍሲ ወከፍ ውጽኢት ሓድሽ ናይ ምዕጻው ስክሪፕት (ScriptPubKey) ይዕጠቕ።"
         : "Every created output is assigned a cryptographic challenge (ScriptPubKey) that dictates how it can be unlocked in the future.",
       scriptRole: isTi
         ? "ንኣብነት፡ ንP2WPKH OP_0 <20-ባይት ሃሽ>፡ ወይ ንማልቲ-ሲግ 2-ካብ-3 P2WSH/P2TR የቐምጥ።"
