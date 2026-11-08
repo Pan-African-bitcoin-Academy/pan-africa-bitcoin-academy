@@ -1402,13 +1402,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Merkle proofs enable lightweight verification — you can prove a transaction is in a block without downloading the entire blockchain.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/markel.jpg",
-            alt: "Diagram showing Merkle tree structure with transaction hashes",
-            caption: "Merkle trees enable efficient transaction verification",
-          },
-        ],
       },
       {
         heading: "12.2 Why Run a Node (Independent Validation; Mempool Visibility; Policy/Relay Basics)",

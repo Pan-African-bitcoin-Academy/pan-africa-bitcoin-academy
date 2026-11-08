@@ -328,8 +328,9 @@ function BlockExplorerLab({ isTi }: BlockExplorerProps) {
 }
 
 /* =========================================================================
-   Module 2: Merkle Proof Visualizer (Section 12.1)
-   Theme: "Proving Inclusion: Merkle Trees & Light Client Proofs"
+   Module 2: Merkle Proof Visualizer & Diagram (Section 12.1)
+   Theme: "Proving Inclusion: Merkle Trees & Cryptographic Paths"
+   (Faithful interactive implementation of the textbook Merkle tree diagram)
    ========================================================================= */
 
 interface MerkleProofProps {
@@ -337,26 +338,29 @@ interface MerkleProofProps {
 }
 
 function MerkleProofVisualizer({ isTi }: MerkleProofProps) {
-  const [selectedTx, setSelectedTx] = useState<number>(2); // 0, 1, 2, 3 (Tx C is index 2)
+  const [proofStep, setProofStep] = useState<number>(3); // 1: Hash C, 2: Hash CD, 3: Full Root ABCD
   const [tampered, setTampered] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<"diagram" | "step_by_step">("diagram");
 
-  // 4 Transactions in the block
-  const txData = [
-    { id: 0, label: "Tx A (Alice → Bob)", hash: "a1b2", value: "0.05 BTC" },
-    { id: 1, label: "Tx B (Chala → Dawit)", hash: "c3d4", value: "0.12 BTC" },
-    { id: 2, label: "Tx C (Your Payment!)", hash: tampered ? "h4ck" : "e5f6", value: "0.45 BTC" },
-    { id: 3, label: "Tx D (Mining Pool Reward)", hash: "7890", value: "3.125 BTC" },
-  ];
+  // Hash values representing nodes
+  const hashA = "7a1b";
+  const hashB = "9c2e";
+  const hashC = tampered ? "h4ck (Altered!)" : "4d3f";
+  const hashD = "2f8a";
 
-  // Intermediate node hashes
-  const hAB = "hash(a1b2 + c3d4) → 38a9";
-  const hCD = tampered
-    ? "hash(h4ck + 7890) → BAD9 (INVALID!)"
-    : "hash(e5f6 + 7890) → 71fc";
+  const hashAB = "hash(A + B) → 38a9";
+  const hashCD = tampered
+    ? "hash(h4ck + D) → BAD9"
+    : "hash(C + D) → 71fc";
 
-  const calculatedRoot = tampered ? "ROOT_CORRUPTED_9999" : "ROOT_GENUINE_48a1";
-  const blockHeaderRoot = "ROOT_GENUINE_48a1";
+  const calculatedRoot = tampered ? "CORRUPTED_ROOT_9999" : "GENUINE_ROOT_ABCD";
+  const blockHeaderRoot = "GENUINE_ROOT_ABCD";
   const isProofValid = calculatedRoot === blockHeaderRoot;
+
+  const handleReset = () => {
+    setTampered(false);
+    setProofStep(3);
+  };
 
   return (
     <div className={panelClass}>
@@ -372,147 +376,366 @@ function MerkleProofVisualizer({ isTi }: MerkleProofProps) {
                 {t({ en: "Section 12.1 Interactive", ti: "ክፍሊ 12.1 መስተጋብራዊ" }, isTi)}
               </span>
               <span className="text-xs text-zinc-400">
-                {t({ en: "Cryptographic Merkle Path", ti: "ናይ ሜርክል ዛፍ መረጋገጺ" }, isTi)}
+                {t({ en: "Merkle Trees & SPV Proofs", ti: "ናይ ሜርክል ዛፍን ናይ SPV መረጋገጺን" }, isTi)}
               </span>
             </div>
             <h3 className="text-lg font-bold text-zinc-100">
               {t(
                 {
-                  en: "How SPV & Light Wallets Prove Inclusion Without Downloading Blocks",
-                  ti: "ናይ ስልኪ ዋሌታት ብዘይ ምሉእ ብሎክ ምውራድ ብኸመይ ትራንዛክሽን የረጋግጹ",
+                  en: "Merkle Trees: How Light Wallets Prove Inclusion Without Downloading Blocks",
+                  ti: "ናይ ሜርክል ዛፍ፦ ናይ ስልኪ ዋሌታት ብዘይ ምሉእ ብሎክ ምውራድ ብኸመይ ትራንዛክሽን የረጋግጹ",
                 },
                 isTi
               )}
             </h3>
           </div>
         </div>
+        <button
+          onClick={handleReset}
+          className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-white cursor-pointer"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          {t({ en: "Reset Tree", ti: "ዛፍ ምለስ" }, isTi)}
+        </button>
       </div>
 
       <p className="mt-3 text-sm text-zinc-300 leading-relaxed">
         {t(
           {
-            en: "A Bitcoin block contains thousands of transactions. How can a smartphone wallet verify that YOUR payment is inside a block without downloading 600 GB of data? By checking a tiny mathematical proof called a Merkle Path:",
-            ti: "ሓደ ናይ ቢትኮይን ብሎክ ኣሽሓት ትራንዛክሽናት ይሕዝ። ናይ ስልኪ ዋሌት 600 GB ዳታ ከየውረደ ናትካ ክፍሊት ኣብቲ ብሎክ ምህላዉ ብኸመይ ይፈልጥ? ሜርክል ፓዝ (Merkle Path) ብዝበሃል ንእሽቶ ሒሳባዊ መረጋገጺ ኣቢሉ፦",
+            en: "A Bitcoin block can hold over 3,000 transactions. How does your mobile wallet verify you actually received Transaction C without downloading all 3,000 transactions (2 MB per block)? Satoshi used a Merkle Tree: transactions are paired and hashed into a pyramid until only ONE 32-byte hash—the Merkle Root—remains in the block header.",
+            ti: "ሓደ ናይ ቢትኮይን ብሎክ ልዕሊ 3,000 ትራንዛክሽናት ክሕዝ ይኽእል። ናይ ስልኪ ዋሌትካ ነተን 3,000 ትራንዛክሽናት (2 MB ኣብ ነፍሲ ወከፍ ብሎክ) ከየውረደ ትራንዛክሽን C ብሓቂ ከምዝበጽሓካ ብኸመይ ይፈልጥ? ሳቶሺ ናይ ሜርክል ዛፍ (Merkle Tree) ተጠቒሙ፦ ትራንዛክሽናት ብጽምዲ እናተጠርነፉ ናብ ሓደ 32-ባይት ዝኾነ ሜርክል ሩት (Merkle Root) ይድመሩ።",
           },
           isTi
         )}
       </p>
 
-      {/* Merkle Tree Interactive Diagram */}
-      <div className="mt-4 rounded-xl border border-zinc-800 bg-black p-4 sm:p-6 space-y-6">
-        {/* Top: Merkle Root in Block Header */}
+      {/* View Mode Toggle */}
+      <div className="mt-4 flex rounded-xl border border-zinc-800 bg-zinc-900/60 p-1 w-fit">
+        <button
+          onClick={() => setViewMode("diagram")}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition cursor-pointer ${
+            viewMode === "diagram"
+              ? "bg-purple-500 text-white shadow-sm"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Layers className="h-3.5 w-3.5" />
+          {t({ en: "1. Merkle Tree Diagram", ti: "1. ናይ ሜርክል ዛፍ ስእሊ" }, isTi)}
+        </button>
+        <button
+          onClick={() => setViewMode("step_by_step")}
+          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition cursor-pointer ${
+            viewMode === "step_by_step"
+              ? "bg-purple-500 text-white shadow-sm"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <GitCommit className="h-3.5 w-3.5" />
+          {t({ en: "2. Step-by-Step SPV Proof Walkthrough", ti: "2. ደረጃ ብደረጃ ናይ SPV መረጋገጺ" }, isTi)}
+        </button>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          DIAGRAM VIEW: Exact recreation of the user's uploaded image
+         ───────────────────────────────────────────────────────────── */}
+      <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-4 sm:p-6 space-y-6">
+        {/* LEVEL 3: Top Blue Box -> Merkle Root / Hash ABCD */}
         <div className="flex flex-col items-center">
-          <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1">
-            {t({ en: "Block Header (80 Bytes Only)", ti: "ናይ ብሎክ ርእሲ (80 ባይት ጥራይ)" }, isTi)}
-          </span>
-          <div className={`rounded-xl border px-4 py-2 text-center font-mono text-xs font-bold ${
+          <div className={`w-64 rounded-xl border-2 p-3 text-center transition-all shadow-lg ${
             isProofValid
-              ? "border-emerald-500/50 bg-emerald-950/40 text-emerald-300"
-              : "border-red-500/50 bg-red-950/40 text-red-300 animate-pulse"
+              ? "border-sky-400 bg-sky-950/40 text-sky-200 shadow-sky-500/10"
+              : "border-red-500 bg-red-950/40 text-red-300 animate-pulse"
           }`}>
-            <div>Merkle Root: {calculatedRoot}</div>
-            <span className="text-[10px] font-normal text-zinc-400">
-              {isProofValid ? "✓ Matches Block Header!" : "❌ Mismatch! Block Header Rejects!"}
+            <div className="text-xs font-bold uppercase tracking-wider text-sky-300">
+              {t({ en: "Merkle Root", ti: "ሜርክል ሩት (Merkle Root)" }, isTi)}
+            </div>
+            <div className="text-base font-bold font-mono mt-0.5 text-white">
+              {isProofValid ? "Hash ABCD" : "CORRUPTED_ROOT"}
+            </div>
+            <span className="text-[10px] text-zinc-400 block mt-1">
+              {t({ en: "(Stored in 80-byte Block Header)", ti: "(ኣብ ናይ ብሎክ ርእሲ ዝቕመጥ)" }, isTi)}
+            </span>
+          </div>
+
+          {/* Connector Arrow Upwards */}
+          <div className="flex flex-col items-center my-1 text-zinc-500">
+            <span className="text-xs font-bold">▲</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 my-0.5">
+              {t({ en: "Non-Leaf Nodes", ti: "ናይ ጨንፈር ኖዳት (Non-Leaf)" }, isTi)}
             </span>
           </div>
         </div>
 
-        {/* Tree Connectors Level 1 */}
-        <div className="grid grid-cols-2 gap-4 text-center font-mono text-[11px]">
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-2 text-zinc-400">
-            <span className="text-[9px] text-zinc-600 block">Branch Hash AB</span>
-            {hAB}
-          </div>
-          <div className={`rounded-lg border p-2 font-bold ${
-            tampered
-              ? "border-red-500/40 bg-red-950/30 text-red-300"
-              : "border-purple-500/40 bg-purple-950/30 text-purple-300"
-          }`}>
-            <span className="text-[9px] text-zinc-500 block">Branch Hash CD (Derived)</span>
-            {hCD}
-          </div>
-        </div>
+        {/* Orthogonal branch lines from Top to Middle */}
+        <div className="relative max-w-lg mx-auto">
+          {/* Branch connecting bar */}
+          <div className="hidden sm:block h-3 border-t-2 border-l-2 border-r-2 border-zinc-700 mx-24 -mt-3 mb-1" />
 
-        {/* Bottom Level: 4 Leaf Transactions */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-zinc-900">
-          {txData.map((tx) => {
-            const isTarget = tx.id === selectedTx;
-            const isSibling = (selectedTx === 2 && tx.id === 3) || (selectedTx === 3 && tx.id === 2);
-            return (
-              <div
-                key={tx.id}
-                onClick={() => setSelectedTx(tx.id)}
-                className={`rounded-lg border p-2.5 text-xs font-mono transition cursor-pointer ${
-                  isTarget
-                    ? "border-cyan-500 bg-cyan-950/30 text-cyan-200 ring-2 ring-cyan-500/30"
-                    : isSibling
-                    ? "border-purple-500/40 bg-purple-950/20 text-purple-300"
-                    : "border-zinc-800 bg-zinc-900/30 text-zinc-500 hover:border-zinc-700"
-                }`}
-              >
-                <div className="text-[10px] font-bold uppercase flex justify-between">
-                  <span>{tx.id === 2 ? "Your Tx (Tx C)" : `Tx #${tx.id + 1}`}</span>
-                  {isTarget && <span className="text-cyan-400">Target</span>}
-                  {isSibling && <span className="text-purple-400">Sibling</span>}
+          {/* LEVEL 2: Two Tan / Beige Boxes -> Hash AB and Hash CD */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-12">
+            {/* Left Non-Leaf Node: Hash AB */}
+            <div className="flex flex-col items-center">
+              <div className="w-full rounded-xl border-2 border-amber-500/40 bg-amber-950/30 p-3 text-center shadow-md">
+                <div className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                  Hash AB
                 </div>
-                <div className="font-bold text-zinc-200 mt-1">{tx.value}</div>
-                <div className="text-[10px] text-zinc-400 truncate">Hash: {tx.hash}</div>
+                <div className="text-xs font-mono text-zinc-300 mt-1">
+                  hash(Hash A + Hash B)
+                </div>
+                <span className="text-[10px] font-mono text-zinc-500 block mt-0.5">
+                  {hashAB}
+                </span>
+                <span className="mt-1.5 inline-block rounded bg-amber-500/20 px-2 py-0.5 text-[9px] font-bold text-amber-300">
+                  {t({ en: "Proof Sibling (Sent to Phone)", ti: "ንመወከሲ ዝስደድ መረጋገጺ" }, isTi)}
+                </span>
               </div>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* Tamper Test Toggle */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
-        <div>
-          <span className="text-xs font-bold text-zinc-200 block">
-            {t({ en: "Try Tampering with Tx C Data:", ti: "ንትራንዛክሽን C ክትልውጦ ፈትን፦" }, isTi)}
-          </span>
-          <p className="text-xs text-zinc-400">
-            {t(
-              {
-                en: "What if a hacker tries to forge your payment amount by 1 satoshi?",
-                ti: "ሓደ ሰራቒ ነቲ ዝኸፈልካዮ መጠን ብ1 ሳትስ ጥራይ ክልውጦ እንተዝፍትን እንታይ መጋጠመ?",
-              },
-              isTi
+              {/* Connector Arrow Upwards */}
+              <div className="flex flex-col items-center my-1 text-zinc-500">
+                <span className="text-xs font-bold">▲</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 my-0.5">
+                  {t({ en: "Leaf Nodes", ti: "ናይ ቆጽሊ ኖዳት (Leaf)" }, isTi)}
+                </span>
+              </div>
+            </div>
+
+            {/* Right Non-Leaf Node: Hash CD */}
+            <div className="flex flex-col items-center">
+              <div className={`w-full rounded-xl border-2 p-3 text-center shadow-md transition-all ${
+                tampered
+                  ? "border-red-500 bg-red-950/40 text-red-300"
+                  : "border-amber-500/40 bg-amber-950/30 text-amber-200"
+              }`}>
+                <div className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                  Hash CD
+                </div>
+                <div className="text-xs font-mono text-zinc-300 mt-1">
+                  hash(Hash C + Hash D)
+                </div>
+                <span className="text-[10px] font-mono text-zinc-400 block mt-0.5">
+                  {hashCD}
+                </span>
+                <span className="mt-1.5 inline-block rounded bg-cyan-500/20 px-2 py-0.5 text-[9px] font-bold text-cyan-300">
+                  {t({ en: "Calculated by Your Phone", ti: "ብናይ ስልክኻ ዝሕሰብ" }, isTi)}
+                </span>
+              </div>
+
+              {/* Connector Arrow Upwards */}
+              <div className="flex flex-col items-center my-1 text-zinc-500">
+                <span className="text-xs font-bold">▲</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 my-0.5">
+                  {t({ en: "Leaf Nodes", ti: "ናይ ቆጽሊ ኖዳት (Leaf)" }, isTi)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Orthogonal branch lines from Middle to Bottom */}
+        <div className="relative max-w-2xl mx-auto">
+          {/* LEVEL 1: Four Grey/Slate Boxes -> Leaf Nodes Hash A, B, C, D */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Hash A */}
+            <div className="rounded-xl border border-zinc-700 bg-zinc-900/50 p-2.5 text-center opacity-60">
+              <div className="text-xs font-bold text-zinc-300">Hash A</div>
+              <div className="text-[10px] font-mono text-zinc-500 mt-0.5">{hashA}</div>
+              <span className="text-[9px] text-zinc-600 italic block mt-1">
+                {t({ en: "Not downloaded!", ti: "ኣየውረድካዮን!" }, isTi)}
+              </span>
+            </div>
+
+            {/* Hash B */}
+            <div className="rounded-xl border border-zinc-700 bg-zinc-900/50 p-2.5 text-center opacity-60">
+              <div className="text-xs font-bold text-zinc-300">Hash B</div>
+              <div className="text-[10px] font-mono text-zinc-500 mt-0.5">{hashB}</div>
+              <span className="text-[9px] text-zinc-600 italic block mt-1">
+                {t({ en: "Not downloaded!", ti: "ኣየውረድካዮን!" }, isTi)}
+              </span>
+            </div>
+
+            {/* Hash C (Your Target Transaction!) */}
+            <div className={`rounded-xl border-2 p-2.5 text-center shadow-lg transition-all ${
+              tampered
+                ? "border-red-500 bg-red-950/40 text-red-200 ring-2 ring-red-500/30"
+                : "border-cyan-500 bg-cyan-950/30 text-cyan-200 ring-2 ring-cyan-500/40"
+            }`}>
+              <div className="text-xs font-bold text-cyan-300">Hash C</div>
+              <div className="text-[10px] font-mono font-bold mt-0.5 text-white">{hashC}</div>
+              <span className="mt-1 inline-block rounded bg-cyan-500/20 px-1.5 py-0.2 text-[9px] font-bold text-cyan-300">
+                {t({ en: "Your Tx (Target)", ti: "ናትካ ክፍሊት" }, isTi)}
+              </span>
+            </div>
+
+            {/* Hash D (Sibling Partner) */}
+            <div className="rounded-xl border-2 border-amber-500/40 bg-amber-950/20 p-2.5 text-center shadow-md">
+              <div className="text-xs font-bold text-amber-300">Hash D</div>
+              <div className="text-[10px] font-mono text-amber-400 mt-0.5">{hashD}</div>
+              <span className="mt-1 inline-block rounded bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold text-amber-300">
+                {t({ en: "Proof Sibling", ti: "መወከሲ መረጋገጺ" }, isTi)}
+              </span>
+            </div>
+          </div>
+
+          {/* LEVEL 0: Transaction IDs underneath */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-[11px] font-mono text-zinc-400 pt-2 border-t border-zinc-800 mt-2">
+            <div>
+              <span className="block font-semibold text-zinc-400">Transaction ID A</span>
+              <span className="text-[9px] text-zinc-600">Alice → Bob (0.05 BTC)</span>
+            </div>
+            <div>
+              <span className="block font-semibold text-zinc-400">Transaction ID B</span>
+              <span className="text-[9px] text-zinc-600">Chala → Dawit (0.12 BTC)</span>
+            </div>
+            <div>
+              <span className="block font-bold text-cyan-400">Transaction ID C</span>
+              <span className="text-[9px] text-cyan-300 font-semibold">Your 0.45 BTC Payment!</span>
+            </div>
+            <div>
+              <span className="block font-semibold text-amber-400">Transaction ID D</span>
+              <span className="text-[9px] text-zinc-500">Miner Coinbase (3.125 BTC)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Interactive Tamper Button */}
+        <div className="pt-4 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span className="text-xs font-bold text-zinc-200 block">
+              {t({ en: "Test Tamper Resistance (Fraud Detection):", ti: "ናይ ምግርጫው መከላኸሊ ፈትን፦" }, isTi)}
+            </span>
+            <p className="text-xs text-zinc-400">
+              {t(
+                {
+                  en: "What if an attacker tries to change even 1 satoshi in Transaction C?",
+                  ti: "ሰራቒ ኣብ ትራንዛክሽን C ዋላ 1 ሳትስ ጥራይ ክልውጥ እንተዝፍትን እንታይ መጋጠመ?",
+                },
+                isTi
+              )}
+            </p>
+          </div>
+          <button
+            onClick={() => setTampered(!tampered)}
+            className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-2 shadow-lg ${
+              tampered
+                ? "bg-red-500 text-white"
+                : "border border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+            }`}
+          >
+            {tampered ? (
+              <>
+                <XCircle className="h-4 w-4" />
+                {t({ en: "Tamper Active (Block Broken!)", ti: "ምግርጫው ተኸሲቱ (ብሎክ ፈሺሉ!)" }, isTi)}
+              </>
+            ) : (
+              <>
+                <Split className="h-4 w-4 text-cyan-400" />
+                {t({ en: "Alter 1 Byte in Tx C", ti: "1 ባይት ቀይር" }, isTi)}
+              </>
             )}
-          </p>
+          </button>
         </div>
-        <button
-          onClick={() => setTampered(!tampered)}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-2 ${
-            tampered
-              ? "bg-red-500 text-white"
-              : "border border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
-          }`}
-        >
-          {tampered ? (
-            <>
-              <XCircle className="h-4 w-4" />
-              {t({ en: "Tamper Active (Corrupted!)", ti: "ምጭብርባር ተኸሲቱ!" }, isTi)}
-            </>
-          ) : (
-            <>
-              <Check className="h-4 w-4 text-emerald-400" />
-              {t({ en: "Tamper 1 Byte in Tx C", ti: "1 ባይት ቀይር" }, isTi)}
-            </>
-          )}
-        </button>
+
+        {/* Result Callout */}
+        {tampered ? (
+          <div className="rounded-xl border border-red-500/40 bg-red-950/20 p-4 space-y-2">
+            <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
+              <ShieldAlert className="h-5 w-5" />
+              <span>{t({ en: "CRYPTOGRAPHIC FAILURE: Tamper Detected!", ti: "ሓደጋ፦ ምግርጫው ብቕጽበት ተታሒዙ!" }, isTi)}</span>
+            </div>
+            <p className="text-xs text-zinc-300 leading-relaxed font-mono">
+              {t(
+                {
+                  en: "Because the attacker modified Transaction C, its hash changed to 'h4ck'. That broke Hash CD ('BAD9'), which broke the calculated Merkle Root ('CORRUPTED_ROOT_9999'). Because the root does not match the Block Header, your phone rejects the fake payment instantly!",
+                  ti: "እቲ ሰራቒ ንትራንዛክሽን C ስለዝቐየሮ፡ ናቱ ሃሽ ናብ 'h4ck' ተለዊጡ። እዚ ድማ ንHash CD ኣበላሽይዎ፡ ኣብ መወዳእታ ድማ እቲ ሜርክል ሩት ፈጺሙ ካልእ ኮይኑ። ምስቲ ናይ ብሎክ ርእሲ ስለዘይተሰማምዐ፡ ስልክኻ ነቲ ናይ ሓሶት ክፍሊት ብቕጽበት ትነጽጎ!",
+                },
+                isTi
+              )}
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <ShieldCheck className="h-5 w-5" />
+              <span>{t({ en: "MATHEMATICAL PROOF VERIFIED: Transaction C is in the Block!", ti: "ሒሳባዊ መረጋገጺ ተዓዊቱ፦ ትራንዛክሽን C ኣብቲ ብሎክ ኣሎ!" }, isTi)}</span>
+            </div>
+            <p className="text-xs text-zinc-300 leading-relaxed font-mono">
+              {t(
+                {
+                  en: "Calculated Root ('GENUINE_ROOT_ABCD') exactly matches the Merkle Root inside the 80-byte Block Header. Your phone verified your payment by downloading only 2 small hashes (Hash D and Hash AB), without downloading the rest of the block!",
+                  ti: "እቲ ዝተሓስበ ሩት ('GENUINE_ROOT_ABCD') ምስቲ ኣብ ናይ ብሎክ ርእሲ ዘሎ ብትኽክል ተመሳሲሉ። ስልክኻ 2 ንኣሽቱ ሃሽ ጥራይ (Hash Dን Hash ABን) ብምውራድ፡ ንኻልኦት ትራንዛክሽናት ከየውረደት ክፍሊትካ 100% ቅኑዕ ምዃኑ ኣረጋጊጻ!",
+                },
+                isTi
+              )}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* SPV Proof Efficiency Insight */}
-      <div className="mt-4 rounded-xl border border-cyan-500/40 bg-cyan-950/20 p-4 flex items-start gap-3">
-        <Sparkles className="h-5 w-5 text-cyan-400 shrink-0 mt-0.5" />
+      {/* ─────────────────────────────────────────────────────────────
+          WALKTHROUGH VIEW: Step by step explanation of SPV
+         ───────────────────────────────────────────────────────────── */}
+      {viewMode === "step_by_step" && (
+        <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 space-y-4">
+          <div className="text-xs font-semibold uppercase tracking-wider text-purple-400">
+            {t({ en: "How Your Phone Verifies Tx C in 3 Simple Math Steps:", ti: "ስልክኻ ንትራንዛክሽን C ብ3 ሒሳባዊ ደረጃታት ብኸመይ ተረጋግጽ፦" }, isTi)}
+          </div>
+
+          <div className="space-y-3 font-mono text-xs">
+            <div className="rounded-lg bg-zinc-950 p-3 border border-zinc-800 flex items-start gap-3">
+              <span className="rounded bg-cyan-500 text-zinc-950 px-2 py-0.5 text-xs font-bold">1</span>
+              <div>
+                <span className="font-bold text-cyan-300 block">Step 1: Your Phone Has Your Transaction (Tx C)</span>
+                <span className="text-zinc-400 text-[11px]">
+                  Your wallet hashes your incoming transaction: <strong className="text-white">SHA256(Tx C) → Hash C ({hashC})</strong>.
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-zinc-950 p-3 border border-zinc-800 flex items-start gap-3">
+              <span className="rounded bg-amber-500 text-zinc-950 px-2 py-0.5 text-xs font-bold">2</span>
+              <div>
+                <span className="font-bold text-amber-300 block">Step 2: Network Sends Partner Hash #1 (Hash D)</span>
+                <span className="text-zinc-400 text-[11px]">
+                  Your phone glues Hash C and Hash D together and hashes them: <strong className="text-white">SHA256(Hash C + Hash D) → Hash CD ({hashCD})</strong>.
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-zinc-950 p-3 border border-zinc-800 flex items-start gap-3">
+              <span className="rounded bg-sky-500 text-zinc-950 px-2 py-0.5 text-xs font-bold">3</span>
+              <div>
+                <span className="font-bold text-sky-300 block">Step 3: Network Sends Partner Hash #2 (Hash AB)</span>
+                <span className="text-zinc-400 text-[11px]">
+                  Your phone glues Hash AB and Hash CD together and hashes them: <strong className="text-white">SHA256(Hash AB + Hash CD) → Merkle Root ({calculatedRoot})</strong>.
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-zinc-950 p-3 border border-emerald-500/40 text-emerald-300 flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold block">Step 4: Compare with 80-byte Block Header</span>
+                <span className="text-zinc-300 text-[11px]">
+                  The phone checks its 80-byte block header. The calculated root matches the header's Merkle root. Inclusion is mathematically proven without downloading Transaction A, B, or D!
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mathematical Superpower Callout */}
+      <div className="mt-4 rounded-xl border border-purple-500/40 bg-purple-950/20 p-4 flex items-start gap-3">
+        <Sparkles className="h-5 w-5 text-purple-400 shrink-0 mt-0.5" />
         <div className="text-xs text-zinc-300 space-y-1">
-          <span className="font-bold text-cyan-300">
-            {t({ en: "The Power of O(log N) Verification:", ti: "ናይ O(log N) ቅልጣፈ፦" }, isTi)}
+          <span className="font-bold text-purple-300 text-sm">
+            {t({ en: "The Logarithmic Superpower of Merkle Trees:", ti: "ናይ ሜርክል ዛፍ ሒሳባዊ ሓይሊ፦" }, isTi)}
           </span>
           <p className="leading-relaxed">
             {t(
               {
-                en: "To verify your transaction in a block of 2,048 transactions, your phone does NOT need to download 2,048 transactions. It only downloads 11 partner hashes (less than 1 KB of data)! It hashes them up to the root, compares with the block header, and verifies inclusion with 100% cryptographic certainty.",
-                ti: "ኣብ 2,048 ትራንዛክሽናት ዘለዎ ብሎክ፡ ስልክኻ ነተን 2,048 ትራንዛክሽናት ምውራድ ኣየድልያን። 11 መረጋገጺ ሃሽ ጥራይ (ትሕቲ 1 KB) ብምውራድ፡ ምስቲ ናይ ብሎክ ርእሲ ብምውድዳር 100% ቅኑዕ ምዃኑ ብሒሳብ ተረጋግጽ።",
+                en: "If a Bitcoin block has 4 transactions, your phone only needs 2 partner hashes. If a block has 4,096 transactions, your phone only needs 12 partner hashes! Even if a block had 1,000,000 transactions, your phone would only need 20 hashes (less than 1 KB of mobile data) to prove your payment is real.",
+                ti: "ሓደ ብሎክ 4 ትራንዛክሽናት እንተሃልይዎ፡ ስልክኻ 2 መረጋገጺ ሃሽ ጥራይ የድልያ። 4,096 ትራንዛክሽናት እንተሃልይዎ ድማ 12 ሃሽ ጥራይ የድልያ! 1,000,000 ትራንዛክሽናት እኳ እንተዝህልዎ፡ ስልክኻ ክፍሊትካ ንምርግጋጽ 20 ሃሽ ጥራይ (ትሕቲ 1 KB ዳታ) እዩ ዘድልያ።",
               },
               isTi
             )}
