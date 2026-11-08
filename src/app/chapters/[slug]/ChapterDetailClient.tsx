@@ -1876,16 +1876,16 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               {chapter.slug === "hardware-signers" && sectionIdx === 3 ? (
                 <Chapter11InteractiveLesson module="psbt_signing_pipeline" isTi={isTi} />
               ) : null}
-              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 1 ? (
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && (section.heading.includes("12.0") || sectionIdx === 1) ? (
                 <Chapter12InteractiveLesson module="block_explorer_lab" isTi={isTi} />
               ) : null}
-              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 2 ? (
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && (section.heading.includes("12.1") || sectionIdx === 2) ? (
                 <Chapter12InteractiveLesson module="merkle_proof_visualizer" isTi={isTi} />
               ) : null}
-              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 3 ? (
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && (section.heading.includes("12.2") || sectionIdx === 3) ? (
                 <Chapter12InteractiveLesson module="node_validator_sandbox" isTi={isTi} />
               ) : null}
-              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && sectionIdx === 4 ? (
+              {chapter.slug === "verify-for-yourself-block-explorers-nodes" && (section.heading.includes("12.3") || sectionIdx === 4) ? (
                 <Chapter12InteractiveLesson module="node_sync_calculator" isTi={isTi} />
               ) : null}
               </React.Fragment>
