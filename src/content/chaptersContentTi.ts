@@ -443,13 +443,6 @@ export const chaptersContentTi: ChapterContent[] = [
             content: "ላይትኒንግ መስመራት ምሕደራ ዓቅሚ ገንዘብ የድልዮም። ንምቕባል ናይ ምእታው ዓቕሚ፡ ንምልኣኽ ድማ ናይ ደገ ዓቕሚ የድልየካ።",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/lightning_networ.png",
-            alt: "Diagram showing Lightning payment channel opening, payments, and closing",
-            caption: "ላይትኒንግ ቻነላት ቅጽበታዊ ካብ ሰንሰለት ወጻኢ ክፍሊት የኽእሉ።",
-          },
-        ],
       },
       {
         heading: "15.1 ኣብ ላይትኒንግ ምቕባልን ምውጻእን (Custodial vs Non-Custodial)",
@@ -478,13 +471,6 @@ export const chaptersContentTi: ChapterContent[] = [
           {
             type: "warning",
             content: "ጎናዊ ሰንሰለታት ኣብ ፈደረሽናት ምትእምማን የተኣታቱ። ነዚ ምትሕውዋስ እንተተረዲእካዮን እንተተቐቢልካን ጥራይ ኢኻ ተጠቐመሎም።",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/sidechain-peg.png",
-            alt: "Diagram showing Bitcoin pegged to sidechain and back",
-            caption: "ሳይድቸይን ምስ ቢትኮይን ዝተኣሳሰሩ ኮይኖም ግን ዝተፈላለየ ምርድዳእ ይጥቀሙ",
           },
         ],
       },

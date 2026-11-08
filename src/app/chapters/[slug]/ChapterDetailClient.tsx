@@ -201,6 +201,18 @@ const Chapter14InteractiveLesson = dynamic(
   }
 );
 
+const Chapter15InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter15InteractiveLesson").then((module) => module.Chapter15InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 15 Layer 2 lessons...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -1935,6 +1947,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "mining-in-practice" && (section.heading.includes("14.3") || sectionIdx === 4) ? (
                 <Chapter14InteractiveLesson module="asic_geopolitics_map" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "layer-2-sidechains-in-daily-life" && (section.heading.includes("15.0") || sectionIdx === 1) ? (
+                <Chapter15InteractiveLesson module="lightning_channel_flow" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "layer-2-sidechains-in-daily-life" && (section.heading.includes("15.1") || sectionIdx === 2) ? (
+                <Chapter15InteractiveLesson module="custodial_vs_non_custodial" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "layer-2-sidechains-in-daily-life" && (section.heading.includes("15.2") || sectionIdx === 3) ? (
+                <Chapter15InteractiveLesson module="sidechain_federation_peg" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "layer-2-sidechains-in-daily-life" && (section.heading.includes("15.3") || sectionIdx === 4) ? (
+                <Chapter15InteractiveLesson module="circular_economy_explorer" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );

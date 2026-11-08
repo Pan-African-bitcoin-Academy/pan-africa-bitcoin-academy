@@ -1700,13 +1700,6 @@ export const chaptersContent: ChapterContent[] = [
             content: "Lightning channels require liquidity management. You need inbound capacity to receive and outbound capacity to send.",
           },
         ],
-        images: [
-          {
-            src: "/images/book_images/lightning_networ.png",
-            alt: "Diagram showing Lightning payment channel opening, payments, and closing",
-            caption: "Lightning channels enable instant off-chain payments",
-          },
-        ],
       },
       {
         heading: "15.1 Receive and Spend on Lightning (Custodial vs Non-Custodial)",
@@ -1735,13 +1728,6 @@ export const chaptersContent: ChapterContent[] = [
           {
             type: "warning",
             content: "Sidechains introduce trust in federations. Only use them if you understand and accept this trade-off.",
-          },
-        ],
-        images: [
-          {
-            src: "/images/book_images/sidechain-peg.svg",
-            alt: "Diagram showing Bitcoin pegged to sidechain and back",
-            caption: "Sidechains are pegged to Bitcoin but use different consensus",
           },
         ],
       },
