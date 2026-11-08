@@ -237,6 +237,18 @@ const Chapter17InteractiveLesson = dynamic(
   }
 );
 
+const Chapter18InteractiveLesson = dynamic(
+  () => import("@/components/chapters/Chapter18InteractiveLesson").then((module) => module.Chapter18InteractiveLesson),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400" role="status">
+        Loading Chapter 18 script activities...
+      </p>
+    ),
+  }
+);
+
 function TigrinyaChapterLesson({
   content,
   chapter,
@@ -2001,6 +2013,18 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
               ) : null}
               {chapter.slug === "multi-sig-collaborative-custody" && (section.heading.includes("17.2") || sectionIdx === 3) ? (
                 <Chapter17InteractiveLesson module="operational_playbook_workbench" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "intro-to-bitcoin-script-optional-track" && (section.heading.includes("18.0") || sectionIdx === 1) ? (
+                <Chapter18InteractiveLesson module="script_types_evolution" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "intro-to-bitcoin-script-optional-track" && (section.heading.includes("18.1") || sectionIdx === 2) ? (
+                <Chapter18InteractiveLesson module="timelock_policies_matrix" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "intro-to-bitcoin-script-optional-track" && (section.heading.includes("18.2") || sectionIdx === 3) ? (
+                <Chapter18InteractiveLesson module="wallet_abstraction_pipeline" isTi={isTi} />
+              ) : null}
+              {chapter.slug === "intro-to-bitcoin-script-optional-track" && (section.heading.includes("18.3") || sectionIdx === 4) ? (
+                <Chapter18InteractiveLesson module="transaction_lifecycle_flow" isTi={isTi} />
               ) : null}
               </React.Fragment>
               );
