@@ -94,11 +94,11 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               // Allow Vercel Live feedback in development only
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.supabase.co https://*.supabase.in https://vercel.live",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com data:",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.supabase.co https://*.supabase.in https://vercel.live https://assets.vercel.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://vercel.live",
+              "font-src 'self' https://fonts.gstatic.com https://vercel.live https://assets.vercel.com data:",
               "img-src 'self' data: https: blob:",
-              "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://vercel.live wss://vercel.live https://*.pusher.com wss://*.pusher.com",
+              "connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://vercel.live wss://vercel.live https://*.pusher.com wss://*.pusher.com https://vercel.com https://assets.vercel.com",
               "frame-src 'self' https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",

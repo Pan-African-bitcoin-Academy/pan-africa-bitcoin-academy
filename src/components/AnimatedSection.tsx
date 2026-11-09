@@ -67,18 +67,18 @@ export function AnimatedSection({
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
         if (once) {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting || entry.boundingClientRect.bottom < 0) {
             setIsVisible(true);
             observerRef.current?.disconnect();
             observerRef.current = null;
           }
           return;
         }
-        setIsVisible(entry.isIntersecting);
+        setIsVisible(entry.isIntersecting || entry.boundingClientRect.bottom < 0);
       },
       {
         threshold,
-        rootMargin: fadeOut ? '-50px 0px -50px 0px' : '-30px 0px',
+        rootMargin: fadeOut ? '0px 0px -50px 0px' : '0px 0px -30px 0px',
       }
     );
     observerRef.current.observe(el);
@@ -109,4 +109,3 @@ export function AnimatedSection({
     </div>
   );
 }
-

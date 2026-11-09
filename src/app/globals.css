@@ -542,6 +542,8 @@ button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-us
 
 .animate-heading-reveal {
   animation: headingReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {

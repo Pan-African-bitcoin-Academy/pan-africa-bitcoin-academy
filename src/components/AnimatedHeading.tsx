@@ -11,9 +11,17 @@ interface AnimatedHeadingProps {
   className?: string;
   /** Optional delay in ms before animation runs when in view */
   delay?: number;
+  /** Whether to animate once and remain visible (default true) */
+  once?: boolean;
 }
 
-export function AnimatedHeading({ as: Tag, children, className = '', delay = 0 }: AnimatedHeadingProps) {
+export function AnimatedHeading({
+  as: Tag,
+  children,
+  className = '',
+  delay = 0,
+  once = true,
+}: AnimatedHeadingProps) {
   const ref = useRef<HTMLHeadingElement>(null);
   const [inView, setInView] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -33,13 +41,25 @@ export function AnimatedHeading({ as: Tag, children, className = '', delay = 0 }
     }
     const el = ref.current;
     if (!el) return;
+
     const obs = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.1, rootMargin: '-20px 0px -20px 0px' }
+      ([entry]) => {
+        // If element is intersecting or has already scrolled past the top of the viewport
+        if (entry.isIntersecting || entry.boundingClientRect.bottom < 0) {
+          setInView(true);
+          if (once) {
+            obs.disconnect();
+          }
+        } else if (!once) {
+          setInView(false);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
     );
+
     obs.observe(el);
     return () => obs.disconnect();
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, once]);
 
   const show = inView || prefersReducedMotion;
   const animateClass = show && !prefersReducedMotion ? 'animate-heading-reveal' : 'animate-heading-initial';

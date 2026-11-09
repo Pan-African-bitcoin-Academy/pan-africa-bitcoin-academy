@@ -193,7 +193,7 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li>
-      <Link href={href} className="block py-1 text-zinc-500 transition-colors hover:text-cyan-300 sm:py-0 sm:inline-block">
+      <Link href={href} prefetch={false} className="block py-1 text-zinc-500 transition-colors hover:text-cyan-300 sm:py-0 sm:inline-block">
         {children}
       </Link>
     </li>

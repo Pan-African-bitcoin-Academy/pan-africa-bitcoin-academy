@@ -81,7 +81,9 @@ export function ChapterAccessCheck({ chapterNumber, chapterSlug, children }: Cha
         }
 
         const data = await response.json();
-        console.log('Chapter access check result:', data);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Chapter access check result:', data);
+        }
 
         if (!data.hasAccess) {
           // No access - redirect based on reason

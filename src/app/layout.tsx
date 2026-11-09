@@ -182,14 +182,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preload critical background image for faster loading - SEO optimized */}
-        <link
-          rel="preload"
-          href="/images/bitcoin-bg.jpg"
-          as="image"
-          fetchPriority="high"
-          type="image/jpeg"
-        />
         {/* SEO: Background image meta for Eritrea, Uganda, Africa Bitcoin education */}
         <meta
           name="image"
