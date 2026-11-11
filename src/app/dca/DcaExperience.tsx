@@ -2226,9 +2226,6 @@ export default function DcaExperience() {
                         <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
                           Portfolio value vs. recorded spending
                         </h3>
-                        <p className="mt-1 text-xs text-zinc-500 max-w-xl">
-                          Real-time valuation of your accumulated bitcoin based on current spot price ({market?.currentPrice ? formatCurrency(market.currentPrice, 0) : '—'}) compared against all recorded spending.
-                        </p>
                       </div>
 
                       {latestPurchase && (
@@ -2340,9 +2337,6 @@ export default function DcaExperience() {
                         <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
                           Bitcoin accumulation and average cost
                         </h3>
-                        <p className="mt-1 text-xs text-zinc-500 max-w-xl">
-                          Tracks accumulated bitcoin alongside your dollar-weighted average acquisition price including all recorded exchange fees.
-                        </p>
                       </div>
 
                       {latestPurchase && (
@@ -2490,9 +2484,6 @@ export default function DcaExperience() {
                       <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
                         Monthly manual contributions
                       </h3>
-                      <p className="mt-1 text-xs text-zinc-500 max-w-xl">
-                        Total fiat capital committed per calendar month, aggregating manual purchase entries and recorded transaction fees.
-                      </p>
                     </div>
 
                     <div className="flex flex-wrap sm:flex-col sm:items-end gap-1 bg-zinc-50/80 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-zinc-100">
