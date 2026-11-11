@@ -254,6 +254,19 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
    Run the SQL schema in Supabase SQL Editor:
    - See `supabase/schema.sql` for the complete schema
    - Optional: Add sample data with `supabase/sample-data.sql`
+   - Apply the additive migration in `supabase/migrations/` to enable watch-only DCA wallets; do not drop or recreate existing DCA tables.
+
+### Watch-only DCA wallet setup
+
+The DCA dashboard can monitor Bitcoin mainnet addresses and account-level xpub/ypub/zpub imports. It does not accept private keys or seed phrases. Output descriptors and multisig imports are not supported yet.
+
+Before enabling wallet connections in a deployment:
+
+- Configure the server-only `DCA_WALLET_ENCRYPTION_KEY` with a securely generated, stable 32-byte key (hex or base64). Back it up securely; changing it without re-encrypting stored wallet data makes existing imports unreadable.
+- Configure a strong `CRON_SECRET` so the Vercel scheduled wallet synchronization can authenticate.
+- Apply the additive watch-only wallet migration in Supabase before deploying the feature.
+
+Neither secret should use a `NEXT_PUBLIC_` prefix. Students should only enter public addresses or extended public keys; the platform never needs recovery phrases or spending credentials.
 
 5. **Run the development server**
 ```bash

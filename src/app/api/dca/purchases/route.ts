@@ -29,6 +29,8 @@ function responseWithSession(
 }
 
 function validPurchase(body: Record<string, unknown>): boolean {
+  const isInWallet = body.isInWallet === true;
+  const depositedToWalletId = body.depositedToWalletId;
   return isDate(body.purchaseDate) &&
     numberInRange(body.amountUsd, 0.01, 1_000_000_000) &&
     numberInRange(body.btcPrice, 0.01, 1_000_000_000) &&
@@ -37,7 +39,16 @@ function validPurchase(body: Record<string, unknown>): boolean {
     typeof body.transactionId === 'string' &&
     body.transactionId.length <= 200 &&
     typeof body.notes === 'string' &&
-    body.notes.length <= 2000;
+    body.notes.length <= 2000 &&
+    (body.isInWallet === undefined || typeof body.isInWallet === 'boolean') &&
+    (depositedToWalletId === undefined || depositedToWalletId === null ||
+      (typeof depositedToWalletId === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(depositedToWalletId))) &&
+    (body.walletTransferDate === undefined || body.walletTransferDate === null || isDate(body.walletTransferDate)) &&
+    (isInWallet
+      ? typeof depositedToWalletId === 'string' && isDate(body.walletTransferDate)
+      : (depositedToWalletId === undefined || depositedToWalletId === null || depositedToWalletId === '') &&
+        (body.walletTransferDate === undefined || body.walletTransferDate === null || body.walletTransferDate === ''));
 }
 
 function mapPurchase(body: Record<string, unknown>) {
@@ -49,7 +60,25 @@ function mapPurchase(body: Record<string, unknown>) {
     fees_usd: body.feesUsd,
     transaction_id: body.transactionId,
     notes: body.notes,
+    deposited_to_wallet_id: body.isInWallet === true ? body.depositedToWalletId : null,
+    is_in_wallet: body.isInWallet === true,
+    wallet_transfer_date: body.isInWallet === true ? body.walletTransferDate : null,
   };
+}
+
+async function ownsWallet(userId: string, walletId: unknown): Promise<boolean> {
+  if (typeof walletId !== 'string') return false;
+  const { data, error } = await supabaseAdmin
+    .from('dca_wallets')
+    .select('id')
+    .eq('id', walletId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) {
+    console.error('Failed to validate linked DCA wallet:', error);
+    throw new Error('Unable to verify the selected wallet.');
+  }
+  return Boolean(data);
 }
 
 export async function GET(request: NextRequest) {
@@ -77,10 +106,20 @@ export async function POST(request: NextRequest) {
   if (!body || typeof body !== 'object' || !validPurchase(body as Record<string, unknown>)) {
     return responseWithSession({ error: 'Enter valid purchase details.' }, 400, session);
   }
+  const values = body as Record<string, unknown>;
+  if (values.isInWallet === true) {
+    try {
+      if (!await ownsWallet(session.userId, values.depositedToWalletId)) {
+        return responseWithSession({ error: 'Select one of your connected wallets for this manual record.' }, 400, session);
+      }
+    } catch {
+      return responseWithSession({ error: 'Unable to verify the selected wallet.' }, 500, session);
+    }
+  }
 
   const { data, error } = await supabaseAdmin
     .from('dca_purchases')
-    .insert({ ...mapPurchase(body as Record<string, unknown>), user_id: session.userId })
+    .insert({ ...mapPurchase(values), user_id: session.userId })
     .select('*')
     .single();
 
@@ -102,6 +141,15 @@ export async function PATCH(request: NextRequest) {
   const values = body as Record<string, unknown>;
   if (typeof values.id !== 'string' || !validPurchase(values)) {
     return responseWithSession({ error: 'Enter valid purchase details.' }, 400, session);
+  }
+  if (values.isInWallet === true) {
+    try {
+      if (!await ownsWallet(session.userId, values.depositedToWalletId)) {
+        return responseWithSession({ error: 'Select one of your connected wallets for this manual record.' }, 400, session);
+      }
+    } catch {
+      return responseWithSession({ error: 'Unable to verify the selected wallet.' }, 500, session);
+    }
   }
 
   const { data, error } = await supabaseAdmin

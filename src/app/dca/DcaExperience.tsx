@@ -22,7 +22,6 @@ import {
   CircleAlert,
   Clock3,
   Coins,
-  Copy,
   Download,
   Key,
   LogOut,
@@ -39,6 +38,13 @@ import {
 } from 'lucide-react';
 import { CryptoAuthModal } from '@/components/dca/CryptoAuthModal';
 import { LinkCryptoKeyModal } from '@/components/dca/LinkCryptoKeyModal';
+import ConnectWalletModal from '@/components/dca/ConnectWalletModal';
+import WalletDashboard, {
+  type ManualPortfolioRecord,
+  type WalletRecord,
+  type WalletSnapshotRecord,
+  type WalletTxRecord,
+} from '@/components/dca/WalletDashboard';
 import { ForgotPasswordModal } from '@/components/ForgotPasswordModal';
 import {
   Area,
@@ -46,7 +52,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -92,6 +97,9 @@ interface DcaPurchase {
   feesUsd: number;
   transactionId: string;
   notes: string;
+  depositedToWalletId: string | null;
+  isInWallet: boolean;
+  walletTransferDate: string | null;
 }
 
 interface MarketData {
@@ -337,6 +345,13 @@ function readPurchase(value: Record<string, unknown>): DcaPurchase {
     feesUsd: Number(value.feesUsd ?? value.fees_usd ?? 0),
     transactionId: String(value.transactionId ?? value.transaction_id ?? ''),
     notes: String(value.notes ?? ''),
+    depositedToWalletId: typeof (value.depositedToWalletId ?? value.deposited_to_wallet_id) === 'string'
+      ? String(value.depositedToWalletId ?? value.deposited_to_wallet_id)
+      : null,
+    isInWallet: value.isInWallet === true || value.is_in_wallet === true,
+    walletTransferDate: typeof (value.walletTransferDate ?? value.wallet_transfer_date) === 'string'
+      ? String(value.walletTransferDate ?? value.wallet_transfer_date)
+      : null,
   };
 }
 
@@ -493,7 +508,7 @@ function SimulationTooltip({ active, payload, valuationMode }: SimulationTooltip
 
 interface PortfolioValueTooltipProps {
   active?: boolean;
-  payload?: any[];
+  payload?: Array<{ payload: { date: string; value?: number; contributions?: number } }>;
   currentPrice: number;
 }
 
@@ -545,7 +560,7 @@ function PortfolioValueTooltip({ active, payload, currentPrice }: PortfolioValue
 
 interface AccumulationTooltipProps {
   active?: boolean;
-  payload?: any[];
+  payload?: Array<{ payload: { date: string; btc?: number; averagePrice?: number } }>;
   currentPrice: number;
 }
 
@@ -598,7 +613,7 @@ function AccumulationTooltip({ active, payload, currentPrice }: AccumulationTool
 
 interface MonthlyContributionsTooltipProps {
   active?: boolean;
-  payload?: any[];
+  payload?: Array<{ payload: { label: string; btc?: number; contributions: number } }>;
 }
 
 function MonthlyContributionsTooltip({ active, payload }: MonthlyContributionsTooltipProps) {
@@ -650,6 +665,12 @@ export default function DcaExperience() {
   const [section, setSection] = useState<Section>('overview');
   const [plans, setPlans] = useState<DcaPlan[]>([]);
   const [purchases, setPurchases] = useState<DcaPurchase[]>([]);
+  // --- Watch-only wallet state (additive — does not replace any DCA state) ---
+  const [wallets, setWallets] = useState<WalletRecord[]>([]);
+  const [walletTxs, setWalletTxs] = useState<WalletTxRecord[]>([]);
+  const [walletSnapshots, setWalletSnapshots] = useState<WalletSnapshotRecord[]>([]);
+  const [walletError, setWalletError] = useState('');
+  const [connectWalletOpen, setConnectWalletOpen] = useState(false);
   const [storageReady, setStorageReady] = useState(false);
   const [market, setMarket] = useState<MarketData | null>(null);
   const [marketError, setMarketError] = useState('');
@@ -687,6 +708,8 @@ export default function DcaExperience() {
   const [purchaseFees, setPurchaseFees] = useState('0');
   const [purchaseTxid, setPurchaseTxid] = useState('');
   const [purchaseNotes, setPurchaseNotes] = useState('');
+  const [purchaseWalletId, setPurchaseWalletId] = useState('');
+  const [purchaseWalletTransferDate, setPurchaseWalletTransferDate] = useState(todayInputValue);
   const [isBtcManual, setIsBtcManual] = useState(false);
   const purchaseFormRef = useRef<HTMLDivElement>(null);
 
@@ -864,9 +887,23 @@ export default function DcaExperience() {
     let active = true;
     const loadAccountRecords = async () => {
       try {
-        const [planResponse, purchaseResponse] = await Promise.all([
+        const [planResponse, purchaseResponse, walletResponse] = await Promise.all([
           requestJson('/api/dca/plans'),
           requestJson('/api/dca/purchases'),
+          // Load wallets in parallel — failure does not break DCA records
+          fetch('/api/dca/wallets', { credentials: 'include' })
+            .then(async (response) => {
+              const data = await response.json() as {
+                error?: string;
+                wallets?: unknown[];
+                transactions?: unknown[];
+                snapshots?: unknown[];
+              };
+              return response.ok
+                ? data
+                : { error: data.error || 'Could not load connected wallets.', wallets: [], transactions: [] };
+            })
+            .catch(() => ({ error: 'Could not load connected wallets.', wallets: [], transactions: [] })),
         ]);
         if (!active) return;
         const accountPlans = Array.isArray(planResponse.plans)
@@ -877,6 +914,22 @@ export default function DcaExperience() {
           : [];
         setPlans(accountPlans);
         setPurchases(accountPurchases);
+        // Load wallet data (additive — does not affect DCA state)
+        const walletData = walletResponse as {
+          wallets?: unknown[];
+          transactions?: unknown[];
+          snapshots?: unknown[];
+        };
+        setWalletError('error' in walletResponse && typeof walletResponse.error === 'string' ? walletResponse.error : '');
+        if (Array.isArray(walletData.wallets)) {
+          setWallets(walletData.wallets as WalletRecord[]);
+        }
+        if (Array.isArray(walletData.transactions)) {
+          setWalletTxs(walletData.transactions as WalletTxRecord[]);
+        }
+        if (Array.isArray(walletData.snapshots)) {
+          setWalletSnapshots(walletData.snapshots as WalletSnapshotRecord[]);
+        }
         setErrorMessage('');
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify({ plans: accountPlans, purchases: accountPurchases }));
@@ -1168,6 +1221,9 @@ export default function DcaExperience() {
         feesUsd,
         transactionId: purchaseTxid.trim(),
         notes: purchaseNotes.trim(),
+        depositedToWalletId: purchaseWalletId || null,
+        isInWallet: Boolean(purchaseWalletId),
+        walletTransferDate: purchaseWalletId ? purchaseWalletTransferDate : null,
       };
       const saved = await updatePurchase(draft, existing ? 'PATCH' : 'POST');
       setPurchases((current) => existing
@@ -1191,6 +1247,8 @@ export default function DcaExperience() {
     setPurchaseFees('0');
     setPurchaseTxid('');
     setPurchaseNotes('');
+    setPurchaseWalletId('');
+    setPurchaseWalletTransferDate(todayInputValue());
     setIsBtcManual(false);
   };
 
@@ -1204,6 +1262,8 @@ export default function DcaExperience() {
     setPurchaseFees(String(purchase.feesUsd));
     setPurchaseTxid(purchase.transactionId);
     setPurchaseNotes(purchase.notes);
+    setPurchaseWalletId(purchase.isInWallet ? purchase.depositedToWalletId ?? '' : '');
+    setPurchaseWalletTransferDate(purchase.walletTransferDate ?? todayInputValue());
     setIsBtcManual(true);
     setTimeout(() => {
       purchaseFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1255,6 +1315,93 @@ export default function DcaExperience() {
     const start = Date.now() - Number(marketDays) * 24 * 60 * 60 * 1000;
     return market.candles.filter((candle) => candle.timestamp >= start);
   }, [market, marketDays]);
+
+  // --- Wallet callbacks (additive — DCA records unaffected) ---
+  const handleWalletConnected = useCallback((
+    wallet: WalletRecord,
+    transactions: WalletTxRecord[],
+    snapshots: WalletSnapshotRecord[],
+  ) => {
+    setWalletError('');
+    setWallets((prev) => [wallet, ...prev.filter((w) => w.id !== wallet.id)]);
+    setWalletTxs((prev) => {
+      const existing = prev.filter((tx) => tx.wallet_id !== wallet.id);
+      return [...transactions, ...existing];
+    });
+    setWalletSnapshots((prev) => [
+      ...prev.filter((snapshot) => snapshot.wallet_id !== wallet.id),
+      ...snapshots,
+    ]);
+  }, []);
+
+  const handleWalletRemoved = useCallback((walletId: string) => {
+    setWallets((prev) => prev.filter((w) => w.id !== walletId));
+    setWalletTxs((prev) => prev.filter((tx) => tx.wallet_id !== walletId));
+    setWalletSnapshots((prev) => prev.filter((snapshot) => snapshot.wallet_id !== walletId));
+    setPurchases((prev) => prev.map((purchase) => purchase.depositedToWalletId === walletId
+      ? { ...purchase, depositedToWalletId: null, isInWallet: false, walletTransferDate: null }
+      : purchase));
+  }, []);
+
+  const handleWalletsRefreshed = useCallback((
+    updatedWallets: WalletRecord[],
+    transactions: WalletTxRecord[],
+    snapshots: WalletSnapshotRecord[],
+  ) => {
+    setWallets((prev) => {
+      const updated = new Map(updatedWallets.map((w) => [w.id, w]));
+      return prev.map((w) => updated.get(w.id) ?? w);
+    });
+    setWalletTxs(transactions);
+    setWalletSnapshots(snapshots);
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated || wallets.length === 0) return;
+
+    let active = true;
+    let syncing = false;
+    const synchronize = async () => {
+      if (syncing || document.visibilityState !== 'visible') return;
+      syncing = true;
+      try {
+        const response = await fetch('/api/dca/wallets/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({}),
+        });
+        const data = await response.json() as {
+          error?: string;
+          message?: string;
+          syncedCount?: number;
+          updatedWallets?: WalletRecord[];
+          transactions?: WalletTxRecord[];
+          snapshots?: WalletSnapshotRecord[];
+        };
+        if (!response.ok) throw new Error(data.error || 'Automatic wallet refresh failed.');
+        if (!active) return;
+        handleWalletsRefreshed(data.updatedWallets ?? [], data.transactions ?? [], data.snapshots ?? []);
+        setWalletError(
+          typeof data.syncedCount === 'number' && data.syncedCount < wallets.length
+            ? data.message || 'Some connected wallets could not be refreshed.'
+            : '',
+        );
+      } catch (error) {
+        if (active) {
+          setWalletError(error instanceof Error ? error.message : 'Automatic wallet refresh failed.');
+        }
+      } finally {
+        syncing = false;
+      }
+    };
+
+    const timer = window.setInterval(() => void synchronize(), 5 * 60 * 1000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [handleWalletsRefreshed, isAuthenticated, wallets.length]);
 
   const setSectionAndScroll = (next: Section) => {
     clearMessages();
@@ -1889,9 +2036,19 @@ export default function DcaExperience() {
                 Enter purchases you made independently. PBA does not verify, control, or hold any bitcoin represented here.
               </p>
             </div>
-            <button type="button" onClick={exportPurchases} disabled={!purchases.length} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 shadow-xs hover:bg-zinc-50 disabled:opacity-40">
-              <Download className="h-4 w-4" aria-hidden="true" /> Export CSV
-            </button>
+            <div className="flex flex-wrap gap-2 items-center">
+              <button
+                type="button"
+                onClick={() => setConnectWalletOpen(true)}
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#f97602] bg-orange-50 px-4 text-sm font-semibold text-[#f97602] shadow-xs hover:bg-orange-100 transition-colors"
+              >
+                <Wallet className="h-4 w-4" aria-hidden="true" />
+                Connect Bitcoin Wallet
+              </button>
+              <button type="button" onClick={exportPurchases} disabled={!purchases.length} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 shadow-xs hover:bg-zinc-50 disabled:opacity-40">
+                <Download className="h-4 w-4" aria-hidden="true" /> Export CSV
+              </button>
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <MetricPanel label="Recorded spending" value={formatCurrency(purchaseStats.totalSpent)} detail="Excludes fees" />
@@ -2009,6 +2166,37 @@ export default function DcaExperience() {
                 <Field label="Optional transaction ID">
                   <input className={inputClass} maxLength={200} value={purchaseTxid} onChange={(event) => setPurchaseTxid(event.target.value)} />
                 </Field>
+                {wallets.length > 0 && (
+                  <Field
+                    label="Already held in a connected wallet?"
+                    hint="Mark a purchase only when its bitcoin is already included in a connected wallet balance. This prevents that manual entry from being counted twice in the combined view."
+                  >
+                    <select
+                      className={inputClass}
+                      value={purchaseWalletId}
+                      onChange={(event) => setPurchaseWalletId(event.target.value)}
+                    >
+                      <option value="">No — keep separate from wallet holdings</option>
+                      {wallets.map((wallet) => (
+                        <option key={wallet.id} value={wallet.id}>{wallet.label}</option>
+                      ))}
+                    </select>
+                  </Field>
+                )}
+                {purchaseWalletId && (
+                  <Field
+                    label="Date included in connected wallet"
+                    hint="Use the date the bitcoin arrived in this wallet. This is used only to avoid double-counting in portfolio history."
+                  >
+                    <input
+                      className={inputClass}
+                      type="date"
+                      value={purchaseWalletTransferDate}
+                      onChange={(event) => setPurchaseWalletTransferDate(event.target.value)}
+                      required
+                    />
+                  </Field>
+                )}
                 <Field label="Notes">
                   <textarea className={`${inputClass} min-h-20 resize-y`} maxLength={2000} value={purchaseNotes} onChange={(event) => setPurchaseNotes(event.target.value)} />
                 </Field>
@@ -2425,6 +2613,40 @@ export default function DcaExperience() {
               </Panel>
             </div>
           </div>
+
+          {/* ── Watch-Only Wallet Dashboard (additive; DCA records above remain unchanged) ── */}
+          <div>
+            <div className="mb-3 flex items-center gap-2">
+              <span className="inline-flex h-2 w-2 rounded-full bg-[#f97602]" />
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Watch-Only Wallets</p>
+            </div>
+            <WalletDashboard
+              wallets={wallets}
+              transactions={walletTxs}
+              snapshots={walletSnapshots}
+              manualRecords={purchases.map((purchase): ManualPortfolioRecord => ({
+                purchaseDate: purchase.purchaseDate,
+                btcReceived: purchase.btcReceived,
+                isInWallet: purchase.isInWallet,
+                walletTransferDate: purchase.walletTransferDate,
+              }))}
+              priceHistory={market?.prices ?? []}
+              error={walletError}
+              currentPriceBtc={market?.currentPrice ?? null}
+              dcaPortfolioBtc={purchaseStats.totalBtc}
+              separateManualBtc={purchases.reduce(
+                (total, purchase) => total + (purchase.isInWallet ? 0 : purchase.btcReceived),
+                0,
+              )}
+              linkedManualBtc={purchases.reduce(
+                (total, purchase) => total + (purchase.isInWallet ? purchase.btcReceived : 0),
+                0,
+              )}
+              onWalletRemoved={handleWalletRemoved}
+              onWalletsRefreshed={handleWalletsRefreshed}
+              onConnectWallet={() => setConnectWalletOpen(true)}
+            />
+          </div>
         </div>
       )}
 
@@ -2495,6 +2717,12 @@ export default function DcaExperience() {
           setForgotPasswordEmail('');
         }}
         initialEmail={forgotPasswordEmail}
+      />
+      {/* Watch-only Bitcoin wallet connection modal */}
+      <ConnectWalletModal
+        isOpen={connectWalletOpen}
+        onClose={() => setConnectWalletOpen(false)}
+        onWalletConnected={handleWalletConnected}
       />
       </div>
     </main>
