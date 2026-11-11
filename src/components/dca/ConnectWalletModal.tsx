@@ -159,7 +159,6 @@ export default function ConnectWalletModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-zinc-900">Connect Watch-Only Bitcoin Wallet</h3>
-              <p className="text-xs text-zinc-500">Read-only balance &amp; transaction tracking</p>
             </div>
           </div>
           <button
@@ -246,7 +245,7 @@ export default function ConnectWalletModal({
                 placeholder={
                   tab === 'address'
                     ? 'Paste your Bitcoin receiving address (e.g., bc1q...)'
-                    : 'Paste your read-only extended public key (zpub... or xpub...)'
+                    : 'Paste your extended public key (zpub... or xpub...)'
                 }
                 className="w-full font-mono rounded-xl border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-[#f97602] focus:outline-none focus:ring-2 focus:ring-[#f97602]/20"
                 required
