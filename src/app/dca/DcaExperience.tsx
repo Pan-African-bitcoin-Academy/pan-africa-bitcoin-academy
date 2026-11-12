@@ -52,6 +52,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -2523,6 +2524,7 @@ export default function DcaExperience() {
                           </linearGradient>
                         </defs>
                         <CartesianGrid stroke="#f4f4f5" strokeDasharray="3 3" vertical={false} />
+                        <Legend verticalAlign="top" height={28} />
                         <XAxis
                           dataKey="label"
                           tick={{ fill: '#71717a', fontSize: 11 }}
@@ -2530,17 +2532,36 @@ export default function DcaExperience() {
                           tickLine={false}
                         />
                         <YAxis
+                          yAxisId="spending"
                           tick={{ fill: '#71717a', fontSize: 11 }}
                           tickFormatter={(v: number) => `$${Math.round(v).toLocaleString()}`}
                           axisLine={false}
                           tickLine={false}
                           width={54}
                         />
+                        <YAxis
+                          yAxisId="btc"
+                          orientation="right"
+                          tick={{ fill: '#0284c7', fontSize: 11 }}
+                          tickFormatter={(v: number) => v.toFixed(6)}
+                          axisLine={false}
+                          tickLine={false}
+                          width={72}
+                        />
                         <Tooltip content={<MonthlyContributionsTooltip />} cursor={{ fill: '#f4f4f5', opacity: 0.6 }} />
                         <Bar
+                          yAxisId="spending"
                           dataKey="contributions"
                           name="Spending and fees"
                           fill="url(#fintechBarGrad)"
+                          radius={[8, 8, 2, 2]}
+                          maxBarSize={56}
+                        />
+                        <Bar
+                          yAxisId="btc"
+                          dataKey="btc"
+                          name="Bitcoin acquired (BTC)"
+                          fill="#0284c7"
                           radius={[8, 8, 2, 2]}
                           maxBarSize={56}
                         />
@@ -2557,7 +2578,7 @@ export default function DcaExperience() {
                 {purchases.length === 0 ? (
                   <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">No manual purchase records yet.</p>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="max-h-96 space-y-3 overflow-y-auto pr-2">
                     {purchases.map((purchase) => {
                       const isCurrentEditing = editingPurchaseId === purchase.id;
                       return (
