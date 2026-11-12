@@ -91,6 +91,7 @@ interface DcaPlan {
 
 interface DcaPurchase {
   id: string;
+  planId: string | null;
   purchaseDate: string;
   amountUsd: number;
   btcPrice: number;
@@ -339,6 +340,9 @@ function readPlan(value: Record<string, unknown>): DcaPlan {
 function readPurchase(value: Record<string, unknown>): DcaPurchase {
   return {
     id: String(value.id),
+    planId: typeof (value.planId ?? value.plan_id) === 'string'
+      ? String(value.planId ?? value.plan_id)
+      : null,
     purchaseDate: String(value.purchaseDate ?? value.purchase_date),
     amountUsd: Number(value.amountUsd ?? value.amount_usd),
     btcPrice: Number(value.btcPrice ?? value.btc_price),
@@ -709,6 +713,8 @@ export default function DcaExperience() {
   const [purchaseFees, setPurchaseFees] = useState('0');
   const [purchaseTxid, setPurchaseTxid] = useState('');
   const [purchaseNotes, setPurchaseNotes] = useState('');
+  const [purchasePlanId, setPurchasePlanId] = useState('');
+  const [portfolioFilterId, setPortfolioFilterId] = useState('all');
   const [purchaseWalletId, setPurchaseWalletId] = useState('');
   const [purchaseWalletTransferDate, setPurchaseWalletTransferDate] = useState(todayInputValue);
   const [isBtcManual, setIsBtcManual] = useState(false);
@@ -984,10 +990,21 @@ export default function DcaExperience() {
     });
   }, [historicalPrices, simContribution, simEndDate, simFee, simFrequency, simInitial, simStartDate]);
 
+  const portfolioPurchases = useMemo(() => {
+    if (portfolioFilterId === 'all') return purchases;
+    if (portfolioFilterId === 'main') return purchases.filter((purchase) => !purchase.planId);
+    return purchases.filter((purchase) => purchase.planId === portfolioFilterId);
+  }, [portfolioFilterId, purchases]);
+
+  const portfolioLabel = (planId: string | null) => {
+    if (!planId) return 'Main portfolio (Other)';
+    return plans.find((plan) => plan.id === planId)?.name ?? 'Main portfolio (Other)';
+  };
+
   const purchaseStats = useMemo(() => {
-    const totalSpent = purchases.reduce((sum, item) => sum + item.amountUsd, 0);
-    const totalFees = purchases.reduce((sum, item) => sum + item.feesUsd, 0);
-    const totalBtc = purchases.reduce((sum, item) => sum + item.btcReceived, 0);
+    const totalSpent = portfolioPurchases.reduce((sum, item) => sum + item.amountUsd, 0);
+    const totalFees = portfolioPurchases.reduce((sum, item) => sum + item.feesUsd, 0);
+    const totalBtc = portfolioPurchases.reduce((sum, item) => sum + item.btcReceived, 0);
     const value = totalBtc * (market?.currentPrice ?? 0);
     return {
       totalSpent,
@@ -997,11 +1014,11 @@ export default function DcaExperience() {
       profitLoss: value - totalSpent - totalFees,
       averagePrice: totalBtc > 0 ? (totalSpent + totalFees) / totalBtc : 0,
     };
-  }, [purchases, market?.currentPrice]);
+  }, [portfolioPurchases, market?.currentPrice]);
 
   const monthlyData = useMemo(() => {
     const buckets = new Map<string, { month: string; contributions: number; btc: number }>();
-    for (const purchase of [...purchases].sort((a, b) => a.purchaseDate.localeCompare(b.purchaseDate))) {
+    for (const purchase of [...portfolioPurchases].sort((a, b) => a.purchaseDate.localeCompare(b.purchaseDate))) {
       const month = purchase.purchaseDate.slice(0, 7);
       const entry = buckets.get(month) ?? { month, contributions: 0, btc: 0 };
       entry.contributions += purchase.amountUsd + purchase.feesUsd;
@@ -1013,12 +1030,12 @@ export default function DcaExperience() {
       label: new Intl.DateTimeFormat('en', { month: 'short', year: '2-digit', timeZone: 'UTC' })
         .format(new Date(`${item.month}-01T00:00:00.000Z`)),
     }));
-  }, [purchases]);
+  }, [portfolioPurchases]);
 
   const purchaseHistory = useMemo(() => {
     let totalSpent = 0;
     let totalBtc = 0;
-    return [...purchases]
+    return [...portfolioPurchases]
       .sort((a, b) => a.purchaseDate.localeCompare(b.purchaseDate))
       .map((purchase) => {
         totalSpent += purchase.amountUsd + purchase.feesUsd;
@@ -1031,7 +1048,7 @@ export default function DcaExperience() {
           averagePrice: totalBtc > 0 ? totalSpent / totalBtc : 0,
         };
       });
-  }, [purchases, market?.currentPrice]);
+  }, [portfolioPurchases, market?.currentPrice]);
 
   const latestPurchase = purchaseHistory.length > 0 ? purchaseHistory[purchaseHistory.length - 1] : null;
   const portfolioNetPnl = latestPurchase ? latestPurchase.value - latestPurchase.contributions : 0;
@@ -1178,6 +1195,10 @@ export default function DcaExperience() {
         await requestJson(`/api/dca/plans?id=${encodeURIComponent(plan.id)}`, { method: 'DELETE' });
       }
       setPlans((current) => current.filter((item) => item.id !== plan.id));
+      setPurchases((current) => current.map((purchase) =>
+        purchase.planId === plan.id ? { ...purchase, planId: null } : purchase
+      ));
+      if (portfolioFilterId === plan.id) setPortfolioFilterId('all');
       setNotice('Plan deleted.');
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to delete this plan.');
@@ -1215,6 +1236,7 @@ export default function DcaExperience() {
         : undefined;
       const draft: DcaPurchase = {
         id: existing?.id ?? crypto.randomUUID(),
+        planId: purchasePlanId || null,
         purchaseDate,
         amountUsd,
         btcPrice,
@@ -1248,6 +1270,7 @@ export default function DcaExperience() {
     setPurchaseFees('0');
     setPurchaseTxid('');
     setPurchaseNotes('');
+    setPurchasePlanId('');
     setPurchaseWalletId('');
     setPurchaseWalletTransferDate(todayInputValue());
     setIsBtcManual(false);
@@ -1263,6 +1286,7 @@ export default function DcaExperience() {
     setPurchaseFees(String(purchase.feesUsd));
     setPurchaseTxid(purchase.transactionId);
     setPurchaseNotes(purchase.notes);
+    setPurchasePlanId(purchase.planId ?? '');
     setPurchaseWalletId(purchase.isInWallet ? purchase.depositedToWalletId ?? '' : '');
     setPurchaseWalletTransferDate(purchase.walletTransferDate ?? todayInputValue());
     setIsBtcManual(true);
@@ -1291,9 +1315,10 @@ export default function DcaExperience() {
 
   const exportPurchases = () => {
     const rows = [
-      ['Date', 'Amount USD', 'BTC price USD', 'BTC received', 'Fees USD', 'Transaction ID', 'Notes'],
+      ['Date', 'Portfolio', 'Amount USD', 'BTC price USD', 'BTC received', 'Fees USD', 'Transaction ID', 'Notes'],
       ...purchases.map((item) => [
         item.purchaseDate,
+        portfolioLabel(item.planId),
         item.amountUsd,
         item.btcPrice,
         item.btcReceived,
@@ -2038,6 +2063,19 @@ export default function DcaExperience() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2 items-center">
+              <label className="flex min-h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-600">
+                <span className="font-semibold">Portfolio</span>
+                <select
+                  className="max-w-48 bg-transparent font-semibold text-zinc-900 outline-none"
+                  value={portfolioFilterId}
+                  onChange={(event) => setPortfolioFilterId(event.target.value)}
+                  aria-label="Filter portfolio records"
+                >
+                  <option value="all">All portfolios</option>
+                  <option value="main">Main portfolio (Other)</option>
+                  {plans.map((plan) => <option key={plan.id} value={plan.id}>{plan.name}</option>)}
+                </select>
+              </label>
               <button
                 type="button"
                 onClick={() => setConnectWalletOpen(true)}
@@ -2105,6 +2143,19 @@ export default function DcaExperience() {
                   )}
                 </div>
                 <form onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                <Field
+                  label="Add to portfolio"
+                  hint="Choose a DCA plan to keep this purchase with that plan, or use Main portfolio (Other) for purchases outside your plans."
+                >
+                  <select
+                    className={inputClass}
+                    value={purchasePlanId}
+                    onChange={(event) => setPurchasePlanId(event.target.value)}
+                  >
+                    <option value="">Main portfolio (Other)</option>
+                    {plans.map((plan) => <option key={plan.id} value={plan.id}>{plan.name}</option>)}
+                  </select>
+                </Field>
                 <Field label="Purchase date">
                   <input className={inputClass} type="date" value={purchaseDate} onChange={(event) => setPurchaseDate(event.target.value)} required />
                 </Field>
@@ -2572,14 +2623,19 @@ export default function DcaExperience() {
               )}
               <Panel>
                 <div className="mb-4 flex items-center justify-between gap-3">
-                  <div><h3 className="font-semibold text-zinc-900">Purchase records</h3><p className="mt-1 text-xs text-zinc-500">{purchases.length} manual entries</p></div>
+                  <div>
+                    <h3 className="font-semibold text-zinc-900">Purchase records</h3>
+                    <p className="mt-1 text-xs text-zinc-500">{portfolioPurchases.length} manual entries</p>
+                  </div>
                   <LockKeyhole className="h-4 w-4 text-cyan-600" aria-hidden="true" />
                 </div>
-                {purchases.length === 0 ? (
-                  <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">No manual purchase records yet.</p>
+                {portfolioPurchases.length === 0 ? (
+                  <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">
+                    {purchases.length === 0 ? 'No manual purchase records yet.' : 'No purchase records in this portfolio yet.'}
+                  </p>
                 ) : (
                   <div className="max-h-96 space-y-3 overflow-y-auto pr-2">
-                    {purchases.map((purchase) => {
+                    {portfolioPurchases.map((purchase) => {
                       const isCurrentEditing = editingPurchaseId === purchase.id;
                       return (
                         <article
@@ -2601,6 +2657,7 @@ export default function DcaExperience() {
                                   </span>
                                 )}
                               </div>
+                              <p className="mt-1 text-xs font-medium text-[#f97602]">{portfolioLabel(purchase.planId)}</p>
                               <p className="mt-1 text-sm text-zinc-700">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
                               <p className="mt-1 text-xs text-zinc-500">Price {formatCurrency(purchase.btcPrice)} · Fees {formatCurrency(purchase.feesUsd)}</p>
                               {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">ID: {purchase.transactionId}</p>}

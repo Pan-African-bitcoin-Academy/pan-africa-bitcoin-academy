@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { attachSessionRefresh, requireStudent } from '@/lib/session';
-import { parseAndValidateWalletInput } from '@/lib/bitcoin/watchWallet';
-import { syncDetectedWallet } from '@/lib/bitcoin/blockchainClient';
 import { decryptWalletWatchData } from '@/lib/bitcoin/walletEncryption';
-import { recordWalletBalanceSnapshot } from '@/lib/bitcoin/walletSnapshots';
-
-const DERIVATION_SCHEMES = ['bip44', 'bip49', 'bip84', 'bip86'] as const;
-
-function isDerivationScheme(value: string) {
-  return DERIVATION_SCHEMES.includes(value as (typeof DERIVATION_SCHEMES)[number]);
-}
+import { syncWalletRecord } from '@/lib/bitcoin/syncWalletRecord';
 
 function publicWallet(wallet: Record<string, unknown>) {
   return {
@@ -72,53 +64,11 @@ export async function POST(request: NextRequest) {
 
     for (const wallet of wallets) {
       try {
-        // Derive/determine addresses to check
-        const watchData = decryptWalletWatchData(wallet.watch_data_encrypted);
-        const parsed = parseAndValidateWalletInput(
-          watchData,
-          isDerivationScheme(wallet.format) ? wallet.format : undefined,
-        );
-        const syncResult = await syncDetectedWallet(parsed);
-
-        const { error: updateErr } = await supabaseAdmin
-          .from('dca_wallets')
-          .update({
-            balance_sats: syncResult.balanceSats,
-            unconfirmed_balance_sats: syncResult.unconfirmedBalanceSats,
-            sync_status: 'synced',
-            sync_error: null,
-            last_synced_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', wallet.id)
-          .eq('user_id', session.userId);
-        if (updateErr) throw new Error('Unable to save the updated wallet balance.');
-
-        // Upsert transactions
-        if (syncResult.transactions.length > 0) {
-          const txRows = syncResult.transactions.map((tx) => ({
-            wallet_id: wallet.id,
-            user_id: session.userId,
-            txid: tx.txid,
-            tx_type: tx.txType,
-            amount_sats: tx.amountSats,
-            fee_sats: tx.feeSats,
-            confirmed: tx.confirmed,
-            confirmations: tx.confirmations,
-            block_height: tx.blockHeight,
-            block_time: tx.blockTime,
-          }));
-
-          const { error: txError } = await supabaseAdmin
-            .from('dca_wallet_transactions')
-            .upsert(txRows, { onConflict: 'wallet_id,txid' });
-          if (txError) throw new Error('Unable to save wallet transaction history.');
-        }
-
-        await recordWalletBalanceSnapshot({
-          walletId: wallet.id,
+        await syncWalletRecord({
+          id: wallet.id,
           userId: session.userId,
-          balanceSats: syncResult.balanceSats,
+          format: wallet.format,
+          encryptedWatchData: wallet.watch_data_encrypted,
         });
       } catch (error) {
         console.error(`Error syncing wallet ${wallet.id}:`, error);

@@ -31,6 +31,7 @@ function responseWithSession(
 function validPurchase(body: Record<string, unknown>): boolean {
   const isInWallet = body.isInWallet === true;
   const depositedToWalletId = body.depositedToWalletId;
+  const planId = body.planId;
   return isDate(body.purchaseDate) &&
     numberInRange(body.amountUsd, 0.01, 1_000_000_000) &&
     numberInRange(body.btcPrice, 0.01, 1_000_000_000) &&
@@ -40,6 +41,9 @@ function validPurchase(body: Record<string, unknown>): boolean {
     body.transactionId.length <= 200 &&
     typeof body.notes === 'string' &&
     body.notes.length <= 2000 &&
+    (planId === undefined || planId === null ||
+      (typeof planId === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(planId))) &&
     (body.isInWallet === undefined || typeof body.isInWallet === 'boolean') &&
     (depositedToWalletId === undefined || depositedToWalletId === null ||
       (typeof depositedToWalletId === 'string' &&
@@ -53,6 +57,7 @@ function validPurchase(body: Record<string, unknown>): boolean {
 
 function mapPurchase(body: Record<string, unknown>) {
   return {
+    plan_id: body.planId ?? null,
     purchase_date: body.purchaseDate,
     amount_usd: body.amountUsd,
     btc_price: body.btcPrice,
@@ -77,6 +82,21 @@ async function ownsWallet(userId: string, walletId: unknown): Promise<boolean> {
   if (error) {
     console.error('Failed to validate linked DCA wallet:', error);
     throw new Error('Unable to verify the selected wallet.');
+  }
+  return Boolean(data);
+}
+
+async function ownsPlan(userId: string, planId: unknown): Promise<boolean> {
+  if (typeof planId !== 'string') return false;
+  const { data, error } = await supabaseAdmin
+    .from('dca_plans')
+    .select('id')
+    .eq('id', planId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) {
+    console.error('Failed to validate DCA purchase plan:', error);
+    throw new Error('Unable to verify the selected plan.');
   }
   return Boolean(data);
 }
@@ -107,6 +127,15 @@ export async function POST(request: NextRequest) {
     return responseWithSession({ error: 'Enter valid purchase details.' }, 400, session);
   }
   const values = body as Record<string, unknown>;
+  if (values.planId != null) {
+    try {
+      if (!await ownsPlan(session.userId, values.planId)) {
+        return responseWithSession({ error: 'Select one of your saved DCA plans.' }, 400, session);
+      }
+    } catch {
+      return responseWithSession({ error: 'Unable to verify the selected plan.' }, 500, session);
+    }
+  }
   if (values.isInWallet === true) {
     try {
       if (!await ownsWallet(session.userId, values.depositedToWalletId)) {
@@ -141,6 +170,15 @@ export async function PATCH(request: NextRequest) {
   const values = body as Record<string, unknown>;
   if (typeof values.id !== 'string' || !validPurchase(values)) {
     return responseWithSession({ error: 'Enter valid purchase details.' }, 400, session);
+  }
+  if (values.planId != null) {
+    try {
+      if (!await ownsPlan(session.userId, values.planId)) {
+        return responseWithSession({ error: 'Select one of your saved DCA plans.' }, 400, session);
+      }
+    } catch {
+      return responseWithSession({ error: 'Unable to verify the selected plan.' }, 500, session);
+    }
   }
   if (values.isInWallet === true) {
     try {
