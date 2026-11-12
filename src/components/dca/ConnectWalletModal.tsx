@@ -158,7 +158,7 @@ export default function ConnectWalletModal({
               <Wallet className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-zinc-900">Connect Watch-Only Bitcoin Wallet</h3>
+              <h3 className="text-lg font-bold text-zinc-900">Connect Bitcoin wallet</h3>
             </div>
           </div>
           <button
@@ -175,13 +175,12 @@ export default function ConnectWalletModal({
           <div className="flex items-start gap-2.5">
             <ShieldCheck className="h-5 w-5 shrink-0 text-amber-700 mt-0.5" />
             <p className="text-xs leading-relaxed text-amber-900">
-              <strong className="font-semibold">Strictly Watch-Only:</strong> Your wallet is connected in watch-only mode.
-              Pan-African Bitcoin Academy can view publicly accessible Bitcoin information but cannot access, move, or spend your funds.
-              <span className="font-semibold text-amber-950"> Never enter your recovery phrase or private keys.</span>
+              <strong className="font-semibold">Watch-only:</strong> PBA can view public data but cannot spend your bitcoin.
+              <span className="font-semibold text-amber-950"> Never enter private keys or recovery phrases.</span>
             </p>
           </div>
           <p className="mt-2 pl-7 text-[11px] leading-relaxed text-amber-900">
-            Bitcoin addresses are queried through public Esplora data providers. Your extended public key is encrypted in PBA storage and is not sent to those providers.
+            Addresses use public explorers; extended keys are encrypted and not shared.
           </p>
         </div>
 
@@ -208,7 +207,7 @@ export default function ConnectWalletModal({
                   : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
-              2. Extended Key (xpub/ypub/zpub)
+              2. Extended Key
             </button>
           </div>
 
@@ -221,7 +220,7 @@ export default function ConnectWalletModal({
                 type="text"
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
-                placeholder="e.g., Sparrow Vault, BlueWallet DCA, Trezor Savings"
+                placeholder="e.g., Savings wallet"
                 className="w-full rounded-xl border border-zinc-200 px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#f97602] focus:outline-none focus:ring-2 focus:ring-[#f97602]/20"
                 required
               />
@@ -230,12 +229,12 @@ export default function ConnectWalletModal({
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-semibold text-zinc-700">
-                  {tab === 'address' && 'Bitcoin Public Address'}
-                  {tab === 'xpub' && 'Extended Public Key (xpub, ypub, or zpub)'}
+                  {tab === 'address' && 'Bitcoin address'}
+                  {tab === 'xpub' && 'Extended public key (xpub/ypub/zpub)'}
                 </label>
                 <span className="text-[11px] text-zinc-400">
-                  {tab === 'address' && 'Legacy (1...), SegWit (3..., bc1q...), or Taproot (bc1p...)'}
-                  {tab === 'xpub' && 'Account-level, mainnet public extended keys only'}
+                  {tab === 'address' && '1..., 3..., or bc1...'}
+                  {tab === 'xpub' && 'Mainnet account key'}
                 </span>
               </div>
               <textarea
@@ -244,8 +243,8 @@ export default function ConnectWalletModal({
                 onChange={(e) => setWatchInput(e.target.value)}
                 placeholder={
                   tab === 'address'
-                    ? 'Paste your Bitcoin receiving address (e.g., bc1q...)'
-                    : 'Paste your extended public key (zpub... or xpub...)'
+                    ? 'Paste a Bitcoin address'
+                    : 'Paste an xpub, ypub, or zpub'
                 }
                 className="w-full font-mono rounded-xl border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-[#f97602] focus:outline-none focus:ring-2 focus:ring-[#f97602]/20"
                 required
@@ -270,7 +269,7 @@ export default function ConnectWalletModal({
                   <option value="bip86">Taproot (BIP86)</option>
                 </select>
                 <p className="mt-1 text-[11px] text-zinc-500">
-                  ypub and zpub keys identify BIP49 and BIP84. For an xpub, choose the account path shown in your wallet.
+                  For xpubs, choose the account path shown in your wallet.
                 </p>
               </div>
             )}
@@ -315,22 +314,6 @@ export default function ConnectWalletModal({
               </div>
             )}
 
-            {/* Compatible Wallets Helper Box */}
-            <div className="rounded-xl bg-zinc-50 border border-zinc-200/80 p-3 text-[11px] text-zinc-600">
-              <p className="font-medium text-zinc-800 mb-1">Compatible with standard Bitcoin wallets:</p>
-              <div className="flex flex-wrap gap-1.5 text-zinc-600">
-                <span className="rounded bg-white px-2 py-0.5 border border-zinc-200 font-medium">BlueWallet</span>
-                <span className="rounded bg-white px-2 py-0.5 border border-zinc-200 font-medium">Sparrow Wallet</span>
-                <span className="rounded bg-white px-2 py-0.5 border border-zinc-200 font-medium">Electrum</span>
-                <span className="rounded bg-white px-2 py-0.5 border border-zinc-200 font-medium">Ledger</span>
-                <span className="rounded bg-white px-2 py-0.5 border border-zinc-200 font-medium">Trezor</span>
-                <span className="rounded bg-white px-2 py-0.5 border border-zinc-200 font-medium">Coldcard</span>
-              </div>
-              <p className="mt-1.5 text-zinc-500">
-                In your wallet, export a public receiving address or account-level extended public key. Never export private keys or recovery phrases.
-              </p>
-            </div>
-
             {/* Actions */}
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
@@ -352,7 +335,7 @@ export default function ConnectWalletModal({
                     Synchronizing on-chain...
                   </>
                 ) : (
-                  'Connect Watch-Only Wallet'
+                  'Connect wallet'
                 )}
               </button>
             </div>

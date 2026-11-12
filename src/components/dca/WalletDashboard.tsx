@@ -513,7 +513,7 @@ export default function WalletDashboard({
   }, [onWalletsRefreshed]);
 
   const handleRemove = useCallback(async (wallet: WalletRecord) => {
-    if (!window.confirm(`Disconnect wallet "${wallet.label}"? This removes on-chain data only. Manual DCA records are unaffected.`)) return;
+    if (!window.confirm(`Disconnect "${wallet.label}"? Purchase records will remain.`)) return;
     setActionError('');
     setRemovingId(wallet.id);
     try {
@@ -602,7 +602,7 @@ export default function WalletDashboard({
                 <div className="mt-0.5 text-xs font-semibold text-[#f97602]">≈ {formatCurrencyUsd(combinedBtc * currentPriceBtc, 0)}</div>
               )}
               <p className="mt-1.5 text-[10px] text-orange-800 leading-snug">
-                Excludes {formatBtc(Math.round(linkedManualBtc * SATS_PER_BTC))} BTC of manual purchases you marked as already held in connected wallets. Other transfers are not inferred.
+                Excludes {formatBtc(Math.round(linkedManualBtc * SATS_PER_BTC))} BTC already counted in wallet balances.
               </p>
             </div>
           </div>
@@ -617,7 +617,7 @@ export default function WalletDashboard({
           </div>
           <h3 className="font-semibold text-zinc-800">No wallets connected</h3>
           <p className="mt-1.5 text-sm text-zinc-500 max-w-sm mx-auto">
-            Connect a Bitcoin address, xpub, ypub, or zpub to automatically track your on-chain holdings alongside your DCA journal.
+            Track on-chain balances alongside manual purchases.
           </p>
           <button
             type="button"
@@ -625,7 +625,7 @@ export default function WalletDashboard({
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#f97602] px-5 py-2.5 text-sm font-bold text-white shadow-xs hover:bg-[#e06900] transition-colors"
           >
             <Wallet className="h-4 w-4" />
-            Connect Watch-Only Wallet
+            Connect wallet
           </button>
         </div>
       )}
@@ -635,7 +635,7 @@ export default function WalletDashboard({
           <div className="mb-4">
             <h3 className="font-semibold text-zinc-900">Portfolio history</h3>
             <p className="mt-1 text-xs leading-5 text-zinc-500">
-              Wallet balances are actual on-chain snapshots. Manual BTC follows your purchase and transfer dates. Combined USD uses the closest available BTC price sample.
+              Wallets use on-chain snapshots; manual BTC uses purchase and transfer dates.
             </p>
           </div>
           <div className="h-80 w-full min-w-0">

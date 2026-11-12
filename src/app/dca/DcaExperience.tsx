@@ -138,43 +138,43 @@ const sectionLinks: { id: Section; label: string; icon: typeof Activity }[] = [
 const lessons = [
   {
     title: 'What is dollar-cost averaging?',
-    body: 'Dollar-cost averaging (DCA) means investing a fixed amount on a regular schedule, regardless of the asset’s price. This changes the timing and size of each purchase; it does not remove market risk or guarantee a profit.',
+    body: 'DCA means investing a fixed amount on a regular schedule. It changes timing, not market risk.',
   },
   {
     title: 'How Bitcoin DCA works',
-    body: 'A person chooses an amount and schedule, then independently makes purchases on those dates. When the price is lower, the same amount buys more bitcoin; when it is higher, it buys less. This tool only models the schedule and does not make purchases.',
+    body: 'Set an amount and schedule. Each payment buys more bitcoin at lower prices and less at higher prices.',
   },
   {
     title: 'Why people use DCA',
-    body: 'A regular schedule can make a plan easier to follow and reduce the pressure to choose one perfect entry point. It also means continuing to buy through falling markets, so it is important to understand the potential losses first.',
+    body: 'A schedule reduces timing decisions, but you keep buying during downturns.',
   },
   {
     title: 'DCA versus a lump sum',
-    body: 'DCA spreads purchases over time, while a lump-sum approach invests an available amount at once. Their historical results vary by period and asset-price path. Neither approach is universally best, and past results do not predict future returns.',
+    body: 'DCA spreads purchases over time; a lump sum invests at once. Results depend on timing and market conditions.',
   },
   {
     title: 'Understanding Bitcoin volatility',
-    body: 'Bitcoin prices can move sharply in either direction. A portfolio can lose substantial value, including over long periods. A chart or historical simulation cannot show every possible future market condition.',
+    body: 'Bitcoin prices can rise or fall sharply, and portfolios can lose substantial value.',
   },
   {
     title: 'Risks and limitations',
-    body: 'DCA does not prevent loss, remove volatility, or ensure a positive return. Fees, spreads, taxes, missed purchases, market data gaps, and custody mistakes can all affect real outcomes. Never use money needed for essential expenses.',
+    body: 'DCA does not guarantee returns. Fees, taxes, and custody errors affect results; don’t invest essential funds.',
   },
   {
     title: 'Budgeting recurring purchases',
-    body: 'Before setting any schedule, consider your essential costs, emergency savings, debts, and local rules. A hypothetical plan should fit a budget you can sustain; there is no need to make real purchases to use this learning tool.',
+    body: 'Consider essential costs, savings, debts, and local rules before setting a recurring amount.',
   },
   {
     title: 'Bitcoin accumulation and self-custody',
-    body: 'Self-custody means controlling the keys needed to spend bitcoin yourself. It also means taking responsibility for backups and security. PBA does not hold bitcoin, request wallet credentials, or connect to a wallet.',
+    body: 'Self-custody gives you control of bitcoin and responsibility for key backups.',
   },
   {
     title: 'Transaction fees',
-    body: 'Fees reduce the amount that reaches a bitcoin balance or add to the cost basis, depending on how they are charged. Small, frequent purchases can make fixed fees especially significant. This planner models fees as a percentage of each contribution.',
+    body: 'Fees reduce the bitcoin received or increase its cost basis. Frequent small purchases can make fixed fees significant.',
   },
   {
     title: 'Reviewing a plan',
-    body: 'Review a plan against your budget and circumstances rather than recent price movements. Historical data is incomplete, and a strategy that performed well in one period may perform poorly in another.',
+    body: 'Review plans against your budget, not recent prices. Historical results don’t predict future performance.',
   },
 ];
 
@@ -1465,12 +1465,12 @@ export default function DcaExperience() {
             Keep stacking <span className="text-[#f97602]">sats.</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600 sm:text-base">
-            Learn the approach, explore historical data, and organize a hypothetical plan or purchases you enter yourself.
+            Learn about DCA, explore past prices, and track your purchases.
           </p>
         </div>
         <div className="flex items-start gap-2 rounded-xl border border-cyan-200 bg-cyan-50/70 p-3 text-xs leading-5 text-cyan-900 sm:max-w-sm">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" aria-hidden="true" />
-          <p>No trading, payments, wallet connection, or bitcoin custody. Your records are not verified by PBA.</p>
+          <p>Manual records are unverified.</p>
         </div>
       </header>
 
@@ -1523,8 +1523,8 @@ export default function DcaExperience() {
               <Key className="h-4 w-4" />
             </div>
             <div>
-              <p className="font-semibold text-zinc-900">Email-Free Cryptographic Accounts Available</p>
-              <p className="text-xs text-zinc-600">Access the DCA planner and dashboard with a private account key. No KYC, email, or personal data required.</p>
+              <p className="font-semibold text-zinc-900">Private-key account</p>
+              <p className="text-xs text-zinc-600">Access saved plans with your private key.</p>
             </div>
           </div>
           <button
@@ -1567,7 +1567,7 @@ export default function DcaExperience() {
                   onClick={() => setLinkKeyModalOpen(true)}
                   className="ml-2 font-medium text-[#f97602] underline decoration-orange-300 hover:text-[#d46200] cursor-pointer"
                 >
-                  Link Private Key (Email-Free Access)
+                  Link private key
                 </button>
               </span>
             )}
@@ -1594,7 +1594,7 @@ export default function DcaExperience() {
                   Understand the trade-offs before you make a plan.
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-                  DCA is a way of scheduling purchases—not a way to avoid risk or predict bitcoin’s price. Start with the short lessons, then test a hypothetical schedule with historical data.
+                  Learn how DCA works, then compare a sample schedule with historical prices.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <PrimaryButton onClick={() => setSectionAndScroll('learn')}>
@@ -1623,21 +1623,21 @@ export default function DcaExperience() {
             <InfoCard
               number="01"
               title="Learn"
-              text="Get familiar with schedules, fees, volatility, and the limitations of historical results."
+              text="Learn about schedules, fees, and volatility."
               action="Read the lessons"
               onClick={() => setSectionAndScroll('learn')}
             />
             <InfoCard
               number="02"
               title="Plan"
-              text="Calculate scheduled contributions and compare their assumptions with your budget."
+              text="Set contribution amounts and dates."
               action="Build a hypothetical plan"
               onClick={() => setSectionAndScroll('planner')}
             />
             <InfoCard
               number="03"
               title="Track"
-              text="Keep a private manual journal of purchases you made independently of PBA."
+              text="Record purchases and view your portfolio."
               action="Open your dashboard"
               onClick={() => setSectionAndScroll('dashboard')}
             />
@@ -1648,7 +1648,7 @@ export default function DcaExperience() {
             <div>
               <h2 className="font-semibold text-zinc-900">What DCA does—and does not do</h2>
               <p className="mt-1 text-sm leading-6 text-zinc-600">
-                Regular purchases can spread entry points over time. They cannot guarantee gains, prevent losses, or make bitcoin suitable for every person. This is educational information, not financial advice.
+                Regular buys don’t guarantee gains or prevent losses.
               </p>
             </div>
           </Panel>
@@ -1661,7 +1661,7 @@ export default function DcaExperience() {
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Learn DCA</p>
             <h2 className="mt-2 text-2xl font-bold text-zinc-900">A beginner’s guide to recurring purchases</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-              Open each lesson at your own pace. The examples describe hypothetical activity; they are not recommendations to buy bitcoin.
+              Short lessons on DCA, fees, and risk.
             </p>
             <div className="mt-5 divide-y divide-zinc-200">
               {lessons.map((lesson, index) => (
@@ -1683,12 +1683,12 @@ export default function DcaExperience() {
               <BookOpen className="h-5 w-5 text-[#f97602]" aria-hidden="true" />
               <h3 className="mt-3 font-semibold text-zinc-900">Quick knowledge check</h3>
               <p className="mt-2 text-sm leading-6 text-zinc-600">
-                Does a regular bitcoin purchase schedule guarantee that you will make a profit?
+                Can DCA guarantee a profit?
               </p>
               <details className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
                 <summary className="cursor-pointer text-sm font-semibold text-[#f97602]">Show answer</summary>
                 <p className="mt-2 text-sm leading-6 text-zinc-600">
-                  No. DCA changes purchase timing, but it does not remove price risk or guarantee a positive return.
+                  No. It changes timing, not price risk.
                 </p>
               </details>
             </Panel>
@@ -1696,7 +1696,7 @@ export default function DcaExperience() {
               <CircleAlert className="h-5 w-5 text-red-600" aria-hidden="true" />
               <h3 className="mt-3 font-semibold text-zinc-900">Risk reminder</h3>
               <p className="mt-2 text-sm leading-6 text-zinc-600">
-                Bitcoin is volatile. Consider your circumstances and local regulations, and do not risk money needed for essentials.
+                Bitcoin is volatile. Don’t risk money needed for essentials.
               </p>
             </Panel>
             <PrimaryButton onClick={() => setSectionAndScroll('planner')}>
@@ -1712,7 +1712,6 @@ export default function DcaExperience() {
             <div className="mb-5">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Hypothetical plan</p>
               <h2 className="mt-2 text-2xl font-bold text-zinc-900">{editingPlanId ? 'Edit your plan' : 'Build a DCA plan'}</h2>
-              <p className="mt-2 text-sm text-zinc-500">This tool schedules ideas only. It never makes a purchase.</p>
             </div>
             <form onSubmit={handleSavePlan} className="grid gap-4 sm:grid-cols-2">
               <Field label="Plan name">
@@ -1726,7 +1725,7 @@ export default function DcaExperience() {
                   <option value="daily">Daily</option><option value="weekly">Weekly</option><option value="biweekly">Biweekly</option><option value="monthly">Monthly</option>
                 </select>
               </Field>
-              <Field label="Estimated fee (%)" hint="Modeled as a percentage deducted from each contribution.">
+              <Field label="Estimated fee (%)" hint="Deducted from each contribution.">
                 <input className={inputClass} type="number" min="0" max="100" step="0.01" value={planFee} onChange={(event) => setPlanFee(event.target.value)} />
               </Field>
               <Field label="Start date">
@@ -1757,7 +1756,7 @@ export default function DcaExperience() {
           <div className="space-y-5">
             <Panel>
               <h3 className="font-semibold text-zinc-900">Plan estimate</h3>
-              <p className="mt-1 text-xs leading-5 text-zinc-500">Contribution totals are schedule arithmetic. BTC uses today’s price only as an illustration—not a forecast.</p>
+              <p className="mt-1 text-xs leading-5 text-zinc-500">BTC estimate uses today’s price, not a forecast.</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <Metric label="Scheduled purchases" value={String(planSchedule.length + (planInitialAmount > 0 ? 1 : 0))} />
                 <Metric label="Planned contributions" value={formatCurrency(plannedContributions)} />
@@ -1820,7 +1819,7 @@ export default function DcaExperience() {
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Historical what-if</p>
                 <h2 className="mt-2 text-2xl font-bold text-zinc-900">Test a schedule against historical prices</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-                  Hypothetically buy at each scheduled date using the nearest available historical price. Price gaps over three days are skipped and shown in the results.
+                  Uses the nearest price for each date; skips gaps over three days.
                 </p>
                 <p className="mt-2 text-xs text-zinc-500">
                   Historical market-price data from January 2020 onward{historicalPriceSource ? ` · Source: ${historicalPriceSource}` : ''}.
@@ -1847,7 +1846,7 @@ export default function DcaExperience() {
               <Field label="Estimated fee (%)">
                 <input className={inputClass} type="number" min="0" max="100" step="0.01" value={simFee} onChange={(event) => setSimFee(event.target.value)} />
               </Field>
-              <Field label="Start date" hint={historicalPrices[0] ? `Available from ${formatDate(new Date(historicalPrices[0].timestamp).toISOString().slice(0, 10))}` : 'Select a date from January 1, 2020 onward.'}>
+              <Field label="Start date" hint={historicalPrices[0] ? `From ${formatDate(new Date(historicalPrices[0].timestamp).toISOString().slice(0, 10))}` : 'From Jan 1, 2020.'}>
                 <input className={inputClass} type="date" min={SIMULATION_START_DATE} max={todayInputValue()} value={simStartDate} onChange={(event) => setSimStartDate(event.target.value)} />
               </Field>
               <Field label="End date">
@@ -1864,7 +1863,7 @@ export default function DcaExperience() {
           {!historicalPriceLoading && !historicalPriceError && simulation && (
             <>
               {simulation.purchases.length === 0 ? (
-                <Panel><p className="text-sm text-zinc-600">No scheduled purchases could be matched to the available price history. Choose dates from January 2020 onward.</p></Panel>
+                <Panel><p className="text-sm text-zinc-600">No prices for these dates. Choose a range with historical data.</p></Panel>
               ) : (
                 <>
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -1882,8 +1881,8 @@ export default function DcaExperience() {
                         </h3>
                         <p className="mt-0.5 text-xs text-zinc-500">
                           {valuationMode === 'historical'
-                            ? "Dynamic historical portfolio valuation based on Bitcoin's daily market price at each scheduled date."
-                            : `Evaluates accumulated bitcoin value at the period-end price (${formatCurrency(simulation.endPrice)}).`}
+                            ? "Value uses Bitcoin's daily price for each date."
+                            : `Value at the period-end price (${formatCurrency(simulation.endPrice)}).`}
                         </p>
                       </div>
 
@@ -2047,7 +2046,7 @@ export default function DcaExperience() {
             <Panel><p className="text-sm text-zinc-600">Enter a positive contribution and a valid date range to view a simulation.</p></Panel>
           )}
           <p className="text-xs leading-5 text-zinc-400">
-            Historical market-price samples from {historicalPriceSource || 'Blockchain.com'}. Simulation ignores exchange spreads, taxes, withdrawals, and individual execution differences. This is hypothetical analysis, not a recommendation.
+            Historical results are illustrative, not predictive. Source: {historicalPriceSource || 'Blockchain.com'}.
           </p>
         </div>
       )}
@@ -2056,11 +2055,7 @@ export default function DcaExperience() {
         <div className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Manual records only</p>
               <h2 className="mt-2 text-2xl font-bold text-zinc-900">Your purchase journal</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-                Enter purchases you made independently. PBA does not verify, control, or hold any bitcoin represented here.
-              </p>
             </div>
             <div className="flex flex-wrap gap-2 items-center">
               <label className="flex min-h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-600">
@@ -2145,7 +2140,7 @@ export default function DcaExperience() {
                 <form onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <Field
                   label="Add to portfolio"
-                  hint="Choose a DCA plan to keep this purchase with that plan, or use Main portfolio (Other) for purchases outside your plans."
+                  hint="Assign this purchase to a saved plan or the main portfolio."
                 >
                   <select
                     className={inputClass}
@@ -2202,11 +2197,11 @@ export default function DcaExperience() {
                           Formula: ${Number(purchaseAmount || 0).toLocaleString()} ÷ ${Number(purchasePrice || 0).toLocaleString()} = <strong className="text-[#f97602] font-bold">{calculatedBtcFromInputs} BTC</strong>
                         </span>
                         {isBtcManual && purchaseBtc !== calculatedBtcFromInputs && (
-                          <span className="text-amber-600 font-medium">Custom override active. Click &quot;Recalculate&quot; above to re-apply formula.</span>
+                          <span className="text-amber-600 font-medium">Custom BTC amount. Recalculate to use amount ÷ price.</span>
                         )}
                       </div>
                     ) : (
-                      'Enter amount & price to auto-calculate, or enter the amount shown on your exchange receipt.'
+                      'Enter BTC received, or provide amount and price to calculate it.'
                     )
                   }
                 >
@@ -2221,7 +2216,7 @@ export default function DcaExperience() {
                 {wallets.length > 0 && (
                   <Field
                     label="Already held in a connected wallet?"
-                    hint="Mark a purchase only when its bitcoin is already included in a connected wallet balance. This prevents that manual entry from being counted twice in the combined view."
+                    hint="Select a wallet only if this BTC is already included in its balance."
                   >
                     <select
                       className={inputClass}
@@ -2238,7 +2233,7 @@ export default function DcaExperience() {
                 {purchaseWalletId && (
                   <Field
                     label="Date included in connected wallet"
-                    hint="Use the date the bitcoin arrived in this wallet. This is used only to avoid double-counting in portfolio history."
+                    hint="Date the BTC arrived in this wallet."
                   >
                     <input
                       className={inputClass}
@@ -2761,7 +2756,7 @@ export default function DcaExperience() {
       )}
 
       <footer className="mt-8 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-xs leading-5 text-zinc-500 sm:p-5 shadow-xs">
-        Bitcoin is volatile and you could lose some or all of the value of any purchase. Dollar-cost averaging does not eliminate risk or guarantee returns. PBA provides educational and analytical tools only—not financial advice, trading, custody, payments, or verification of manually entered records. Historical outcomes are hypothetical and do not predict future performance.
+        Bitcoin is volatile; DCA does not guarantee returns. PBA provides education, not financial advice or custody.
       </footer>
       <CryptoAuthModal
         isOpen={signInModalOpen}
