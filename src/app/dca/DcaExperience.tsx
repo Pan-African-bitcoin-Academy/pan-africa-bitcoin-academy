@@ -28,10 +28,13 @@ import {
   Gauge,
   Lightbulb,
   LockKeyhole,
+  Maximize2,
+  Minimize2,
   Pencil,
   Play,
   Plus,
   RefreshCw,
+  RotateCcw,
   ShieldCheck,
   Trash2,
   Wallet,
@@ -226,55 +229,152 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
   const bottom = 32;
   const plotWidth = width - left - right;
   const plotHeight = height - top - bottom;
+
   const validCurrentPrice = currentPrice !== null && Number.isFinite(currentPrice) && currentPrice > 0
-    ? currentPrice
-    : null;
-  const low = Math.min(...data.map((c) => c.low), validCurrentPrice ?? Infinity);
+    ? currentPrice : null;
+
+  const low  = Math.min(...data.map((c) => c.low),  validCurrentPrice ?? Infinity);
   const high = Math.max(...data.map((c) => c.high), validCurrentPrice ?? -Infinity);
   const range = high - low || high * 0.02 || 1;
-  const minPrice = low - range * 0.06;
+  const minPrice = low  - range * 0.06;
   const maxPrice = high + range * 0.06;
   const yForPrice = (price: number) =>
     top + ((maxPrice - price) / (maxPrice - minPrice)) * plotHeight;
-  const candleStep = plotWidth / data.length;
+
+  const candleStep  = plotWidth / data.length;
   const candleWidth = Math.max(2, Math.min(10, candleStep * 0.64));
-  const tickCount = Math.min(5, data.length);
+  const tickCount   = Math.min(5, data.length);
+
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const activeIndex = hoveredIndex === null ? null : Math.min(hoveredIndex, data.length - 1);
+  const [isFullscreen, setIsFullscreen]  = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  /* sync state with the browser fullscreen API */
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      containerRef.current?.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  };
+
+  const resetView = () => setHoveredIndex(null);
+
+  const activeIndex   = hoveredIndex === null ? null : Math.min(hoveredIndex, data.length - 1);
   const selectedIndex = activeIndex ?? data.length - 1;
   const selectedCandle = data[selectedIndex];
   const isBullish = selectedCandle.close >= selectedCandle.open;
+
   const selectedDate = new Intl.DateTimeFormat('en', {
     month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
   }).format(selectedCandle.timestamp);
+
   const axisCurrency = new Intl.NumberFormat('en-US', {
     style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1,
   });
 
-  // Last candle anchor for the TradingView-style price line
-  const lastCandle = data[data.length - 1];
-  const lastCandleX = left + (data.length - 0.5) * candleStep;
-  const priceY = validCurrentPrice !== null ? yForPrice(validCurrentPrice) : null;
+  /* period performance */
+  const firstOpen    = data[0]?.open ?? 0;
+  const lastClose    = data[data.length - 1]?.close ?? 0;
+  const periodChange = firstOpen > 0 ? ((lastClose - firstOpen) / firstOpen) * 100 : 0;
+  const isPeriodUp   = lastClose >= firstOpen;
 
-  // Hover crosshair
-  const hoverX = activeIndex !== null ? left + (activeIndex + 0.5) * candleStep : null;
+  /* last candle anchor for TradingView-style price line */
+  const lastCandle  = data[data.length - 1];
+  const lastCandleX = left + (data.length - 0.5) * candleStep;
+  const priceY      = validCurrentPrice !== null ? yForPrice(validCurrentPrice) : null;
+
+  /* hover crosshair */
+  const hoverX      = activeIndex !== null ? left + (activeIndex + 0.5) * candleStep : null;
   const hoverCloseY = activeIndex !== null ? yForPrice(data[activeIndex].close) : null;
 
+  /* floating tooltip: flip to left half when cursor is in right half */
+  const tooltipW = 148;
+  const tooltipH = 90;
+  const tooltipOnRight = activeIndex !== null && activeIndex < data.length / 2;
+  const tooltipX = hoverX !== null
+    ? (tooltipOnRight ? hoverX + 14 : hoverX - tooltipW - 14)
+    : 0;
+  const tooltipY = hoverCloseY !== null
+    ? Math.max(top + 2, Math.min(top + plotHeight - tooltipH - 2, hoverCloseY - tooltipH / 2))
+    : 0;
+
   return (
-    <div>
-      {/* OHLC info bar */}
+    <div
+      ref={containerRef}
+      className={cn(
+        'transition-all',
+        isFullscreen && 'bg-white p-6 overflow-auto flex flex-col gap-4',
+      )}
+    >
+      {/* ── Toolbar ── */}
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        {/* Period performance badge */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+          <span className={cn('font-bold flex items-center gap-1', isPeriodUp ? 'text-emerald-600' : 'text-rose-600')}>
+            {isPeriodUp ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+            {isPeriodUp ? '+' : ''}{periodChange.toFixed(2)}% period
+          </span>
+          <span className="text-zinc-400 hidden sm:inline">|</span>
+          <span className="text-zinc-500 hidden sm:inline">
+            Start <span className="font-semibold text-zinc-700">{formatCurrency(firstOpen, 0)}</span>
+          </span>
+          <span className="text-zinc-500 hidden sm:inline">
+            High <span className="font-semibold text-emerald-600">{formatCurrency(Math.max(...data.map(c => c.high)), 0)}</span>
+          </span>
+          <span className="text-zinc-500 hidden sm:inline">
+            Low <span className="font-semibold text-rose-600">{formatCurrency(Math.min(...data.map(c => c.low)), 0)}</span>
+          </span>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-1.5">
+          {/* Reset to latest candle */}
+          <button
+            type="button"
+            onClick={resetView}
+            disabled={hoveredIndex === null}
+            title="Reset to latest candle"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-600 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+            <span className="hidden sm:inline">Reset view</span>
+          </button>
+
+          {/* Fullscreen toggle */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Exit fullscreen' : 'Expand chart to fullscreen'}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-600 shadow-xs transition hover:border-orange-300 hover:bg-orange-50 hover:text-[#f97602]"
+          >
+            {isFullscreen
+              ? <Minimize2 className="h-3.5 w-3.5" aria-hidden="true" />
+              : <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />}
+            <span className="hidden sm:inline">{isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── OHLC info bar ── */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl bg-zinc-50 px-3 py-2 text-xs">
         <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-5">
           {[
-            { label: 'Date',  value: selectedDate,                          className: 'text-zinc-800' },
+            { label: 'Date',  value: selectedDate,                            className: 'text-zinc-800' },
             { label: 'Open',  value: formatCurrency(selectedCandle.open,  0), className: 'text-zinc-800' },
             { label: 'High',  value: formatCurrency(selectedCandle.high,  0), className: 'text-emerald-700' },
             { label: 'Low',   value: formatCurrency(selectedCandle.low,   0), className: 'text-rose-700' },
             { label: 'Close', value: formatCurrency(selectedCandle.close, 0), className: isBullish ? 'text-emerald-700' : 'text-rose-700' },
-          ].map((item, index) => (
+          ].map((item, idx) => (
             <div
               key={item.label}
-              className={`min-w-0 rounded-lg border border-zinc-100 bg-white px-2.5 py-2 ${index === 0 ? 'col-span-2 sm:col-span-1' : ''}`}
+              className={`min-w-0 rounded-lg border border-zinc-100 bg-white px-2.5 py-2 ${idx === 0 ? 'col-span-2 sm:col-span-1' : ''}`}
             >
               <span className="block text-[10px] font-medium uppercase tracking-wide text-zinc-400">{item.label}</span>
               <span className={`mt-0.5 block truncate font-mono text-xs font-semibold tabular-nums sm:text-sm ${item.className}`}>{item.value}</span>
@@ -283,12 +383,13 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* ── SVG chart ── */}
+      <div className={cn('overflow-x-auto', isFullscreen && 'flex-1')}>
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          className="block h-auto w-full min-w-[720px]"
+          className={cn('block h-auto w-full min-w-[720px]', isFullscreen && 'max-h-[calc(100vh-220px)]')}
           role="img"
-          aria-label="Bitcoin USD historical candlestick chart. The orange horizontal line marks the current Bitcoin price anchored to the last candle. Hover or use arrow keys to inspect candle prices."
+          aria-label="Bitcoin USD candlestick chart. The orange dashed line marks the live BTC price across the full chart. Hover or use arrow keys to inspect candles."
           tabIndex={0}
           onPointerMove={(event) => {
             const bounds = event.currentTarget.getBoundingClientRect();
@@ -300,14 +401,20 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
           onKeyDown={(event) => {
             if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
             event.preventDefault();
-            const direction = event.key === 'ArrowLeft' ? -1 : 1;
-            setHoveredIndex((current) =>
-              Math.max(0, Math.min(data.length - 1, (current ?? data.length - 1) + direction)),
+            const dir = event.key === 'ArrowLeft' ? -1 : 1;
+            setHoveredIndex((cur) =>
+              Math.max(0, Math.min(data.length - 1, (cur ?? data.length - 1) + dir)),
             );
           }}
           onPointerLeave={() => setHoveredIndex(null)}
         >
-          {/* Horizontal grid lines + left Y-axis labels */}
+          <defs>
+            <filter id="candle-tooltip-shadow" x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000" floodOpacity="0.08" />
+            </filter>
+          </defs>
+
+          {/* Grid lines */}
           {Array.from({ length: 6 }, (_, i) => {
             const price = maxPrice - ((maxPrice - minPrice) * i) / 5;
             const y = top + (plotHeight * i) / 5;
@@ -323,82 +430,97 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
 
           {/* Hover column highlight */}
           {activeIndex !== null && (
-            <rect
-              x={left + activeIndex * candleStep}
-              y={top}
-              width={candleStep}
-              height={plotHeight}
-              fill="#f4f4f5"
-              opacity="0.65"
-            />
+            <rect x={left + activeIndex * candleStep} y={top} width={candleStep} height={plotHeight} fill="#f4f4f5" opacity="0.65" />
           )}
 
           {/* Candles */}
           {data.map((candle, index) => {
             const x = left + (index + 0.5) * candleStep;
-            const openY = yForPrice(candle.open);
+            const openY  = yForPrice(candle.open);
             const closeY = yForPrice(candle.close);
-            const color = candle.close >= candle.open ? '#16a34a' : '#e11d48';
-            const bodyTop = Math.min(openY, closeY);
+            const color  = candle.close >= candle.open ? '#16a34a' : '#e11d48';
+            const bodyTop    = Math.min(openY, closeY);
             const bodyHeight = Math.max(2, Math.abs(openY - closeY));
             const date = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(candle.timestamp);
             return (
               <g key={candle.timestamp}>
-                <title>{`${date} · Open ${formatCurrency(candle.open)} · High ${formatCurrency(candle.high)} · Low ${formatCurrency(candle.low)} · Close ${formatCurrency(candle.close)}`}</title>
-                {/* Wick */}
+                <title>{`${date} · O ${formatCurrency(candle.open)} · H ${formatCurrency(candle.high)} · L ${formatCurrency(candle.low)} · C ${formatCurrency(candle.close)}`}</title>
                 <line x1={x} x2={x} y1={yForPrice(candle.high)} y2={yForPrice(candle.low)} stroke={color} strokeWidth="1.5" />
-                {/* Body */}
                 <rect x={x - candleWidth / 2} y={bodyTop} width={candleWidth} height={bodyHeight} fill={color} rx="1" />
               </g>
             );
           })}
 
-          {/* ── TradingView-style current price line ── */}
+          {/* ── Live price line: full-width horizontal at current price, dot at right edge ── */}
           {validCurrentPrice !== null && priceY !== null && (
             <g>
-              {/* Dashed line only from last candle to right label — not across all candles */}
-              <line
-                x1={lastCandleX}
-                x2={width - right + 1}
-                y1={priceY}
-                y2={priceY}
-                stroke="#f97602"
-                strokeDasharray="5 3"
-                strokeWidth="1.5"
-              />
-              {/* Outer pulse ring */}
-              <circle cx={lastCandleX} cy={priceY} r="8" fill="#f97602" opacity="0.15">
-                <animate attributeName="r"       values="5;10;5"       dur="2.2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.18;0;0.18"  dur="2.2s" repeatCount="indefinite" />
+              {/* Full-width dashed line spanning the entire chart plot area */}
+              <line x1={left} x2={width - right} y1={priceY} y2={priceY} stroke="#f97602" strokeDasharray="5 3" strokeWidth="1.5" />
+              {/* Pulsing dot at the RIGHT edge — where the line meets the price label */}
+              <circle cx={width - right} cy={priceY} r="8" fill="#f97602" opacity="0.15">
+                <animate attributeName="r"       values="5;10;5"      dur="2.2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.18;0;0.18" dur="2.2s" repeatCount="indefinite" />
               </circle>
-              {/* Inner solid dot */}
-              <circle cx={lastCandleX} cy={priceY} r="4" fill="#f97602">
+              <circle cx={width - right} cy={priceY} r="4" fill="#f97602">
                 <animate attributeName="opacity" values="1;0.4;1" dur="2.2s" repeatCount="indefinite" />
               </circle>
-              {/* Price pill label on the right axis */}
               <rect x={width - right + 4} y={priceY - 11} width={right - 8} height="22" rx="5" fill="#f97602" />
               <text x={width - right / 2 + 2} y={priceY + 4} textAnchor="middle" fill="white" fontSize="11" fontWeight="700">
                 {`BTC ${axisCurrency.format(validCurrentPrice)}`}
               </text>
-              {/* Small tick on the right border where line meets the label */}
               <line x1={width - right} x2={width - right + 4} y1={priceY} y2={priceY} stroke="#f97602" strokeWidth="1.5" />
             </g>
           )}
 
-          {/* ── Hover crosshair: vertical + horizontal ── */}
+          {/* ── Hover crosshair + floating tooltip ── */}
           {activeIndex !== null && hoverX !== null && hoverCloseY !== null && (
             <g>
               {/* Vertical hair */}
               <line x1={hoverX} x2={hoverX} y1={top} y2={top + plotHeight} stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="1" />
               {/* Horizontal hair */}
               <line x1={left} x2={width - right} y1={hoverCloseY} y2={hoverCloseY} stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="1" />
-              {/* Close price label on left Y-axis */}
+              {/* Left Y-axis close price label */}
               <rect x={0} y={hoverCloseY - 11} width={left - 4} height="22" rx="4" fill="#3f3f46" />
               <text x={(left - 4) / 2} y={hoverCloseY + 4} textAnchor="middle" fill="white" fontSize="11" fontWeight="600">
                 {axisCurrency.format(data[activeIndex].close)}
               </text>
-              {/* Dot at crosshair intersection */}
+              {/* Crosshair dot */}
               <circle cx={hoverX} cy={hoverCloseY} r="3.5" fill="white" stroke="#94a3b8" strokeWidth="1.5" />
+
+              {/* Bottom X-axis date pill */}
+              <rect x={hoverX - 30} y={height - bottom + 3} width="60" height="18" rx="4" fill="#3f3f46" />
+              <text x={hoverX} y={height - bottom + 15} textAnchor="middle" fill="white" fontSize="10" fontWeight="600">
+                {new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(data[activeIndex].timestamp)}
+              </text>
+
+              {/* Floating OHLC tooltip */}
+              {(() => {
+                const c   = data[activeIndex];
+                const chg = c.open > 0 ? ((c.close - c.open) / c.open) * 100 : 0;
+                const up  = c.close >= c.open;
+                return (
+                  <g filter="url(#candle-tooltip-shadow)">
+                    <rect x={tooltipX} y={tooltipY} width={tooltipW} height={tooltipH} rx="8" fill="white" stroke="#e4e4e7" strokeWidth="1" />
+                    {/* Candle direction badge */}
+                    <rect x={tooltipX + 8} y={tooltipY + 8} width={tooltipW - 16} height="18" rx="4" fill={up ? '#f0fdf4' : '#fff1f2'} />
+                    <text x={tooltipX + tooltipW / 2} y={tooltipY + 20} textAnchor="middle" fontSize="10" fontWeight="700" fill={up ? '#16a34a' : '#e11d48'}>
+                      {up ? '▲' : '▼'} {up ? '+' : ''}{chg.toFixed(2)}%
+                    </text>
+                    {/* O H L C rows */}
+                    {[
+                      { label: 'O', val: formatCurrency(c.open,  0), color: '#52525b' },
+                      { label: 'H', val: formatCurrency(c.high,  0), color: '#16a34a' },
+                      { label: 'L', val: formatCurrency(c.low,   0), color: '#e11d48' },
+                      { label: 'C', val: formatCurrency(c.close, 0), color: up ? '#16a34a' : '#e11d48' },
+                    ].map((row, ri) => (
+                      <g key={row.label}>
+                        <text x={tooltipX + 12} y={tooltipY + 44 + ri * 13} fontSize="10" fill="#a1a1aa">{row.label}:</text>
+                        <text x={tooltipX + tooltipW - 10} y={tooltipY + 44 + ri * 13} textAnchor="end" fontSize="10" fontWeight="600" fill={row.color}>{row.val}</text>
+                      </g>
+                    ))}
+                  </g>
+                );
+              })()}
             </g>
           )}
 
@@ -415,18 +537,24 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
             );
           })}
 
-          {/* Last candle date tick (always visible) */}
+          {/* Last candle orange date tick */}
           {lastCandle && (() => {
-            const x = lastCandleX;
             const label = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(lastCandle.timestamp);
             return (
-              <text key="last-tick" x={x} y={height - 8} textAnchor="middle" fill="#f97602" fontSize="11" fontWeight="600">
+              <text key="last-tick" x={lastCandleX} y={height - 8} textAnchor="middle" fill="#f97602" fontSize="11" fontWeight="600">
                 {label}
               </text>
             );
           })()}
         </svg>
       </div>
+
+      {/* Keyboard hint — only shown in fullscreen */}
+      {isFullscreen && (
+        <p className="text-center text-xs text-zinc-400">
+          ← → arrow keys to step through candles · press <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1 py-0.5 font-mono text-[10px]">Esc</kbd> to exit fullscreen
+        </p>
+      )}
     </div>
   );
 }
