@@ -236,88 +236,158 @@ function CandleChart({ data }: { data: MarketCandle[] }) {
   const candleStep = plotWidth / data.length;
   const candleWidth = Math.max(2, Math.min(10, candleStep * 0.64));
   const tickCount = Math.min(5, data.length);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const activeIndex = hoveredIndex === null ? null : Math.min(hoveredIndex, data.length - 1);
+  const selectedIndex = activeIndex ?? data.length - 1;
+  const selectedCandle = data[selectedIndex];
+  const selectedDate = new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(selectedCandle.timestamp);
+  const axisCurrency = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  });
 
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className="h-full w-full"
-      role="img"
-      aria-label="Bitcoin USD historical candlestick chart"
-    >
-      {Array.from({ length: 5 }, (_, index) => {
-        const price = maxPrice - ((maxPrice - minPrice) * index) / 4;
-        const y = top + (plotHeight * index) / 4;
-        return (
-          <g key={index}>
-            <line x1={left} x2={width - right} y1={y} y2={y} stroke="#e4e4e7" strokeDasharray="3 3" />
-            <text x={left - 8} y={y + 4} textAnchor="end" fill="#71717a" fontSize="12">
-              {formatCurrency(price, 0)}
-            </text>
-          </g>
-        );
-      })}
-      {data.map((candle, index) => {
-        const x = left + (index + 0.5) * candleStep;
-        const openY = yForPrice(candle.open);
-        const closeY = yForPrice(candle.close);
-        const color = candle.close >= candle.open ? '#22c55e' : '#ef4444';
-        const date = new Intl.DateTimeFormat('en', {
-          month: 'short',
-          day: 'numeric',
-          timeZone: 'UTC',
-        }).format(candle.timestamp);
-        const bodyTop = Math.min(openY, closeY);
-        const bodyHeight = Math.max(2, Math.abs(openY - closeY));
-
-        return (
-          <g key={candle.timestamp}>
-            <title>
-              {`${date} · Open ${formatCurrency(candle.open)} · High ${formatCurrency(candle.high)} · Low ${formatCurrency(candle.low)} · Close ${formatCurrency(candle.close)}`}
-            </title>
-            <line
-              x1={x}
-              x2={x}
-              y1={yForPrice(candle.high)}
-              y2={yForPrice(candle.low)}
-              stroke={color}
-              strokeWidth="1.5"
-            />
+    <div>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl bg-zinc-50 px-3 py-2 text-xs">
+        <span className="font-semibold text-zinc-700">{selectedDate}</span>
+        <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-zinc-500">
+          <span>O <b className="font-medium text-zinc-800">{formatCurrency(selectedCandle.open, 0)}</b></span>
+          <span>H <b className="font-medium text-emerald-700">{formatCurrency(selectedCandle.high, 0)}</b></span>
+          <span>L <b className="font-medium text-rose-700">{formatCurrency(selectedCandle.low, 0)}</b></span>
+          <span>C <b className="font-medium text-zinc-800">{formatCurrency(selectedCandle.close, 0)}</b></span>
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          className="block h-auto w-full min-w-[720px]"
+          role="img"
+          aria-label="Bitcoin USD historical candlestick chart. Hover over the chart or focus it and use the arrow keys to inspect candle prices."
+          tabIndex={0}
+          onPointerMove={(event) => {
+            const bounds = event.currentTarget.getBoundingClientRect();
+            if (!bounds.width) return;
+            const x = ((event.clientX - bounds.left) / bounds.width) * width;
+            if (x < left || x >= width - right) {
+              setHoveredIndex(null);
+              return;
+            }
+            setHoveredIndex(Math.min(data.length - 1, Math.floor((x - left) / candleStep)));
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+            event.preventDefault();
+            const direction = event.key === 'ArrowLeft' ? -1 : 1;
+            setHoveredIndex((current) =>
+              Math.max(0, Math.min(data.length - 1, (current ?? data.length - 1) + direction)),
+            );
+          }}
+          onPointerLeave={() => setHoveredIndex(null)}
+        >
+          {Array.from({ length: 5 }, (_, index) => {
+            const price = maxPrice - ((maxPrice - minPrice) * index) / 4;
+            const y = top + (plotHeight * index) / 4;
+            return (
+              <g key={index}>
+                <line x1={left} x2={width - right} y1={y} y2={y} stroke="#e4e4e7" strokeDasharray="3 3" />
+                <text x={left - 8} y={y + 4} textAnchor="end" fill="#71717a" fontSize="12">
+                  {axisCurrency.format(price)}
+                </text>
+              </g>
+            );
+          })}
+          {activeIndex !== null && (
             <rect
-              x={x - candleWidth / 2}
-              y={bodyTop}
-              width={candleWidth}
-              height={bodyHeight}
-              fill={color}
-              rx="1"
+              x={left + activeIndex * candleStep}
+              y={top}
+              width={candleStep}
+              height={plotHeight}
+              fill="#f4f4f5"
+              opacity="0.7"
             />
-          </g>
-        );
-      })}
-      {Array.from({ length: tickCount }, (_, index) => {
-        const dataIndex = tickCount === 1
-          ? 0
-          : Math.round((index * (data.length - 1)) / (tickCount - 1));
-        const candle = data[dataIndex];
-        const x = left + (dataIndex + 0.5) * candleStep;
-        const label = new Intl.DateTimeFormat('en', {
-          month: 'short',
-          day: 'numeric',
-          timeZone: 'UTC',
-        }).format(candle.timestamp);
-        return (
-          <text
-            key={candle.timestamp}
-            x={x}
-            y={height - 6}
-            textAnchor="middle"
-            fill="#94a3b8"
-            fontSize="12"
-          >
-            {label}
-          </text>
-        );
-      })}
-    </svg>
+          )}
+          {data.map((candle, index) => {
+            const x = left + (index + 0.5) * candleStep;
+            const openY = yForPrice(candle.open);
+            const closeY = yForPrice(candle.close);
+            const color = candle.close >= candle.open ? '#16a34a' : '#e11d48';
+            const date = new Intl.DateTimeFormat('en', {
+              month: 'short',
+              day: 'numeric',
+              timeZone: 'UTC',
+            }).format(candle.timestamp);
+            const bodyTop = Math.min(openY, closeY);
+            const bodyHeight = Math.max(2, Math.abs(openY - closeY));
+
+            return (
+              <g key={candle.timestamp}>
+                <title>
+                  {`${date} · Open ${formatCurrency(candle.open)} · High ${formatCurrency(candle.high)} · Low ${formatCurrency(candle.low)} · Close ${formatCurrency(candle.close)}`}
+                </title>
+                <line
+                  x1={x}
+                  x2={x}
+                  y1={yForPrice(candle.high)}
+                  y2={yForPrice(candle.low)}
+                  stroke={color}
+                  strokeWidth="1.5"
+                />
+                <rect
+                  x={x - candleWidth / 2}
+                  y={bodyTop}
+                  width={candleWidth}
+                  height={bodyHeight}
+                  fill={color}
+                  rx="1"
+                />
+              </g>
+            );
+          })}
+          {activeIndex !== null && (
+            <line
+              x1={left + (activeIndex + 0.5) * candleStep}
+              x2={left + (activeIndex + 0.5) * candleStep}
+              y1={top}
+              y2={top + plotHeight}
+              stroke="#71717a"
+              strokeDasharray="4 4"
+              strokeWidth="1"
+            />
+          )}
+          {Array.from({ length: tickCount }, (_, index) => {
+            const dataIndex = tickCount === 1
+              ? 0
+              : Math.round((index * (data.length - 1)) / (tickCount - 1));
+            const candle = data[dataIndex];
+            const x = left + (dataIndex + 0.5) * candleStep;
+            const label = new Intl.DateTimeFormat('en', {
+              month: 'short',
+              day: 'numeric',
+              timeZone: 'UTC',
+            }).format(candle.timestamp);
+            return (
+              <text
+                key={candle.timestamp}
+                x={x}
+                y={height - 6}
+                textAnchor="middle"
+                fill="#71717a"
+                fontSize="12"
+              >
+                {label}
+              </text>
+            );
+          })}
+        </svg>
+      </div>
+    </div>
   );
 }
 
@@ -2722,12 +2792,33 @@ export default function DcaExperience() {
               <h2 className="mt-2 text-2xl font-bold text-zinc-900">BTC / USD overview</h2>
               <p className="mt-2 text-sm text-zinc-500">Market data is provided for context and may be delayed or temporarily unavailable.</p>
             </div>
-            <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
-              Range
-              <select className={`${inputClass} w-auto`} value={marketDays} onChange={(event) => setMarketDays(event.target.value)}>
-                <option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option><option value="180">180 days</option><option value="365">1 year</option>
-              </select>
-            </label>
+            <div
+              className="flex flex-wrap items-center gap-1 rounded-xl border border-zinc-200 bg-white p-1"
+              role="group"
+              aria-label="Historical price range"
+            >
+              {[
+                { value: '7', label: '7D' },
+                { value: '30', label: '30D' },
+                { value: '90', label: '90D' },
+                { value: '180', label: '6M' },
+                { value: '365', label: '1Y' },
+              ].map((range) => (
+                <button
+                  key={range.value}
+                  type="button"
+                  aria-pressed={marketDays === range.value}
+                  onClick={() => setMarketDays(range.value)}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                    marketDays === range.value
+                      ? 'bg-[#f97602] text-white shadow-sm'
+                      : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900'
+                  }`}
+                >
+                  {range.label}
+                </button>
+              ))}
+            </div>
           </div>
           {marketError && <MarketError message={marketError} onRetry={() => void loadMarket(marketDays)} />}
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -2746,8 +2837,8 @@ export default function DcaExperience() {
               {market && <p className="text-xs text-zinc-400">Updated {new Date(market.lastUpdated).toLocaleString()}</p>}
             </div>
             {marketLoading ? <LoadingPanel text="Loading market prices…" /> : marketCandles.length ? (
-              <div className="h-80 w-full min-w-0">
-                <CandleChart data={marketCandles} />
+              <div className="w-full min-w-0">
+                <CandleChart key={marketDays} data={marketCandles} />
               </div>
             ) : <p className="py-12 text-center text-sm text-zinc-500">{market?.candleError ?? 'No market chart data is available right now.'}</p>}
             {market && <p className="mt-3 text-xs text-zinc-400">Source: {market.source}. Data is not guaranteed to be real time.</p>}
