@@ -233,17 +233,31 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
   const validCurrentPrice = currentPrice !== null && Number.isFinite(currentPrice) && currentPrice > 0
     ? currentPrice : null;
 
-  const low  = Math.min(...data.map((c) => c.low),  validCurrentPrice ?? Infinity);
-  const high = Math.max(...data.map((c) => c.high), validCurrentPrice ?? -Infinity);
+  // ── Merge the live price into the last candle so it becomes a "live" candle ──
+  // The last candle's close, high, and low are updated to reflect the current price.
+  const liveData: MarketCandle[] = useMemo(() => {
+    if (!validCurrentPrice || data.length === 0) return data;
+    const last = data[data.length - 1];
+    const liveCandle: MarketCandle = {
+      ...last,
+      close: validCurrentPrice,
+      high:  Math.max(last.high, validCurrentPrice),
+      low:   Math.min(last.low,  validCurrentPrice),
+    };
+    return [...data.slice(0, -1), liveCandle];
+  }, [data, validCurrentPrice]);
+
+  const low  = Math.min(...liveData.map((c) => c.low));
+  const high = Math.max(...liveData.map((c) => c.high));
   const range = high - low || high * 0.02 || 1;
   const minPrice = low  - range * 0.06;
   const maxPrice = high + range * 0.06;
   const yForPrice = (price: number) =>
     top + ((maxPrice - price) / (maxPrice - minPrice)) * plotHeight;
 
-  const candleStep  = plotWidth / data.length;
+  const candleStep  = plotWidth / liveData.length;
   const candleWidth = Math.max(2, Math.min(10, candleStep * 0.64));
-  const tickCount   = Math.min(5, data.length);
+  const tickCount   = Math.min(5, liveData.length);
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isFullscreen, setIsFullscreen]  = useState(false);
@@ -266,9 +280,9 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
 
   const resetView = () => setHoveredIndex(null);
 
-  const activeIndex   = hoveredIndex === null ? null : Math.min(hoveredIndex, data.length - 1);
-  const selectedIndex = activeIndex ?? data.length - 1;
-  const selectedCandle = data[selectedIndex];
+  const activeIndex    = hoveredIndex === null ? null : Math.min(hoveredIndex, liveData.length - 1);
+  const selectedIndex  = activeIndex ?? liveData.length - 1;
+  const selectedCandle = liveData[selectedIndex];
   const isBullish = selectedCandle.close >= selectedCandle.open;
 
   const selectedDate = new Intl.DateTimeFormat('en', {
@@ -279,25 +293,26 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
     style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1,
   });
 
-  /* period performance */
-  const firstOpen    = data[0]?.open ?? 0;
-  const lastClose    = data[data.length - 1]?.close ?? 0;
+  /* period performance — use liveData so the last close is the live price */
+  const firstOpen    = liveData[0]?.open ?? 0;
+  const lastClose    = liveData[liveData.length - 1]?.close ?? 0;
   const periodChange = firstOpen > 0 ? ((lastClose - firstOpen) / firstOpen) * 100 : 0;
   const isPeriodUp   = lastClose >= firstOpen;
 
-  /* last candle anchor for TradingView-style price line */
-  const lastCandle  = data[data.length - 1];
-  const lastCandleX = left + (data.length - 0.5) * candleStep;
-  const priceY      = validCurrentPrice !== null ? yForPrice(validCurrentPrice) : null;
+  /* last candle — now has validCurrentPrice as its close */
+  const lastCandle  = liveData[liveData.length - 1];
+  const lastCandleX = left + (liveData.length - 0.5) * candleStep;
+  /* price line anchors to the live candle's close (= validCurrentPrice) */
+  const priceY = validCurrentPrice !== null ? yForPrice(validCurrentPrice) : null;
 
   /* hover crosshair */
   const hoverX      = activeIndex !== null ? left + (activeIndex + 0.5) * candleStep : null;
-  const hoverCloseY = activeIndex !== null ? yForPrice(data[activeIndex].close) : null;
+  const hoverCloseY = activeIndex !== null ? yForPrice(liveData[activeIndex].close) : null;
 
   /* floating tooltip: flip to left half when cursor is in right half */
   const tooltipW = 148;
   const tooltipH = 90;
-  const tooltipOnRight = activeIndex !== null && activeIndex < data.length / 2;
+  const tooltipOnRight = activeIndex !== null && activeIndex < liveData.length / 2;
   const tooltipX = hoverX !== null
     ? (tooltipOnRight ? hoverX + 14 : hoverX - tooltipW - 14)
     : 0;
@@ -396,14 +411,14 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
             if (!bounds.width) return;
             const x = ((event.clientX - bounds.left) / bounds.width) * width;
             if (x < left || x >= width - right) { setHoveredIndex(null); return; }
-            setHoveredIndex(Math.min(data.length - 1, Math.floor((x - left) / candleStep)));
+            setHoveredIndex(Math.min(liveData.length - 1, Math.floor((x - left) / candleStep)));
           }}
           onKeyDown={(event) => {
             if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
             event.preventDefault();
             const dir = event.key === 'ArrowLeft' ? -1 : 1;
             setHoveredIndex((cur) =>
-              Math.max(0, Math.min(data.length - 1, (cur ?? data.length - 1) + dir)),
+              Math.max(0, Math.min(liveData.length - 1, (cur ?? liveData.length - 1) + dir)),
             );
           }}
           onPointerLeave={() => setHoveredIndex(null)}
@@ -434,7 +449,7 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
           )}
 
           {/* Candles */}
-          {data.map((candle, index) => {
+          {liveData.map((candle, index) => {
             const x = left + (index + 0.5) * candleStep;
             const openY  = yForPrice(candle.open);
             const closeY = yForPrice(candle.close);
@@ -451,17 +466,17 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
             );
           })}
 
-          {/* ── Live price line: full-width horizontal at current price, dot at right edge ── */}
+          {/* ── Live price line: from last candle to right label, pulsing dot on the live candle ── */}
           {validCurrentPrice !== null && priceY !== null && (
             <g>
-              {/* Full-width dashed line spanning the entire chart plot area */}
-              <line x1={left} x2={width - right} y1={priceY} y2={priceY} stroke="#f97602" strokeDasharray="5 3" strokeWidth="1.5" />
-              {/* Pulsing dot at the RIGHT edge — where the line meets the price label */}
-              <circle cx={width - right} cy={priceY} r="8" fill="#f97602" opacity="0.15">
+              {/* Dashed line from last candle to right price label */}
+              <line x1={lastCandleX} x2={width - right + 1} y1={priceY} y2={priceY} stroke="#f97602" strokeDasharray="5 3" strokeWidth="1.5" />
+              {/* Pulsing dot ON the live candle column */}
+              <circle cx={lastCandleX} cy={priceY} r="8" fill="#f97602" opacity="0.15">
                 <animate attributeName="r"       values="5;10;5"      dur="2.2s" repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.18;0;0.18" dur="2.2s" repeatCount="indefinite" />
               </circle>
-              <circle cx={width - right} cy={priceY} r="4" fill="#f97602">
+              <circle cx={lastCandleX} cy={priceY} r="4" fill="#f97602">
                 <animate attributeName="opacity" values="1;0.4;1" dur="2.2s" repeatCount="indefinite" />
               </circle>
               <rect x={width - right + 4} y={priceY - 11} width={right - 8} height="22" rx="5" fill="#f97602" />
@@ -482,7 +497,7 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
               {/* Left Y-axis close price label */}
               <rect x={0} y={hoverCloseY - 11} width={left - 4} height="22" rx="4" fill="#3f3f46" />
               <text x={(left - 4) / 2} y={hoverCloseY + 4} textAnchor="middle" fill="white" fontSize="11" fontWeight="600">
-                {axisCurrency.format(data[activeIndex].close)}
+                {axisCurrency.format(liveData[activeIndex].close)}
               </text>
               {/* Crosshair dot */}
               <circle cx={hoverX} cy={hoverCloseY} r="3.5" fill="white" stroke="#94a3b8" strokeWidth="1.5" />
@@ -490,12 +505,12 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
               {/* Bottom X-axis date pill */}
               <rect x={hoverX - 30} y={height - bottom + 3} width="60" height="18" rx="4" fill="#3f3f46" />
               <text x={hoverX} y={height - bottom + 15} textAnchor="middle" fill="white" fontSize="10" fontWeight="600">
-                {new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(data[activeIndex].timestamp)}
+                {new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(liveData[activeIndex].timestamp)}
               </text>
 
               {/* Floating OHLC tooltip */}
               {(() => {
-                const c   = data[activeIndex];
+                const c   = liveData[activeIndex];
                 const chg = c.open > 0 ? ((c.close - c.open) / c.open) * 100 : 0;
                 const up  = c.close >= c.open;
                 return (
@@ -526,8 +541,8 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
 
           {/* X-axis date ticks */}
           {Array.from({ length: tickCount }, (_, index) => {
-            const dataIndex = tickCount === 1 ? 0 : Math.round((index * (data.length - 1)) / (tickCount - 1));
-            const candle = data[dataIndex];
+            const dataIndex = tickCount === 1 ? 0 : Math.round((index * (liveData.length - 1)) / (tickCount - 1));
+            const candle = liveData[dataIndex];
             const x = left + (dataIndex + 0.5) * candleStep;
             const label = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(candle.timestamp);
             return (
