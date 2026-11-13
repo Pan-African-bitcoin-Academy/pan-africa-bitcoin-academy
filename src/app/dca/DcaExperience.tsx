@@ -219,21 +219,21 @@ function isPricePoint(value: unknown): value is PricePoint {
 
 function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPrice: number | null }) {
   const width = 1000;
-  const height = 320;
+  const height = 340;
   const left = 78;
-  const right = 108;
-  const top = 14;
-  const bottom = 30;
+  const right = 112;
+  const top = 16;
+  const bottom = 32;
   const plotWidth = width - left - right;
   const plotHeight = height - top - bottom;
   const validCurrentPrice = currentPrice !== null && Number.isFinite(currentPrice) && currentPrice > 0
     ? currentPrice
     : null;
-  const low = Math.min(...data.map((candle) => candle.low), validCurrentPrice ?? Infinity);
-  const high = Math.max(...data.map((candle) => candle.high), validCurrentPrice ?? -Infinity);
+  const low = Math.min(...data.map((c) => c.low), validCurrentPrice ?? Infinity);
+  const high = Math.max(...data.map((c) => c.high), validCurrentPrice ?? -Infinity);
   const range = high - low || high * 0.02 || 1;
-  const minPrice = low - range * 0.05;
-  const maxPrice = high + range * 0.05;
+  const minPrice = low - range * 0.06;
+  const maxPrice = high + range * 0.06;
   const yForPrice = (price: number) =>
     top + ((maxPrice - price) / (maxPrice - minPrice)) * plotHeight;
   const candleStep = plotWidth / data.length;
@@ -243,61 +243,58 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
   const activeIndex = hoveredIndex === null ? null : Math.min(hoveredIndex, data.length - 1);
   const selectedIndex = activeIndex ?? data.length - 1;
   const selectedCandle = data[selectedIndex];
+  const isBullish = selectedCandle.close >= selectedCandle.open;
   const selectedDate = new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    timeZone: 'UTC',
+    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
   }).format(selectedCandle.timestamp);
   const axisCurrency = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    notation: 'compact',
-    maximumFractionDigits: 1,
+    style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1,
   });
+
+  // Last candle anchor for the TradingView-style price line
+  const lastCandle = data[data.length - 1];
+  const lastCandleX = left + (data.length - 0.5) * candleStep;
+  const priceY = validCurrentPrice !== null ? yForPrice(validCurrentPrice) : null;
+
+  // Hover crosshair
+  const hoverX = activeIndex !== null ? left + (activeIndex + 0.5) * candleStep : null;
+  const hoverCloseY = activeIndex !== null ? yForPrice(data[activeIndex].close) : null;
 
   return (
     <div>
+      {/* OHLC info bar */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl bg-zinc-50 px-3 py-2 text-xs">
         <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-5">
           {[
-            { label: 'Date', value: selectedDate, className: 'text-zinc-800' },
-            { label: 'Open', value: formatCurrency(selectedCandle.open, 0), className: 'text-zinc-800' },
-            { label: 'High', value: formatCurrency(selectedCandle.high, 0), className: 'text-emerald-700' },
-            { label: 'Low', value: formatCurrency(selectedCandle.low, 0), className: 'text-rose-700' },
-            { label: 'Close', value: formatCurrency(selectedCandle.close, 0), className: 'text-zinc-800' },
+            { label: 'Date',  value: selectedDate,                          className: 'text-zinc-800' },
+            { label: 'Open',  value: formatCurrency(selectedCandle.open,  0), className: 'text-zinc-800' },
+            { label: 'High',  value: formatCurrency(selectedCandle.high,  0), className: 'text-emerald-700' },
+            { label: 'Low',   value: formatCurrency(selectedCandle.low,   0), className: 'text-rose-700' },
+            { label: 'Close', value: formatCurrency(selectedCandle.close, 0), className: isBullish ? 'text-emerald-700' : 'text-rose-700' },
           ].map((item, index) => (
             <div
               key={item.label}
-              className={`min-w-0 rounded-lg border border-zinc-100 bg-white px-2.5 py-2 ${
-                index === 0 ? 'col-span-2 sm:col-span-1' : ''
-              }`}
+              className={`min-w-0 rounded-lg border border-zinc-100 bg-white px-2.5 py-2 ${index === 0 ? 'col-span-2 sm:col-span-1' : ''}`}
             >
-              <span className="block text-[10px] font-medium uppercase tracking-wide text-zinc-400">
-                {item.label}
-              </span>
-              <span className={`mt-0.5 block truncate font-mono text-xs font-semibold tabular-nums sm:text-sm ${item.className}`}>
-                {item.value}
-              </span>
+              <span className="block text-[10px] font-medium uppercase tracking-wide text-zinc-400">{item.label}</span>
+              <span className={`mt-0.5 block truncate font-mono text-xs font-semibold tabular-nums sm:text-sm ${item.className}`}>{item.value}</span>
             </div>
           ))}
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="block h-auto w-full min-w-[720px]"
           role="img"
-          aria-label="Bitcoin USD historical candlestick chart. The orange horizontal line marks the current Bitcoin price. Hover over the chart or focus it and use the arrow keys to inspect candle prices."
+          aria-label="Bitcoin USD historical candlestick chart. The orange horizontal line marks the current Bitcoin price anchored to the last candle. Hover or use arrow keys to inspect candle prices."
           tabIndex={0}
           onPointerMove={(event) => {
             const bounds = event.currentTarget.getBoundingClientRect();
             if (!bounds.width) return;
             const x = ((event.clientX - bounds.left) / bounds.width) * width;
-            if (x < left || x >= width - right) {
-              setHoveredIndex(null);
-              return;
-            }
+            if (x < left || x >= width - right) { setHoveredIndex(null); return; }
             setHoveredIndex(Math.min(data.length - 1, Math.floor((x - left) / candleStep)));
           }}
           onKeyDown={(event) => {
@@ -310,18 +307,21 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
           }}
           onPointerLeave={() => setHoveredIndex(null)}
         >
-          {Array.from({ length: 5 }, (_, index) => {
-            const price = maxPrice - ((maxPrice - minPrice) * index) / 4;
-            const y = top + (plotHeight * index) / 4;
+          {/* Horizontal grid lines + left Y-axis labels */}
+          {Array.from({ length: 6 }, (_, i) => {
+            const price = maxPrice - ((maxPrice - minPrice) * i) / 5;
+            const y = top + (plotHeight * i) / 5;
             return (
-              <g key={index}>
-                <line x1={left} x2={width - right} y1={y} y2={y} stroke="#e4e4e7" strokeDasharray="3 3" />
-                <text x={left - 8} y={y + 4} textAnchor="end" fill="#71717a" fontSize="12">
+              <g key={i}>
+                <line x1={left} x2={width - right} y1={y} y2={y} stroke="#f0f0f0" strokeWidth="1" />
+                <text x={left - 8} y={y + 4} textAnchor="end" fill="#a1a1aa" fontSize="11">
                   {axisCurrency.format(price)}
                 </text>
               </g>
             );
           })}
+
+          {/* Hover column highlight */}
           {activeIndex !== null && (
             <rect
               x={left + activeIndex * candleStep}
@@ -329,112 +329,102 @@ function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPric
               width={candleStep}
               height={plotHeight}
               fill="#f4f4f5"
-              opacity="0.7"
+              opacity="0.65"
             />
           )}
+
+          {/* Candles */}
           {data.map((candle, index) => {
             const x = left + (index + 0.5) * candleStep;
             const openY = yForPrice(candle.open);
             const closeY = yForPrice(candle.close);
             const color = candle.close >= candle.open ? '#16a34a' : '#e11d48';
-            const date = new Intl.DateTimeFormat('en', {
-              month: 'short',
-              day: 'numeric',
-              timeZone: 'UTC',
-            }).format(candle.timestamp);
             const bodyTop = Math.min(openY, closeY);
             const bodyHeight = Math.max(2, Math.abs(openY - closeY));
-
+            const date = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(candle.timestamp);
             return (
               <g key={candle.timestamp}>
-                <title>
-                  {`${date} · Open ${formatCurrency(candle.open)} · High ${formatCurrency(candle.high)} · Low ${formatCurrency(candle.low)} · Close ${formatCurrency(candle.close)}`}
-                </title>
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={yForPrice(candle.high)}
-                  y2={yForPrice(candle.low)}
-                  stroke={color}
-                  strokeWidth="1.5"
-                />
-                <rect
-                  x={x - candleWidth / 2}
-                  y={bodyTop}
-                  width={candleWidth}
-                  height={bodyHeight}
-                  fill={color}
-                  rx="1"
-                />
+                <title>{`${date} · Open ${formatCurrency(candle.open)} · High ${formatCurrency(candle.high)} · Low ${formatCurrency(candle.low)} · Close ${formatCurrency(candle.close)}`}</title>
+                {/* Wick */}
+                <line x1={x} x2={x} y1={yForPrice(candle.high)} y2={yForPrice(candle.low)} stroke={color} strokeWidth="1.5" />
+                {/* Body */}
+                <rect x={x - candleWidth / 2} y={bodyTop} width={candleWidth} height={bodyHeight} fill={color} rx="1" />
               </g>
             );
           })}
-          {validCurrentPrice !== null && (
+
+          {/* ── TradingView-style current price line ── */}
+          {validCurrentPrice !== null && priceY !== null && (
             <g>
+              {/* Dashed line only from last candle to right label — not across all candles */}
               <line
-                x1={left}
-                x2={width - right}
-                y1={yForPrice(validCurrentPrice)}
-                y2={yForPrice(validCurrentPrice)}
+                x1={lastCandleX}
+                x2={width - right + 1}
+                y1={priceY}
+                y2={priceY}
                 stroke="#f97602"
-                strokeDasharray="6 4"
+                strokeDasharray="5 3"
                 strokeWidth="1.5"
               />
-              <rect
-                x={width - right + 4}
-                y={yForPrice(validCurrentPrice) - 10}
-                width={right - 8}
-                height="20"
-                rx="5"
-                fill="#f97602"
-              />
-              <text
-                x={width - right / 2}
-                y={yForPrice(validCurrentPrice) + 4}
-                textAnchor="middle"
-                fill="white"
-                fontSize="11"
-                fontWeight="600"
-              >
+              {/* Outer pulse ring */}
+              <circle cx={lastCandleX} cy={priceY} r="8" fill="#f97602" opacity="0.15">
+                <animate attributeName="r"       values="5;10;5"       dur="2.2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.18;0;0.18"  dur="2.2s" repeatCount="indefinite" />
+              </circle>
+              {/* Inner solid dot */}
+              <circle cx={lastCandleX} cy={priceY} r="4" fill="#f97602">
+                <animate attributeName="opacity" values="1;0.4;1" dur="2.2s" repeatCount="indefinite" />
+              </circle>
+              {/* Price pill label on the right axis */}
+              <rect x={width - right + 4} y={priceY - 11} width={right - 8} height="22" rx="5" fill="#f97602" />
+              <text x={width - right / 2 + 2} y={priceY + 4} textAnchor="middle" fill="white" fontSize="11" fontWeight="700">
                 {`BTC ${axisCurrency.format(validCurrentPrice)}`}
               </text>
+              {/* Small tick on the right border where line meets the label */}
+              <line x1={width - right} x2={width - right + 4} y1={priceY} y2={priceY} stroke="#f97602" strokeWidth="1.5" />
             </g>
           )}
-          {activeIndex !== null && (
-            <line
-              x1={left + (activeIndex + 0.5) * candleStep}
-              x2={left + (activeIndex + 0.5) * candleStep}
-              y1={top}
-              y2={top + plotHeight}
-              stroke="#71717a"
-              strokeDasharray="4 4"
-              strokeWidth="1"
-            />
+
+          {/* ── Hover crosshair: vertical + horizontal ── */}
+          {activeIndex !== null && hoverX !== null && hoverCloseY !== null && (
+            <g>
+              {/* Vertical hair */}
+              <line x1={hoverX} x2={hoverX} y1={top} y2={top + plotHeight} stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="1" />
+              {/* Horizontal hair */}
+              <line x1={left} x2={width - right} y1={hoverCloseY} y2={hoverCloseY} stroke="#94a3b8" strokeDasharray="4 3" strokeWidth="1" />
+              {/* Close price label on left Y-axis */}
+              <rect x={0} y={hoverCloseY - 11} width={left - 4} height="22" rx="4" fill="#3f3f46" />
+              <text x={(left - 4) / 2} y={hoverCloseY + 4} textAnchor="middle" fill="white" fontSize="11" fontWeight="600">
+                {axisCurrency.format(data[activeIndex].close)}
+              </text>
+              {/* Dot at crosshair intersection */}
+              <circle cx={hoverX} cy={hoverCloseY} r="3.5" fill="white" stroke="#94a3b8" strokeWidth="1.5" />
+            </g>
           )}
+
+          {/* X-axis date ticks */}
           {Array.from({ length: tickCount }, (_, index) => {
-            const dataIndex = tickCount === 1
-              ? 0
-              : Math.round((index * (data.length - 1)) / (tickCount - 1));
+            const dataIndex = tickCount === 1 ? 0 : Math.round((index * (data.length - 1)) / (tickCount - 1));
             const candle = data[dataIndex];
             const x = left + (dataIndex + 0.5) * candleStep;
-            const label = new Intl.DateTimeFormat('en', {
-              month: 'short',
-              day: 'numeric',
-              timeZone: 'UTC',
-            }).format(candle.timestamp);
+            const label = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(candle.timestamp);
             return (
-              <text
-                key={candle.timestamp}
-                x={x}
-                y={height - 6}
-                textAnchor="middle"
-                fill="#71717a"
-                fontSize="12"
-              >
+              <text key={candle.timestamp} x={x} y={height - 8} textAnchor="middle" fill="#a1a1aa" fontSize="11">
                 {label}
               </text>
             );
           })}
+
+          {/* Last candle date tick (always visible) */}
+          {lastCandle && (() => {
+            const x = lastCandleX;
+            const label = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(lastCandle.timestamp);
+            return (
+              <text key="last-tick" x={x} y={height - 8} textAnchor="middle" fill="#f97602" fontSize="11" fontWeight="600">
+                {label}
+              </text>
+            );
+          })()}
         </svg>
       </div>
     </div>
