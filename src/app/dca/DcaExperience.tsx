@@ -217,17 +217,20 @@ function isPricePoint(value: unknown): value is PricePoint {
   );
 }
 
-function CandleChart({ data }: { data: MarketCandle[] }) {
+function CandleChart({ data, currentPrice }: { data: MarketCandle[]; currentPrice: number | null }) {
   const width = 1000;
   const height = 320;
   const left = 78;
-  const right = 16;
+  const right = 108;
   const top = 14;
   const bottom = 30;
   const plotWidth = width - left - right;
   const plotHeight = height - top - bottom;
-  const low = Math.min(...data.map((candle) => candle.low));
-  const high = Math.max(...data.map((candle) => candle.high));
+  const validCurrentPrice = currentPrice !== null && Number.isFinite(currentPrice) && currentPrice > 0
+    ? currentPrice
+    : null;
+  const low = Math.min(...data.map((candle) => candle.low), validCurrentPrice ?? Infinity);
+  const high = Math.max(...data.map((candle) => candle.high), validCurrentPrice ?? -Infinity);
   const range = high - low || high * 0.02 || 1;
   const minPrice = low - range * 0.05;
   const maxPrice = high + range * 0.05;
@@ -256,12 +259,28 @@ function CandleChart({ data }: { data: MarketCandle[] }) {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl bg-zinc-50 px-3 py-2 text-xs">
-        <span className="font-semibold text-zinc-700">{selectedDate}</span>
-        <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-zinc-500">
-          <span>O <b className="font-medium text-zinc-800">{formatCurrency(selectedCandle.open, 0)}</b></span>
-          <span>H <b className="font-medium text-emerald-700">{formatCurrency(selectedCandle.high, 0)}</b></span>
-          <span>L <b className="font-medium text-rose-700">{formatCurrency(selectedCandle.low, 0)}</b></span>
-          <span>C <b className="font-medium text-zinc-800">{formatCurrency(selectedCandle.close, 0)}</b></span>
+        <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-5">
+          {[
+            { label: 'Date', value: selectedDate, className: 'text-zinc-800' },
+            { label: 'Open', value: formatCurrency(selectedCandle.open, 0), className: 'text-zinc-800' },
+            { label: 'High', value: formatCurrency(selectedCandle.high, 0), className: 'text-emerald-700' },
+            { label: 'Low', value: formatCurrency(selectedCandle.low, 0), className: 'text-rose-700' },
+            { label: 'Close', value: formatCurrency(selectedCandle.close, 0), className: 'text-zinc-800' },
+          ].map((item, index) => (
+            <div
+              key={item.label}
+              className={`min-w-0 rounded-lg border border-zinc-100 bg-white px-2.5 py-2 ${
+                index === 0 ? 'col-span-2 sm:col-span-1' : ''
+              }`}
+            >
+              <span className="block text-[10px] font-medium uppercase tracking-wide text-zinc-400">
+                {item.label}
+              </span>
+              <span className={`mt-0.5 block truncate font-mono text-xs font-semibold tabular-nums sm:text-sm ${item.className}`}>
+                {item.value}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -269,7 +288,7 @@ function CandleChart({ data }: { data: MarketCandle[] }) {
           viewBox={`0 0 ${width} ${height}`}
           className="block h-auto w-full min-w-[720px]"
           role="img"
-          aria-label="Bitcoin USD historical candlestick chart. Hover over the chart or focus it and use the arrow keys to inspect candle prices."
+          aria-label="Bitcoin USD historical candlestick chart. The orange horizontal line marks the current Bitcoin price. Hover over the chart or focus it and use the arrow keys to inspect candle prices."
           tabIndex={0}
           onPointerMove={(event) => {
             const bounds = event.currentTarget.getBoundingClientRect();
@@ -350,6 +369,37 @@ function CandleChart({ data }: { data: MarketCandle[] }) {
               </g>
             );
           })}
+          {validCurrentPrice !== null && (
+            <g>
+              <line
+                x1={left}
+                x2={width - right}
+                y1={yForPrice(validCurrentPrice)}
+                y2={yForPrice(validCurrentPrice)}
+                stroke="#f97602"
+                strokeDasharray="6 4"
+                strokeWidth="1.5"
+              />
+              <rect
+                x={width - right + 4}
+                y={yForPrice(validCurrentPrice) - 10}
+                width={right - 8}
+                height="20"
+                rx="5"
+                fill="#f97602"
+              />
+              <text
+                x={width - right / 2}
+                y={yForPrice(validCurrentPrice) + 4}
+                textAnchor="middle"
+                fill="white"
+                fontSize="11"
+                fontWeight="600"
+              >
+                {`BTC ${axisCurrency.format(validCurrentPrice)}`}
+              </text>
+            </g>
+          )}
           {activeIndex !== null && (
             <line
               x1={left + (activeIndex + 0.5) * candleStep}
@@ -2822,10 +2872,19 @@ export default function DcaExperience() {
           </div>
           {marketError && <MarketError message={marketError} onRetry={() => void loadMarket(marketDays)} />}
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricPanel label="Current BTC price" value={market ? formatCurrency(market.currentPrice) : marketLoading ? 'Loading…' : 'Unavailable'} />
-            <MetricPanel label="24-hour change" value={market?.change24h == null ? '—' : `${market.change24h >= 0 ? '+' : ''}${market.change24h.toFixed(2)}%`} detail="Percentage change" />
-            <MetricPanel label="24-hour high" value={market?.high24h == null ? '—' : formatCurrency(market.high24h)} />
-            <MetricPanel label="24-hour low" value={market?.low24h == null ? '—' : formatCurrency(market.low24h)} />
+            <MetricPanel
+              label="Current BTC price"
+              value={market ? formatCurrency(market.currentPrice) : marketLoading ? 'Loading…' : 'Unavailable'}
+              valueClassName={market ? ((market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600') : 'text-zinc-900'}
+            />
+            <MetricPanel
+              label="24-hour change"
+              value={market?.change24h == null ? '—' : `${market.change24h >= 0 ? '+' : ''}${market.change24h.toFixed(2)}%`}
+              detail="Percentage change"
+              valueClassName={market?.change24h == null ? 'text-zinc-900' : market.change24h >= 0 ? 'text-emerald-600' : 'text-rose-600'}
+            />
+            <MetricPanel label="24-hour high" value={market?.high24h == null ? '—' : formatCurrency(market.high24h)} valueClassName="text-emerald-600" />
+            <MetricPanel label="24-hour low" value={market?.low24h == null ? '—' : formatCurrency(market.low24h)} valueClassName="text-rose-600" />
           </div>
           <Panel>
             <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
@@ -2838,7 +2897,11 @@ export default function DcaExperience() {
             </div>
             {marketLoading ? <LoadingPanel text="Loading market prices…" /> : marketCandles.length ? (
               <div className="w-full min-w-0">
-                <CandleChart key={marketDays} data={marketCandles} />
+                <CandleChart
+                  key={marketDays}
+                  data={marketCandles}
+                  currentPrice={market?.currentPrice ?? null}
+                />
               </div>
             ) : <p className="py-12 text-center text-sm text-zinc-500">{market?.candleError ?? 'No market chart data is available right now.'}</p>}
             {market && <p className="mt-3 text-xs text-zinc-400">Source: {market.source}. Data is not guaranteed to be real time.</p>}
@@ -2903,15 +2966,17 @@ function MetricPanel({
   label,
   value,
   detail,
+  valueClassName,
 }: {
   label: string;
   value: string;
   detail?: string;
+  valueClassName?: string;
 }) {
   return (
     <Panel className="p-4 bg-white border-zinc-200 shadow-xs">
       <p className="text-xs font-medium text-zinc-500">{label}</p>
-      <p className="mt-2 break-words text-xl font-bold text-zinc-900">{value}</p>
+      <p className={cn('mt-2 break-words text-xl font-bold', valueClassName ?? 'text-zinc-900')}>{value}</p>
       {detail && <p className="mt-1 text-xs text-zinc-500">{detail}</p>}
     </Panel>
   );
@@ -2943,7 +3008,7 @@ function MarketSnapshot({
         <p className="mt-6 animate-pulse text-2xl font-bold text-zinc-400">Loading price…</p>
       ) : market ? (
         <>
-          <p className="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{formatCurrency(market.currentPrice)}</p>
+          <p className={`mt-4 text-3xl font-bold tracking-tight ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{formatCurrency(market.currentPrice)}</p>
           <p className={`mt-2 flex items-center gap-1 text-sm font-semibold ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
             {(market.change24h ?? 0) >= 0 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
             {market.change24h == null ? '24-hour change unavailable' : `${market.change24h >= 0 ? '+' : ''}${market.change24h.toFixed(2)}% over 24 hours`}
