@@ -1,14 +1,6 @@
 import type { Metadata } from 'next';
-import { Noto_Sans_Ethiopic } from 'next/font/google';
 import { StructuredData } from '@/components/StructuredData';
 import { WhitepaperExperience } from '@/components/whitepaper/WhitepaperExperience';
-
-const notoEthiopic = Noto_Sans_Ethiopic({
-  subsets: ['ethiopic'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-  adjustFontFallback: true,
-});
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.com').replace(/\/$/, '');
 const pagePath = '/white_paper';
@@ -107,7 +99,7 @@ const webPageJsonLd = {
 
 export default function WhitePaperPage() {
   return (
-    <div className={`${notoEthiopic.className} min-w-0`}>
+    <div className="font-ethiopic min-w-0">
       <StructuredData data={articleJsonLd} />
       <StructuredData data={webPageJsonLd} />
       <WhitepaperExperience />

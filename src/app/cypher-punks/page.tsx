@@ -1,16 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Noto_Sans_Ethiopic } from 'next/font/google';
 import { MarkdownContent } from '@/components/MarkdownContent';
 import { DownloadPdfButton } from '@/components/DownloadPdfButton';
 import { cypherpunkArticleSections } from '@/content/cypherpunksArticle';
-
-const notoEthiopic = Noto_Sans_Ethiopic({
-  subsets: ['ethiopic'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-  adjustFontFallback: true,
-});
 
 export const metadata: Metadata = {
   title: 'ሳይፈርፓንክስ፡ ብሕታዊነት፡ ክሪፕቶግራፊን ቃልሲ ንዲጂታላዊ ናጽነትን',
@@ -162,7 +154,7 @@ const CYPHER_PUNKS_PDF_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1
 
 export default function CypherpunksPage() {
   return (
-    <div className={`${notoEthiopic.className} min-h-screen overflow-x-hidden bg-[#070b11] text-zinc-100`}>
+    <div className="font-ethiopic min-h-screen overflow-x-hidden bg-[#070b11] text-zinc-100">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="pt-4 sm:pt-8">
           <div className="mb-5 flex flex-wrap items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-orange-300/80 sm:text-[11px]">

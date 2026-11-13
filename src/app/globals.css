@@ -7,6 +7,10 @@
   --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+.font-ethiopic {
+  font-family: "Noto Sans Ethiopic", "Nyala", var(--font-geist-sans), sans-serif;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

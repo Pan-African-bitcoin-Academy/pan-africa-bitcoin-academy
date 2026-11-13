@@ -1,14 +1,6 @@
 import type { Metadata } from 'next';
-import { Noto_Sans_Ethiopic } from 'next/font/google';
 import { StructuredData } from '@/components/StructuredData';
 import { Crash1929Client } from './Crash1929Client';
-
-const notoEthiopic = Noto_Sans_Ethiopic({
-  subsets: ['ethiopic'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-  adjustFontFallback: true,
-});
 
 export const metadata: Metadata = {
   title: '1929: ምውዳቅ ስቶክ ማርኬትን እቲ ዓቢ ቅልውላውን | PanAfrican Bitcoin Academy',
@@ -70,7 +62,7 @@ const jsonLdData = {
 
 export default function Crash1929Page() {
   return (
-    <div className={`${notoEthiopic.className} min-h-screen overflow-x-hidden bg-[#07080b] text-stone-100 selection:bg-amber-500/30 selection:text-amber-200`}>
+    <div className="font-ethiopic min-h-screen overflow-x-hidden bg-[#07080b] text-stone-100 selection:bg-amber-500/30 selection:text-amber-200">
       <StructuredData data={jsonLdData} />
       <Crash1929Client />
     </div>
