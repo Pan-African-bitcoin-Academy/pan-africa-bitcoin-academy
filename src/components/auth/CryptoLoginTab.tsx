@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import {
   Key,
-  Lock,
   Upload,
   Check,
   AlertCircle,
@@ -210,27 +209,14 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
         ) : (
           <>
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-zinc-300">
-                  Private Key String / JWK JSON
-                </label>
-                <span className="text-[10px] text-zinc-500">Auto-derives Account ID</span>
-              </div>
               <textarea
                 value={rawKeyInput}
                 onChange={(e) => setRawKeyInput(e.target.value)}
-                placeholder="Paste your raw private key string here..."
+                placeholder="Paste your private key here..."
                 rows={4}
                 required
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs font-mono text-white placeholder-zinc-500 focus:border-[#f97602] focus:outline-hidden"
               />
-            </div>
-        
-            <div className="rounded-lg border border-amber-200/80 bg-amber-50/70 p-2.5 text-[11px] text-amber-800 space-y-1">
-              <p className="font-medium">💡 Don't have a raw key string?</p>
-              <p className="text-amber-700">
-                Switch to the <strong>Encrypted Backup File</strong> tab above and select your <code>.json</code> backup file instead. The raw key string is only needed if you specifically exported it.
-              </p>
             </div>
           </>
         )}
@@ -254,15 +240,6 @@ export function CryptoLoginTab({ onSuccess }: CryptoLoginTabProps) {
         </button>
       </form>
 
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-3 text-[11px] text-zinc-500 space-y-1">
-        <p className="flex items-center gap-1.5 text-zinc-400 font-medium">
-          <Lock className="h-3.5 w-3.5 text-[#f97602]" />
-          Zero-Knowledge Signing
-        </p>
-        <p>
-          Your private key never leaves your browser. The server issues a one-time challenge that is signed locally on your device.
-        </p>
-      </div>
     </div>
   );
 }
