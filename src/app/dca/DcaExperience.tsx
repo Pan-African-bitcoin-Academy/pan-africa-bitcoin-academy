@@ -3009,9 +3009,18 @@ function MarketSnapshot({
       ) : market ? (
         <>
           <p className={`mt-4 text-3xl font-bold tracking-tight ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{formatCurrency(market.currentPrice)}</p>
-          <p className={`mt-2 flex items-center gap-1 text-sm font-semibold ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-            {(market.change24h ?? 0) >= 0 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
-            {market.change24h == null ? '24-hour change unavailable' : `${market.change24h >= 0 ? '+' : ''}${market.change24h.toFixed(2)}% over 24 hours`}
+          <p className="mt-2 flex items-center gap-1 text-sm font-semibold">
+            {(market.change24h ?? 0) >= 0 ? <ArrowUpRight className={`h-4 w-4 ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`} /> : <ArrowDownRight className={`h-4 w-4 ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`} />}
+            {market.change24h == null ? (
+              <span className="text-zinc-900">24-hour change unavailable</span>
+            ) : (
+              <>
+                <span className={(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}>
+                  {market.change24h >= 0 ? '+' : ''}{market.change24h.toFixed(2)}%
+                </span>
+                <span className="text-zinc-900 font-normal"> over 24 hours</span>
+              </>
+            )}
           </p>
           <p className="mt-auto pt-4 text-xs text-zinc-400">Updated {new Date(market.lastUpdated).toLocaleTimeString()}</p>
         </>
