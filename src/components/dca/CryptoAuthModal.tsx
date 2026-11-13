@@ -333,7 +333,12 @@ export function CryptoAuthModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
       <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-100 p-5 pb-4">
@@ -342,8 +347,7 @@ export function CryptoAuthModal({
               <Key className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-zinc-900">PBA DCA Account Access</h2>
-              <p className="text-xs text-zinc-500">Cryptographic identity · No KYC · No email required</p>
+              <h2 className="text-base font-bold text-zinc-900">DCA Account</h2>
             </div>
           </div>
           <button
@@ -425,7 +429,7 @@ export function CryptoAuthModal({
             <div className="space-y-4">
               <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-3.5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Your Public Account ID</span>
+                  <span className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Public Account ID</span>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
@@ -498,11 +502,11 @@ export function CryptoAuthModal({
                 <div className="flex items-center gap-2">
                   <Lock className="h-4 w-4 text-[#f97602]" />
                   <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wide">
-                    Step 1: Download Private Key File
+                    Save Your Private Key
                   </h3>
                 </div>
                 <p className="text-xs text-zinc-600 leading-relaxed">
-                  Download your private key file or copy your raw key. You will need this key whenever you sign in from another browser.
+                  Save this key to sign in from another browser.
                 </p>
 
 
@@ -526,7 +530,7 @@ export function CryptoAuthModal({
               {/* Step 3: Required Confirmations */}
               <div className="space-y-2.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-xs text-zinc-700">
                 <h4 className="font-semibold text-zinc-900 text-xs uppercase tracking-wider">
-                  Step 2: Confirmations
+                  Confirm
                 </h4>
                 <label className="flex items-start gap-2.5 cursor-pointer">
                   <input
@@ -536,7 +540,7 @@ export function CryptoAuthModal({
                     className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-[#f97602] focus:ring-[#f97602]"
                   />
                   <span className="leading-normal">
-                    I have downloaded and safely stored my private key backup file in a secure place.
+                    I’ve saved my private key backup.
                   </span>
                 </label>
                 <label className="flex items-start gap-2.5 cursor-pointer">
@@ -547,7 +551,7 @@ export function CryptoAuthModal({
                     className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-[#f97602] focus:ring-[#f97602]"
                   />
                   <span className="leading-normal">
-                    I understand this is an authentication key, not a Bitcoin wallet, and that PBA cannot recover my account if I lose this file.
+                    This key is for sign-in only, not a Bitcoin wallet. PBA can’t restore my account if I lose it.
                   </span>
                 </label>
               </div>
@@ -738,10 +742,10 @@ export function CryptoAuthModal({
         <div className="border-t border-zinc-100 bg-zinc-50 p-4 text-[11px] leading-relaxed text-zinc-500 space-y-1">
           <p className="flex items-center gap-1.5 font-medium text-zinc-700">
             <Shield className="h-3.5 w-3.5 text-[#f97602]" />
-            Educational & Personal Record-Keeping Tool
+            About Your Account
           </p>
           <p>
-            The PBA DCA platform does not custody Bitcoin, execute purchases, or connect to Bitcoin wallets. Private account keys are client-side credentials solely used to authenticate your access to your saved simulation and DCA plans.
+            PBA doesn’t hold Bitcoin, make purchases, or connect to wallets. Your key only gives access to saved simulations and DCA plans.
           </p>
         </div>
       </div>

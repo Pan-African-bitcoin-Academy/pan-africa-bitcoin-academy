@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.dca_wallets (
   user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   label text NOT NULL CHECK (char_length(label) BETWEEN 1 AND 100),
   wallet_type text NOT NULL CHECK (wallet_type IN ('address', 'xpub', 'descriptor')),
-  format text NOT NULL DEFAULT 'unknown' CHECK (format IN ('p2pkh', 'p2sh', 'p2wpkh', 'p2tr', 'bip44', 'bip49', 'bip84', 'bip86', 'descriptor', 'unknown')),
+  format text NOT NULL DEFAULT 'unknown' CHECK (format IN ('p2pkh', 'p2sh', 'p2wpkh', 'p2wsh', 'p2tr', 'bip44', 'bip49', 'bip84', 'bip86', 'descriptor', 'unknown')),
   watch_data_encrypted text NOT NULL CHECK (char_length(watch_data_encrypted) BETWEEN 10 AND 3000),
   derivation_path text DEFAULT NULL CHECK (derivation_path IS NULL OR char_length(derivation_path) <= 100),
   balance_sats bigint NOT NULL DEFAULT 0 CHECK (balance_sats >= 0),
