@@ -30,6 +30,7 @@ import {
   type GeneratedAccountBundle,
   type AccountKeyBackup,
 } from '@/lib/cryptoAuth';
+import { validatePassword } from '@/lib/passwordValidation';
 
 interface CryptoAuthModalProps {
   isOpen: boolean;
@@ -70,11 +71,21 @@ export function CryptoAuthModal({
   const [loginAccountIdInput, setLoginAccountIdInput] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  // Traditional email login state
+  // Traditional email login/signup state
+  const [emailMode, setEmailMode] = useState<'signin' | 'signup'>('signin');
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [showEmailPassword, setShowEmailPassword] = useState(false);
   const [isEmailLoggingIn, setIsEmailLoggingIn] = useState(false);
+
+  // Sign-up specific state
+  const [signupFirstName, setSignupFirstName] = useState('');
+  const [signupLastName, setSignupLastName] = useState('');
+  const [signupPhone, setSignupPhone] = useState('');
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false);
+  const [isEmailSigningUp, setIsEmailSigningUp] = useState(false);
 
   // Error/Success messages
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -332,6 +343,83 @@ export function CryptoAuthModal({
     }
   }
 
+  async function handleEmailSignup(e: FormEvent) {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    // Basic validation
+    if (!signupFirstName.trim()) {
+      setErrorMessage('First name is required.');
+      return;
+    }
+    if (!signupLastName.trim()) {
+      setErrorMessage('Last name is required.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailInput.trim())) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    if (!signupPhone.trim()) {
+      setErrorMessage('WhatsApp / phone number is required.');
+      return;
+    }
+    const pwResult = validatePassword(passwordInput);
+    if (!pwResult.isValid) {
+      setErrorMessage(pwResult.errors[0]);
+      return;
+    }
+    if (passwordInput !== signupConfirmPassword) {
+      setErrorMessage('Passwords do not match.');
+      return;
+    }
+
+    try {
+      setIsEmailSigningUp(true);
+
+      const res = await fetch('/api/profile/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: signupFirstName.trim(),
+          lastName: signupLastName.trim(),
+          email: emailInput.trim(),
+          phone: signupPhone.trim(),
+          password: passwordInput,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 409 || data.error?.toLowerCase().includes('already')) {
+          throw new Error('An account with this email already exists. Please sign in instead.');
+        }
+        throw new Error(data.error || 'Registration failed.');
+      }
+
+      // Persist email for convenience (same as AuthModal.tsx)
+      localStorage.setItem('profileEmail', emailInput.trim());
+      window.dispatchEvent(new Event('storage'));
+
+      setSuccessMessage('Account created! You can now sign in with your email and password.');
+      // Switch to sign-in mode so user can log in immediately
+      setSignupFirstName('');
+      setSignupLastName('');
+      setSignupPhone('');
+      setSignupConfirmPassword('');
+      setPasswordInput('');
+      setEmailMode('signin');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Registration failed';
+      setErrorMessage(msg);
+    } finally {
+      setIsEmailSigningUp(false);
+    }
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs"
@@ -366,6 +454,7 @@ export function CryptoAuthModal({
             onClick={() => {
               setActiveTab('crypto_create');
               setErrorMessage(null);
+              setEmailMode('signin');
             }}
             className={`flex items-center justify-center gap-1.5 rounded-lg py-2 transition cursor-pointer ${
               activeTab === 'crypto_create'
@@ -381,6 +470,7 @@ export function CryptoAuthModal({
             onClick={() => {
               setActiveTab('crypto_login');
               setErrorMessage(null);
+              setEmailMode('signin');
             }}
             className={`flex items-center justify-center gap-1.5 rounded-lg py-2 transition cursor-pointer ${
               activeTab === 'crypto_login'
@@ -396,6 +486,7 @@ export function CryptoAuthModal({
             onClick={() => {
               setActiveTab('email_login');
               setErrorMessage(null);
+              setEmailMode('signin');
             }}
             className={`flex items-center justify-center gap-1.5 rounded-lg py-2 transition cursor-pointer ${
               activeTab === 'email_login'
@@ -404,7 +495,7 @@ export function CryptoAuthModal({
             }`}
           >
             <Mail className="h-4 w-4" />
-            Email Login
+            Email
           </button>
         </div>
 
@@ -671,70 +762,257 @@ export function CryptoAuthModal({
             </form>
           )}
 
-          {/* TAB 3: EMAIL & PASSWORD LOGIN */}
+          {/* TAB 3: EMAIL & PASSWORD (LOGIN / SIGN UP) */}
           {activeTab === 'email_login' && (
-            <form onSubmit={handleEmailLogin} className="space-y-3.5">
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
-                Sign in with your standard Pan-African Bitcoin Academy student account email and password.
+            <div className="space-y-4">
+              {/* Sign In / Sign Up Toggle */}
+              <div className="flex rounded-lg border border-zinc-200 p-1 bg-zinc-100 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmailMode('signin');
+                    setErrorMessage(null);
+                  }}
+                  className={`flex-1 rounded-md py-1.5 font-medium transition cursor-pointer ${
+                    emailMode === 'signin' ? 'bg-white text-zinc-900 shadow-xs' : 'text-zinc-600 hover:text-zinc-900'
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmailMode('signup');
+                    setErrorMessage(null);
+                  }}
+                  className={`flex-1 rounded-md py-1.5 font-medium transition cursor-pointer ${
+                    emailMode === 'signup' ? 'bg-white text-zinc-900 shadow-xs' : 'text-zinc-600 hover:text-zinc-900'
+                  }`}
+                >
+                  Create Account
+                </button>
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-700 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="student@example.com"
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
-                />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-zinc-700">Password</label>
-                  {onForgotPassword && (
-                    <button
-                      type="button"
-                      onClick={() => onForgotPassword(emailInput)}
-                      className="text-xs text-[#f97602] hover:underline cursor-pointer"
-                    >
-                      Forgot?
-                    </button>
-                  )}
-                </div>
-                <div className="relative">
-                  <input
-                    type={showEmailPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
-                  />
+
+              {emailMode === 'signin' ? (
+                <form onSubmit={handleEmailLogin} className="space-y-3.5">
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
+                    Sign in with your standard Pan-African Bitcoin Academy student account email and password.
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-700 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="student@example.com"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-semibold text-zinc-700">Password</label>
+                      {onForgotPassword && (
+                        <button
+                          type="button"
+                          onClick={() => onForgotPassword(emailInput)}
+                          className="text-xs text-[#f97602] hover:underline cursor-pointer"
+                        >
+                          Forgot?
+                        </button>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <input
+                        type={showEmailPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        value={passwordInput}
+                        onChange={(e) => setPasswordInput(e.target.value)}
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowEmailPassword(!showEmailPassword)}
+                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                      >
+                        {showEmailPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
                   <button
-                    type="button"
-                    onClick={() => setShowEmailPassword(!showEmailPassword)}
-                    className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                    type="submit"
+                    disabled={isEmailLoggingIn}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50 transition cursor-pointer"
                   >
-                    {showEmailPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {isEmailLoggingIn ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        Signing in…
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="h-4 w-4" />
+                        Sign In with Email
+                      </>
+                    )}
                   </button>
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={isEmailLoggingIn}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50 transition cursor-pointer"
-              >
-                {isEmailLoggingIn ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                    Signing in…
-                  </>
-                ) : (
-                  <>
-                    <Mail className="h-4 w-4" />
-                    Sign In with Email
-                  </>
-                )}
-              </button>
-            </form>
+                </form>
+              ) : (
+                <form onSubmit={handleEmailSignup} className="space-y-3.5">
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
+                    Create a Pan-African Bitcoin Academy student account to track your progress and saved DCA plans.
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                        First Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Abebe"
+                        value={signupFirstName}
+                        onChange={(e) => setSignupFirstName(e.target.value)}
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                        Last Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Kebede"
+                        value={signupLastName}
+                        onChange={(e) => setSignupLastName(e.target.value)}
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="student@example.com"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                      WhatsApp / Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="+251 91 123 4567"
+                      value={signupPhone}
+                      onChange={(e) => setSignupPhone(e.target.value)}
+                      className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 focus:border-[#f97602] focus:outline-hidden"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                      Password <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showSignupPassword ? 'text' : 'password'}
+                        placeholder="Create strong password"
+                        value={passwordInput}
+                        onChange={(e) => setPasswordInput(e.target.value)}
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSignupPassword(!showSignupPassword)}
+                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                      >
+                        {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+
+                    {/* Dynamic Password Requirements Checklist */}
+                    <div className="mt-2 space-y-1 rounded-lg bg-zinc-50 border border-zinc-200/80 p-2.5 text-[11px]">
+                      <span className="font-semibold text-zinc-600 block mb-1">Requirements:</span>
+                      {[
+                        { label: 'Minimum 8 characters', met: passwordInput.length >= 8 },
+                        { label: 'At least 1 uppercase letter', met: /[A-Z]/.test(passwordInput) },
+                        { label: 'At least 1 lowercase letter', met: /[a-z]/.test(passwordInput) },
+                        { label: 'At least 1 number', met: /[0-9]/.test(passwordInput) },
+                        {
+                          label: 'At least 1 special character (!@#$%^&*)',
+                          met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passwordInput),
+                        },
+                      ].map((req, idx) => (
+                        <div
+                          key={idx}
+                          className={`flex items-center gap-1.5 ${
+                            req.met ? 'text-emerald-600 font-medium' : 'text-zinc-400'
+                          }`}
+                        >
+                          <Check className={`h-3 w-3 shrink-0 ${req.met ? 'text-emerald-600' : 'text-zinc-300'}`} />
+                          <span>{req.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                      Confirm Password <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showSignupConfirmPassword ? 'text' : 'password'}
+                        placeholder="Re-enter password"
+                        value={signupConfirmPassword}
+                        onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSignupConfirmPassword(!showSignupConfirmPassword)}
+                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                      >
+                        {showSignupConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {signupConfirmPassword.length > 0 && (
+                      <p
+                        className={`mt-1 text-[11px] ${
+                          passwordInput === signupConfirmPassword ? 'text-emerald-600' : 'text-rose-500'
+                        }`}
+                      >
+                        {passwordInput === signupConfirmPassword ? '✓ Passwords match' : '✗ Passwords do not match'}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isEmailSigningUp}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#f97602] py-3 text-xs font-bold text-white shadow-sm hover:bg-[#d46200] disabled:opacity-50 transition cursor-pointer"
+                  >
+                    {isEmailSigningUp ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        Creating Account…
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="h-4 w-4" />
+                        Create Student Account
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
           )}
         </div>
 
