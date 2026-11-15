@@ -36,7 +36,8 @@ export interface HealthScoreResult {
 export function calculateDcaHealthScore(
   plan: DcaPlan | undefined,
   purchases: DcaPurchase[],
-  daysWindow: 30 | 90 | 180 = 90
+  daysWindow: 30 | 90 | 180 = 90,
+  language: 'en' | 'ti' = 'en'
 ): HealthScoreResult {
   // If no plan or brand new with 0 purchases and created recently
   if (!plan) {
@@ -178,40 +179,51 @@ export function calculateDcaHealthScore(
   }
 
   // Actionable Insights
+  const isTi = language === 'ti';
   const insights: HealthScoreResult['insights'] = [];
 
   if (scheduleConsistency >= 85) {
     insights.push({
       type: 'positive',
-      title: 'Strong Schedule Discipline',
-      description: `You logged ${onTimeCount} of your last ${dueContributions} scheduled contributions on time.`,
+      title: isTi ? 'ጽኑዕ ስሩዕነት መደብ' : 'Strong Schedule Discipline',
+      description: isTi
+        ? `ካብ ዝሓለፈ ${dueContributions} ዝተመደበልካ ዕድጊ፡ ነተን ${onTimeCount} ብግዜአን መዝጊብካየን።`
+        : `You logged ${onTimeCount} of your last ${dueContributions} scheduled contributions on time.`,
     });
   } else {
     insights.push({
       type: 'warning',
-      title: 'Missed Scheduled Contributions',
-      description: `You missed ${dueContributions - onTimeCount} scheduled contribution periods in the last ${daysWindow} days.`,
+      title: isTi ? 'ዝተዘለለ ስሩዕ ኣበርክቶታት' : 'Missed Scheduled Contributions',
+      description: isTi
+        ? `ኣብ ዝሓለፉ ${daysWindow} መዓልታት ${dueContributions - onTimeCount} ዝተመደቡ እዋናት ዕድጊ ሓሊፎምኻ።`
+        : `You missed ${dueContributions - onTimeCount} scheduled contribution periods in the last ${daysWindow} days.`,
     });
   }
 
   if (contributionConsistency >= 90) {
     insights.push({
       type: 'positive',
-      title: 'Reliable Contribution Volume',
-      description: `You reached ${contributionConsistency}% of your planned $${plannedAmount.toLocaleString()} USD budget.`,
+      title: isTi ? 'እሙን መጠን ኣበርክቶ' : 'Reliable Contribution Volume',
+      description: isTi
+        ? `${contributionConsistency}% ካብቲ ዝወጠንካዮ $${plannedAmount.toLocaleString()} USD በጀት በጺሕካ ኣለኻ።`
+        : `You reached ${contributionConsistency}% of your planned $${plannedAmount.toLocaleString()} USD budget.`,
     });
   } else if (contributionConsistency < 75) {
     insights.push({
       type: 'warning',
-      title: 'Under-contributed Relative to Plan',
-      description: `Recorded $${recordedAmount.toLocaleString()} out of $${plannedAmount.toLocaleString()} USD scheduled for this window.`,
+      title: isTi ? 'ካብቲ መደብ ዝወሓደ ኣበርክቶ' : 'Under-contributed Relative to Plan',
+      description: isTi
+        ? `ካብቲ ዝተመደበ $${plannedAmount.toLocaleString()} USD፡ $${recordedAmount.toLocaleString()} USD ጥራይ ተመዝጊቡ።`
+        : `Recorded $${recordedAmount.toLocaleString()} out of $${plannedAmount.toLocaleString()} USD scheduled for this window.`,
     });
   }
 
   insights.push({
     type: 'info',
-    title: 'Goal Progression',
-    description: `You have reached ${goalProgress}% of your accumulation target (${(totalSatsAccumulated / 100_000_000).toFixed(4)} BTC accumulated).`,
+    title: isTi ? 'ምዕባለ ሸቶ' : 'Goal Progression',
+    description: isTi
+      ? `${goalProgress}% ካብቲ ዝመረጽካዮ ናይ ምእካብ ሸቶ በጺሕካ ኣለኻ (${(totalSatsAccumulated / 100_000_000).toFixed(4)} BTC ተኣኪቡ)።`
+      : `You have reached ${goalProgress}% of your accumulation target (${(totalSatsAccumulated / 100_000_000).toFixed(4)} BTC accumulated).`,
   });
 
   return {

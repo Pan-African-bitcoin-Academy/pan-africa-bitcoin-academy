@@ -285,5 +285,27 @@
     "market_unavailable": "Current market price is unavailable; portfolio value cannot be calculated.",
     "retry": "Retry",
     "footer": "Bitcoin is volatile; DCA does not guarantee returns. PBA provides education, not financial advice or custody."
+  },
+  "health_score": {
+    "title": "DCA Health Score",
+    "subtitle": "Measures discipline and savings plan adherence, independent of BTC price",
+    "overall_health": "Overall Health",
+    "days_selector": "{days} Days",
+    "schedule_consistency": "Schedule Consistency (35%)",
+    "schedule_detail": "{onTime} of {due} due contributions logged on time",
+    "contribution_consistency": "Contribution Consistency (30%)",
+    "contribution_detail": "${recorded} USD recorded vs ${planned} USD planned",
+    "goal_progress": "Goal Progress (20%)",
+    "goal_detail": "{btc} BTC accumulated toward target",
+    "tracking_activity": "Tracking Activity (15%)",
+    "tracking_detail": "{periods} tracking periods kept up to date",
+    "insights_heading": "What is affecting your score?",
+    "reminders_callout": "Never miss a contribution with automated reminders.",
+    "reminders_btn": "Configure Smart Reminders",
+    "class_excellent": "Excellent",
+    "class_good": "Good",
+    "class_fair": "Fair",
+    "class_attention": "Needs attention",
+    "class_poor": "Poor"
   }
 }

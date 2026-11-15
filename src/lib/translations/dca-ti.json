@@ -285,5 +285,27 @@
     "market_unavailable": "ናይ ሕጂ ዋጋ ዕዳጋ የለን፤ ዋጋ ፖርትፎሊዮ ክጽብጸብ ኣይክእልን እዩ።",
     "retry": "ደጊምካ ፈትን",
     "footer": "ቢትኮይን ተለዋዋጢ እዩ፤ DCA ትርፊ ኣየረጋግጽን። PBA ትምህርቲ እምበር ፋይናንሳዊ ምኽሪ ወይ ዕቃበ ኣይህብን።"
+  },
+  "health_score": {
+    "title": "መመዘኒ ጥዕና DCA",
+    "subtitle": "ዋጋ ቢትኮይን ብዘየገድስ፡ ተወፋይነትካን ንመደብ ምቁጣብካ ዘለካ ተገዛእነትን ይዕቅን",
+    "overall_health": "ሓፈሻዊ ጥዕና",
+    "days_selector": "{days} መዓልታት",
+    "schedule_consistency": "ስሩዕነት መደብ (35%)",
+    "schedule_detail": "ካብ ዝተመደበልካ {due} ውጽኢት፡ {onTime} ብግዜኡ ዝተመዝገበ ኣበርክቶ",
+    "contribution_consistency": "ስሩዕነት መጠን ኣበርክቶ (30%)",
+    "contribution_detail": "ካብ ዝተመደበ ${planned} USD፡ ${recorded} USD ዝተመዝገበ",
+    "goal_progress": "ዕቤት ናብ ሸቶ (20%)",
+    "goal_detail": "ናብ ሸቶኻ {btc} BTC ተኣኪቡ",
+    "tracking_activity": "ንጥፈታት ምክትታል (15%)",
+    "tracking_detail": "{periods} እዋናት ምክትታል ብእዋኑ ተሓዲሱ",
+    "insights_heading": "ኣብ ነጥብኻ ጽልዋ ዘለዎም ረቛሒታት እንታይ እዮም?",
+    "reminders_callout": "ብኣውቶማቲክ መዘኻኸሪታት ኣቢልካ ፈጺምካ ኣበርክቶኻ ኣይተቋርጽ።",
+    "reminders_btn": "ስሩዕ መዘኻኸሪታት ኣመዓራሪ",
+    "class_excellent": "ብሉጽ",
+    "class_good": "ጽቡቕ",
+    "class_fair": "ማእከላይ",
+    "class_attention": "ትኲረት የድሊ",
+    "class_poor": "ደኹም"
   }
 }

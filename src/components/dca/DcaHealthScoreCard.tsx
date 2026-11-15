@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import type { DcaPlan, DcaPurchase } from '@/app/dca/DcaExperience';
 import { calculateDcaHealthScore } from '@/lib/dca/dcaHealthScore';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getDcaCopy } from '@/lib/translations/dca';
 
 interface DcaHealthScoreCardProps {
   plan: DcaPlan | undefined;
@@ -26,9 +28,13 @@ export function DcaHealthScoreCard({
   purchases,
   onOpenAlerts,
 }: DcaHealthScoreCardProps) {
+  const { language } = useLanguage();
+  const t = getDcaCopy(language);
+  const hs = t.health_score;
+
   const [windowDays, setWindowDays] = useState<30 | 90 | 180>(90);
 
-  const health = calculateDcaHealthScore(plan, purchases, windowDays);
+  const health = calculateDcaHealthScore(plan, purchases, windowDays, language as 'en' | 'ti');
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
@@ -55,9 +61,9 @@ export function DcaHealthScoreCard({
             <Activity className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-zinc-900">DCA Health Score</h3>
+            <h3 className="text-base font-bold text-zinc-900">{hs.title}</h3>
             <p className="text-xs text-zinc-500">
-              Measures discipline and savings plan adherence, independent of BTC price
+              {hs.subtitle}
             </p>
           </div>
         </div>
@@ -75,7 +81,7 @@ export function DcaHealthScoreCard({
                   : 'text-zinc-500 hover:text-zinc-900'
               }`}
             >
-              {days} Days
+              {hs.days_selector.replace('{days}', String(days))}
             </button>
           ))}
         </div>
@@ -86,7 +92,7 @@ export function DcaHealthScoreCard({
         {/* Circular Gauge / Badge */}
         <div className="flex flex-col items-center justify-center text-center p-4 rounded-2xl border border-zinc-100 bg-zinc-50/60">
           <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-            Overall Health
+            {hs.overall_health}
           </span>
           <div className="my-2 flex items-baseline gap-1">
             <span className="text-5xl font-black tracking-tight text-zinc-900">
@@ -99,7 +105,7 @@ export function DcaHealthScoreCard({
               health.overallScore
             )}`}
           >
-            {health.classification} ({health.classificationTigrinya})
+            {language === 'ti' ? health.classificationTigrinya : health.classification}
           </span>
         </div>
 
@@ -108,7 +114,7 @@ export function DcaHealthScoreCard({
           {/* 1. Schedule Consistency */}
           <div>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-semibold text-zinc-700">Schedule Consistency (35%)</span>
+              <span className="font-semibold text-zinc-700">{hs.schedule_consistency}</span>
               <span className="font-mono text-zinc-900 font-bold">
                 {health.components.scheduleConsistency}/100
               </span>
@@ -122,15 +128,16 @@ export function DcaHealthScoreCard({
               />
             </div>
             <span className="text-[11px] text-zinc-400 block mt-0.5">
-              {health.details.onTimeContributions} of {health.details.dueContributions} due
-              contributions logged on time
+              {hs.schedule_detail
+                .replace('{onTime}', String(health.details.onTimeContributions))
+                .replace('{due}', String(health.details.dueContributions))}
             </span>
           </div>
 
           {/* 2. Contribution Consistency */}
           <div>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-semibold text-zinc-700">Contribution Consistency (30%)</span>
+              <span className="font-semibold text-zinc-700">{hs.contribution_consistency}</span>
               <span className="font-mono text-zinc-900 font-bold">
                 {health.components.contributionConsistency}/100
               </span>
@@ -144,15 +151,16 @@ export function DcaHealthScoreCard({
               />
             </div>
             <span className="text-[11px] text-zinc-400 block mt-0.5">
-              ${health.details.recordedAmount.toLocaleString()} USD recorded vs $
-              {health.details.plannedAmount.toLocaleString()} USD planned
+              {hs.contribution_detail
+                .replace('{recorded}', health.details.recordedAmount.toLocaleString())
+                .replace('{planned}', health.details.plannedAmount.toLocaleString())}
             </span>
           </div>
 
           {/* 3. Goal Progress */}
           <div>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-semibold text-zinc-700">Goal Progress (20%)</span>
+              <span className="font-semibold text-zinc-700">{hs.goal_progress}</span>
               <span className="font-mono text-zinc-900 font-bold">
                 {health.components.goalProgress}/100
               </span>
@@ -166,14 +174,14 @@ export function DcaHealthScoreCard({
               />
             </div>
             <span className="text-[11px] text-zinc-400 block mt-0.5">
-              {(health.details.currentSats / 100_000_000).toFixed(4)} BTC accumulated toward target
+              {hs.goal_detail.replace('{btc}', (health.details.currentSats / 100_000_000).toFixed(4))}
             </span>
           </div>
 
           {/* 4. Tracking Activity */}
           <div>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-semibold text-zinc-700">Tracking Activity (15%)</span>
+              <span className="font-semibold text-zinc-700">{hs.tracking_activity}</span>
               <span className="font-mono text-zinc-900 font-bold">
                 {health.components.trackingActivity}/100
               </span>
@@ -187,7 +195,7 @@ export function DcaHealthScoreCard({
               />
             </div>
             <span className="text-[11px] text-zinc-400 block mt-0.5">
-              {health.details.activeTrackingPeriods} tracking periods kept up to date
+              {hs.tracking_detail.replace('{periods}', String(health.details.activeTrackingPeriods))}
             </span>
           </div>
         </div>
@@ -196,7 +204,7 @@ export function DcaHealthScoreCard({
       {/* Actionable Insights */}
       <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4 space-y-2.5">
         <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider block">
-          What is affecting your score?
+          {hs.insights_heading}
         </span>
         <div className="grid gap-2 sm:grid-cols-3">
           {health.insights.map((insight, idx) => (
@@ -225,14 +233,14 @@ export function DcaHealthScoreCard({
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-zinc-600 border-t border-zinc-100">
           <span className="flex items-center gap-1.5">
             <Clock className="h-4 w-4 text-[#f97602]" />
-            Never miss a contribution with automated reminders.
+            {hs.reminders_callout}
           </span>
           <button
             type="button"
             onClick={onOpenAlerts}
             className="font-semibold text-[#f97602] hover:underline inline-flex items-center gap-1 cursor-pointer"
           >
-            Configure Smart Reminders <ArrowRight className="h-3.5 w-3.5" />
+            {hs.reminders_btn} <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
