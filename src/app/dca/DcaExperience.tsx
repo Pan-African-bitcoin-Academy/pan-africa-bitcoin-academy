@@ -2339,11 +2339,6 @@ export default function DcaExperience() {
 
       {section === 'dashboard' && (
         <div className="space-y-5">
-          <DcaHealthScoreCard
-            plan={plans.find((p) => p.status === 'active') || plans[0]}
-            purchases={purchases}
-            onOpenAlerts={() => setSmartAlertsOpen(true)}
-          />
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.dashboard.heading}</h2>
@@ -2546,6 +2541,14 @@ export default function DcaExperience() {
                 </div>
               </form>
             </Panel>
+
+            <div className="mt-5">
+              <DcaHealthScoreCard
+                plan={plans.find((p) => p.status === 'active') || plans[0]}
+                purchases={purchases}
+                onOpenAlerts={() => setSmartAlertsOpen(true)}
+              />
+            </div>
           </div>
 
             <div className="space-y-5">
