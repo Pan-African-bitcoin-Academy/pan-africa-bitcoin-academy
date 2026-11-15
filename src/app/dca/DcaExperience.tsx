@@ -45,6 +45,7 @@ import { LinkCryptoKeyModal } from '@/components/dca/LinkCryptoKeyModal';
 import ConnectWalletModal from '@/components/dca/ConnectWalletModal';
 import { NotificationBell } from '@/components/dca/NotificationBell';
 import { SmartAlertsModal } from '@/components/dca/SmartAlertsModal';
+import { DcaHealthScoreCard } from '@/components/dca/DcaHealthScoreCard';
 import WalletDashboard, {
   type ManualPortfolioRecord,
   type WalletRecord,
@@ -83,7 +84,7 @@ import {
 type Section = 'overview' | 'learn' | 'planner' | 'simulator' | 'dashboard' | 'market';
 type PlanStatus = 'active' | 'paused' | 'archived';
 
-interface DcaPlan {
+export interface DcaPlan {
   id: string;
   name: string;
   contributionAmount: number;
@@ -97,7 +98,7 @@ interface DcaPlan {
   createdAt: string;
 }
 
-interface DcaPurchase {
+export interface DcaPurchase {
   id: string;
   planId: string | null;
   purchaseDate: string;
@@ -2338,6 +2339,11 @@ export default function DcaExperience() {
 
       {section === 'dashboard' && (
         <div className="space-y-5">
+          <DcaHealthScoreCard
+            plan={plans.find((p) => p.status === 'active') || plans[0]}
+            purchases={purchases}
+            onOpenAlerts={() => setSmartAlertsOpen(true)}
+          />
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.dashboard.heading}</h2>
