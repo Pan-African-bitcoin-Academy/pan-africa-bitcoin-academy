@@ -18,6 +18,7 @@ import {
   BookOpen,
   Calculator,
   CalendarDays,
+  Bell,
   Check,
   CircleAlert,
   Clock3,
@@ -42,6 +43,8 @@ import {
 import { CryptoAuthModal } from '@/components/dca/CryptoAuthModal';
 import { LinkCryptoKeyModal } from '@/components/dca/LinkCryptoKeyModal';
 import ConnectWalletModal from '@/components/dca/ConnectWalletModal';
+import { NotificationBell } from '@/components/dca/NotificationBell';
+import { SmartAlertsModal } from '@/components/dca/SmartAlertsModal';
 import WalletDashboard, {
   type ManualPortfolioRecord,
   type WalletRecord,
@@ -942,6 +945,7 @@ export default function DcaExperience() {
   const [historicalPriceError, setHistoricalPriceError] = useState('');
   const [historicalPriceLoading, setHistoricalPriceLoading] = useState(false);
   const [signInModalOpen, setSignInModalOpen] = useState(false);
+  const [smartAlertsOpen, setSmartAlertsOpen] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [notice, setNotice] = useState('');
@@ -1725,9 +1729,20 @@ export default function DcaExperience() {
             {t.hero.subtitle}
           </p>
         </div>
-        <div className="flex items-start gap-2 rounded-xl border border-cyan-200 bg-cyan-50/70 p-3 text-xs leading-5 text-cyan-900 sm:max-w-sm">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" aria-hidden="true" />
-          <p>{t.hero.disclaimer}</p>
+        <div className="flex items-center gap-3">
+          <NotificationBell onOpenSettings={() => setSmartAlertsOpen(true)} />
+          <button
+            type="button"
+            onClick={() => setSmartAlertsOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 shadow-2xs transition cursor-pointer"
+          >
+            <Bell className="h-3.5 w-3.5 text-[#f97602]" />
+            Smart Alerts
+          </button>
+          <div className="flex items-start gap-2 rounded-xl border border-cyan-200 bg-cyan-50/70 p-3 text-xs leading-5 text-cyan-900 sm:max-w-sm">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" aria-hidden="true" />
+            <p>{t.hero.disclaimer}</p>
+          </div>
         </div>
       </header>
 
@@ -3070,6 +3085,11 @@ export default function DcaExperience() {
           setSignInModalOpen(false);
           setForgotPasswordOpen(true);
         }}
+      />
+      <SmartAlertsModal
+        isOpen={smartAlertsOpen}
+        onClose={() => setSmartAlertsOpen(false)}
+        currentBtcPrice={market?.currentPrice}
       />
       <LinkCryptoKeyModal
         isOpen={linkKeyModalOpen}

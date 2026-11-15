@@ -821,18 +821,19 @@ export function CryptoAuthModal({
                         </button>
                       )}
                     </div>
-                    <div className="relative">
+                    <div className="relative flex items-center">
                       <input
                         type={showEmailPassword ? 'text' : 'password'}
                         placeholder="Enter your password"
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
-                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-10 focus:border-[#f97602] focus:outline-hidden"
                       />
                       <button
                         type="button"
                         onClick={() => setShowEmailPassword(!showEmailPassword)}
-                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
+                        aria-label={showEmailPassword ? "Hide password" : "Show password"}
                       >
                         {showEmailPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -919,18 +920,19 @@ export function CryptoAuthModal({
                     <label className="block text-xs font-semibold text-zinc-700 mb-1">
                       Password <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
+                    <div className="relative flex items-center">
                       <input
                         type={showSignupPassword ? 'text' : 'password'}
                         placeholder="Create strong password"
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
-                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-10 focus:border-[#f97602] focus:outline-hidden"
                       />
                       <button
                         type="button"
                         onClick={() => setShowSignupPassword(!showSignupPassword)}
-                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
+                        aria-label={showSignupPassword ? "Hide password" : "Show password"}
                       >
                         {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -966,18 +968,19 @@ export function CryptoAuthModal({
                     <label className="block text-xs font-semibold text-zinc-700 mb-1">
                       Confirm Password <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
+                    <div className="relative flex items-center">
                       <input
                         type={showSignupConfirmPassword ? 'text' : 'password'}
                         placeholder="Re-enter password"
                         value={signupConfirmPassword}
                         onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-9 focus:border-[#f97602] focus:outline-hidden"
+                        className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 pr-10 focus:border-[#f97602] focus:outline-hidden"
                       />
                       <button
                         type="button"
                         onClick={() => setShowSignupConfirmPassword(!showSignupConfirmPassword)}
-                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
+                        aria-label={showSignupConfirmPassword ? "Hide password" : "Show password"}
                       >
                         {showSignupConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
