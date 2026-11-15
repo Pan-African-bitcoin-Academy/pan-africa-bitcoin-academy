@@ -64,6 +64,8 @@ import {
   YAxis,
 } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getDcaCopy } from '@/lib/translations/dca';
 import { cn } from '@/lib/styles';
 import {
   getNextPurchaseDate,
@@ -910,6 +912,8 @@ function MonthlyContributionsTooltip({ active, payload }: MonthlyContributionsTo
 }
 
 export default function DcaExperience() {
+  const { language } = useLanguage();
+  const t = useMemo(() => getDcaCopy(language), [language]);
   const { isAuthenticated, loading: authLoading, profile, sessionEmail, logout } = useAuth();
   const [linkKeyModalOpen, setLinkKeyModalOpen] = useState(false);
   const [copiedAccountKey, setCopiedAccountKey] = useState(false);
@@ -1712,24 +1716,31 @@ export default function DcaExperience() {
         <div className="max-w-3xl">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">
             <Coins className="h-4 w-4" aria-hidden="true" />
-            PBA learning tool
+            {t.hero.badge}
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl lg:text-5xl">
-            Keep stacking <span className="text-[#f97602]">sats.</span>
+            {t.hero.title_start} <span className="text-[#f97602]">{t.hero.title_highlight}</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600 sm:text-base">
-            Learn about DCA, explore past prices, and track your purchases.
+            {t.hero.subtitle}
           </p>
         </div>
         <div className="flex items-start gap-2 rounded-xl border border-cyan-200 bg-cyan-50/70 p-3 text-xs leading-5 text-cyan-900 sm:max-w-sm">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" aria-hidden="true" />
-          <p>Manual records are unverified.</p>
+          <p>{t.hero.disclaimer}</p>
         </div>
       </header>
 
       <nav aria-label="DCA sections" className="-mx-3 mb-6 overflow-x-auto px-3 sm:mx-0 sm:px-0">
         <div className="flex min-w-max gap-1.5 rounded-2xl border border-zinc-200 bg-zinc-100/80 p-1.5 shadow-xs">
-          {sectionLinks.map(({ id, label, icon: Icon }) => (
+          {[
+            { id: 'overview' as Section, label: t.nav.overview, icon: Gauge },
+            { id: 'learn' as Section, label: t.nav.learn, icon: BookOpen },
+            { id: 'planner' as Section, label: t.nav.planner, icon: CalendarDays },
+            { id: 'simulator' as Section, label: t.nav.simulator, icon: Activity },
+            { id: 'dashboard' as Section, label: t.nav.dashboard, icon: Wallet },
+            { id: 'market' as Section, label: t.nav.market, icon: Coins },
+          ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
@@ -1738,7 +1749,7 @@ export default function DcaExperience() {
               aria-current={section === id ? 'page' : undefined}
               aria-label={
                 (id === 'planner' || id === 'dashboard') && !isAuthenticated
-                  ? `${label} (sign in required)`
+                  ? `${label} (${t.nav.sign_in_required})`
                   : undefined
               }
               className={`inline-flex min-h-10 items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition active:scale-[0.98] ${
@@ -1776,8 +1787,8 @@ export default function DcaExperience() {
               <Key className="h-4 w-4" />
             </div>
             <div>
-              <p className="font-semibold text-zinc-900">Private-key account</p>
-              <p className="text-xs text-zinc-600">Access saved plans with your private key.</p>
+              <p className="font-semibold text-zinc-900">{t.auth.private_key_account}</p>
+              <p className="text-xs text-zinc-600">{t.auth.access_saved_plans}</p>
             </div>
           </div>
           <button
@@ -1786,7 +1797,7 @@ export default function DcaExperience() {
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#f97602] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-[#d46200] transition cursor-pointer"
           >
             <ShieldCheck className="h-3.5 w-3.5" />
-            Access DCA Account
+            {t.auth.access_dca_account}
           </button>
         </div>
       )}
@@ -1796,7 +1807,7 @@ export default function DcaExperience() {
             <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
             {isCryptoUser ? (
               <span className="flex flex-wrap items-center gap-1.5">
-                <span className="font-semibold text-zinc-800">Authenticated via Private Key:</span>
+                <span className="font-semibold text-zinc-800">{t.auth.authenticated_via_key}</span>
                 <span className="font-mono bg-white px-2 py-0.5 rounded border border-zinc-200 text-zinc-900">{cryptoAccountId}</span>
                 <button
                   type="button"
@@ -1809,18 +1820,18 @@ export default function DcaExperience() {
                   }}
                   className="text-[#f97602] hover:underline cursor-pointer"
                 >
-                  {copiedAccountKey ? 'Copied' : 'Copy ID'}
+                  {copiedAccountKey ? t.auth.copied : t.auth.copy_id}
                 </button>
               </span>
             ) : (
               <span className="flex flex-wrap items-center gap-1.5">
-                <span>Signed in as <strong className="text-zinc-900">{profile?.email || sessionEmail}</strong></span>
+                <span>{t.auth.signed_in_as} <strong className="text-zinc-900">{profile?.email || sessionEmail}</strong></span>
                 <button
                   type="button"
                   onClick={() => setLinkKeyModalOpen(true)}
                   className="ml-2 font-medium text-[#f97602] underline decoration-orange-300 hover:text-[#d46200] cursor-pointer"
                 >
-                  Link private key
+                  {t.auth.link_private_key}
                 </button>
               </span>
             )}
@@ -1831,7 +1842,7 @@ export default function DcaExperience() {
             className="font-medium text-zinc-500 hover:text-zinc-900 transition flex items-center gap-1 cursor-pointer"
           >
             <LogOut className="h-3.5 w-3.5" />
-            Sign Out
+            {t.auth.sign_out}
           </button>
         </div>
       )}
@@ -1842,23 +1853,23 @@ export default function DcaExperience() {
           <div className="grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
             <Panel className="border-zinc-200 bg-white">
               <div className="relative">
-                <p className="text-sm font-semibold text-[#f97602]">A steady schedule. A clearer picture.</p>
+                <p className="text-sm font-semibold text-[#f97602]">{t.overview.tagline}</p>
                 <h2 className="mt-2 max-w-2xl text-2xl font-bold leading-tight text-zinc-900 sm:text-3xl">
-                  Understand the trade-offs before you make a plan.
+                  {t.overview.heading}
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-                  Learn how DCA works, then compare a sample schedule with historical prices.
+                  {t.overview.body}
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <PrimaryButton onClick={() => setSectionAndScroll('learn')}>
-                    Learn the basics <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    {t.overview.btn_learn} <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </PrimaryButton>
                   <button
                     type="button"
                     onClick={() => setSectionAndScroll('simulator')}
                     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-bold text-zinc-800 shadow-xs transition hover:bg-zinc-50 active:scale-[0.98]"
                   >
-                    Explore a historical simulation
+                    {t.overview.btn_simulator}
                   </button>
                 </div>
               </div>
@@ -1875,23 +1886,23 @@ export default function DcaExperience() {
           <div className="grid gap-4 md:grid-cols-3">
             <InfoCard
               number="01"
-              title="Learn"
-              text="Learn about schedules, fees, and volatility."
-              action="Read the lessons"
+              title={t.overview.card_01_title}
+              text={t.overview.card_01_text}
+              action={t.overview.card_01_action}
               onClick={() => setSectionAndScroll('learn')}
             />
             <InfoCard
               number="02"
-              title="Plan"
-              text="Set contribution amounts and dates."
-              action="Build a hypothetical plan"
+              title={t.overview.card_02_title}
+              text={t.overview.card_02_text}
+              action={t.overview.card_02_action}
               onClick={() => setSectionAndScroll('planner')}
             />
             <InfoCard
               number="03"
-              title="Track"
-              text="Record purchases and view your portfolio."
-              action="Open your dashboard"
+              title={t.overview.card_03_title}
+              text={t.overview.card_03_text}
+              action={t.overview.card_03_action}
               onClick={() => setSectionAndScroll('dashboard')}
             />
           </div>
@@ -1899,9 +1910,9 @@ export default function DcaExperience() {
           <Panel className="flex flex-col gap-4 border-orange-200 bg-orange-50/60 sm:flex-row sm:items-start">
             <Lightbulb className="h-5 w-5 shrink-0 text-[#f97602]" aria-hidden="true" />
             <div>
-              <h2 className="font-semibold text-zinc-900">What DCA does—and does not do</h2>
+              <h2 className="font-semibold text-zinc-900">{t.overview.dca_disclaimer_title}</h2>
               <p className="mt-1 text-sm leading-6 text-zinc-600">
-                Regular buys don’t guarantee gains or prevent losses.
+                {t.overview.dca_disclaimer_body}
               </p>
             </div>
           </Panel>
@@ -1911,14 +1922,14 @@ export default function DcaExperience() {
       {section === 'learn' && (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
           <Panel>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Learn DCA</p>
-            <h2 className="mt-2 text-2xl font-bold text-zinc-900">A beginner’s guide to recurring purchases</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.learn.badge}</p>
+            <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.learn.heading}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-              Short lessons on DCA, fees, and risk.
+              {t.learn.subheading}
             </p>
             <div className="mt-5 divide-y divide-zinc-200">
-              {lessons.map((lesson, index) => (
-                <details key={lesson.title} className="group py-4">
+              {(t.learn.lessons || lessons).map((lesson, index) => (
+                <details key={index} className="group py-4">
                   <summary className="flex cursor-pointer list-none items-center gap-3 text-left font-semibold text-zinc-900 marker:hidden">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-[#f97602]">
                       {String(index + 1).padStart(2, '0')}
@@ -1934,26 +1945,26 @@ export default function DcaExperience() {
           <div className="space-y-4">
             <Panel>
               <BookOpen className="h-5 w-5 text-[#f97602]" aria-hidden="true" />
-              <h3 className="mt-3 font-semibold text-zinc-900">Quick knowledge check</h3>
+              <h3 className="mt-3 font-semibold text-zinc-900">{t.learn.knowledge_check_title}</h3>
               <p className="mt-2 text-sm leading-6 text-zinc-600">
-                Can DCA guarantee a profit?
+                {t.learn.knowledge_check_question}
               </p>
               <details className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
-                <summary className="cursor-pointer text-sm font-semibold text-[#f97602]">Show answer</summary>
+                <summary className="cursor-pointer text-sm font-semibold text-[#f97602]">{t.learn.knowledge_check_show}</summary>
                 <p className="mt-2 text-sm leading-6 text-zinc-600">
-                  No. It changes timing, not price risk.
+                  {t.learn.knowledge_check_answer}
                 </p>
               </details>
             </Panel>
             <Panel className="border-red-200 bg-red-50/50">
               <CircleAlert className="h-5 w-5 text-red-600" aria-hidden="true" />
-              <h3 className="mt-3 font-semibold text-zinc-900">Risk reminder</h3>
+              <h3 className="mt-3 font-semibold text-zinc-900">{t.learn.risk_title}</h3>
               <p className="mt-2 text-sm leading-6 text-zinc-600">
-                Bitcoin is volatile. Don’t risk money needed for essentials.
+                {t.learn.risk_body}
               </p>
             </Panel>
             <PrimaryButton onClick={() => setSectionAndScroll('planner')}>
-              Try the planner <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              {t.learn.btn_try_planner} <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </PrimaryButton>
           </div>
         </div>
@@ -1963,43 +1974,46 @@ export default function DcaExperience() {
         <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
           <Panel>
             <div className="mb-5">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Hypothetical plan</p>
-              <h2 className="mt-2 text-2xl font-bold text-zinc-900">{editingPlanId ? 'Edit your plan' : 'Build a DCA plan'}</h2>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.planner.badge}</p>
+              <h2 className="mt-2 text-2xl font-bold text-zinc-900">{editingPlanId ? t.planner.heading_edit : t.planner.heading_new}</h2>
             </div>
             <form onSubmit={handleSavePlan} className="grid gap-4 sm:grid-cols-2">
-              <Field label="Plan name">
-                <input className={inputClass} value={planName} onChange={(event) => setPlanName(event.target.value)} maxLength={100} required placeholder="e.g. Learning plan" />
+              <Field label={t.planner.field_plan_name}>
+                <input className={inputClass} value={planName} onChange={(event) => setPlanName(event.target.value)} maxLength={100} required placeholder={t.planner.field_plan_name_placeholder} />
               </Field>
-              <Field label="Contribution amount (USD)">
+              <Field label={t.planner.field_contribution}>
                 <input className={inputClass} type="number" min="0.01" step="0.01" value={planContribution} onChange={(event) => setPlanContribution(event.target.value)} required />
               </Field>
-              <Field label="Purchase frequency">
+              <Field label={t.planner.field_frequency}>
                 <select className={inputClass} value={planFrequency} onChange={(event) => setPlanFrequency(event.target.value as DcaFrequency)}>
-                  <option value="daily">Daily</option><option value="weekly">Weekly</option><option value="biweekly">Biweekly</option><option value="monthly">Monthly</option>
+                  <option value="daily">{t.planner.freq_daily}</option>
+                  <option value="weekly">{t.planner.freq_weekly}</option>
+                  <option value="biweekly">{t.planner.freq_biweekly}</option>
+                  <option value="monthly">{t.planner.freq_monthly}</option>
                 </select>
               </Field>
-              <Field label="Estimated fee (%)" hint="Deducted from each contribution.">
+              <Field label={t.planner.field_fee} hint={t.planner.field_fee_hint}>
                 <input className={inputClass} type="number" min="0" max="100" step="0.01" value={planFee} onChange={(event) => setPlanFee(event.target.value)} />
               </Field>
-              <Field label="Start date">
+              <Field label={t.planner.field_start_date}>
                 <input className={inputClass} type="date" value={planStartDate} onChange={(event) => setPlanStartDate(event.target.value)} required />
               </Field>
-              <Field label="End date">
+              <Field label={t.planner.field_end_date}>
                 <input className={inputClass} type="date" min={planStartDate} value={planEndDate} onChange={(event) => setPlanEndDate(event.target.value)} required />
               </Field>
-              <Field label="Optional initial contribution (USD)">
+              <Field label={t.planner.field_initial}>
                 <input className={inputClass} type="number" min="0" step="0.01" value={planInitial} onChange={(event) => setPlanInitial(event.target.value)} />
               </Field>
-              <Field label="Notes or personal goal">
-                <input className={inputClass} maxLength={2000} value={planNotes} onChange={(event) => setPlanNotes(event.target.value)} placeholder="Optional" />
+              <Field label={t.planner.field_notes}>
+                <input className={inputClass} maxLength={2000} value={planNotes} onChange={(event) => setPlanNotes(event.target.value)} placeholder={t.planner.field_notes_placeholder} />
               </Field>
               <div className="flex flex-wrap gap-2 sm:col-span-2">
                 <PrimaryButton type="submit" disabled={saving}>
-                  {saving ? 'Saving…' : editingPlanId ? <><Check className="h-4 w-4" /> Update plan</> : <><Plus className="h-4 w-4" /> Save plan</>}
+                  {saving ? t.planner.btn_saving : editingPlanId ? <><Check className="h-4 w-4" /> {t.planner.btn_update}</> : <><Plus className="h-4 w-4" /> {t.planner.btn_save}</>}
                 </PrimaryButton>
                 {editingPlanId && (
                   <button type="button" className="min-h-11 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs" onClick={() => { setEditingPlanId(null); setPlanName(''); }}>
-                    Cancel editing
+                    {t.planner.btn_cancel_edit}
                   </button>
                 )}
               </div>
@@ -2008,27 +2022,27 @@ export default function DcaExperience() {
 
           <div className="space-y-5">
             <Panel>
-              <h3 className="font-semibold text-zinc-900">Plan estimate</h3>
-              <p className="mt-1 text-xs leading-5 text-zinc-500">BTC estimate uses today’s price, not a forecast.</p>
+              <h3 className="font-semibold text-zinc-900">{t.planner.estimate_title}</h3>
+              <p className="mt-1 text-xs leading-5 text-zinc-500">{t.planner.estimate_subtitle}</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <Metric label="Scheduled purchases" value={String(planSchedule.length + (planInitialAmount > 0 ? 1 : 0))} />
-                <Metric label="Planned contributions" value={formatCurrency(plannedContributions)} />
-                <Metric label="Estimated fees" value={formatCurrency(plannedFees)} />
-                <Metric label="Illustrative BTC" value={estimatedBtc === null ? 'Market unavailable' : formatBtc(estimatedBtc)} />
+                <Metric label={t.planner.estimate_scheduled} value={String(planSchedule.length + (planInitialAmount > 0 ? 1 : 0))} />
+                <Metric label={t.planner.estimate_contributions} value={formatCurrency(plannedContributions)} />
+                <Metric label={t.planner.estimate_fees} value={formatCurrency(plannedFees)} />
+                <Metric label={t.planner.estimate_btc} value={estimatedBtc === null ? t.planner.estimate_btc_unavailable : formatBtc(estimatedBtc)} />
               </div>
-              {market && <p className="mt-3 text-xs text-zinc-400">Illustration uses {formatCurrency(market.currentPrice)} per BTC, fetched {new Date(market.lastUpdated).toLocaleString()}.</p>}
+              {market && <p className="mt-3 text-xs text-zinc-400">{t.planner.estimate_illustration.replace('{price}', formatCurrency(market.currentPrice)).replace('{date}', new Date(market.lastUpdated).toLocaleString())}</p>}
             </Panel>
 
             <Panel>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-semibold text-zinc-900">Your plans</h3>
-                  <p className="mt-1 text-xs text-zinc-500">{plans.length} saved plan{plans.length === 1 ? '' : 's'}</p>
+                  <h3 className="font-semibold text-zinc-900">{t.planner.saved_plans_title}</h3>
+                  <p className="mt-1 text-xs text-zinc-500">{plans.length} {t.planner.saved_plans_title}</p>
                 </div>
                 <CalendarDays className="h-5 w-5 text-[#f97602]" aria-hidden="true" />
               </div>
               {plans.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">Your saved plans will appear here.</p>
+                <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">{t.planner.saved_plans_empty}</p>
               ) : (
                 <div className="space-y-3">
                   {plans.map((plan) => (
@@ -2040,18 +2054,18 @@ export default function DcaExperience() {
                             {formatCurrency(plan.contributionAmount)} · {plan.frequency} · {formatDate(plan.startDate)} – {formatDate(plan.endDate)}
                           </p>
                           <p className="mt-1 text-xs capitalize text-zinc-500">
-                            {plan.status}{plan.status === 'active' && ` · next date ${getNextPurchaseDate(plan.startDate, plan.frequency) ?? 'not scheduled'}`}
+                            {plan.status}{plan.status === 'active' && ` · ${t.planner.plan_next_date} ${getNextPurchaseDate(plan.startDate, plan.frequency) ?? t.planner.plan_not_scheduled}`}
                           </p>
                         </div>
                         <div className="flex flex-wrap gap-1">
-                          <IconButton label="Edit plan" onClick={() => beginPlanEdit(plan)}><Pencil /></IconButton>
+                          <IconButton label={t.planner.plan_edit_label} onClick={() => beginPlanEdit(plan)}><Pencil /></IconButton>
                           {plan.status === 'active'
-                            ? <IconButton label="Pause plan" onClick={() => void changePlanStatus(plan, 'paused')}><Clock3 /></IconButton>
+                            ? <IconButton label={t.planner.plan_pause_label} onClick={() => void changePlanStatus(plan, 'paused')}><Clock3 /></IconButton>
                             : plan.status === 'paused'
-                              ? <IconButton label="Resume plan" onClick={() => void changePlanStatus(plan, 'active')}><Play /></IconButton>
-                              : <IconButton label="Restore plan" onClick={() => void changePlanStatus(plan, 'active')}><RefreshCw /></IconButton>}
-                          {plan.status !== 'archived' && <IconButton label="Archive plan" onClick={() => void changePlanStatus(plan, 'archived')}><Archive /></IconButton>}
-                          <IconButton label="Delete plan" onClick={() => void deletePlan(plan)}><Trash2 /></IconButton>
+                              ? <IconButton label={t.planner.plan_resume_label} onClick={() => void changePlanStatus(plan, 'active')}><Play /></IconButton>
+                              : <IconButton label={t.planner.plan_restore_label} onClick={() => void changePlanStatus(plan, 'active')}><RefreshCw /></IconButton>}
+                          {plan.status !== 'archived' && <IconButton label={t.planner.plan_archive_label} onClick={() => void changePlanStatus(plan, 'archived')}><Archive /></IconButton>}
+                          <IconButton label={t.planner.plan_delete_label} onClick={() => void deletePlan(plan)}><Trash2 /></IconButton>
                         </div>
                       </div>
                       {plan.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{plan.notes}</p>}
@@ -2069,13 +2083,13 @@ export default function DcaExperience() {
           <Panel>
             <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Historical what-if</p>
-                <h2 className="mt-2 text-2xl font-bold text-zinc-900">Test a schedule against historical prices</h2>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.simulator.badge}</p>
+                <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.simulator.heading}</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-                  Uses the nearest price for each date; skips gaps over three days.
+                  {t.simulator.body}
                 </p>
                 <p className="mt-2 text-xs text-zinc-500">
-                  Historical market-price data from January 2020 onward{historicalPriceSource ? ` · Source: ${historicalPriceSource}` : ''}.
+                  {t.simulator.source_note}{historicalPriceSource ? ` · ${t.market.chart_source.replace('{source}', historicalPriceSource)}` : ''}.
                 </p>
               </div>
               <button
@@ -2084,58 +2098,61 @@ export default function DcaExperience() {
                 disabled={historicalPriceLoading}
                 className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 text-sm font-semibold text-zinc-700 shadow-xs hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <RefreshCw className="h-4 w-4" aria-hidden="true" /> {historicalPriceLoading ? 'Loading history…' : 'Reload history from 2020'}
+                <RefreshCw className="h-4 w-4" aria-hidden="true" /> {historicalPriceLoading ? t.simulator.btn_loading : t.simulator.btn_reload}
               </button>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Field label="Contribution (USD)">
+              <Field label={t.simulator.field_contribution}>
                 <input className={inputClass} type="number" min="0.01" step="0.01" value={simContribution} onChange={(event) => setSimContribution(event.target.value)} />
               </Field>
-              <Field label="Frequency">
+              <Field label={t.simulator.field_frequency}>
                 <select className={inputClass} value={simFrequency} onChange={(event) => setSimFrequency(event.target.value as DcaFrequency)}>
-                  <option value="daily">Daily</option><option value="weekly">Weekly</option><option value="biweekly">Biweekly</option><option value="monthly">Monthly</option>
+                  <option value="daily">{t.planner.freq_daily}</option>
+                  <option value="weekly">{t.planner.freq_weekly}</option>
+                  <option value="biweekly">{t.planner.freq_biweekly}</option>
+                  <option value="monthly">{t.planner.freq_monthly}</option>
                 </select>
               </Field>
-              <Field label="Estimated fee (%)">
+              <Field label={t.simulator.field_fee}>
                 <input className={inputClass} type="number" min="0" max="100" step="0.01" value={simFee} onChange={(event) => setSimFee(event.target.value)} />
               </Field>
-              <Field label="Start date" hint={historicalPrices[0] ? `From ${formatDate(new Date(historicalPrices[0].timestamp).toISOString().slice(0, 10))}` : 'From Jan 1, 2020.'}>
+              <Field label={t.simulator.field_start_date} hint={historicalPrices[0] ? `From ${formatDate(new Date(historicalPrices[0].timestamp).toISOString().slice(0, 10))}` : 'From Jan 1, 2020.'}>
                 <input className={inputClass} type="date" min={SIMULATION_START_DATE} max={todayInputValue()} value={simStartDate} onChange={(event) => setSimStartDate(event.target.value)} />
               </Field>
-              <Field label="End date">
+              <Field label={t.simulator.field_end_date}>
                 <input className={inputClass} type="date" min={simStartDate} max={todayInputValue()} value={simEndDate} onChange={(event) => setSimEndDate(event.target.value)} />
               </Field>
-              <Field label="Optional initial contribution (USD)">
+              <Field label={t.simulator.field_initial}>
                 <input className={inputClass} type="number" min="0" step="0.01" value={simInitial} onChange={(event) => setSimInitial(event.target.value)} />
               </Field>
             </div>
           </Panel>
 
           {historicalPriceError ? <MarketError message={historicalPriceError} onRetry={() => void loadHistoricalPrices()} /> : null}
-          {historicalPriceLoading && <LoadingPanel text="Loading historical Bitcoin prices from 2020…" />}
+          {historicalPriceLoading && <LoadingPanel text={t.common.loading_history} />}
           {!historicalPriceLoading && !historicalPriceError && simulation && (
             <>
               {simulation.purchases.length === 0 ? (
-                <Panel><p className="text-sm text-zinc-600">No prices for these dates. Choose a range with historical data.</p></Panel>
+                <Panel><p className="text-sm text-zinc-600">{t.simulator.no_prices}</p></Panel>
               ) : (
                 <>
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    <MetricPanel label="Contributions" value={formatCurrency(simulation.totalContributions)} />
-                    <MetricPanel label="Hypothetical BTC" value={formatBtc(simulation.totalBtc)} />
-                    <MetricPanel label="Average acquisition price" value={formatCurrency(simulation.averagePrice)} />
-                    <MetricPanel label="Value at period end" value={formatCurrency(simulation.portfolioValue)} detail={`${simulation.profitLoss >= 0 ? '+' : ''}${formatCurrency(simulation.profitLoss)} hypothetical difference`} />
+                    <MetricPanel label={t.simulator.metric_contributions} value={formatCurrency(simulation.totalContributions)} />
+                    <MetricPanel label={t.simulator.metric_btc} value={formatBtc(simulation.totalBtc)} />
+                    <MetricPanel label={t.simulator.metric_avg_price} value={formatCurrency(simulation.averagePrice)} />
+                    <MetricPanel label={t.simulator.metric_value} value={formatCurrency(simulation.portfolioValue)} detail={`${simulation.profitLoss >= 0 ? '+' : ''}${formatCurrency(simulation.profitLoss)} ${t.simulator.metric_value_detail}`} />
                   </div>
                   <Panel className="border-zinc-200 bg-white shadow-xs">
                     {/* Header with Title and Interactive Valuation Mode Toggle */}
                     <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 pb-4">
                       <div>
                         <h3 className="text-base sm:text-lg font-bold text-zinc-900">
-                          Contributions and hypothetical value
+                          {t.simulator.chart_title}
                         </h3>
                         <p className="mt-0.5 text-xs text-zinc-500">
                           {valuationMode === 'historical'
-                            ? "Value uses Bitcoin's daily price for each date."
-                            : `Value at the period-end price (${formatCurrency(simulation.endPrice)}).`}
+                            ? t.simulator.chart_subtitle_historical
+                            : t.simulator.chart_subtitle_end.replace('{price}', formatCurrency(simulation.endPrice))}
                         </p>
                       </div>
 
@@ -2151,7 +2168,7 @@ export default function DcaExperience() {
                               : "text-zinc-600 hover:text-zinc-900 hover:bg-white"
                           )}
                         >
-                          Historical Market Value
+                          {t.simulator.mode_historical}
                         </button>
                         <button
                           type="button"
@@ -2163,7 +2180,7 @@ export default function DcaExperience() {
                               : "text-zinc-600 hover:text-zinc-900 hover:bg-white"
                           )}
                         >
-                          Period-End Value ({formatCurrency(simulation.endPrice, 0)})
+                          {t.simulator.mode_end.replace('{price}', formatCurrency(simulation.endPrice, 0))}
                         </button>
                       </div>
                     </div>
@@ -2176,7 +2193,7 @@ export default function DcaExperience() {
                           <span className="flex h-3 w-4 items-center justify-center">
                             <span className="h-0.5 w-4 border-b-2 border-dashed border-zinc-500" />
                           </span>
-                          <span className="text-zinc-500 font-medium">Total Invested:</span>
+                          <span className="text-zinc-500 font-medium">{t.simulator.legend_total_invested}</span>
                           <span className="font-bold text-zinc-800">{formatCurrency(simulation.totalContributions)}</span>
                         </div>
 
@@ -2185,7 +2202,7 @@ export default function DcaExperience() {
                           <span className="flex h-3 w-4 items-center justify-center">
                             <span className="h-1 w-4 rounded-full bg-[#f97602]" />
                           </span>
-                          <span className="text-zinc-500 font-medium">Portfolio Value:</span>
+                          <span className="text-zinc-500 font-medium">{t.simulator.legend_portfolio_value}</span>
                           <span className="font-bold text-zinc-900">{formatCurrency(simulation.portfolioValue)}</span>
                         </div>
 
@@ -2206,9 +2223,9 @@ export default function DcaExperience() {
 
                       {/* Period Metadata */}
                       <div className="flex items-center gap-3 text-zinc-500 text-[11px]">
-                        <span>Fees: <strong className="text-zinc-700">{formatCurrency(simulation.totalFees)}</strong></span>
+                        <span>{t.simulator.legend_fees} <strong className="text-zinc-700">{formatCurrency(simulation.totalFees)}</strong></span>
                         <span>·</span>
-                        <span>End Price: <strong className="text-zinc-700">{formatCurrency(simulation.endPrice)}</strong></span>
+                        <span>{t.simulator.legend_end_price} <strong className="text-zinc-700">{formatCurrency(simulation.endPrice)}</strong></span>
                       </div>
                     </div>
 
@@ -2267,19 +2284,19 @@ export default function DcaExperience() {
                     {simulation.skippedPurchases > 0 && (
                       <p className="mt-3 flex items-start gap-2 text-sm text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
                         <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                        {simulation.skippedPurchases} scheduled purchase{simulation.skippedPurchases === 1 ? ' was' : 's were'} skipped because no nearby historical price was available.
+                        {t.simulator.skipped_purchases.replace('{n}', String(simulation.skippedPurchases)).replace('{s}', simulation.skippedPurchases === 1 ? '' : 's')}
                       </p>
                     )}
                   </Panel>
                   <Panel>
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <h3 className="font-semibold text-zinc-900">Historical purchase schedule</h3>
-                      <p className="text-xs text-zinc-500">{simulation.purchases.length} matched purchases</p>
+                      <h3 className="font-semibold text-zinc-900">{t.simulator.schedule_title}</h3>
+                      <p className="text-xs text-zinc-500">{t.simulator.schedule_matched.replace('{n}', String(simulation.purchases.length))}</p>
                     </div>
                     <div className="max-h-80 overflow-auto">
                       <table className="w-full min-w-[560px] text-left text-sm">
                         <thead className="sticky top-0 bg-zinc-100 text-xs uppercase text-zinc-600 border-b border-zinc-200">
-                          <tr><th className="p-3">Date</th><th className="p-3">Price</th><th className="p-3">Contribution</th><th className="p-3">BTC</th><th className="p-3">Fees</th></tr>
+                          <tr><th className="p-3">{t.simulator.table_date}</th><th className="p-3">{t.simulator.table_price}</th><th className="p-3">{t.simulator.table_contribution}</th><th className="p-3">{t.simulator.table_btc}</th><th className="p-3">{t.simulator.table_fees}</th></tr>
                         </thead>
                         <tbody>
                           {simulation.purchases.map((item, index) => (
@@ -2296,10 +2313,10 @@ export default function DcaExperience() {
             </>
           )}
           {!historicalPriceLoading && !historicalPriceError && !simulation && (
-            <Panel><p className="text-sm text-zinc-600">Enter a positive contribution and a valid date range to view a simulation.</p></Panel>
+            <Panel><p className="text-sm text-zinc-600">{t.simulator.no_simulation}</p></Panel>
           )}
           <p className="text-xs leading-5 text-zinc-400">
-            Historical results are illustrative, not predictive. Source: {historicalPriceSource || 'Blockchain.com'}.
+            {t.simulator.footer_note.replace('{source}', historicalPriceSource || 'Blockchain.com')}
           </p>
         </div>
       )}
@@ -2308,19 +2325,19 @@ export default function DcaExperience() {
         <div className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="mt-2 text-2xl font-bold text-zinc-900">Your purchase journal</h2>
+              <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.dashboard.heading}</h2>
             </div>
             <div className="flex flex-wrap gap-2 items-center">
               <label className="flex min-h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-600">
-                <span className="font-semibold">Portfolio</span>
+                <span className="font-semibold">{t.dashboard.portfolio_label}</span>
                 <select
                   className="max-w-48 bg-transparent font-semibold text-zinc-900 outline-none"
                   value={portfolioFilterId}
                   onChange={(event) => setPortfolioFilterId(event.target.value)}
                   aria-label="Filter portfolio records"
                 >
-                  <option value="all">All portfolios</option>
-                  <option value="main">Main portfolio (Other)</option>
+                  <option value="all">{t.dashboard.all_portfolios}</option>
+                  <option value="main">{t.dashboard.main_portfolio}</option>
                   {plans.map((plan) => <option key={plan.id} value={plan.id}>{plan.name}</option>)}
                 </select>
               </label>
@@ -2330,21 +2347,21 @@ export default function DcaExperience() {
                 className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#f97602] bg-orange-50 px-4 text-sm font-semibold text-[#f97602] shadow-xs hover:bg-orange-100 transition-colors"
               >
                 <Wallet className="h-4 w-4" aria-hidden="true" />
-                Connect Bitcoin Wallet
+                {t.dashboard.btn_connect_wallet}
               </button>
               <button type="button" onClick={exportPurchases} disabled={!purchases.length} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 shadow-xs hover:bg-zinc-50 disabled:opacity-40">
-                <Download className="h-4 w-4" aria-hidden="true" /> Export CSV
+                <Download className="h-4 w-4" aria-hidden="true" /> {t.dashboard.btn_export_csv}
               </button>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            <MetricPanel label="Recorded spending" value={formatCurrency(purchaseStats.totalSpent)} detail="Excludes fees" />
-            <MetricPanel label="Manual BTC total" value={formatBtc(purchaseStats.totalBtc)} />
-            <MetricPanel label="Illustrative current value" value={market ? formatCurrency(purchaseStats.value) : 'Unavailable'} />
-            <MetricPanel label="Average cost basis" value={purchaseStats.averagePrice ? formatCurrency(purchaseStats.averagePrice) : '—'} />
-            <MetricPanel label="Difference after fees" value={formatCurrency(purchaseStats.profitLoss)} detail={`Recorded fees: ${formatCurrency(purchaseStats.totalFees)}`} />
+            <MetricPanel label={t.dashboard.metric_recorded_spending} value={formatCurrency(purchaseStats.totalSpent)} detail={t.dashboard.metric_recorded_spending_detail} />
+            <MetricPanel label={t.dashboard.metric_manual_btc} value={formatBtc(purchaseStats.totalBtc)} />
+            <MetricPanel label={t.dashboard.metric_current_value} value={market ? formatCurrency(purchaseStats.value) : 'Unavailable'} />
+            <MetricPanel label={t.dashboard.metric_avg_cost} value={purchaseStats.averagePrice ? formatCurrency(purchaseStats.averagePrice) : '—'} />
+            <MetricPanel label={t.dashboard.metric_difference} value={formatCurrency(purchaseStats.profitLoss)} detail={t.dashboard.metric_difference_detail.replace('{fees}', formatCurrency(purchaseStats.totalFees))} />
           </div>
-          {!market && <MarketError message={marketError || 'Current market price is unavailable; portfolio value cannot be calculated.'} onRetry={() => void loadMarket('180')} />}
+          {!market && <MarketError message={marketError || t.common.market_unavailable} onRetry={() => void loadMarket('180')} />}
 
           <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
             <div ref={purchaseFormRef} className="scroll-mt-6">
@@ -2363,11 +2380,11 @@ export default function DcaExperience() {
                       )}
                       <div>
                         <h3 className="font-semibold text-zinc-900">
-                          {editingPurchaseId ? 'Edit purchase record' : 'Record a purchase'}
+                          {editingPurchaseId ? t.dashboard.form_edit_heading : t.dashboard.form_add_heading}
                         </h3>
                         {editingPurchaseId && (
                           <p className="text-xs text-[#f97602] font-medium">
-                            Updating entry from {formatDate(purchaseDate)}
+                            {t.dashboard.form_updating_entry} {formatDate(purchaseDate)}
                           </p>
                         )}
                       </div>
@@ -2378,50 +2395,50 @@ export default function DcaExperience() {
                         onClick={resetPurchaseForm}
                         className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 underline cursor-pointer"
                       >
-                        Cancel edit
+                        {t.dashboard.form_cancel_edit}
                       </button>
                     )}
                   </div>
                   {editingPurchaseId && (
                     <div className="mt-3 rounded-xl border border-orange-200/90 bg-orange-50/80 p-2.5 text-xs text-orange-950 animate-in fade-in duration-200">
                       <span className="font-medium">
-                        Now editing this record. Adjust any field below and click <strong>Update record</strong>.
+                        {t.dashboard.form_editing_note} <strong>{t.dashboard.form_editing_update_btn}</strong>.
                       </span>
                     </div>
                   )}
                 </div>
                 <form onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <Field
-                  label="Add to portfolio"
-                  hint="Assign this purchase to a saved plan or the main portfolio."
+                  label={t.dashboard.form_add_to_portfolio}
+                  hint={t.dashboard.form_add_to_portfolio_hint}
                 >
                   <select
                     className={inputClass}
                     value={purchasePlanId}
                     onChange={(event) => setPurchasePlanId(event.target.value)}
                   >
-                    <option value="">Main portfolio (Other)</option>
+                    <option value="">{t.dashboard.main_portfolio}</option>
                     {plans.map((plan) => <option key={plan.id} value={plan.id}>{plan.name}</option>)}
                   </select>
                 </Field>
-                <Field label="Purchase date">
+                <Field label={t.dashboard.form_purchase_date}>
                   <input className={inputClass} type="date" value={purchaseDate} onChange={(event) => setPurchaseDate(event.target.value)} required />
                 </Field>
-                <Field label="Amount spent (USD)">
+                <Field label={t.dashboard.form_amount_spent}>
                   <input className={inputClass} type="number" min="0.01" step="0.01" value={purchaseAmount} onChange={(event) => handleAmountChange(event.target.value)} placeholder="e.g. 100" required />
                 </Field>
                 <Field
-                  label="Bitcoin price at purchase (USD)"
+                  label={t.dashboard.form_btc_price}
                   action={
                     market?.currentPrice ? (
                       <button
                         type="button"
                         onClick={handleUseCurrentSpotPrice}
                         className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#f97602] hover:underline cursor-pointer"
-                        title="Use current spot price"
+                        title={t.dashboard.form_use_spot.replace('{price}', formatCurrency(market.currentPrice, 0))}
                       >
                         <Coins className="h-3 w-3" />
-                        Use spot ({formatCurrency(market.currentPrice, 0)})
+                        {t.dashboard.form_use_spot.replace('{price}', formatCurrency(market.currentPrice, 0))}
                       </button>
                     ) : null
                   }
@@ -2429,17 +2446,17 @@ export default function DcaExperience() {
                   <input className={inputClass} type="number" min="0.01" step="0.01" value={purchasePrice} onChange={(event) => handlePriceChange(event.target.value)} placeholder="e.g. 120000" required />
                 </Field>
                 <Field
-                  label="BTC received"
+                  label={t.dashboard.form_btc_received}
                   action={
                     calculatedBtcFromInputs ? (
                       <button
                         type="button"
                         onClick={handleApplyCalculatedBtc}
                         className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#f97602] hover:underline cursor-pointer"
-                        title="Recalculate exact BTC: Amount spent ÷ Price"
+                        title={t.dashboard.form_recalculate}
                       >
                         <Calculator className="h-3 w-3" />
-                        {isBtcManual ? 'Recalculate (Amount ÷ Price)' : 'Auto-calculated'}
+                        {isBtcManual ? t.dashboard.form_recalculate : t.dashboard.form_auto_calculated}
                       </button>
                     ) : null
                   }
@@ -2447,36 +2464,36 @@ export default function DcaExperience() {
                     calculatedBtcFromInputs ? (
                       <div className="flex flex-col gap-0.5 text-[11px] text-zinc-500 mt-1">
                         <span className="font-mono text-zinc-700">
-                          Formula: ${Number(purchaseAmount || 0).toLocaleString()} ÷ ${Number(purchasePrice || 0).toLocaleString()} = <strong className="text-[#f97602] font-bold">{calculatedBtcFromInputs} BTC</strong>
+                          ${Number(purchaseAmount || 0).toLocaleString()} ÷ ${Number(purchasePrice || 0).toLocaleString()} = <strong className="text-[#f97602] font-bold">{calculatedBtcFromInputs} BTC</strong>
                         </span>
                         {isBtcManual && purchaseBtc !== calculatedBtcFromInputs && (
-                          <span className="text-amber-600 font-medium">Custom BTC amount. Recalculate to use amount ÷ price.</span>
+                          <span className="text-amber-600 font-medium">{t.dashboard.form_btc_hint_manual}</span>
                         )}
                       </div>
                     ) : (
-                      'Enter BTC received, or provide amount and price to calculate it.'
+                      t.dashboard.form_btc_enter_hint
                     )
                   }
                 >
                   <input className={inputClass} type="number" min="0.00000001" step="0.00000001" value={purchaseBtc} onChange={(event) => handleBtcChange(event.target.value)} placeholder="e.g. 0.00083333" required />
                 </Field>
-                <Field label="Transaction fees (USD)">
+                <Field label={t.dashboard.form_fees}>
                   <input className={inputClass} type="number" min="0" step="0.01" value={purchaseFees} onChange={(event) => setPurchaseFees(event.target.value)} />
                 </Field>
-                <Field label="Optional transaction ID">
+                <Field label={t.dashboard.form_txid}>
                   <input className={inputClass} maxLength={200} value={purchaseTxid} onChange={(event) => setPurchaseTxid(event.target.value)} />
                 </Field>
                 {wallets.length > 0 && (
                   <Field
-                    label="Already held in a connected wallet?"
-                    hint="Select a wallet only if this BTC is already included in its balance."
+                    label={t.dashboard.form_wallet_question}
+                    hint={t.dashboard.form_wallet_hint}
                   >
                     <select
                       className={inputClass}
                       value={purchaseWalletId}
                       onChange={(event) => setPurchaseWalletId(event.target.value)}
                     >
-                      <option value="">No — keep separate from wallet holdings</option>
+                      <option value="">{t.dashboard.form_no_wallet}</option>
                       {wallets.map((wallet) => (
                         <option key={wallet.id} value={wallet.id}>{wallet.label}</option>
                       ))}
@@ -2485,8 +2502,8 @@ export default function DcaExperience() {
                 )}
                 {purchaseWalletId && (
                   <Field
-                    label="Date included in connected wallet"
-                    hint="Date the BTC arrived in this wallet."
+                    label={t.dashboard.form_wallet_date}
+                    hint={t.dashboard.form_wallet_date_hint}
                   >
                     <input
                       className={inputClass}
@@ -2497,14 +2514,14 @@ export default function DcaExperience() {
                     />
                   </Field>
                 )}
-                <Field label="Notes">
+                <Field label={t.dashboard.form_notes}>
                   <textarea className={`${inputClass} min-h-20 resize-y`} maxLength={2000} value={purchaseNotes} onChange={(event) => setPurchaseNotes(event.target.value)} />
                 </Field>
                 <div className="flex flex-wrap gap-2 sm:col-span-2 xl:col-span-1">
                   <PrimaryButton type="submit" disabled={saving}>
-                    {saving ? 'Saving…' : editingPurchaseId ? 'Update record' : 'Save purchase'}
+                    {saving ? t.dashboard.form_btn_saving : editingPurchaseId ? t.dashboard.form_btn_update : t.dashboard.form_btn_save}
                   </PrimaryButton>
-                  {editingPurchaseId && <button type="button" onClick={resetPurchaseForm} className="min-h-11 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs">Cancel</button>}
+                  {editingPurchaseId && <button type="button" onClick={resetPurchaseForm} className="min-h-11 rounded-xl border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs">{t.dashboard.form_btn_cancel}</button>}
                 </div>
               </form>
             </Panel>
@@ -2520,17 +2537,17 @@ export default function DcaExperience() {
                         <div className="flex items-center gap-2 mb-1.5">
                           <span className="inline-flex h-2 w-2 rounded-full bg-[#f97602]" />
                           <span className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
-                            Portfolio Performance
+                            {t.dashboard.perf_badge}
                           </span>
                         </div>
                         <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
-                          Portfolio value vs. recorded spending
+                          {t.dashboard.perf_title}
                         </h3>
                       </div>
 
                       {latestPurchase && (
                         <div className="flex flex-wrap items-baseline sm:flex-col sm:items-end gap-2 sm:gap-1 bg-zinc-50/80 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-zinc-100">
-                          <div className="text-xs text-zinc-500 font-medium">Current Portfolio Value</div>
+                          <div className="text-xs text-zinc-500 font-medium">{t.dashboard.current_portfolio_value}</div>
                           <div className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
                             {formatCurrency(latestPurchase.value)}
                           </div>
@@ -2554,19 +2571,19 @@ export default function DcaExperience() {
                     {/* KPI Stat Bar */}
                     <div className="mb-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                       <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
-                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Total Spent</span>
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">{t.dashboard.kpi_total_spent}</span>
                         <span className="text-sm sm:text-base font-bold text-zinc-800">{formatCurrency(latestPurchase?.contributions ?? 0)}</span>
                       </div>
                       <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
-                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Accumulated</span>
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">{t.dashboard.kpi_accumulated}</span>
                         <span className="text-sm sm:text-base font-bold text-zinc-800 font-mono">{(latestPurchase?.btc ?? 0).toFixed(6)} BTC</span>
                       </div>
                       <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
-                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Current Price</span>
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">{t.dashboard.kpi_current_price}</span>
                         <span className="text-sm sm:text-base font-bold text-[#f97602]">{formatCurrency(market?.currentPrice ?? 0, 0)}</span>
                       </div>
                       <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
-                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">All-Time ROI</span>
+                        <span className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">{t.dashboard.kpi_roi}</span>
                         <span className={cn("text-sm sm:text-base font-bold", isPortfolioGain ? "text-emerald-600" : "text-red-600")}>
                           {isPortfolioGain ? '+' : ''}{portfolioPnlPercent.toFixed(1)}%
                         </span>
@@ -2631,18 +2648,18 @@ export default function DcaExperience() {
                         <div className="flex items-center gap-2 mb-1.5">
                           <span className="inline-flex h-2 w-2 rounded-full bg-[#0284c7]" />
                           <span className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
-                            Cost Basis & Sats Stack
+                            {t.dashboard.cost_basis_badge}
                           </span>
                         </div>
                         <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
-                          Bitcoin accumulation and average cost
+                          {t.dashboard.cost_basis_title}
                         </h3>
                       </div>
 
                       {latestPurchase && (
                         <div className="flex flex-wrap sm:flex-nowrap gap-3">
                           <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-3 sm:text-right min-w-[130px]">
-                            <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wide">Total Bitcoin</span>
+                            <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wide">{t.dashboard.total_bitcoin}</span>
                             <div className="text-lg sm:text-xl font-extrabold text-sky-900 font-mono">
                               {latestPurchase.btc.toFixed(6)}
                             </div>
@@ -2652,11 +2669,11 @@ export default function DcaExperience() {
                           </div>
 
                           <div className="rounded-xl border border-orange-200 bg-orange-50/60 p-3 sm:text-right min-w-[130px]">
-                            <span className="text-[10px] font-bold text-[#f97602] uppercase tracking-wide">Average Cost</span>
+                            <span className="text-[10px] font-bold text-[#f97602] uppercase tracking-wide">{t.dashboard.avg_cost}</span>
                             <div className="text-lg sm:text-xl font-extrabold text-zinc-900">
                               {formatCurrency(latestPurchase.averagePrice, 0)}
                             </div>
-                            <span className="text-[11px] text-zinc-500">per BTC</span>
+                            <span className="text-[11px] text-zinc-500">{t.dashboard.per_btc}</span>
                           </div>
                         </div>
                       )}
@@ -2872,14 +2889,14 @@ export default function DcaExperience() {
               <Panel>
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
-                    <h3 className="font-semibold text-zinc-900">Purchase records</h3>
-                    <p className="mt-1 text-xs text-zinc-500">{portfolioPurchases.length} manual entries</p>
+                    <h3 className="font-semibold text-zinc-900">{t.dashboard.records_title}</h3>
+                    <p className="mt-1 text-xs text-zinc-500">{t.dashboard.records_manual.replace('{n}', String(portfolioPurchases.length))}</p>
                   </div>
                   <LockKeyhole className="h-4 w-4 text-cyan-600" aria-hidden="true" />
                 </div>
                 {portfolioPurchases.length === 0 ? (
                   <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">
-                    {purchases.length === 0 ? 'No manual purchase records yet.' : 'No purchase records in this portfolio yet.'}
+                    {purchases.length === 0 ? t.dashboard.records_empty_all : t.dashboard.records_empty_portfolio}
                   </p>
                 ) : (
                   <div className="max-h-96 space-y-3 overflow-y-auto pr-2">
@@ -2901,24 +2918,24 @@ export default function DcaExperience() {
                                 <h4 className="font-semibold text-zinc-900">{formatDate(purchase.purchaseDate)}</h4>
                                 {isCurrentEditing && (
                                   <span className="inline-flex items-center gap-1 rounded-full bg-[#f97602] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider animate-pulse">
-                                    Editing
+                                    {t.dashboard.record_editing_badge}
                                   </span>
                                 )}
                               </div>
                               <p className="mt-1 text-xs font-medium text-[#f97602]">{portfolioLabel(purchase.planId)}</p>
                               <p className="mt-1 text-sm text-zinc-700">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
-                              <p className="mt-1 text-xs text-zinc-500">Price {formatCurrency(purchase.btcPrice)} · Fees {formatCurrency(purchase.feesUsd)}</p>
-                              {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">ID: {purchase.transactionId}</p>}
+                              <p className="mt-1 text-xs text-zinc-500">{t.dashboard.record_price} {formatCurrency(purchase.btcPrice)} · {t.dashboard.record_fees} {formatCurrency(purchase.feesUsd)}</p>
+                              {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">{t.dashboard.record_id} {purchase.transactionId}</p>}
                             </div>
                             <div className="flex gap-1">
                               <IconButton
-                                label={isCurrentEditing ? "Currently editing this record" : "Edit purchase"}
+                                label={isCurrentEditing ? t.dashboard.record_edit_active_label : t.dashboard.record_edit_label}
                                 onClick={() => beginPurchaseEdit(purchase)}
                                 className={isCurrentEditing ? "bg-orange-100 text-[#f97602] border-orange-300 ring-1 ring-[#f97602]/30" : ""}
                               >
                                 <Pencil />
                               </IconButton>
-                              <IconButton label="Delete purchase" onClick={() => void deletePurchase(purchase)}><Trash2 /></IconButton>
+                              <IconButton label={t.dashboard.record_delete_label} onClick={() => void deletePurchase(purchase)}><Trash2 /></IconButton>
                             </div>
                           </div>
                           {purchase.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{purchase.notes}</p>}
@@ -2935,7 +2952,7 @@ export default function DcaExperience() {
           <div>
             <div className="mb-3 flex items-center gap-2">
               <span className="inline-flex h-2 w-2 rounded-full bg-[#f97602]" />
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Watch-Only Wallets</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.dashboard.wallets_badge}</p>
             </div>
             <WalletDashboard
               wallets={wallets}
@@ -2971,14 +2988,14 @@ export default function DcaExperience() {
         <div className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">Bitcoin market</p>
-              <h2 className="mt-2 text-2xl font-bold text-zinc-900">BTC / USD overview</h2>
-              <p className="mt-2 text-sm text-zinc-500">Market data is provided for context and may be delayed or temporarily unavailable.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.market.badge}</p>
+              <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.market.heading}</h2>
+              <p className="mt-2 text-sm text-zinc-500">{t.market.subtitle}</p>
             </div>
             <div
               className="flex flex-wrap items-center gap-1 rounded-xl border border-zinc-200 bg-white p-1"
               role="group"
-              aria-label="Historical price range"
+              aria-label={t.market.range_label}
             >
               {[
                 { value: '7', label: '7D' },
@@ -3006,29 +3023,29 @@ export default function DcaExperience() {
           {marketError && <MarketError message={marketError} onRetry={() => void loadMarket(marketDays)} />}
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricPanel
-              label="Current BTC price"
+              label={t.market.metric_current_price}
               value={market ? formatCurrency(market.currentPrice) : marketLoading ? 'Loading…' : 'Unavailable'}
               valueClassName={market ? ((market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600') : 'text-zinc-900'}
             />
             <MetricPanel
-              label="24-hour change"
+              label={t.market.metric_24h_change}
               value={market?.change24h == null ? '—' : `${market.change24h >= 0 ? '+' : ''}${market.change24h.toFixed(2)}%`}
-              detail="Percentage change"
+              detail={t.market.metric_24h_change_detail}
               valueClassName={market?.change24h == null ? 'text-zinc-900' : market.change24h >= 0 ? 'text-emerald-600' : 'text-rose-600'}
             />
-            <MetricPanel label="24-hour high" value={market?.high24h == null ? '—' : formatCurrency(market.high24h)} valueClassName="text-emerald-600" />
-            <MetricPanel label="24-hour low" value={market?.low24h == null ? '—' : formatCurrency(market.low24h)} valueClassName="text-rose-600" />
+            <MetricPanel label={t.market.metric_24h_high} value={market?.high24h == null ? '—' : formatCurrency(market.high24h)} valueClassName="text-emerald-600" />
+            <MetricPanel label={t.market.metric_24h_low} value={market?.low24h == null ? '—' : formatCurrency(market.low24h)} valueClassName="text-rose-600" />
           </div>
           <Panel>
             <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
               <div>
-                <h3 className="font-semibold text-zinc-900">Bitcoin historical price</h3>
-                <p className="mt-1 text-xs text-zinc-500">USD · OHLC candlesticks</p>
-                <p className="mt-1 text-xs text-zinc-400">4-hour candles up to 30 days; 4-day candles for longer ranges.</p>
+                <h3 className="font-semibold text-zinc-900">{t.market.chart_title}</h3>
+                <p className="mt-1 text-xs text-zinc-500">{t.market.chart_subtitle}</p>
+                <p className="mt-1 text-xs text-zinc-400">{t.market.chart_resolution}</p>
               </div>
-              {market && <p className="text-xs text-zinc-400">Updated {new Date(market.lastUpdated).toLocaleString()}</p>}
+              {market && <p className="text-xs text-zinc-400">{t.market.chart_updated} {new Date(market.lastUpdated).toLocaleString()}</p>}
             </div>
-            {marketLoading ? <LoadingPanel text="Loading market prices…" /> : marketCandles.length ? (
+            {marketLoading ? <LoadingPanel text={t.market.chart_loading} /> : marketCandles.length ? (
               <div className="w-full min-w-0">
                 <CandleChart
                   key={marketDays}
@@ -3036,14 +3053,14 @@ export default function DcaExperience() {
                   currentPrice={market?.currentPrice ?? null}
                 />
               </div>
-            ) : <p className="py-12 text-center text-sm text-zinc-500">{market?.candleError ?? 'No market chart data is available right now.'}</p>}
-            {market && <p className="mt-3 text-xs text-zinc-400">Source: {market.source}. Data is not guaranteed to be real time.</p>}
+            ) : <p className="py-12 text-center text-sm text-zinc-500">{market?.candleError ?? t.market.chart_no_data}</p>}
+            {market && <p className="mt-3 text-xs text-zinc-400">{t.market.chart_source.replace('{source}', market.source)}</p>}
           </Panel>
         </div>
       )}
 
       <footer className="mt-8 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-xs leading-5 text-zinc-500 sm:p-5 shadow-xs">
-        Bitcoin is volatile; DCA does not guarantee returns. PBA provides education, not financial advice or custody.
+        {t.common.footer}
       </footer>
       <CryptoAuthModal
         isOpen={signInModalOpen}
@@ -3128,43 +3145,46 @@ function MarketSnapshot({
   onRetry: () => void;
   onOpen: () => void;
 }) {
+  const { language } = useLanguage();
+  const t = useMemo(() => getDcaCopy(language), [language]);
+
   return (
     <Panel className="flex min-h-[230px] flex-col border-zinc-200 bg-white">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">Bitcoin market</p>
-          <p className="mt-0.5 text-xs text-zinc-400">BTC / USD</p>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">{t.market.snapshot_label}</p>
+          <p className="mt-0.5 text-xs text-zinc-400">{t.market.snapshot_pair}</p>
         </div>
         <Activity className="h-5 w-5 text-[#f97602]" aria-hidden="true" />
       </div>
       {loading ? (
-        <p className="mt-6 animate-pulse text-2xl font-bold text-zinc-400">Loading price…</p>
+        <p className="mt-6 animate-pulse text-2xl font-bold text-zinc-400">{t.market.snapshot_loading}</p>
       ) : market ? (
         <>
           <p className={`mt-4 text-3xl font-bold tracking-tight ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{formatCurrency(market.currentPrice)}</p>
           <p className="mt-2 flex items-center gap-1 text-sm font-semibold">
             {(market.change24h ?? 0) >= 0 ? <ArrowUpRight className={`h-4 w-4 ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`} /> : <ArrowDownRight className={`h-4 w-4 ${(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`} />}
             {market.change24h == null ? (
-              <span className="text-zinc-900">24-hour change unavailable</span>
+              <span className="text-zinc-900">{t.market.snapshot_change_unavailable}</span>
             ) : (
               <>
                 <span className={(market.change24h ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'}>
                   {market.change24h >= 0 ? '+' : ''}{market.change24h.toFixed(2)}%
                 </span>
-                <span className="text-zinc-900 font-normal"> over 24 hours</span>
+                <span className="text-zinc-900 font-normal"> {t.market.snapshot_over_24h}</span>
               </>
             )}
           </p>
-          <p className="mt-auto pt-4 text-xs text-zinc-400">Updated {new Date(market.lastUpdated).toLocaleTimeString()}</p>
+          <p className="mt-auto pt-4 text-xs text-zinc-400">{t.market.snapshot_updated} {new Date(market.lastUpdated).toLocaleTimeString()}</p>
         </>
       ) : (
         <div className="mt-5">
-          <p className="text-sm text-amber-800">{error || 'Market data unavailable.'}</p>
-          <button type="button" onClick={onRetry} className="mt-3 min-h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs">Retry</button>
+          <p className="text-sm text-amber-800">{error || t.market.snapshot_error}</p>
+          <button type="button" onClick={onRetry} className="mt-3 min-h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 shadow-xs">{t.market.snapshot_retry}</button>
         </div>
       )}
       <button type="button" onClick={onOpen} className="mt-4 inline-flex min-h-10 items-center gap-2 self-start text-sm font-semibold text-[#f97602] hover:text-[#d46200]">
-        View market details <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        {t.market.snapshot_view_details} <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </button>
     </Panel>
   );
