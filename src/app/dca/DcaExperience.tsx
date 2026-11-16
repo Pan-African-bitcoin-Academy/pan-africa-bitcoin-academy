@@ -800,14 +800,14 @@ function PortfolioValueTooltip({ active, payload, currentPrice, t }: PortfolioVa
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-zinc-500">
             <span className="h-2 w-2 rounded-full bg-[#f97602]" />
-            Portfolio Value:
+            {t.dashboard.current_portfolio_value}:
           </span>
           <span className="font-bold text-zinc-900">{formatCurrency(value)}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-zinc-500">
             <span className="h-2 w-2 rounded-full bg-zinc-400" />
-            Total Spent:
+            {t.dashboard.kpi_total_spent}:
           </span>
           <span className="font-semibold text-zinc-700">{formatCurrency(spent)}</span>
         </div>
@@ -821,7 +821,7 @@ function PortfolioValueTooltip({ active, payload, currentPrice, t }: PortfolioVa
           </div>
         )}
         <div className="flex items-center justify-between border-t border-zinc-100 pt-2">
-          <span className="text-zinc-500">Unrealized Return:</span>
+          <span className="text-zinc-500">{t.dashboard.kpi_roi}:</span>
           <span className={cn(
             "font-bold inline-flex items-center gap-0.5",
             isGain ? "text-emerald-600" : "text-red-600"
@@ -838,9 +838,10 @@ interface AccumulationTooltipProps {
   active?: boolean;
   payload?: Array<{ payload: { date: string; btc?: number; averagePrice?: number } }>;
   currentPrice: number;
+  t: ReturnType<typeof getDcaCopy>;
 }
 
-function AccumulationTooltip({ active, payload, currentPrice }: AccumulationTooltipProps) {
+function AccumulationTooltip({ active, payload, currentPrice, t }: AccumulationTooltipProps) {
   if (!active || !payload || !payload.length) return null;
   const item = payload[0]?.payload;
   if (!item) return null;
@@ -859,7 +860,7 @@ function AccumulationTooltip({ active, payload, currentPrice }: AccumulationTool
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-zinc-500">
             <span className="h-2 w-2 rounded-full bg-[#0284c7]" />
-            Accumulated BTC:
+            {t.dashboard.kpi_accumulated} BTC:
           </span>
           <span className="font-bold text-sky-800 font-mono">{btc.toFixed(6)} BTC</span>
         </div>
@@ -870,13 +871,13 @@ function AccumulationTooltip({ active, payload, currentPrice }: AccumulationTool
         <div className="flex items-center justify-between border-t border-zinc-100 pt-2">
           <span className="flex items-center gap-1.5 text-zinc-500">
             <span className="h-2 w-2 rounded-full bg-[#f97602]" />
-            Avg Cost / BTC:
+            {t.dashboard.avg_cost} ({t.dashboard.per_btc}):
           </span>
           <span className="font-bold text-zinc-900">{formatCurrency(avgPrice, 0)}</span>
         </div>
         {priceDiff !== null && (
           <div className="flex items-center justify-between text-[11px]">
-            <span className="text-zinc-500">vs Current Spot:</span>
+            <span className="text-zinc-500">{t.dashboard.kpi_current_price}:</span>
             <span className={cn("font-semibold", priceDiff >= 0 ? "text-emerald-600" : "text-zinc-600")}>
               {priceDiff >= 0 ? '+' : ''}{priceDiff.toFixed(1)}%
             </span>
@@ -1310,20 +1311,23 @@ export default function DcaExperience() {
   const purchaseHistory = useMemo(() => {
     let totalSpent = 0;
     let totalBtc = 0;
-    return [...portfolioPurchases]
-      .sort((a, b) => a.purchaseDate.localeCompare(b.purchaseDate))
-      .map((purchase) => {
-        totalSpent += purchase.amountUsd + purchase.feesUsd;
-        totalBtc += purchase.btcReceived;
-        return {
-          date: formatDate(purchase.purchaseDate),
-          contributions: totalSpent,
-          btc: totalBtc,
-          value: totalBtc * (market?.currentPrice ?? 0),
-          averagePrice: totalBtc > 0 ? totalSpent / totalBtc : 0,
-          btcPrice: purchase.btcPrice,
-        };
-      });
+    const sorted = [...portfolioPurchases].sort((a, b) => a.purchaseDate.localeCompare(b.purchaseDate));
+    return sorted.map((purchase, index) => {
+      totalSpent += purchase.amountUsd + purchase.feesUsd;
+      totalBtc += purchase.btcReceived;
+      const isLatest = index === sorted.length - 1;
+      const effectiveBtcPrice = isLatest && market?.currentPrice && market.currentPrice > 0
+        ? market.currentPrice
+        : (purchase.btcPrice > 0 ? purchase.btcPrice : (purchase.btcReceived > 0 ? (purchase.amountUsd / purchase.btcReceived) : (market?.currentPrice ?? 0)));
+      return {
+        date: formatDate(purchase.purchaseDate),
+        contributions: totalSpent,
+        btc: totalBtc,
+        value: totalBtc * effectiveBtcPrice,
+        averagePrice: totalBtc > 0 ? totalSpent / totalBtc : 0,
+        btcPrice: effectiveBtcPrice,
+      };
+    });
   }, [portfolioPurchases, market?.currentPrice]);
 
   const latestPurchase = purchaseHistory.length > 0 ? purchaseHistory[purchaseHistory.length - 1] : null;
@@ -2739,7 +2743,7 @@ export default function DcaExperience() {
                           <Area
                             type="monotone"
                             dataKey="value"
-                            name="Current-price value"
+                            name={t.dashboard.current_portfolio_value}
                             stroke="#f97602"
                             strokeWidth={2.5}
                             fill="url(#fintechPortfolioValGrad)"
@@ -2802,19 +2806,19 @@ export default function DcaExperience() {
                       <div className="flex flex-wrap items-center gap-5">
                         <div className="flex items-center gap-2">
                           <span className="h-2.5 w-2.5 rounded-full bg-[#0284c7]" />
-                          <span className="text-zinc-500 font-medium">Accumulated BTC:</span>
+                          <span className="text-zinc-500 font-medium">{t.dashboard.kpi_accumulated} BTC:</span>
                           <span className="font-bold text-zinc-900 font-mono">{latestPurchase?.btc.toFixed(6) ?? '0.000000'} BTC</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="h-2.5 w-2.5 rounded-full bg-[#f97602]" />
-                          <span className="text-zinc-500 font-medium">Avg Acquisition Price:</span>
+                          <span className="text-zinc-500 font-medium">{t.dashboard.avg_cost}:</span>
                           <span className="font-bold text-zinc-900">{formatCurrency(latestPurchase?.averagePrice ?? 0, 0)}</span>
                         </div>
                       </div>
 
                       {portfolioCostEfficiency !== null && (
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-zinc-500">Cost Basis Advantage:</span>
+                          <span className="text-zinc-500">{t.dashboard.metric_avg_cost}:</span>
                           <span className={cn(
                             "font-bold rounded-md px-2 py-0.5 text-[11px]",
                             portfolioCostEfficiency >= 0 ? "bg-emerald-100 text-emerald-800" : "bg-zinc-200 text-zinc-700"
@@ -2853,12 +2857,12 @@ export default function DcaExperience() {
                             tickLine={false}
                             width={60}
                           />
-                          <Tooltip content={<AccumulationTooltip currentPrice={market?.currentPrice ?? 0} />} />
+                          <Tooltip content={<AccumulationTooltip currentPrice={market?.currentPrice ?? 0} t={t} />} />
                           <Line
                             yAxisId="btc"
                             type="monotone"
                             dataKey="btc"
-                            name="Accumulated BTC"
+                            name={`${t.dashboard.kpi_accumulated} (BTC)`}
                             stroke="#0284c7"
                             strokeWidth={2.75}
                             dot={false}
@@ -2868,7 +2872,7 @@ export default function DcaExperience() {
                             yAxisId="price"
                             type="monotone"
                             dataKey="averagePrice"
-                            name="Average acquisition price"
+                            name={t.dashboard.avg_cost}
                             stroke="#f97602"
                             strokeWidth={2.75}
                             dot={false}
