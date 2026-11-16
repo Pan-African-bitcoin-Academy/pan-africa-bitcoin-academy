@@ -2268,7 +2268,17 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
 
         {activeTab === 'leaderboard' && (
           <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]">
-            <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Leaderboard</h2>
+            <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-zinc-50">Leaderboard</h2>
+                <p className="text-xs text-zinc-400">Ranked by performance: Sats earned, awards, assignments & curriculum progress</p>
+              </div>
+              {leaderboard.length > 0 && (
+                <div className="text-xs text-zinc-400">
+                  Total Students: <span className="font-semibold text-zinc-200">{leaderboard.length}</span>
+                </div>
+              )}
+            </div>
             {loading && (
               <div className="mb-3 text-sm text-zinc-400">Loading leaderboard...</div>
             )}
@@ -2288,34 +2298,58 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {leaderboard.map((student: any) => (
-                    <tr
-                      key={student.rank || student.name}
-                      className={`border-b border-zinc-800 ${
-                        student.name?.toLowerCase?.() === 'sarah' ? 'bg-orange-500/10' : ''
-                      }`}
-                    >
-                      <td className="px-4 py-3">
-                        <span
-                          className={`text-lg font-bold ${
-                            student.rank === 1
-                              ? 'text-yellow-400'
-                              : student.rank === 2
-                              ? 'text-zinc-300'
-                              : student.rank === 3
-                              ? 'text-orange-400'
-                              : 'text-zinc-500'
-                          }`}
-                        >
-                          #{student.rank ?? '?'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-medium text-zinc-100">{student.name}</td>
-                      <td className="px-4 py-3 text-orange-300">{student.sats ?? student.points ?? 0} sats</td>
-                      <td className="px-4 py-3 text-cyan-300">{student.awards ?? student.assignments ?? 0}</td>
-                      <td className="px-4 py-3 text-purple-300">{student.attendance ?? '--'}%</td>
-                    </tr>
-                  ))}
+                  {leaderboard.map((student: any) => {
+                    const isCurrentUser = Boolean(
+                      (userData?.profile?.id && student.studentId === userData.profile.id) ||
+                      (userData?.profile?.name && student.name?.toLowerCase?.().trim() === userData.profile.name?.toLowerCase?.().trim())
+                    );
+
+                    return (
+                      <tr
+                        key={student.rank || student.studentId || student.name}
+                        className={`border-b border-zinc-800 transition ${
+                          isCurrentUser
+                            ? 'bg-orange-500/15 border-l-4 border-l-orange-500'
+                            : 'hover:bg-zinc-900/50'
+                        }`}
+                      >
+                        <td className="px-4 py-3">
+                          <span
+                            className={`text-lg font-bold ${
+                              student.rank === 1
+                                ? 'text-yellow-400'
+                                : student.rank === 2
+                                ? 'text-zinc-300'
+                                : student.rank === 3
+                                ? 'text-orange-400'
+                                : 'text-zinc-500'
+                            }`}
+                          >
+                            #{student.rank ?? '?'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 font-medium text-zinc-100">
+                          <span>{student.name}</span>
+                          {isCurrentUser && (
+                            <span className="ml-2 inline-flex items-center rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-400">
+                              You
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-orange-300">
+                          {(student.sats ?? student.points ?? 0).toLocaleString()} sats
+                        </td>
+                        <td className="px-4 py-3 text-cyan-300">
+                          {student.awards ?? student.assignments ?? 0}
+                        </td>
+                        <td className="px-4 py-3 text-purple-300">
+                          {student.attendance !== null && student.attendance !== undefined && student.attendance !== '--'
+                            ? `${student.attendance}%`
+                            : '--'}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
