@@ -59,6 +59,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  ComposedChart,
   Legend,
   Line,
   LineChart,
@@ -772,11 +773,12 @@ function SimulationTooltip({ active, payload, valuationMode }: SimulationTooltip
 
 interface PortfolioValueTooltipProps {
   active?: boolean;
-  payload?: Array<{ payload: { date: string; value?: number; contributions?: number } }>;
+  payload?: Array<{ payload: { date: string; value?: number; contributions?: number; btcPrice?: number } }>;
   currentPrice: number;
+  t: ReturnType<typeof getDcaCopy>;
 }
 
-function PortfolioValueTooltip({ active, payload, currentPrice }: PortfolioValueTooltipProps) {
+function PortfolioValueTooltip({ active, payload, currentPrice, t }: PortfolioValueTooltipProps) {
   if (!active || !payload || !payload.length) return null;
   const item = payload[0]?.payload;
   if (!item) return null;
@@ -786,6 +788,7 @@ function PortfolioValueTooltip({ active, payload, currentPrice }: PortfolioValue
   const net = value - spent;
   const pct = spent > 0 ? (net / spent) * 100 : 0;
   const isGain = net >= 0;
+  const btcPrice = item.btcPrice ?? 0;
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xl min-w-[240px] text-zinc-900 pointer-events-none">
@@ -808,6 +811,15 @@ function PortfolioValueTooltip({ active, payload, currentPrice }: PortfolioValue
           </span>
           <span className="font-semibold text-zinc-700">{formatCurrency(spent)}</span>
         </div>
+        {btcPrice > 0 && (
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-zinc-500">
+              <span className="h-2 w-2 rounded-full bg-[#06b6d4]" />
+              {t.dashboard.tooltip_btc_price}
+            </span>
+            <span className="font-semibold text-zinc-700 font-mono">{formatCurrency(btcPrice, 0)}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between border-t border-zinc-100 pt-2">
           <span className="text-zinc-500">Unrealized Return:</span>
           <span className={cn(
@@ -878,9 +890,10 @@ function AccumulationTooltip({ active, payload, currentPrice }: AccumulationTool
 interface MonthlyContributionsTooltipProps {
   active?: boolean;
   payload?: Array<{ payload: { label: string; btc?: number; contributions: number } }>;
+  t: ReturnType<typeof getDcaCopy>;
 }
 
-function MonthlyContributionsTooltip({ active, payload }: MonthlyContributionsTooltipProps) {
+function MonthlyContributionsTooltip({ active, payload, t }: MonthlyContributionsTooltipProps) {
   if (!active || !payload || !payload.length) return null;
   const item = payload[0]?.payload;
   if (!item) return null;
@@ -895,18 +908,18 @@ function MonthlyContributionsTooltip({ active, payload }: MonthlyContributionsTo
       </div>
       <div className="space-y-1.5 text-xs">
         <div className="flex items-center justify-between">
-          <span className="text-zinc-500">Monthly Spending:</span>
+          <span className="text-zinc-500">{t.dashboard.tooltip_monthly_spending}</span>
           <span className="font-bold text-[#f97602]">{formatCurrency(item.contributions)}</span>
         </div>
         {btc > 0 && (
           <div className="flex items-center justify-between">
-            <span className="text-zinc-500">Acquired BTC:</span>
+            <span className="text-zinc-500">{t.dashboard.tooltip_acquired_btc}</span>
             <span className="font-semibold text-zinc-800 font-mono">{btc.toFixed(6)} BTC</span>
           </div>
         )}
         {sats > 0 && (
           <div className="flex items-center justify-between text-[11px] text-zinc-500">
-            <span>Acquired Sats:</span>
+            <span>{t.dashboard.tooltip_acquired_sats}</span>
             <span className="font-mono text-zinc-700">{sats.toLocaleString()} sats</span>
           </div>
         )}
@@ -1308,6 +1321,7 @@ export default function DcaExperience() {
           btc: totalBtc,
           value: totalBtc * (market?.currentPrice ?? 0),
           averagePrice: totalBtc > 0 ? totalSpent / totalBtc : 0,
+          btcPrice: purchase.btcPrice,
         };
       });
   }, [portfolioPurchases, market?.currentPrice]);
@@ -2542,12 +2556,72 @@ export default function DcaExperience() {
               </form>
             </Panel>
 
-            <div className="mt-5">
+            <div className="mt-5 space-y-5">
               <DcaHealthScoreCard
                 plan={plans.find((p) => p.status === 'active') || plans[0]}
                 purchases={purchases}
                 onOpenAlerts={() => setSmartAlertsOpen(true)}
               />
+
+              <Panel>
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-semibold text-zinc-900">{t.dashboard.records_title}</h3>
+                    <p className="mt-1 text-xs text-zinc-500">{t.dashboard.records_manual.replace('{n}', String(portfolioPurchases.length))}</p>
+                  </div>
+                  <LockKeyhole className="h-4 w-4 text-cyan-600" aria-hidden="true" />
+                </div>
+                {portfolioPurchases.length === 0 ? (
+                  <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">
+                    {purchases.length === 0 ? t.dashboard.records_empty_all : t.dashboard.records_empty_portfolio}
+                  </p>
+                ) : (
+                  <div className="max-h-96 space-y-3 overflow-y-auto pr-2">
+                    {portfolioPurchases.map((purchase) => {
+                      const isCurrentEditing = editingPurchaseId === purchase.id;
+                      return (
+                        <article
+                          key={purchase.id}
+                          className={cn(
+                            "rounded-xl border p-3 transition-all duration-200",
+                            isCurrentEditing
+                              ? "border-[#f97602] bg-orange-50/60 ring-2 ring-[#f97602]/40 shadow-xs"
+                              : "border-zinc-200 bg-zinc-50/70 hover:bg-zinc-50"
+                          )}
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold text-zinc-900">{formatDate(purchase.purchaseDate)}</h4>
+                                {isCurrentEditing && (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-[#f97602] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider animate-pulse">
+                                    {t.dashboard.record_editing_badge}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-1 text-xs font-medium text-[#f97602]">{portfolioLabel(purchase.planId)}</p>
+                              <p className="mt-1 text-sm text-zinc-700">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
+                              <p className="mt-1 text-xs text-zinc-500">{t.dashboard.record_price} {formatCurrency(purchase.btcPrice)} · {t.dashboard.record_fees} {formatCurrency(purchase.feesUsd)}</p>
+                              {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">{t.dashboard.record_id} {purchase.transactionId}</p>}
+                            </div>
+                            <div className="flex gap-1">
+                              <IconButton
+                                label={isCurrentEditing ? t.dashboard.record_edit_active_label : t.dashboard.record_edit_label}
+                                onClick={() => beginPurchaseEdit(purchase)}
+                                className={isCurrentEditing ? "bg-orange-100 text-[#f97602] border-orange-300 ring-1 ring-[#f97602]/30" : ""}
+                              >
+                                <Pencil />
+                              </IconButton>
+                              <IconButton label={t.dashboard.record_delete_label} onClick={() => void deletePurchase(purchase)}><Trash2 /></IconButton>
+                            </div>
+                          </div>
+                          {purchase.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{purchase.notes}</p>}
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+              </Panel>
             </div>
           </div>
 
@@ -2616,7 +2690,7 @@ export default function DcaExperience() {
 
                     <div className="h-72 sm:h-80 w-full min-w-0">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={purchaseHistory} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                        <ComposedChart data={purchaseHistory} margin={{ top: 10, right: 65, left: -10, bottom: 0 }}>
                           <defs>
                             <linearGradient id="fintechPortfolioValGrad" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="0%" stopColor="#f97602" stopOpacity={0.28} />
@@ -2628,6 +2702,7 @@ export default function DcaExperience() {
                             </linearGradient>
                           </defs>
                           <CartesianGrid stroke="#f4f4f5" strokeDasharray="3 3" vertical={false} />
+                          <Legend verticalAlign="top" height={28} />
                           <XAxis
                             dataKey="date"
                             tick={{ fill: '#71717a', fontSize: 11 }}
@@ -2642,11 +2717,20 @@ export default function DcaExperience() {
                             tickLine={false}
                             width={54}
                           />
-                          <Tooltip content={<PortfolioValueTooltip currentPrice={market?.currentPrice ?? 0} />} />
+                          <YAxis
+                            yAxisId="btcPrice"
+                            orientation="right"
+                            tick={{ fill: '#06b6d4', fontSize: 11 }}
+                            tickFormatter={(v: number) => `$${Math.round(v / 1000)}k`}
+                            axisLine={false}
+                            tickLine={false}
+                            width={55}
+                          />
+                          <Tooltip content={<PortfolioValueTooltip currentPrice={market?.currentPrice ?? 0} t={t} />} />
                           <Area
                             type="monotone"
                             dataKey="contributions"
-                            name="Spending and fees"
+                            name={t.dashboard.chart_bar_spending}
                             stroke="#71717a"
                             strokeWidth={1.75}
                             strokeDasharray="4 4"
@@ -2660,7 +2744,17 @@ export default function DcaExperience() {
                             strokeWidth={2.5}
                             fill="url(#fintechPortfolioValGrad)"
                           />
-                        </AreaChart>
+                          <Line
+                            yAxisId="btcPrice"
+                            type="monotone"
+                            dataKey="btcPrice"
+                            name={t.dashboard.chart_legend_btc_price}
+                            stroke="#06b6d4"
+                            strokeWidth={1.75}
+                            dot={false}
+                            strokeDasharray="5 3"
+                          />
+                        </ComposedChart>
                       </ResponsiveContainer>
                     </div>
                   </Panel>
@@ -2819,21 +2913,23 @@ export default function DcaExperience() {
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="inline-flex h-2 w-2 rounded-full bg-[#f97602]" />
                         <span className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
-                          Contribution Velocity
+                          {t.dashboard.monthly_velocity_badge}
                         </span>
                       </div>
                       <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
-                        Monthly manual contributions
+                        {t.dashboard.monthly_velocity_title}
                       </h3>
                     </div>
 
                     <div className="flex flex-wrap sm:flex-col sm:items-end gap-1 bg-zinc-50/80 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-zinc-100">
-                      <span className="text-xs text-zinc-500 font-medium">Monthly Average</span>
+                      <span className="text-xs text-zinc-500 font-medium">{t.dashboard.monthly_avg}</span>
                       <div className="text-xl sm:text-2xl font-extrabold text-zinc-900">
                         {formatCurrency(avgMonthlyContribution)}
                       </div>
                       <span className="text-[11px] text-zinc-500">
-                        Across {monthlyData.length} recorded {monthlyData.length === 1 ? 'month' : 'months'}
+                        {t.dashboard.monthly_across
+                          .replace('{n}', String(monthlyData.length))
+                          .replace('{unit}', monthlyData.length === 1 ? t.dashboard.unit_month : t.dashboard.unit_months)}
                       </span>
                     </div>
                   </div>
@@ -2841,15 +2937,15 @@ export default function DcaExperience() {
                   {/* Summary Metric Ribbon */}
                   <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
-                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Total Cumulative</span>
+                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">{t.dashboard.stat_total_cumulative}</span>
                       <span className="text-sm font-bold text-zinc-800">{formatCurrency(totalMonthlySpent)}</span>
                     </div>
                     <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
-                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Peak Month</span>
+                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">{t.dashboard.stat_peak_month}</span>
                       <span className="text-sm font-bold text-[#f97602]">{peakMonthlyEntry ? `${peakMonthlyEntry.label} (${formatCurrency(peakMonthlyEntry.contributions, 0)})` : '—'}</span>
                     </div>
                     <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 p-3 col-span-2 sm:col-span-1">
-                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Total Stacked</span>
+                      <span className="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">{t.dashboard.stat_total_stacked}</span>
                       <span className="text-sm font-bold text-sky-800 font-mono">{totalMonthlyBtc.toFixed(6)} BTC</span>
                     </div>
                   </div>
@@ -2888,11 +2984,11 @@ export default function DcaExperience() {
                           tickLine={false}
                           width={72}
                         />
-                        <Tooltip content={<MonthlyContributionsTooltip />} cursor={{ fill: '#f4f4f5', opacity: 0.6 }} />
+                        <Tooltip content={<MonthlyContributionsTooltip t={t} />} cursor={{ fill: '#f4f4f5', opacity: 0.6 }} />
                         <Bar
                           yAxisId="spending"
                           dataKey="contributions"
-                          name="Spending and fees"
+                          name={t.dashboard.chart_bar_spending}
                           fill="url(#fintechBarGrad)"
                           radius={[8, 8, 2, 2]}
                           maxBarSize={56}
@@ -2900,7 +2996,7 @@ export default function DcaExperience() {
                         <Bar
                           yAxisId="btc"
                           dataKey="btc"
-                          name="Bitcoin acquired (BTC)"
+                          name={t.dashboard.chart_bar_btc}
                           fill="#0284c7"
                           radius={[8, 8, 2, 2]}
                           maxBarSize={56}
@@ -2910,65 +3006,6 @@ export default function DcaExperience() {
                   </div>
                 </Panel>
               )}
-              <Panel>
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-semibold text-zinc-900">{t.dashboard.records_title}</h3>
-                    <p className="mt-1 text-xs text-zinc-500">{t.dashboard.records_manual.replace('{n}', String(portfolioPurchases.length))}</p>
-                  </div>
-                  <LockKeyhole className="h-4 w-4 text-cyan-600" aria-hidden="true" />
-                </div>
-                {portfolioPurchases.length === 0 ? (
-                  <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 text-sm text-zinc-500">
-                    {purchases.length === 0 ? t.dashboard.records_empty_all : t.dashboard.records_empty_portfolio}
-                  </p>
-                ) : (
-                  <div className="max-h-96 space-y-3 overflow-y-auto pr-2">
-                    {portfolioPurchases.map((purchase) => {
-                      const isCurrentEditing = editingPurchaseId === purchase.id;
-                      return (
-                        <article
-                          key={purchase.id}
-                          className={cn(
-                            "rounded-xl border p-3 transition-all duration-200",
-                            isCurrentEditing
-                              ? "border-[#f97602] bg-orange-50/60 ring-2 ring-[#f97602]/40 shadow-xs"
-                              : "border-zinc-200 bg-zinc-50/70 hover:bg-zinc-50"
-                          )}
-                        >
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-semibold text-zinc-900">{formatDate(purchase.purchaseDate)}</h4>
-                                {isCurrentEditing && (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-[#f97602] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider animate-pulse">
-                                    {t.dashboard.record_editing_badge}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="mt-1 text-xs font-medium text-[#f97602]">{portfolioLabel(purchase.planId)}</p>
-                              <p className="mt-1 text-sm text-zinc-700">{formatCurrency(purchase.amountUsd)} · {purchase.btcReceived.toFixed(8)} BTC</p>
-                              <p className="mt-1 text-xs text-zinc-500">{t.dashboard.record_price} {formatCurrency(purchase.btcPrice)} · {t.dashboard.record_fees} {formatCurrency(purchase.feesUsd)}</p>
-                              {purchase.transactionId && <p className="mt-1 break-all text-xs text-zinc-400">{t.dashboard.record_id} {purchase.transactionId}</p>}
-                            </div>
-                            <div className="flex gap-1">
-                              <IconButton
-                                label={isCurrentEditing ? t.dashboard.record_edit_active_label : t.dashboard.record_edit_label}
-                                onClick={() => beginPurchaseEdit(purchase)}
-                                className={isCurrentEditing ? "bg-orange-100 text-[#f97602] border-orange-300 ring-1 ring-[#f97602]/30" : ""}
-                              >
-                                <Pencil />
-                              </IconButton>
-                              <IconButton label={t.dashboard.record_delete_label} onClick={() => void deletePurchase(purchase)}><Trash2 /></IconButton>
-                            </div>
-                          </div>
-                          {purchase.notes && <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-500">{purchase.notes}</p>}
-                        </article>
-                      );
-                    })}
-                  </div>
-                )}
-              </Panel>
             </div>
           </div>
 

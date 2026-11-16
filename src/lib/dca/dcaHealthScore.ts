@@ -187,15 +187,15 @@ export function calculateDcaHealthScore(
       type: 'positive',
       title: isTi ? 'ጽኑዕ ስሩዕነት መደብ' : 'Strong Schedule Discipline',
       description: isTi
-        ? `ካብ ዝሓለፈ ${dueContributions} ዝተመደበልካ ዕድጊ፡ ነተን ${onTimeCount} ብግዜአን መዝጊብካየን።`
+        ? `${onTimeCount} ካብ ${dueContributions} ዕድጊታት ብእዋኑ ተመዝጊቡ።`
         : `You logged ${onTimeCount} of your last ${dueContributions} scheduled contributions on time.`,
     });
   } else {
     insights.push({
       type: 'warning',
-      title: isTi ? 'ዝተዘለለ ስሩዕ ኣበርክቶታት' : 'Missed Scheduled Contributions',
+      title: isTi ? 'ዝሓለፈ ዕድጊታት' : 'Missed Scheduled Contributions',
       description: isTi
-        ? `ኣብ ዝሓለፉ ${daysWindow} መዓልታት ${dueContributions - onTimeCount} ዝተመደቡ እዋናት ዕድጊ ሓሊፎምኻ።`
+        ? `ኣብ ዝሓለፉ ${daysWindow} መዓልታት ${dueContributions - onTimeCount} ዕድጊታት ኣይተመዝገቡን።`
         : `You missed ${dueContributions - onTimeCount} scheduled contribution periods in the last ${daysWindow} days.`,
     });
   }
@@ -203,17 +203,17 @@ export function calculateDcaHealthScore(
   if (contributionConsistency >= 90) {
     insights.push({
       type: 'positive',
-      title: isTi ? 'እሙን መጠን ኣበርክቶ' : 'Reliable Contribution Volume',
+      title: isTi ? 'እሙን መጠን ዕድጊ' : 'Reliable Contribution Volume',
       description: isTi
-        ? `${contributionConsistency}% ካብቲ ዝወጠንካዮ $${plannedAmount.toLocaleString()} USD በጀት በጺሕካ ኣለኻ።`
+        ? `${contributionConsistency}% ካብቲ $${plannedAmount.toLocaleString()} USD ናይ መደብ በጀት ተመዝጊቡ።`
         : `You reached ${contributionConsistency}% of your planned $${plannedAmount.toLocaleString()} USD budget.`,
     });
   } else if (contributionConsistency < 75) {
     insights.push({
       type: 'warning',
-      title: isTi ? 'ካብቲ መደብ ዝወሓደ ኣበርክቶ' : 'Under-contributed Relative to Plan',
+      title: isTi ? 'ካብቲ መደብ ዝወሓደ ዕድጊ' : 'Under-contributed Relative to Plan',
       description: isTi
-        ? `ካብቲ ዝተመደበ $${plannedAmount.toLocaleString()} USD፡ $${recordedAmount.toLocaleString()} USD ጥራይ ተመዝጊቡ።`
+        ? `$${recordedAmount.toLocaleString()} USD ጥራይ ተመዝጊቡ (ካብ $${plannedAmount.toLocaleString()} USD ናይ መደብ)።`
         : `Recorded $${recordedAmount.toLocaleString()} out of $${plannedAmount.toLocaleString()} USD scheduled for this window.`,
     });
   }
