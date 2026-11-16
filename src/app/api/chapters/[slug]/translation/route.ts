@@ -12,6 +12,15 @@ const chapterTranslations: Record<string, string> = {
   "utxos-fees-coin-control": "ch09-utxos-fees-ti.md",
   "good-bitcoin-hygiene": "ch10-hygiene-ti.md",
   "hardware-signers": "ch11-hardware-signers-ti.md",
+  "verify-for-yourself-block-explorers-nodes": "ch12-verify-for-yourself-ti.md",
+  "proof-of-work-and-block-rewards": "ch13-proof-of-work-ti.md",
+  "mining-in-practice": "ch14-mining-in-practice-ti.md",
+  "layer-2-sidechains-in-daily-life": "ch15-layer2-sidechains-ti.md",
+  "full-node-opening-a-lightning-channel": "ch16-full-node-lightning-ti.md",
+  "multi-sig-collaborative-custody": "ch17-multisig-ti.md",
+  "intro-to-bitcoin-script-optional-track": "ch18-bitcoin-script-ti.md",
+  "utxo-consolidation-privacy-risks": "ch19-consolidation-privacy-ti.md",
+  "why-bitcoin-philosophy-adoption": "ch20-philosophy-ti.md",
 };
 
 export async function GET(
@@ -37,9 +46,11 @@ export async function GET(
     const markdown = await readFile(filePath, "utf8");
     const heading = markdown.match(/^#\s+(.+)$/m)?.[1]?.trim();
     const title = heading?.replace(/^ምዕራፍ\s+\d+\s*[·:.-]\s*/u, "").trim();
-    const lessonStart = markdown.match(/^##\s+ቀንዲ ትሕዝቶ ትምህርቲ\s*$/mu);
+    const lessonStart =
+      markdown.match(/^##\s+ቀንዲ ትሕዝቶ(?: ትምህርቲ)?\s*$/mu) ||
+      markdown.match(/^##\s+መእተዊ\s*$/mu);
     const content = lessonStart?.index !== undefined
-      ? markdown.slice(lessonStart.index + lessonStart[0].length).trim()
+      ? (markdown.slice(lessonStart.index + (lessonStart[0].includes("መእተዊ") ? 0 : lessonStart[0].length))).trim()
       : markdown.replace(/^#\s+.+\r?\n+/, "").trim();
 
     return Response.json(

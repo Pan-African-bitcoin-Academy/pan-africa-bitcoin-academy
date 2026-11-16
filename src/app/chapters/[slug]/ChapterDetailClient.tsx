@@ -284,7 +284,7 @@ function TigrinyaChapterLesson({
     .split(/(?=^#{2,3}\s+)/m)
     .map((markdown) => {
       const heading = markdown.match(/^#{2,3}\s+(.+)$/m)?.[1]?.trim();
-      if (!heading || /image\s*references?|visual\s*references?|ስእላዊ|መወከሲታት/iu.test(heading)) {
+      if (!heading || /image\s*references?|visual\s*references?|ስእላዊ|መወከሲታት|እንታይ\s*ክትመሃር/iu.test(heading)) {
         return null;
       }
 
@@ -639,6 +639,159 @@ function TigrinyaChapterLesson({
             {chapter.slug === "keys-and-transactions" && heading.startsWith("6.2") ? (
               <Chapter6InteractiveLesson module="p2p_pipeline" isTi={true} />
             ) : null}
+            {chapter.slug === "blockchain-basics" && heading.startsWith("7.0") ? (
+              <Chapter7InteractiveLesson module="block_formation" isTi={true} />
+            ) : null}
+            {chapter.slug === "blockchain-basics" && heading.startsWith("7.1") ? (
+              <Chapter7InteractiveLesson module="hash_fingerprint" isTi={true} />
+            ) : null}
+            {chapter.slug === "blockchain-basics" && heading.startsWith("7.2") ? (
+              <Chapter7InteractiveLesson module="build_chain" isTi={true} />
+            ) : null}
+            {chapter.slug === "blockchain-basics" && heading.startsWith("7.3") ? (
+              <Chapter7InteractiveLesson module="mining_puzzle" isTi={true} />
+            ) : null}
+            {chapter.slug === "exchange-software-wallet" && heading.startsWith("8.0") ? (
+              <Chapter8InteractiveLesson module="exchange_onramp" isTi={true} />
+            ) : null}
+            {chapter.slug === "exchange-software-wallet" && heading.startsWith("8.1") ? (
+              <Chapter8InteractiveLesson module="seed_backup_lab" isTi={true} />
+            ) : null}
+            {chapter.slug === "exchange-software-wallet" && heading.startsWith("8.2") ? (
+              <Chapter8InteractiveLesson module="send_receive_playground" isTi={true} />
+            ) : null}
+            {chapter.slug === "exchange-software-wallet" && heading.startsWith("8.3") ? (
+              <Chapter8InteractiveLesson module="privacy_inspector" isTi={true} />
+            ) : null}
+            {chapter.slug === "utxos-fees-coin-control" && heading.startsWith("9.0") ? (
+              <Chapter9InteractiveLesson module="utxo_lifecycle" isTi={true} />
+            ) : null}
+            {chapter.slug === "utxos-fees-coin-control" && heading.startsWith("9.1") ? (
+              <>
+                <Chapter9InteractiveLesson module="fee_vbytes_lab" isTi={true} />
+                <Chapter9InteractiveLesson module="coin_control_cockpit" isTi={true} />
+              </>
+            ) : null}
+            {chapter.slug === "utxos-fees-coin-control" && heading.startsWith("9.2") ? (
+              <Chapter9InteractiveLesson module="consolidation_time_machine" isTi={true} />
+            ) : null}
+            {chapter.slug === "good-bitcoin-hygiene" && heading.startsWith("10.0") ? (
+              <Chapter10InteractiveLesson module="address_verification_lab" isTi={true} />
+            ) : null}
+            {chapter.slug === "good-bitcoin-hygiene" && heading.startsWith("10.1") ? (
+              <Chapter10InteractiveLesson module="utxo_labeling_workbench" isTi={true} />
+            ) : null}
+            {chapter.slug === "good-bitcoin-hygiene" && heading.startsWith("10.2") ? (
+              <>
+                <Chapter10InteractiveLesson module="payment_flow_simulator" isTi={true} />
+                <Chapter10InteractiveLesson module="hygiene_audit_checklist" isTi={true} />
+              </>
+            ) : null}
+            {chapter.slug === "hardware-signers" && heading.startsWith("11.0") ? (
+              <Chapter11InteractiveLesson module="threat_model_sandbox" isTi={true} />
+            ) : null}
+            {chapter.slug === "hardware-signers" && heading.startsWith("11.1") ? (
+              <Chapter11InteractiveLesson module="passphrase_vault_lab" isTi={true} />
+            ) : null}
+            {chapter.slug === "hardware-signers" && heading.startsWith("11.2") ? (
+              <Chapter11InteractiveLesson module="psbt_signing_pipeline" isTi={true} />
+            ) : null}
+            {chapter.slug === "verify-for-yourself-block-explorers-nodes" && heading.startsWith("12.0") ? (
+              <Chapter12InteractiveLesson module="block_explorer_lab" isTi={true} />
+            ) : null}
+            {chapter.slug === "verify-for-yourself-block-explorers-nodes" && heading.startsWith("12.1") ? (
+              <Chapter12InteractiveLesson module="merkle_proof_visualizer" isTi={true} />
+            ) : null}
+            {chapter.slug === "verify-for-yourself-block-explorers-nodes" && heading.startsWith("12.2") ? (
+              <Chapter12InteractiveLesson module="node_validator_sandbox" isTi={true} />
+            ) : null}
+            {chapter.slug === "verify-for-yourself-block-explorers-nodes" && heading.startsWith("12.3") ? (
+              <Chapter12InteractiveLesson module="node_sync_calculator" isTi={true} />
+            ) : null}
+            {chapter.slug === "proof-of-work-and-block-rewards" && heading.startsWith("13.0") ? (
+              <Chapter13InteractiveLesson module="pow_asymmetry" isTi={true} />
+            ) : null}
+            {chapter.slug === "proof-of-work-and-block-rewards" && heading.startsWith("13.1") ? (
+              <Chapter13InteractiveLesson module="coinbase_reward_anatomy" isTi={true} />
+            ) : null}
+            {chapter.slug === "proof-of-work-and-block-rewards" && heading.startsWith("13.2") ? (
+              <Chapter13InteractiveLesson module="halving_schedule_curve" isTi={true} />
+            ) : null}
+            {chapter.slug === "proof-of-work-and-block-rewards" && heading.startsWith("13.3") ? (
+              <Chapter13InteractiveLesson module="subsidy_timeline_2140" isTi={true} />
+            ) : null}
+            {chapter.slug === "mining-in-practice" && heading.startsWith("14.0") ? (
+              <Chapter14InteractiveLesson module="mining_cockpit" isTi={true} />
+            ) : null}
+            {chapter.slug === "mining-in-practice" && heading.startsWith("14.1") ? (
+              <Chapter14InteractiveLesson module="mining_pool_simulator" isTi={true} />
+            ) : null}
+            {chapter.slug === "mining-in-practice" && heading.startsWith("14.2") ? (
+              <Chapter14InteractiveLesson module="security_budget_analyzer" isTi={true} />
+            ) : null}
+            {chapter.slug === "mining-in-practice" && heading.startsWith("14.3") ? (
+              <Chapter14InteractiveLesson module="asic_geopolitics_map" isTi={true} />
+            ) : null}
+            {chapter.slug === "layer-2-sidechains-in-daily-life" && heading.startsWith("15.0") ? (
+              <Chapter15InteractiveLesson module="lightning_channel_flow" isTi={true} />
+            ) : null}
+            {chapter.slug === "layer-2-sidechains-in-daily-life" && heading.startsWith("15.1") ? (
+              <Chapter15InteractiveLesson module="custodial_vs_non_custodial" isTi={true} />
+            ) : null}
+            {chapter.slug === "layer-2-sidechains-in-daily-life" && heading.startsWith("15.2") ? (
+              <Chapter15InteractiveLesson module="sidechain_federation_peg" isTi={true} />
+            ) : null}
+            {chapter.slug === "layer-2-sidechains-in-daily-life" && heading.startsWith("15.3") ? (
+              <Chapter15InteractiveLesson module="circular_economy_explorer" isTi={true} />
+            ) : null}
+            {chapter.slug === "full-node-opening-a-lightning-channel" && heading.startsWith("16.0") ? (
+              <Chapter16InteractiveLesson module="node_stack_architect" isTi={true} />
+            ) : null}
+            {chapter.slug === "full-node-opening-a-lightning-channel" && heading.startsWith("16.1") ? (
+              <Chapter16InteractiveLesson module="channel_lifecycle_workbench" isTi={true} />
+            ) : null}
+            {chapter.slug === "full-node-opening-a-lightning-channel" && heading.startsWith("16.2") ? (
+              <Chapter16InteractiveLesson module="watchtower_penalty_simulator" isTi={true} />
+            ) : null}
+            {chapter.slug === "multi-sig-collaborative-custody" && heading.startsWith("17.0") ? (
+              <Chapter17InteractiveLesson module="single_sig_vs_multi_sig" isTi={true} />
+            ) : null}
+            {chapter.slug === "multi-sig-collaborative-custody" && heading.startsWith("17.1") ? (
+              <Chapter17InteractiveLesson module="mofn_quorum_simulator" isTi={true} />
+            ) : null}
+            {chapter.slug === "multi-sig-collaborative-custody" && heading.startsWith("17.2") ? (
+              <Chapter17InteractiveLesson module="operational_playbook_workbench" isTi={true} />
+            ) : null}
+            {chapter.slug === "intro-to-bitcoin-script-optional-track" && heading.startsWith("18.0") ? (
+              <Chapter18InteractiveLesson module="script_types_evolution" isTi={true} />
+            ) : null}
+            {chapter.slug === "intro-to-bitcoin-script-optional-track" && heading.startsWith("18.1") ? (
+              <Chapter18InteractiveLesson module="timelock_policies_matrix" isTi={true} />
+            ) : null}
+            {chapter.slug === "intro-to-bitcoin-script-optional-track" && heading.startsWith("18.2") ? (
+              <Chapter18InteractiveLesson module="wallet_abstraction_pipeline" isTi={true} />
+            ) : null}
+            {chapter.slug === "intro-to-bitcoin-script-optional-track" && heading.startsWith("18.3") ? (
+              <Chapter18InteractiveLesson module="transaction_lifecycle_flow" isTi={true} />
+            ) : null}
+            {chapter.slug === "utxo-consolidation-privacy-risks" && heading.startsWith("19.0") ? (
+              <Chapter19InteractiveLesson module="mempool_fee_timing_analyzer" isTi={true} />
+            ) : null}
+            {chapter.slug === "utxo-consolidation-privacy-risks" && heading.startsWith("19.1") ? (
+              <Chapter19InteractiveLesson module="privacy_cluster_heuristics" isTi={true} />
+            ) : null}
+            {chapter.slug === "utxo-consolidation-privacy-risks" && heading.startsWith("19.2") ? (
+              <Chapter19InteractiveLesson module="strategic_spend_planner" isTi={true} />
+            ) : null}
+            {chapter.slug === "why-bitcoin-philosophy-adoption" && heading.startsWith("20.0") ? (
+              <Chapter20InteractiveLesson module="monetary_frameworks_spectrum" isTi={true} />
+            ) : null}
+            {chapter.slug === "why-bitcoin-philosophy-adoption" && heading.startsWith("20.1") ? (
+              <Chapter20InteractiveLesson module="protocol_vs_asset_lens" isTi={true} />
+            ) : null}
+            {chapter.slug === "why-bitcoin-philosophy-adoption" && heading.startsWith("20.2") ? (
+              <Chapter20InteractiveLesson module="trust_minimized_beneficiaries_map" isTi={true} />
+            ) : null}
           </ChapterSectionAnimated>
         );
       })}
@@ -664,6 +817,15 @@ export function ChapterDetailClient({ slug }: ChapterDetailClientProps) {
     "utxos-fees-coin-control",
     "good-bitcoin-hygiene",
     "hardware-signers",
+    "verify-for-yourself-block-explorers-nodes",
+    "proof-of-work-and-block-rewards",
+    "mining-in-practice",
+    "layer-2-sidechains-in-daily-life",
+    "full-node-opening-a-lightning-channel",
+    "multi-sig-collaborative-custody",
+    "intro-to-bitcoin-script-optional-track",
+    "utxo-consolidation-privacy-risks",
+    "why-bitcoin-philosophy-adoption",
   ].includes(slug);
   const [tigrinyaLesson, setTigrinyaLesson] = React.useState<{
     slug: string;
