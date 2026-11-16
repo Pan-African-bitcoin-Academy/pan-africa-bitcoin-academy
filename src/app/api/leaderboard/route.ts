@@ -185,15 +185,18 @@ export async function GET() {
         attendance = Math.min(100, attended * 10);
       }
 
-      entries.push({
-        studentId: profileId,
-        name,
-        sats,
-        awards: awardsCount > 0 ? awardsCount : assignments,
-        assignments,
-        chaptersCompleted,
-        attendance,
-      });
+      // Only list students who have received Sats (sats > 0)
+      if (sats > 0) {
+        entries.push({
+          studentId: profileId,
+          name,
+          sats,
+          awards: awardsCount > 0 ? awardsCount : assignments,
+          assignments,
+          chaptersCompleted,
+          attendance,
+        });
+      }
     });
 
     // Rank by student performance:

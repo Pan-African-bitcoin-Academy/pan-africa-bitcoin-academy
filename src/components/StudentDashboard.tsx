@@ -2271,11 +2271,11 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
             <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-2xl font-semibold text-zinc-50">Leaderboard</h2>
-                <p className="text-xs text-zinc-400">Ranked by performance: Sats earned, awards, assignments & curriculum progress</p>
+                <p className="text-xs text-zinc-400">Ranked by Sats received across the academy</p>
               </div>
               {leaderboard.length > 0 && (
                 <div className="text-xs text-zinc-400">
-                  Total Students: <span className="font-semibold text-zinc-200">{leaderboard.length}</span>
+                  Rewarded Students: <span className="font-semibold text-orange-400">{leaderboard.length}</span>
                 </div>
               )}
             </div>
@@ -2315,16 +2315,19 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
                       >
                         <td className="px-4 py-3">
                           <span
-                            className={`text-lg font-bold ${
+                            className={`inline-flex items-center gap-1 text-base font-bold ${
                               student.rank === 1
-                                ? 'text-yellow-400'
+                                ? 'text-amber-400'
                                 : student.rank === 2
-                                ? 'text-zinc-300'
+                                ? 'text-zinc-200'
                                 : student.rank === 3
-                                ? 'text-orange-400'
-                                : 'text-zinc-500'
+                                ? 'text-amber-600'
+                                : 'text-zinc-400'
                             }`}
                           >
+                            {student.rank === 1 && <span className="text-sm">🥇</span>}
+                            {student.rank === 2 && <span className="text-sm">🥈</span>}
+                            {student.rank === 3 && <span className="text-sm">🥉</span>}
                             #{student.rank ?? '?'}
                           </span>
                         </td>
