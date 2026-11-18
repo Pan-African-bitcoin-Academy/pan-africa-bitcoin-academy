@@ -10,25 +10,51 @@ export interface MarketPriceSnapshot {
 }
 
 export async function fetchCurrentBtcPrice(): Promise<MarketPriceSnapshot | null> {
+  // 1. Try CoinGecko (fresh, no-store)
   try {
     const res = await fetch(
       'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&price_change_percentage=24h',
-      { next: { revalidate: 120 } }
+      { cache: 'no-store' }
     );
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) return null;
-    return {
-      current_price: data[0].current_price,
-      price_change_percentage_24h: data[0].price_change_percentage_24h ?? null,
-      high_24h: data[0].high_24h ?? null,
-      low_24h: data[0].low_24h ?? null,
-      last_updated: data[0].last_updated || new Date().toISOString(),
-    };
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0 && typeof data[0].current_price === 'number') {
+        return {
+          current_price: data[0].current_price,
+          price_change_percentage_24h: data[0].price_change_percentage_24h ?? null,
+          high_24h: data[0].high_24h ?? null,
+          low_24h: data[0].low_24h ?? null,
+          last_updated: data[0].last_updated || new Date().toISOString(),
+        };
+      }
+    }
   } catch (err) {
-    console.error('Failed to fetch Bitcoin price for alerts:', err);
-    return null;
+    console.error('Failed to fetch Bitcoin price from CoinGecko:', err);
   }
+
+  // 2. High-reliability fallback: Binance live ticker
+  try {
+    const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT', {
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const b = await res.json();
+      const current_price = parseFloat(b.lastPrice);
+      if (!Number.isNaN(current_price) && current_price > 0) {
+        return {
+          current_price,
+          price_change_percentage_24h: parseFloat(b.priceChangePercent) || null,
+          high_24h: parseFloat(b.highPrice) || null,
+          low_24h: parseFloat(b.lowPrice) || null,
+          last_updated: new Date().toISOString(),
+        };
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch Bitcoin price from Binance:', err);
+  }
+
+  return null;
 }
 
 /**
@@ -222,7 +248,11 @@ export async function getContributionReminderContent(
 
   // Amount & sats calculation
   const amountUsd = alert.threshold_value ? Number(alert.threshold_value) : null;
-  const btcPrice = market?.current_price ?? null;
+  let btcPrice = market?.current_price ?? null;
+  if (!btcPrice) {
+    const liveMarket = await fetchCurrentBtcPrice();
+    btcPrice = liveMarket?.current_price ?? null;
+  }
   const satsPerDollar = btcPrice && btcPrice > 0 ? Math.round(100_000_000 / btcPrice) : null;
   const amountSats =
     amountUsd && btcPrice && btcPrice > 0
@@ -261,10 +291,10 @@ export async function getContributionReminderContent(
   body_en += ` Stay disciplined and log today's purchase to keep your streak going!`;
 
   // --- Tigrinya text generation ---
-  const title_ti = 'ናይ DCA ምዕቃብ መዘኻኸሪ ⏰';
+  const title_ti = 'ናይ DCA ምእካብ መዘኻኸሪ ⏰';
   let body_ti = amountUsd
-    ? `ናይ $${amountUsd.toLocaleString()} ${freqTi} ናይ ቢትኮይን ምዕቃብካ${amountSats ? ` (~${amountSats.toLocaleString()} ሳትስ)` : ''} ሎሚ ዝፍጸመሉ ዕለት እዩ።`
-    : `ናይ ቢትኮይን ስሩዕ ምዕቃብካ (${freqTi}) ሎሚ ዝፍጸመሉ ዕለት እዩ።`;
+    ? `ናይ $${amountUsd.toLocaleString()} ${freqTi} ናይ ቢትኮይን ምእካብ${amountSats ? ` (~${amountSats.toLocaleString()} ሳትስ)` : ''} ሎሚ ዝፍጸመሉ ዕለት እዩ።`
+    : `ናይ ቢትኮይን ስሩዕ ምእካብ (${freqTi}) ሎሚ ዝፍጸመሉ ዕለት እዩ።`;
 
   if (btcPrice) {
     body_ti += ` ናይ ሕጂ ዋጋ ቢትኮይን: $${btcPrice.toLocaleString()} ዶላር${satsPerDollar ? ` (ብ $1 ~${satsPerDollar.toLocaleString()} ሳትስ)` : ''}።`;
@@ -272,7 +302,7 @@ export async function getContributionReminderContent(
   if (totalSats && totalSats > 0) {
     body_ti += ` ክሳብ ሕጂ ${totalSats.toLocaleString()} ሳትስ ኣኪብካ ኣለኻ!`;
   }
-  body_ti += ` ሳትስ ኣብ ምእካብ ጽኑዕ ኩን፣ ናይ ሎሚ ግዝኢትካ ድማ ምዝገብ!`;
+  body_ti += ` ሳትስ ምእካብ ኣይተቋርጽ!`;
 
   return {
     title: isTi ? title_ti : title_en,
@@ -311,8 +341,8 @@ export async function evaluateMissedContribution(
     const cycleStr = new Date().toISOString().slice(0, 10);
     const title_en = 'Missed DCA Contribution Reminder ⚠️';
     const body_en = `You have an active DCA plan, but no contribution was recorded in the past ${graceDays} days grace period. Make sure to log your purchase or adjust your plan schedule!`;
-    const title_ti = 'ዝተረፈ ናይ DCA ምዕቃብ መዘኻኸሪ ⚠️';
-    const body_ti = `ንጡፍ ናይ DCA መደብ ኣለካ፣ ግን ኣብ ዝሓለፉ ${graceDays} መዓልታት ዝኾነ ምዕቃብ ኣይተመዝገበን። ግዝኢትካ ምዝገብ ወይ ናይ መደብካ ግዜ ኣዐሪ!`;
+    const title_ti = 'ዝተረፈ ናይ DCA ምእካብ መዘኻኸሪ ⚠️';
+    const body_ti = `ንጡፍ ናይ DCA መደብ ኣለካ፣ ግን ኣብ ዝሓለፉ ${graceDays} መዓልታት ዝኾነ ምእካብ ኣይተመዝገበን። ግዝኢትካ ምዝገብ ወይ ናይ መደብካ ግዜ ኣዐሪ!`;
 
     return {
       isMissed: true,
