@@ -97,13 +97,36 @@ export function isContributionReminderDue(
   }
 }
 
+export type AlertLang = 'en' | 'ti';
+
+export interface AlertTriggerContent {
+  title: string;
+  body: string;
+  title_en: string;
+  body_en: string;
+  title_ti: string;
+  body_ti: string;
+  dedupKey: string;
+}
+
+/**
+ * Normalizes user language string to 'en' or 'ti'
+ */
+export function normalizeLang(lang?: string | null): AlertLang {
+  if (!lang) return 'en';
+  const l = lang.toLowerCase().trim();
+  if (l === 'ti' || l === 'tigrigna' || l === 'tigrinya') return 'ti';
+  return 'en';
+}
+
 /**
  * Evaluates price threshold conditions
  */
 export function evaluatePriceAlert(
   alert: UserAlert,
-  market: MarketPriceSnapshot
-): { isTriggered: boolean; title: string; body: string; dedupKey: string } | null {
+  market: MarketPriceSnapshot,
+  lang: AlertLang = 'en'
+): ({ isTriggered: boolean } & AlertTriggerContent) | null {
   if (!isCooldownSatisfied(alert)) return null;
 
   const btcPrice = market.current_price;
@@ -112,18 +135,36 @@ export function evaluatePriceAlert(
 
   if (alert.type === 'price_threshold') {
     if (alert.condition === 'below' && btcPrice <= threshold) {
+      const title_en = 'Bitcoin Price Dip Alert 📉';
+      const body_en = `Bitcoin is currently $${btcPrice.toLocaleString()} USD, falling below your alert target of $${threshold.toLocaleString()} USD.`;
+      const title_ti = 'ናይ ቢትኮይን ዋጋ ምውራድ መጠንቀቕታ 📉';
+      const body_ti = `ቢትኮይን ኣብዚ እዋን $${btcPrice.toLocaleString()} ዶላር ኣሎ፣ እዚ ድማ ካብቲ ዝመረጽካዮ ናይ መጠንቀቕታ ዋጋ $${threshold.toLocaleString()} ዶላር ወሪዱ ኣሎ።`;
+
       return {
         isTriggered: true,
-        title: 'Bitcoin Price Dip Alert 📉',
-        body: `Bitcoin is currently $${btcPrice.toLocaleString()} USD, falling below your alert target of $${threshold.toLocaleString()} USD.`,
+        title: lang === 'ti' ? title_ti : title_en,
+        body: lang === 'ti' ? body_ti : body_en,
+        title_en,
+        body_en,
+        title_ti,
+        body_ti,
         dedupKey: `price_below_${alert.id}_${dateStr}`,
       };
     }
     if (alert.condition === 'above' && btcPrice >= threshold) {
+      const title_en = 'Bitcoin Price Rise Alert 🚀';
+      const body_en = `Bitcoin is currently $${btcPrice.toLocaleString()} USD, rising above your alert target of $${threshold.toLocaleString()} USD.`;
+      const title_ti = 'ናይ ቢትኮይን ዋጋ ምዕባይ መጠንቀቕታ 🚀';
+      const body_ti = `ቢትኮይን ኣብዚ እዋን $${btcPrice.toLocaleString()} ዶላር በጺሑ ኣሎ፣ እዚ ድማ ካብቲ ዝመረጽካዮ ናይ መጠንቀቕታ ዋጋ $${threshold.toLocaleString()} ዶላር ደይቡ ኣሎ።`;
+
       return {
         isTriggered: true,
-        title: 'Bitcoin Price Rise Alert 🚀',
-        body: `Bitcoin is currently $${btcPrice.toLocaleString()} USD, rising above your alert target of $${threshold.toLocaleString()} USD.`,
+        title: lang === 'ti' ? title_ti : title_en,
+        body: lang === 'ti' ? body_ti : body_en,
+        title_en,
+        body_en,
+        title_ti,
+        body_ti,
         dedupKey: `price_above_${alert.id}_${dateStr}`,
       };
     }
@@ -133,10 +174,20 @@ export function evaluatePriceAlert(
     const change24h = market.price_change_percentage_24h ?? 0;
     const dropTarget = Math.abs(threshold);
     if (change24h <= -dropTarget) {
+      const pctFormatted = Math.abs(change24h).toFixed(2);
+      const title_en = 'Bitcoin 24-Hour Price Drop Alert ⚡';
+      const body_en = `Bitcoin has dropped ${pctFormatted}% in the last 24 hours (Current: $${btcPrice.toLocaleString()} USD). Good time to review your DCA plan!`;
+      const title_ti = 'ናይ 24 ሰዓት ቢትኮይን ዋጋ ምውራድ መጠንቀቕታ ⚡';
+      const body_ti = `ቢትኮይን ኣብ ዝሓለፈ 24 ሰዓታት ብ ${pctFormatted}% ወሪዱ ኣሎ (ናይ ሕጂ ዋጋ: $${btcPrice.toLocaleString()} ዶላር)። ናይ DCA መደብካ ንምምርማር ጽቡቕ ግዜ እዩ!`;
+
       return {
         isTriggered: true,
-        title: 'Bitcoin 24-Hour Price Drop Alert ⚡',
-        body: `Bitcoin has dropped ${Math.abs(change24h).toFixed(2)}% in the last 24 hours (Current: $${btcPrice.toLocaleString()} USD). Good time to review your DCA plan!`,
+        title: lang === 'ti' ? title_ti : title_en,
+        body: lang === 'ti' ? body_ti : body_en,
+        title_en,
+        body_en,
+        title_ti,
+        body_ti,
         dedupKey: `drop_pct_${alert.id}_${dateStr}`,
       };
     }
@@ -146,11 +197,45 @@ export function evaluatePriceAlert(
 }
 
 /**
+ * Returns content for contribution reminder
+ */
+export function getContributionReminderContent(
+  alert: UserAlert,
+  dedupKey: string,
+  lang: AlertLang = 'en'
+): AlertTriggerContent {
+  const freq = alert.schedule_frequency || 'scheduled';
+  const freqMapTi: Record<string, string> = {
+    daily: 'መዓልታዊ',
+    weekly: 'ሰሙናዊ',
+    biweekly: 'ናይ ክልተ ሰሙን',
+    monthly: 'ወርሓዊ',
+  };
+  const freqTi = freqMapTi[freq] || 'ስሩዕ';
+
+  const title_en = 'DCA Contribution Reminder ⏰';
+  const body_en = `Your scheduled Bitcoin contribution (${freq}) is due today. Stay disciplined on your sats accumulation!`;
+  const title_ti = 'ናይ DCA ምዕቃብ መዘኻኸሪ ⏰';
+  const body_ti = `ናይ ቢትኮይን ስሩዕ ምዕቃብካ (${freqTi}) ሎሚ ዝፍጸመሉ ዕለት እዩ። ሳትስ ኣብ ምእካብ ጽኑዕ ኩን!`;
+
+  return {
+    title: lang === 'ti' ? title_ti : title_en,
+    body: lang === 'ti' ? body_ti : body_en,
+    title_en,
+    body_en,
+    title_ti,
+    body_ti,
+    dedupKey,
+  };
+}
+
+/**
  * Checks for missed scheduled contributions
  */
 export async function evaluateMissedContribution(
-  alert: UserAlert
-): Promise<{ isMissed: boolean; title: string; body: string; dedupKey: string } | null> {
+  alert: UserAlert,
+  lang: AlertLang = 'en'
+): Promise<({ isMissed: boolean } & AlertTriggerContent) | null> {
   if (!alert.user_id || !isCooldownSatisfied(alert)) return null;
 
   // Fetch recent purchases from dca_purchases
@@ -168,10 +253,19 @@ export async function evaluateMissedContribution(
   // If no purchase recorded in the last cycle + grace period
   if (!purchases || purchases.length === 0) {
     const cycleStr = new Date().toISOString().slice(0, 10);
+    const title_en = 'Missed DCA Contribution Reminder ⚠️';
+    const body_en = `You have an active DCA plan, but no contribution was recorded in the past ${graceDays} days grace period. Make sure to log your purchase or adjust your plan schedule!`;
+    const title_ti = 'ዝተረፈ ናይ DCA ምዕቃብ መዘኻኸሪ ⚠️';
+    const body_ti = `ንጡፍ ናይ DCA መደብ ኣለካ፣ ግን ኣብ ዝሓለፉ ${graceDays} መዓልታት ዝኾነ ምዕቃብ ኣይተመዝገበን። ግዝኢትካ ምዝገብ ወይ ናይ መደብካ ግዜ ኣዐሪ!`;
+
     return {
       isMissed: true,
-      title: 'Missed DCA Contribution Reminder ⚠️',
-      body: `You have an active DCA plan, but no contribution was recorded in the past ${graceDays} days grace period. Make sure to log your purchase or adjust your plan schedule!`,
+      title: lang === 'ti' ? title_ti : title_en,
+      body: lang === 'ti' ? body_ti : body_en,
+      title_en,
+      body_en,
+      title_ti,
+      body_ti,
       dedupKey: `missed_${alert.id}_${cycleStr}`,
     };
   }
@@ -183,8 +277,9 @@ export async function evaluateMissedContribution(
  * Checks goal milestones (25%, 50%, 75%, 100%, or target BTC)
  */
 export async function evaluateGoalMilestone(
-  alert: UserAlert
-): Promise<{ isReached: boolean; title: string; body: string; dedupKey: string } | null> {
+  alert: UserAlert,
+  lang: AlertLang = 'en'
+): Promise<({ isReached: boolean } & AlertTriggerContent) | null> {
   if (!alert.user_id) return null;
 
   // Calculate user's total sats accumulated
@@ -196,15 +291,25 @@ export async function evaluateGoalMilestone(
   const totalSats = (purchases || []).reduce((acc: number, p: any) => acc + (Number(p.satoshis) || 0), 0);
   const targetThreshold = Number(alert.threshold_value) || 0;
 
-  // If threshold is in percentage (e.g. 50%) or satoshis
-  // For milestone reached:
   if (totalSats >= targetThreshold && targetThreshold > 0) {
     const btcAmount = (totalSats / 100_000_000).toFixed(4);
     const dedupKey = `milestone_${alert.id}_${targetThreshold}`;
+    const targetLabelEn = targetThreshold >= 1000 ? (targetThreshold / 100_000_000).toFixed(4) + ' BTC' : targetThreshold + '%';
+    const targetLabelTi = targetThreshold >= 1000 ? (targetThreshold / 100_000_000).toFixed(4) + ' ቢትኮይን' : targetThreshold + '%';
+
+    const title_en = 'DCA Goal Milestone Reached! 🎉';
+    const body_en = `Congratulations! You have accumulated ${btcAmount} BTC (${totalSats.toLocaleString()} sats), hitting your milestone target of ${targetLabelEn}.`;
+    const title_ti = 'ናይ DCA ዕላማ ደረጃ በጺሕካ! 🎉';
+    const body_ti = `እንቋዕ ሓጎሰካ! ${btcAmount} ቢትኮይን (${totalSats.toLocaleString()} sats) ኣኪብካ፣ ናይ ዕላማኻ ደረጃ ${targetLabelTi} በጺሕካ ኣለኻ።`;
+
     return {
       isReached: true,
-      title: 'DCA Goal Milestone Reached! 🎉',
-      body: `Congratulations! You have accumulated ${btcAmount} BTC (${totalSats.toLocaleString()} sats), hitting your milestone target of ${targetThreshold >= 1000 ? (targetThreshold / 100_000_000).toFixed(4) + ' BTC' : targetThreshold + '%'}.`,
+      title: lang === 'ti' ? title_ti : title_en,
+      body: lang === 'ti' ? body_ti : body_en,
+      title_en,
+      body_en,
+      title_ti,
+      body_ti,
       dedupKey,
     };
   }

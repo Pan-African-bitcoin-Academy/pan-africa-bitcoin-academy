@@ -1161,7 +1161,31 @@ export default function DcaExperience() {
     if (Date.now() - last < THROTTLE_MS) return;
     sessionStorage.setItem(THROTTLE_KEY, String(Date.now()));
     // Fire-and-forget — silent, no UI changes on failure
-    fetch('/api/dca/alerts/check', { method: 'POST', credentials: 'include' }).catch(() => undefined);
+    fetch('/api/dca/alerts/check', { method: 'POST', credentials: 'include' })
+      .then(async (res) => {
+        if (!res.ok) return;
+        const data = await res.json();
+        // Fire browser notification if push is enabled and alerts were triggered
+        if (
+          data.notificationsCreated > 0 &&
+          typeof window !== 'undefined' &&
+          'Notification' in window &&
+          Notification.permission === 'granted' &&
+          localStorage.getItem('pba-push-enabled') === 'true'
+        ) {
+          const isTi = localStorage.getItem('pba-alert-lang') === 'ti';
+          new Notification(
+            isTi ? '⚡ ናይ ብልሒ መጠንቀቕታ' : '⚡ Smart Alert Triggered',
+            {
+              body: isTi
+                ? `${data.notificationsCreated} ናይ DCA መጠንቀቕታ ተፈጢሩ ኣሎ።`
+                : `${data.notificationsCreated} DCA alert${data.notificationsCreated === 1 ? '' : 's'} triggered.`,
+              icon: '/favicon.ico',
+            }
+          );
+        }
+      })
+      .catch(() => undefined);
   }, [isAuthenticated, authLoading]);
 
   useEffect(() => {

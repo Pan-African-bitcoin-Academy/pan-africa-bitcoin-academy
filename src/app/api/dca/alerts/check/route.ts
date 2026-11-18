@@ -17,8 +17,11 @@ import {
   isContributionReminderDue,
   evaluateMissedContribution,
   evaluateGoalMilestone,
+  getContributionReminderContent,
   isCooldownSatisfied,
+  normalizeLang,
 } from '@/lib/dca/alertEngine';
+import type { AlertLang } from '@/lib/dca/alertEngine';
 import type { UserAlert, NotificationPreference } from '@/lib/dca/alertTypes';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.com';
@@ -36,27 +39,35 @@ function getResend(): Resend | null {
   try { return new Resend(key); } catch { return null; }
 }
 
-async function sendAlertEmail(to: string, title: string, body: string): Promise<boolean> {
+async function sendAlertEmail(to: string, title: string, body: string, lang?: AlertLang): Promise<boolean> {
   const resend = getResend();
   if (!resend) return false;
+  const isTi = lang === 'ti';
+  const headerText = isTi ? '⚡ ናይ ብልሒ መጠንቀቕታ' : '⚡ Smart Alert Triggered';
+  const ctaText = isTi ? 'ናይ DCA ዳሽቦርድካ ርአ →' : 'View Your DCA Dashboard →';
+  const footerText = isTi
+    ? 'ካብ ፓን-አፍሪካ ₿itcoin Academy ዝተፈጠረ ኣውቶማቲክ መጠንቀቕታ።'
+    : 'Automated alert from Pan-African ₿itcoin Academy.';
+  const manageText = isTi ? 'መጠንቀቕታታትካ ኣቀናብር' : 'Manage your alerts';
+
   const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px;">
   <div style="background:linear-gradient(135deg,#f97316 0%,#06b6d4 100%);padding:28px;text-align:center;border-radius:10px 10px 0 0;">
-    <h1 style="color:white;margin:0;font-size:22px;">⚡ Smart Alert Triggered</h1>
+    <h1 style="color:white;margin:0;font-size:22px;">${headerText}</h1>
   </div>
   <div style="background:#f9fafb;padding:28px;border-radius:0 0 10px 10px;border:1px solid #e5e7eb;">
     <h2 style="margin-top:0;color:#1f2937;">${title}</h2>
     <p style="font-size:15px;color:#374151;">${body}</p>
     <div style="text-align:center;margin:24px 0;">
       <a href="${SITE_URL}/dca" style="display:inline-block;background:linear-gradient(135deg,#ea580c 0%,#0891b2 100%);color:#fff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">
-        View Your DCA Dashboard →
+        ${ctaText}
       </a>
     </div>
     <p style="font-size:12px;color:#9ca3af;margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
-      Automated alert from Pan-African ₿itcoin Academy.
-      <a href="${SITE_URL}/dca" style="color:#0891b2;">Manage your alerts</a>
+      ${footerText}
+      <a href="${SITE_URL}/dca" style="color:#0891b2;">${manageText}</a>
     </p>
   </div>
 </body>
@@ -99,13 +110,18 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // 2. Fetch market price and notification preferences in parallel
-    const [market, { data: prefRow }] = await Promise.all([
+    // 2. Fetch market price, notification preferences, and student language in parallel
+    const [market, { data: prefRow }, { data: studentRow }] = await Promise.all([
       fetchCurrentBtcPrice(),
       supabaseAdmin
         .from('notification_preferences')
         .select('*')
         .eq('user_id', userId)
+        .maybeSingle(),
+      supabaseAdmin
+        .from('students')
+        .select('preferred_language')
+        .eq('id', userId)
         .maybeSingle(),
     ]);
 
@@ -113,6 +129,9 @@ export async function POST(request: NextRequest) {
     const timezone = userPref?.timezone || 'UTC';
     const emailEnabled = userPref ? userPref.email_enabled : true;
     const resolvedEmail = userPref?.email_address || session.email || null;
+    const lang = normalizeLang(
+      (studentRow as { preferred_language?: string } | null)?.preferred_language
+    );
 
     let notificationsCreated = 0;
     let skippedDuplicates = 0;
@@ -124,7 +143,7 @@ export async function POST(request: NextRequest) {
 
       if (alert.type === 'price_threshold' || alert.type === 'price_change_pct') {
         if (market) {
-          const res = evaluatePriceAlert(alert, market);
+          const res = evaluatePriceAlert(alert, market, lang);
           if (res?.isTriggered) {
             triggerResult = { title: res.title, body: res.body, dedupKey: res.dedupKey };
           }
@@ -132,19 +151,16 @@ export async function POST(request: NextRequest) {
       } else if (alert.type === 'contribution_reminder') {
         const res = isContributionReminderDue(alert, timezone);
         if (res.isDue) {
-          triggerResult = {
-            title: 'DCA Contribution Reminder ⏰',
-            body: `Your scheduled Bitcoin contribution (${alert.schedule_frequency || 'scheduled'}) is due today. Stay disciplined on your sats accumulation!`,
-            dedupKey: res.dedupKey,
-          };
+          const content = getContributionReminderContent(alert, res.dedupKey, lang);
+          triggerResult = { title: content.title, body: content.body, dedupKey: content.dedupKey };
         }
       } else if (alert.type === 'missed_contribution') {
-        const res = await evaluateMissedContribution(alert);
+        const res = await evaluateMissedContribution(alert, lang);
         if (res?.isMissed) {
           triggerResult = { title: res.title, body: res.body, dedupKey: res.dedupKey };
         }
       } else if (alert.type === 'goal_milestone') {
-        const res = await evaluateGoalMilestone(alert);
+        const res = await evaluateGoalMilestone(alert, lang);
         if (res?.isReached) {
           triggerResult = { title: res.title, body: res.body, dedupKey: res.dedupKey };
         }
@@ -171,7 +187,7 @@ export async function POST(request: NextRequest) {
       // Send email
       let emailSent = false;
       if (emailEnabled && resolvedEmail) {
-        emailSent = await sendAlertEmail(resolvedEmail, triggerResult.title, triggerResult.body);
+        emailSent = await sendAlertEmail(resolvedEmail, triggerResult.title, triggerResult.body, lang);
       }
 
       // Write in-app notification

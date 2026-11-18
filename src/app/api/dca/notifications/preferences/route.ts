@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { attachSessionRefresh, requireStudent } from '@/lib/session';
+import { normalizeLang } from '@/lib/dca/alertEngine';
 
 function responseWithSession(
   body: object,
@@ -24,11 +25,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 
-  const { data: pref, error } = await supabaseAdmin
-    .from('notification_preferences')
-    .select('*')
-    .eq('user_id', session.userId)
-    .maybeSingle();
+  const [{ data: pref, error }, { data: student }] = await Promise.all([
+    supabaseAdmin
+      .from('notification_preferences')
+      .select('*')
+      .eq('user_id', session.userId)
+      .maybeSingle(),
+    supabaseAdmin
+      .from('students')
+      .select('preferred_language')
+      .eq('id', session.userId)
+      .maybeSingle(),
+  ]);
 
   if (error) {
     return responseWithSession({ error: 'Failed to retrieve preferences.' }, 500, session);
@@ -41,7 +49,11 @@ export async function GET(request: NextRequest) {
     email_address: session.email,
   };
 
-  return responseWithSession({ preferences: pref || defaultPref }, 200, session);
+  const lang = normalizeLang(
+    (student as { preferred_language?: string } | null)?.preferred_language
+  );
+
+  return responseWithSession({ preferences: pref || defaultPref, language: lang }, 200, session);
 }
 
 export async function POST(request: NextRequest) {
@@ -52,29 +64,42 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { timezone, in_app_enabled, email_enabled, email_address } = body;
+    const { timezone, in_app_enabled, email_enabled, email_address, language } = body;
 
-    const { data: preference, error } = await supabaseAdmin
-      .from('notification_preferences')
-      .upsert(
-        {
-          user_id: session.userId,
-          timezone: timezone || 'UTC',
-          in_app_enabled: in_app_enabled !== undefined ? Boolean(in_app_enabled) : true,
-          email_enabled: email_enabled !== undefined ? Boolean(email_enabled) : true,
-          email_address: email_address || session.email,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id' }
-      )
-      .select()
-      .single();
+    const [{ data: preference, error }] = await Promise.all([
+      supabaseAdmin
+        .from('notification_preferences')
+        .upsert(
+          {
+            user_id: session.userId,
+            timezone: timezone || 'UTC',
+            in_app_enabled: in_app_enabled !== undefined ? Boolean(in_app_enabled) : true,
+            email_enabled: email_enabled !== undefined ? Boolean(email_enabled) : true,
+            email_address: email_address || session.email,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        )
+        .select()
+        .single(),
+      // Update preferred_language in students table if provided
+      ...(language
+        ? [
+            supabaseAdmin
+              .from('students')
+              .update({
+                preferred_language: language === 'ti' ? 'tigrigna' : 'english',
+              })
+              .eq('id', session.userId),
+          ]
+        : []),
+    ]);
 
     if (error) {
       return responseWithSession({ error: 'Failed to save preferences: ' + error.message }, 500, session);
     }
 
-    return responseWithSession({ preference }, 200, session);
+    return responseWithSession({ preference, language: language ?? null }, 200, session);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Invalid request.';
     return responseWithSession({ error: msg }, 400, session);

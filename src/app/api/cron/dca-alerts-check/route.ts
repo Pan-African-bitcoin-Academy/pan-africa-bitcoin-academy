@@ -8,7 +8,10 @@ import {
   isContributionReminderDue,
   evaluateMissedContribution,
   evaluateGoalMilestone,
+  getContributionReminderContent,
+  normalizeLang,
 } from '@/lib/dca/alertEngine';
+import type { AlertLang } from '@/lib/dca/alertEngine';
 import type { UserAlert, NotificationPreference } from '@/lib/dca/alertTypes';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.com';
@@ -31,30 +34,38 @@ async function sendAlertEmail(opts: {
   title: string;
   body: string;
   alertType: string;
+  lang?: AlertLang;
 }): Promise<boolean> {
   const resend = getResend();
   if (!resend) return false;
 
-  const { to, title, body } = opts;
+  const { to, title, body, lang } = opts;
+  const isTi = lang === 'ti';
+  const headerText = isTi ? '⚡ ናይ ብልሒ መጠንቀቕታ' : '⚡ Smart Alert Triggered';
+  const ctaText = isTi ? 'ናይ DCA ዳሽቦርድካ ርአ →' : 'View Your DCA Dashboard →';
+  const footerText = isTi
+    ? 'ካብ ፓን-አፍሪካ ₿itcoin Academy ዝተፈጠረ ኣውቶማቲክ መጠንቀቕታ።'
+    : 'Automated alert from Pan-African ₿itcoin Academy.';
+  const manageText = isTi ? 'መጠንቀቕታታትካ ኣቀናብር' : 'Manage your alerts';
 
   const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title}</title></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px;">
   <div style="background:linear-gradient(135deg,#f97316 0%,#06b6d4 100%);padding:28px;text-align:center;border-radius:10px 10px 0 0;">
-    <h1 style="color:white;margin:0;font-size:22px;">⚡ Smart Alert Triggered</h1>
+    <h1 style="color:white;margin:0;font-size:22px;">${headerText}</h1>
   </div>
   <div style="background:#f9fafb;padding:28px;border-radius:0 0 10px 10px;border:1px solid #e5e7eb;">
     <h2 style="margin-top:0;color:#1f2937;">${title}</h2>
     <p style="font-size:15px;color:#374151;">${body}</p>
     <div style="text-align:center;margin:24px 0;">
       <a href="${SITE_URL}/dca" style="display:inline-block;background:linear-gradient(135deg,#ea580c 0%,#0891b2 100%);color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">
-        View Your DCA Dashboard →
+        ${ctaText}
       </a>
     </div>
     <p style="font-size:12px;color:#9ca3af;margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
-      Automated alert from Pan-African ₿itcoin Academy. 
-      <a href="${SITE_URL}/dca" style="color:#0891b2;">Manage your alerts</a>
+      ${footerText}
+      <a href="${SITE_URL}/dca" style="color:#0891b2;">${manageText}</a>
     </p>
   </div>
 </body>
@@ -139,13 +150,20 @@ export async function GET(request: NextRequest) {
     // Fallback: fetch email addresses from students table for users without notification_preferences rows
     const usersWithoutPrefs = userIds.filter((id) => id && !prefMap.has(id as string)) as string[];
     const emailFallbackMap = new Map<string, string>();
-    if (usersWithoutPrefs.length > 0) {
+    const langMap = new Map<string, string>();
+
+    // Always fetch preferred_language for all users (batch)
+    const allUserIds = userIds.filter(Boolean) as string[];
+    if (allUserIds.length > 0) {
       const { data: students } = await supabaseAdmin
         .from('students')
-        .select('id, email')
-        .in('id', usersWithoutPrefs);
-      (students || []).forEach((s: { id: string; email: string }) => {
-        if (s.id && s.email) emailFallbackMap.set(s.id, s.email);
+        .select('id, email, preferred_language')
+        .in('id', allUserIds);
+      (students || []).forEach((s: { id: string; email: string; preferred_language?: string }) => {
+        if (s.id) {
+          if (s.preferred_language) langMap.set(s.id, s.preferred_language);
+          if (usersWithoutPrefs.includes(s.id) && s.email) emailFallbackMap.set(s.id, s.email);
+        }
       });
     }
 
@@ -159,11 +177,15 @@ export async function GET(request: NextRequest) {
         (alert.user_id ? emailFallbackMap.get(alert.user_id) : undefined) ||
         null;
 
+      // Resolve user language
+      const rawLang = alert.user_id ? (langMap.get(alert.user_id) ?? null) : null;
+      const lang = normalizeLang(rawLang);
+
       let triggerResult: { title: string; body: string; dedupKey: string } | null = null;
 
       if (alert.type === 'price_threshold' || alert.type === 'price_change_pct') {
         if (market) {
-          const res = evaluatePriceAlert(alert, market);
+          const res = evaluatePriceAlert(alert, market, lang);
           if (res?.isTriggered) {
             triggerResult = { title: res.title, body: res.body, dedupKey: res.dedupKey };
           }
@@ -171,19 +193,16 @@ export async function GET(request: NextRequest) {
       } else if (alert.type === 'contribution_reminder') {
         const res = isContributionReminderDue(alert, timezone);
         if (res.isDue) {
-          triggerResult = {
-            title: 'DCA Contribution Reminder ⏰',
-            body: `Your scheduled Bitcoin contribution (${alert.schedule_frequency || 'scheduled'}) is due today. Stay disciplined on your sats accumulation!`,
-            dedupKey: res.dedupKey,
-          };
+          const content = getContributionReminderContent(alert, res.dedupKey, lang);
+          triggerResult = { title: content.title, body: content.body, dedupKey: content.dedupKey };
         }
       } else if (alert.type === 'missed_contribution') {
-        const res = await evaluateMissedContribution(alert);
+        const res = await evaluateMissedContribution(alert, lang);
         if (res?.isMissed) {
           triggerResult = { title: res.title, body: res.body, dedupKey: res.dedupKey };
         }
       } else if (alert.type === 'goal_milestone') {
-        const res = await evaluateGoalMilestone(alert);
+        const res = await evaluateGoalMilestone(alert, lang);
         if (res?.isReached) {
           triggerResult = { title: res.title, body: res.body, dedupKey: res.dedupKey };
         }
@@ -217,6 +236,7 @@ export async function GET(request: NextRequest) {
             title: triggerResult.title,
             body: triggerResult.body,
             alertType: alert.type,
+            lang,
           });
         }
 
