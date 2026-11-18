@@ -1189,8 +1189,18 @@ export default function DcaExperience() {
   }, [isAuthenticated, authLoading]);
 
   useEffect(() => {
-    const requestedSection = new URLSearchParams(window.location.search).get('section');
-    if (requestedSection === 'learn' || requestedSection === 'dashboard') {
+    const params = new URLSearchParams(window.location.search);
+    const requestedSection = params.get('section');
+    const action = params.get('action');
+
+    if (action === 'log' || requestedSection === 'dashboard') {
+      setSection('dashboard');
+      if (action === 'log') {
+        setTimeout(() => {
+          document.getElementById('log-purchase-form')?.scrollIntoView({ behavior: 'smooth' });
+        }, 500);
+      }
+    } else if (requestedSection === 'learn') {
       setSection(requestedSection);
     }
   }, []);
@@ -2479,7 +2489,7 @@ export default function DcaExperience() {
                     </div>
                   )}
                 </div>
-                <form onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                <form id="log-purchase-form" onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <Field
                   label={t.dashboard.form_add_to_portfolio}
                   hint={t.dashboard.form_add_to_portfolio_hint}

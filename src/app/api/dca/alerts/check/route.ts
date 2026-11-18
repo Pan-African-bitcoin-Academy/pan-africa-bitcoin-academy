@@ -39,12 +39,27 @@ function getResend(): Resend | null {
   try { return new Resend(key); } catch { return null; }
 }
 
-async function sendAlertEmail(to: string, title: string, body: string, lang?: AlertLang): Promise<boolean> {
+async function sendAlertEmail(
+  to: string,
+  title: string,
+  body: string,
+  lang?: AlertLang,
+  alertType?: string
+): Promise<boolean> {
   const resend = getResend();
   if (!resend) return false;
   const isTi = lang === 'ti';
+  const isReminder = alertType === 'contribution_reminder';
+
   const headerText = isTi ? '⚡ ናይ ብልሒ መጠንቀቕታ' : '⚡ Smart Alert Triggered';
-  const ctaText = isTi ? 'ናይ DCA ዳሽቦርድካ ርአ →' : 'View Your DCA Dashboard →';
+  const ctaText = isReminder
+    ? isTi
+      ? 'ሎሚ ዝገዛእካዮ ምዝገብ →'
+      : "Log Today's Purchase →"
+    : isTi
+    ? 'ናይ DCA ዳሽቦርድካ ርአ →'
+    : 'View Your DCA Dashboard →';
+  const ctaUrl = isReminder ? `${SITE_URL}/dca?action=log` : `${SITE_URL}/dca`;
   const footerText = isTi
     ? 'ካብ ፓን-አፍሪካ ₿itcoin Academy ዝተፈጠረ ኣውቶማቲክ መጠንቀቕታ።'
     : 'Automated alert from Pan-African ₿itcoin Academy.';
@@ -61,7 +76,7 @@ async function sendAlertEmail(to: string, title: string, body: string, lang?: Al
     <h2 style="margin-top:0;color:#1f2937;">${title}</h2>
     <p style="font-size:15px;color:#374151;">${body}</p>
     <div style="text-align:center;margin:24px 0;">
-      <a href="${SITE_URL}/dca" style="display:inline-block;background:linear-gradient(135deg,#ea580c 0%,#0891b2 100%);color:#fff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">
+      <a href="${ctaUrl}" style="display:inline-block;background:linear-gradient(135deg,#ea580c 0%,#0891b2 100%);color:#fff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">
         ${ctaText}
       </a>
     </div>
@@ -151,7 +166,7 @@ export async function POST(request: NextRequest) {
       } else if (alert.type === 'contribution_reminder') {
         const res = isContributionReminderDue(alert, timezone);
         if (res.isDue) {
-          const content = getContributionReminderContent(alert, res.dedupKey, lang);
+          const content = await getContributionReminderContent(alert, res.dedupKey, market, lang);
           triggerResult = { title: content.title, body: content.body, dedupKey: content.dedupKey };
         }
       } else if (alert.type === 'missed_contribution') {
@@ -187,7 +202,7 @@ export async function POST(request: NextRequest) {
       // Send email
       let emailSent = false;
       if (emailEnabled && resolvedEmail) {
-        emailSent = await sendAlertEmail(resolvedEmail, triggerResult.title, triggerResult.body, lang);
+        emailSent = await sendAlertEmail(resolvedEmail, triggerResult.title, triggerResult.body, lang, alert.type);
       }
 
       // Write in-app notification

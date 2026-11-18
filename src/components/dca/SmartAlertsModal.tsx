@@ -40,6 +40,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
   const [dropPctTarget, setDropPctTarget] = useState<number>(5);
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'biweekly' | 'monthly'>('weekly');
   const [scheduleTime, setScheduleTime] = useState('09:00');
+  const [reminderAmount, setReminderAmount] = useState<number | string>('');
   const [milestoneTarget, setMilestoneTarget] = useState<number>(1000000);
   const [cooldownHours, setCooldownHours] = useState(24);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -117,7 +118,14 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
       } else if (activeTab === 'price_change_pct') {
         payload = { ...payload, condition: 'drop_pct', threshold_value: dropPctTarget };
       } else if (activeTab === 'contribution_reminder') {
-        payload = { ...payload, condition: 'scheduled_time', schedule_frequency: frequency, schedule_time: scheduleTime };
+        payload = {
+          ...payload,
+          condition: 'scheduled_time',
+          schedule_frequency: frequency,
+          schedule_time: scheduleTime,
+          threshold_value: reminderAmount ? Number(reminderAmount) : null,
+          currency: 'USD',
+        };
       } else if (activeTab === 'missed_contribution') {
         payload = { ...payload, condition: 'missed_grace', grace_period_days: 2 };
       } else if (activeTab === 'goal_milestone') {
@@ -350,28 +358,49 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
 
                 {/* Contribution Reminder Options */}
                 {activeTab === 'contribution_reminder' && (
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <label className="block font-semibold text-zinc-700 mb-1">Frequency</label>
-                      <select
-                        value={frequency}
-                        onChange={(e) => setFrequency(e.target.value as typeof frequency)}
-                        className="w-full rounded-xl border border-zinc-300 bg-white p-2.5 text-xs text-zinc-900"
-                      >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="biweekly">Bi-weekly</option>
-                        <option value="monthly">Monthly</option>
-                      </select>
+                  <div className="space-y-3 text-xs">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-zinc-700 mb-1">Frequency</label>
+                        <select
+                          value={frequency}
+                          onChange={(e) => setFrequency(e.target.value as typeof frequency)}
+                          className="w-full rounded-xl border border-zinc-300 bg-white p-2.5 text-xs text-zinc-900"
+                        >
+                          <option value="daily">Daily</option>
+                          <option value="weekly">Weekly</option>
+                          <option value="biweekly">Bi-weekly</option>
+                          <option value="monthly">Monthly</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-zinc-700 mb-1">Reminder Time</label>
+                        <input
+                          type="time"
+                          value={scheduleTime}
+                          onChange={(e) => setScheduleTime(e.target.value)}
+                          className="w-full rounded-xl border border-zinc-300 bg-white p-2.5 text-xs text-zinc-900"
+                        />
+                      </div>
                     </div>
                     <div>
-                      <label className="block font-semibold text-zinc-700 mb-1">Reminder Time</label>
+                      <label className="block font-semibold text-zinc-700 mb-1">
+                        Target Contribution in USD <span className="font-normal text-zinc-400">(optional)</span>
+                      </label>
                       <input
-                        type="time"
-                        value={scheduleTime}
-                        onChange={(e) => setScheduleTime(e.target.value)}
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={reminderAmount}
+                        onChange={(e) => setReminderAmount(e.target.value)}
+                        placeholder="e.g. 50"
                         className="w-full rounded-xl border border-zinc-300 bg-white p-2.5 text-xs text-zinc-900"
                       />
+                      {Boolean(reminderAmount && currentBtcPrice) && (
+                        <span className="text-[11px] text-zinc-500 mt-1 block">
+                          ~{Math.round((Number(reminderAmount) / currentBtcPrice) * 100_000_000).toLocaleString()} sats at current Bitcoin price
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -443,7 +472,10 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                             {alert.condition === 'below' && `Falls below $${alert.threshold_value?.toLocaleString()} USD`}
                             {alert.condition === 'above' && `Rises above $${alert.threshold_value?.toLocaleString()} USD`}
                             {alert.condition === 'drop_pct' && `Drops ${alert.threshold_value}% in 24h`}
-                            {alert.type === 'contribution_reminder' && `${alert.schedule_frequency} at ${alert.schedule_time}`}
+                            {alert.type === 'contribution_reminder' &&
+                              `${alert.schedule_frequency} at ${alert.schedule_time}${
+                                alert.threshold_value ? ` • $${alert.threshold_value} USD` : ''
+                              }`}
                             {alert.type === 'goal_milestone' && `Target ${alert.threshold_value?.toLocaleString()} sats`}
                           </p>
                         </div>

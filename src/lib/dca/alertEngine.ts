@@ -197,13 +197,20 @@ export function evaluatePriceAlert(
 }
 
 /**
- * Returns content for contribution reminder
+ * Returns enriched content for contribution reminder:
+ * - Scheduled frequency and target amount (USD & Sats)
+ * - Current Bitcoin spot price and sats-per-dollar purchasing power
+ * - Total sats accumulated so far (motivation tracker)
+ * - Discipline reminder to log today's purchase
  */
-export function getContributionReminderContent(
+export async function getContributionReminderContent(
   alert: UserAlert,
   dedupKey: string,
-  lang: AlertLang = 'en'
-): AlertTriggerContent {
+  market?: MarketPriceSnapshot | null,
+  lang: AlertLang = 'en',
+  totalSatsAccumulated?: number
+): Promise<AlertTriggerContent> {
+  const isTi = lang === 'ti';
   const freq = alert.schedule_frequency || 'scheduled';
   const freqMapTi: Record<string, string> = {
     daily: 'መዓልታዊ',
@@ -213,14 +220,63 @@ export function getContributionReminderContent(
   };
   const freqTi = freqMapTi[freq] || 'ስሩዕ';
 
+  // Amount & sats calculation
+  const amountUsd = alert.threshold_value ? Number(alert.threshold_value) : null;
+  const btcPrice = market?.current_price ?? null;
+  const satsPerDollar = btcPrice && btcPrice > 0 ? Math.round(100_000_000 / btcPrice) : null;
+  const amountSats =
+    amountUsd && btcPrice && btcPrice > 0
+      ? Math.round((amountUsd / btcPrice) * 100_000_000)
+      : null;
+
+  // Total sats accumulated so far
+  let totalSats = totalSatsAccumulated;
+  if (totalSats === undefined && alert.user_id) {
+    try {
+      const { data: purchases } = await supabaseAdmin
+        .from('dca_purchases')
+        .select('satoshis')
+        .eq('user_id', alert.user_id);
+      totalSats = (purchases || []).reduce(
+        (acc: number, p: { satoshis?: number | string | null }) => acc + (Number(p.satoshis) || 0),
+        0
+      );
+    } catch {
+      totalSats = 0;
+    }
+  }
+
+  // --- English text generation ---
   const title_en = 'DCA Contribution Reminder ⏰';
-  const body_en = `Your scheduled Bitcoin contribution (${freq}) is due today. Stay disciplined on your sats accumulation!`;
+  let body_en = amountUsd
+    ? `Your scheduled $${amountUsd.toLocaleString()} ${freq} Bitcoin contribution${amountSats ? ` (~${amountSats.toLocaleString()} sats)` : ''} is due today.`
+    : `Your scheduled Bitcoin contribution (${freq}) is due today.`;
+
+  if (btcPrice) {
+    body_en += ` Current BTC: $${btcPrice.toLocaleString()} USD${satsPerDollar ? ` (~${satsPerDollar.toLocaleString()} sats/$1)` : ''}.`;
+  }
+  if (totalSats && totalSats > 0) {
+    body_en += ` You've stacked ${totalSats.toLocaleString()} sats to date!`;
+  }
+  body_en += ` Stay disciplined and log today's purchase to keep your streak going!`;
+
+  // --- Tigrinya text generation ---
   const title_ti = 'ናይ DCA ምዕቃብ መዘኻኸሪ ⏰';
-  const body_ti = `ናይ ቢትኮይን ስሩዕ ምዕቃብካ (${freqTi}) ሎሚ ዝፍጸመሉ ዕለት እዩ። ሳትስ ኣብ ምእካብ ጽኑዕ ኩን!`;
+  let body_ti = amountUsd
+    ? `ናይ $${amountUsd.toLocaleString()} ${freqTi} ናይ ቢትኮይን ምዕቃብካ${amountSats ? ` (~${amountSats.toLocaleString()} ሳትስ)` : ''} ሎሚ ዝፍጸመሉ ዕለት እዩ።`
+    : `ናይ ቢትኮይን ስሩዕ ምዕቃብካ (${freqTi}) ሎሚ ዝፍጸመሉ ዕለት እዩ።`;
+
+  if (btcPrice) {
+    body_ti += ` ናይ ሕጂ ዋጋ ቢትኮይን: $${btcPrice.toLocaleString()} ዶላር${satsPerDollar ? ` (ብ $1 ~${satsPerDollar.toLocaleString()} ሳትስ)` : ''}።`;
+  }
+  if (totalSats && totalSats > 0) {
+    body_ti += ` ክሳብ ሕጂ ${totalSats.toLocaleString()} ሳትስ ኣኪብካ ኣለኻ!`;
+  }
+  body_ti += ` ሳትስ ኣብ ምእካብ ጽኑዕ ኩን፣ ናይ ሎሚ ግዝኢትካ ድማ ምዝገብ!`;
 
   return {
-    title: lang === 'ti' ? title_ti : title_en,
-    body: lang === 'ti' ? body_ti : body_en,
+    title: isTi ? title_ti : title_en,
+    body: isTi ? body_ti : body_en,
     title_en,
     body_en,
     title_ti,

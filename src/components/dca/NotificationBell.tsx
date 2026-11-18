@@ -170,6 +170,19 @@ export function NotificationBell({ onOpenSettings }: NotificationBellProps) {
                     <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed break-words">
                       {n.body}
                     </p>
+                    {n.type === 'contribution_reminder' && (
+                      <a
+                        href="/dca?action=log"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsOpen(false);
+                          if (!n.is_read) handleMarkSingleRead(n.id);
+                        }}
+                        className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-lg bg-orange-50 text-[#f97602] border border-orange-200/80 text-[10px] font-semibold hover:bg-orange-100 transition"
+                      >
+                        {n.title.includes('ናይ') ? 'ሎሚ ዝገዛእካዮ ምዝገብ →' : "Log Today's Purchase →"}
+                      </a>
+                    )}
                     <span className="text-[10px] text-zinc-400 mt-1 block">
                       {new Date(n.created_at).toLocaleDateString([], {
                         month: 'short',
