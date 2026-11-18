@@ -1,0 +1,39 @@
+name: DCA Smart Alerts Check
+
+on:
+  schedule:
+    # Run every hour at :05 past (UTC) — free on all GitHub plans
+    - cron: '5 * * * *'
+  # Allow manual trigger from GitHub Actions UI for testing
+  workflow_dispatch:
+
+jobs:
+  check-alerts:
+    name: Evaluate Smart Alerts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger alert check
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET "${{ secrets.SITE_URL }}/api/cron/dca-alerts-check" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json")
+          echo "Response status: $RESPONSE"
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
+            echo "✅ Alert check completed successfully"
+          else
+            echo "❌ Alert check failed with status $RESPONSE"
+            exit 1
+          fi
+
+      - name: Trigger wallet sync (every 6th hour)
+        # Only run at 00:05, 06:05, 12:05, 18:05 UTC
+        if: ${{ (github.event_name == 'workflow_dispatch') || (github.event.schedule == '5 0 * * *') || (github.event.schedule == '5 6 * * *') || (github.event.schedule == '5 12 * * *') || (github.event.schedule == '5 18 * * *') }}
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET "${{ secrets.SITE_URL }}/api/cron/dca-wallet-sync" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json")
+          echo "Wallet sync response: $RESPONSE"

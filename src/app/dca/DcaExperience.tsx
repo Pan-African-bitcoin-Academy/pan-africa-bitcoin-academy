@@ -1150,6 +1150,20 @@ export default function DcaExperience() {
     void loadMarket(marketDays);
   }, [loadMarket, marketDays]);
 
+  // Client-side alert trigger: runs once per page-load session when the user is
+  // authenticated. Calls the alert-check endpoint so alerts fire in real time
+  // even without a server-side cron job (Vercel free tier).
+  useEffect(() => {
+    if (!isAuthenticated || authLoading) return;
+    const THROTTLE_KEY = 'pba-alert-check-last';
+    const THROTTLE_MS = 15 * 60 * 1000; // at most once every 15 min per tab
+    const last = Number(sessionStorage.getItem(THROTTLE_KEY) || 0);
+    if (Date.now() - last < THROTTLE_MS) return;
+    sessionStorage.setItem(THROTTLE_KEY, String(Date.now()));
+    // Fire-and-forget — silent, no UI changes on failure
+    fetch('/api/dca/alerts/check', { method: 'POST', credentials: 'include' }).catch(() => undefined);
+  }, [isAuthenticated, authLoading]);
+
   useEffect(() => {
     const requestedSection = new URLSearchParams(window.location.search).get('section');
     if (requestedSection === 'learn' || requestedSection === 'dashboard') {

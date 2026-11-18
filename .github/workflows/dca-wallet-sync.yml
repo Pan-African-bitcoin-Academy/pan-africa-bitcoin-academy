@@ -1,0 +1,28 @@
+name: DCA Wallet Sync
+
+on:
+  schedule:
+    # Run every 6 hours: 00:10, 06:10, 12:10, 18:10 UTC
+    - cron: '10 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  wallet-sync:
+    name: Sync DCA Wallets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger wallet sync
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET "${{ secrets.SITE_URL }}/api/cron/dca-wallet-sync" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json")
+          echo "Response status: $RESPONSE"
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
+            echo "✅ Wallet sync completed successfully"
+          else
+            echo "❌ Wallet sync failed with status $RESPONSE"
+            exit 1
+          fi
