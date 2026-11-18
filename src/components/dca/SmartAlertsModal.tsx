@@ -162,10 +162,10 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs"
+      className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-20 bg-zinc-900/60 backdrop-blur-xs"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-100 p-5 pb-4">
           <div className="flex items-center gap-2.5">

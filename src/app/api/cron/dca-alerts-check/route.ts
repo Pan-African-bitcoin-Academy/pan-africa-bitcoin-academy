@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { Resend } from 'resend';
 import {
   fetchCurrentBtcPrice,
   evaluatePriceAlert,
@@ -9,6 +10,68 @@ import {
   evaluateGoalMilestone,
 } from '@/lib/dca/alertEngine';
 import type { UserAlert, NotificationPreference } from '@/lib/dca/alertTypes';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.com';
+const FROM_EMAIL =
+  process.env.RESEND_FROM_EMAIL ||
+  'Pan-African ₿itcoin Academy <noreply@panafricanbitcoin.com>';
+
+function getResend(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  try {
+    return new Resend(key);
+  } catch {
+    return null;
+  }
+}
+
+async function sendAlertEmail(opts: {
+  to: string;
+  title: string;
+  body: string;
+  alertType: string;
+}): Promise<boolean> {
+  const resend = getResend();
+  if (!resend) return false;
+
+  const { to, title, body } = opts;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title}</title></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px;">
+  <div style="background:linear-gradient(135deg,#f97316 0%,#06b6d4 100%);padding:28px;text-align:center;border-radius:10px 10px 0 0;">
+    <h1 style="color:white;margin:0;font-size:22px;">⚡ Smart Alert Triggered</h1>
+  </div>
+  <div style="background:#f9fafb;padding:28px;border-radius:0 0 10px 10px;border:1px solid #e5e7eb;">
+    <h2 style="margin-top:0;color:#1f2937;">${title}</h2>
+    <p style="font-size:15px;color:#374151;">${body}</p>
+    <div style="text-align:center;margin:24px 0;">
+      <a href="${SITE_URL}/dca" style="display:inline-block;background:linear-gradient(135deg,#ea580c 0%,#0891b2 100%);color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">
+        View Your DCA Dashboard →
+      </a>
+    </div>
+    <p style="font-size:12px;color:#9ca3af;margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
+      Automated alert from Pan-African ₿itcoin Academy. 
+      <a href="${SITE_URL}/dca" style="color:#0891b2;">Manage your alerts</a>
+    </p>
+  </div>
+</body>
+</html>`;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: title,
+      html,
+    });
+    return !error;
+  } catch {
+    return false;
+  }
+}
 
 export const maxDuration = 300;
 
@@ -73,10 +136,28 @@ export async function GET(request: NextRequest) {
       if (p.user_id) prefMap.set(p.user_id, p);
     });
 
+    // Fallback: fetch email addresses from students table for users without notification_preferences rows
+    const usersWithoutPrefs = userIds.filter((id) => id && !prefMap.has(id as string)) as string[];
+    const emailFallbackMap = new Map<string, string>();
+    if (usersWithoutPrefs.length > 0) {
+      const { data: students } = await supabaseAdmin
+        .from('students')
+        .select('id, email')
+        .in('id', usersWithoutPrefs);
+      (students || []).forEach((s: { id: string; email: string }) => {
+        if (s.id && s.email) emailFallbackMap.set(s.id, s.email);
+      });
+    }
+
     // 4. Process each alert
     for (const alert of alerts as UserAlert[]) {
       const userPref = alert.user_id ? prefMap.get(alert.user_id) : undefined;
       const timezone = userPref?.timezone || 'UTC';
+      // Resolve best email address: preference row > fallback from students table
+      const resolvedEmail =
+        userPref?.email_address ||
+        (alert.user_id ? emailFallbackMap.get(alert.user_id) : undefined) ||
+        null;
 
       let triggerResult: { title: string; body: string; dedupKey: string } | null = null;
 
@@ -127,7 +208,19 @@ export async function GET(request: NextRequest) {
           continue;
         }
 
-        // Create the user notification
+        // Send email if user has email notifications enabled (or no prefs yet, default to on)
+        let emailSent = false;
+        const emailEnabled = userPref ? userPref.email_enabled : true;
+        if (emailEnabled && resolvedEmail) {
+          emailSent = await sendAlertEmail({
+            to: resolvedEmail,
+            title: triggerResult.title,
+            body: triggerResult.body,
+            alertType: alert.type,
+          });
+        }
+
+        // Create the in-app notification record
         await supabaseAdmin.from('notifications').insert({
           user_id: alert.user_id,
           account_id: alert.account_id,
@@ -142,7 +235,7 @@ export async function GET(request: NextRequest) {
           },
           is_read: false,
           delivery_channel: userPref?.email_enabled ? ['in_app', 'email'] : ['in_app'],
-          email_sent: false,
+          email_sent: emailSent,
         });
 
         // Update alert last_triggered_at (and disable if is_one_time)
