@@ -460,7 +460,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                   <p className="text-xs text-zinc-400 py-3 text-center">Loading alerts…</p>
                 ) : alerts.length === 0 ? (
                   <p className="text-xs text-zinc-400 py-3 text-center border border-dashed border-zinc-200 rounded-xl">
-                    No alert rules configured yet. Create one above to get started.
+                    No alerts configured yet.
                   </p>
                 ) : (
                   <div className="space-y-2">
