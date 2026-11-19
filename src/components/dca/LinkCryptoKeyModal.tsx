@@ -110,8 +110,8 @@ export function LinkCryptoKeyModal({ isOpen, onClose, onSuccess }: LinkCryptoKey
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs">
-      <div className="relative w-full max-w-lg rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl text-zinc-900 space-y-4">
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-3 sm:p-4 bg-zinc-900/60 backdrop-blur-xs">
+      <div className="relative w-full max-w-lg rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-2xl text-zinc-900 space-y-4 max-h-[92dvh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 text-[#f97602]">
@@ -119,7 +119,6 @@ export function LinkCryptoKeyModal({ isOpen, onClose, onSuccess }: LinkCryptoKey
             </div>
             <div>
               <h3 className="text-sm font-bold text-zinc-900">Link Private Account Key</h3>
-              <p className="text-xs text-zinc-500">Enable email-free cryptographic login for this account</p>
             </div>
           </div>
           <button type="button" onClick={onClose} className="text-zinc-400 hover:text-zinc-600 cursor-pointer">
@@ -159,9 +158,6 @@ export function LinkCryptoKeyModal({ isOpen, onClose, onSuccess }: LinkCryptoKey
               <Download className="h-3.5 w-3.5 text-[#f97602]" />
               Account Key Backup
             </span>
-            <p className="text-[11px] text-zinc-600">
-              Download your account key file (.json) to log in instantly on any device without a password.
-            </p>
             <button
               type="button"
               onClick={handleDownload}

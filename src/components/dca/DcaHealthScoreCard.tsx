@@ -62,9 +62,6 @@ export function DcaHealthScoreCard({
           </div>
           <div>
             <h3 className="text-base font-bold text-zinc-900">{hs.title}</h3>
-            <p className="text-xs text-zinc-500">
-              {hs.subtitle}
-            </p>
           </div>
         </div>
 
@@ -230,16 +227,13 @@ export function DcaHealthScoreCard({
 
       {/* Smart Alerts Callout Footer */}
       {onOpenAlerts && (
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-zinc-600 border-t border-zinc-100">
-          <span className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-[#f97602]" />
-            {hs.reminders_callout}
-          </span>
+        <div className="flex flex-wrap items-center justify-end gap-3 pt-2 text-xs text-zinc-600 border-t border-zinc-100">
           <button
             type="button"
             onClick={onOpenAlerts}
-            className="font-semibold text-[#f97602] hover:underline inline-flex items-center gap-1 cursor-pointer"
+            className="font-semibold text-[#f97602] hover:underline inline-flex items-center gap-1.5 cursor-pointer"
           >
+            <Clock className="h-4 w-4" />
             {hs.reminders_btn} <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>

@@ -216,32 +216,37 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-20 bg-zinc-900/60 backdrop-blur-xs"
+      className="fixed inset-0 z-[200] flex items-end sm:items-start justify-center p-0 sm:p-4 pt-0 sm:pt-20 bg-zinc-900/60 backdrop-blur-xs transition-opacity duration-200"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]">
+      <div className="relative w-full max-w-xl rounded-t-3xl sm:rounded-2xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[calc(100vh-5.5rem)] animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-top-4 duration-200">
+        {/* Mobile drag handle indicator */}
+        <div className="flex justify-center pt-2.5 pb-1 sm:hidden">
+          <div className="h-1.5 w-12 rounded-full bg-zinc-200" />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-zinc-100 p-5 pb-0">
-          <div className="flex items-center gap-2.5 pb-4">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-[#f97602] border border-orange-200/60">
+        <div className="flex items-center justify-between border-b border-zinc-100 p-4 sm:p-5 pb-0">
+          <div className="flex items-center gap-2.5 pb-3 sm:pb-4 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#f97602] border border-orange-200/60">
               <Bell className="h-5 w-5" />
             </div>
-            <div>
-              <h2 className="text-base font-bold text-zinc-900">Smart Alerts &amp; Reminders</h2>
-              <p className="text-xs text-zinc-500">Automated price triggers, schedules &amp; milestone monitors</p>
+            <div className="min-w-0">
+              <h2 className="text-base font-bold text-zinc-900 truncate">Smart Alerts &amp; Reminders</h2>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="mb-4 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition cursor-pointer"
+            className="mb-3 sm:mb-4 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition cursor-pointer shrink-0"
+            aria-label="Close modal"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Tab Bar */}
-        <div className="flex border-b border-zinc-100 px-5">
+        <div className="flex border-b border-zinc-100 px-4 sm:px-5">
           <button
             type="button"
             onClick={() => setModalTab('alerts')}
@@ -269,7 +274,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto p-5 space-y-6">
+        <div className="overflow-y-auto p-4 sm:p-5 space-y-5 sm:space-y-6">
           {/* ─── ALERTS TAB ─── */}
           {modalTab === 'alerts' && (
             <>
@@ -287,7 +292,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
               )}
 
               {/* New Alert Form */}
-              <form onSubmit={handleCreateAlert} className="space-y-4 rounded-xl border border-zinc-200 bg-zinc-50/70 p-4">
+              <form onSubmit={handleCreateAlert} className="space-y-4 rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5 sm:p-4">
                 <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider block">
                   Create New Smart Alert
                 </span>
@@ -300,7 +305,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                         key={tab}
                         type="button"
                         onClick={() => setActiveTab(tab)}
-                        className={`py-2 px-2.5 rounded-lg font-medium text-center transition cursor-pointer ${
+                        className={`py-2 px-2 rounded-lg font-medium text-center transition cursor-pointer truncate ${
                           activeTab === tab
                             ? 'bg-white shadow-xs text-[#f97602] border border-zinc-200/80 font-semibold'
                             : 'text-zinc-600 hover:bg-zinc-100'
@@ -317,7 +322,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
 
                 {/* Price Target Options */}
                 {activeTab === 'price_threshold' && (
-                  <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
                       <label className="block font-semibold text-zinc-700 mb-1">Trigger Condition</label>
                       <select
@@ -359,7 +364,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                 {/* Contribution Reminder Options */}
                 {activeTab === 'contribution_reminder' && (
                   <div className="space-y-3 text-xs">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block font-semibold text-zinc-700 mb-1">Frequency</label>
                         <select
@@ -462,13 +467,13 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                     {alerts.map((alert) => (
                       <div
                         key={alert.id}
-                        className="flex items-center justify-between p-3 rounded-xl border border-zinc-200 bg-white shadow-2xs text-xs"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-xl border border-zinc-200 bg-white shadow-2xs text-xs"
                       >
-                        <div>
-                          <p className="font-semibold text-zinc-800 capitalize">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-zinc-800 capitalize truncate">
                             {alert.type.replace(/_/g, ' ')}
                           </p>
-                          <p className="text-[11px] text-zinc-500">
+                          <p className="text-[11px] text-zinc-500 break-words">
                             {alert.condition === 'below' && `Falls below $${alert.threshold_value?.toLocaleString()} USD`}
                             {alert.condition === 'above' && `Rises above $${alert.threshold_value?.toLocaleString()} USD`}
                             {alert.condition === 'drop_pct' && `Drops ${alert.threshold_value}% in 24h`}
@@ -480,7 +485,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                           </p>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-zinc-100">
                           <button
                             type="button"
                             onClick={() => handleToggleAlert(alert.id, alert.is_enabled)}
@@ -527,10 +532,7 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                       <Globe className="h-4 w-4 text-[#f97602]" />
                       Alert Language
                     </div>
-                    <p className="text-[11px] text-zinc-500">
-                      Emails and in-app alert text will be sent in your selected language.
-                    </p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <button
                         type="button"
                         onClick={() => setLanguage('en')}
@@ -563,7 +565,6 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                         <Mail className="h-4 w-4 text-[#f97602]" />
                         <div>
                           <p className="text-xs font-semibold text-zinc-700">Email Notifications</p>
-                          <p className="text-[11px] text-zinc-500">Receive alerts via email</p>
                         </div>
                       </div>
                       <button
@@ -591,11 +592,11 @@ export function SmartAlertsModal({ isOpen, onClose, currentBtcPrice = 85000 }: S
                         <MonitorSmartphone className="h-4 w-4 text-[#f97602]" />
                         <div>
                           <p className="text-xs font-semibold text-zinc-700">Browser Notifications</p>
-                          <p className="text-[11px] text-zinc-500">
-                            {pushPermission === 'denied'
-                              ? 'Blocked in browser settings — please allow in your browser.'
-                              : 'Show alerts as browser pop-ups when visiting the site'}
-                          </p>
+                          {pushPermission === 'denied' && (
+                            <p className="text-[11px] text-zinc-500">
+                              Blocked in browser settings — please allow in your browser.
+                            </p>
+                          )}
                         </div>
                       </div>
                       <button

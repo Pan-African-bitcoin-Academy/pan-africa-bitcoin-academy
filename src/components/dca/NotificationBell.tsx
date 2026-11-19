@@ -101,7 +101,7 @@ export function NotificationBell({ onOpenSettings }: NotificationBellProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-zinc-200 bg-white shadow-xl z-50 text-zinc-900 overflow-hidden flex flex-col max-h-[480px]">
+        <div className="fixed inset-x-3 top-20 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 mt-2 sm:w-96 rounded-2xl border border-zinc-200 bg-white shadow-2xl z-50 text-zinc-900 overflow-hidden flex flex-col max-h-[calc(100dvh-7rem)] sm:max-h-[480px] animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-zinc-100 p-3.5 bg-zinc-50/70">
             <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export function NotificationBell({ onOpenSettings }: NotificationBellProps) {
             {notifications.length === 0 ? (
               <div className="p-8 text-center text-xs text-zinc-400">
                 <Bell className="h-7 w-7 mx-auto mb-2 text-zinc-300 stroke-[1.5]" />
-                No notifications yet. You will be alerted when market conditions or planned reminders occur.
+                No notifications yet.
               </div>
             ) : (
               notifications.map((n) => (

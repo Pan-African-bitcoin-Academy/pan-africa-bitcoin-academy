@@ -616,9 +616,6 @@ export default function WalletDashboard({
             <Wallet className="h-6 w-6" />
           </div>
           <h3 className="font-semibold text-zinc-800">No wallets connected</h3>
-          <p className="mt-1.5 text-sm text-zinc-500 max-w-sm mx-auto">
-            Track on-chain balances alongside manual purchases.
-          </p>
           <button
             type="button"
             onClick={onConnectWallet}
@@ -634,9 +631,6 @@ export default function WalletDashboard({
         <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-xs sm:p-5">
           <div className="mb-4">
             <h3 className="font-semibold text-zinc-900">Portfolio history</h3>
-            <p className="mt-1 text-xs leading-5 text-zinc-500">
-              Wallets use on-chain snapshots; manual BTC uses purchase and transfer dates.
-            </p>
           </div>
           <div className="h-80 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">

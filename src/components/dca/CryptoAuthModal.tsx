@@ -422,12 +422,12 @@ export function CryptoAuthModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs"
+      className="fixed inset-0 z-[150] flex items-center justify-center p-3 sm:p-4 bg-zinc-900/60 backdrop-blur-xs"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden flex flex-col max-h-[92dvh]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-100 p-5 pb-4">
           <div className="flex items-center gap-2.5">
@@ -576,14 +576,9 @@ export function CryptoAuthModal({
                     )}
                   </div>
                   {showRawKey && (
-                    <>
-                      <p className="text-[11px] text-zinc-500">
-                        This is your raw unencrypted base64url private key string. You can paste this directly into the &quot;Paste Raw Key&quot; sign-in tab.
-                      </p>
-                      <p className="font-mono text-[11px] text-zinc-800 break-all select-all bg-white p-2.5 rounded-lg border border-zinc-200 max-h-24 overflow-y-auto">
-                        {rawKeyString || 'Generating...'}
-                      </p>
-                    </>
+                    <p className="font-mono text-[11px] text-zinc-800 break-all select-all bg-white p-2.5 rounded-lg border border-zinc-200 max-h-24 overflow-y-auto">
+                      {rawKeyString || 'Generating...'}
+                    </p>
                   )}
                 </div>
 
@@ -596,9 +591,6 @@ export function CryptoAuthModal({
                     Save Your Private Key
                   </h3>
                 </div>
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                  Save this key to sign in from another browser.
-                </p>
 
 
 
@@ -795,9 +787,6 @@ export function CryptoAuthModal({
 
               {emailMode === 'signin' ? (
                 <form onSubmit={handleEmailLogin} className="space-y-3.5">
-                  <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
-                    Sign in with your standard Pan-African Bitcoin Academy student account email and password.
-                  </div>
                   <div>
                     <label className="block text-xs font-semibold text-zinc-700 mb-1">Email Address</label>
                     <input
@@ -859,9 +848,6 @@ export function CryptoAuthModal({
                 </form>
               ) : (
                 <form onSubmit={handleEmailSignup} className="space-y-3.5">
-                  <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
-                    Create a Pan-African Bitcoin Academy student account to track your progress and saved DCA plans.
-                  </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>

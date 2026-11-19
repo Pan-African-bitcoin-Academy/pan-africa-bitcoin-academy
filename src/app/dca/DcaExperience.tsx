@@ -1792,28 +1792,27 @@ export default function DcaExperience() {
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl lg:text-5xl">
             {t.hero.title_start} <span className="text-[#f97602]">{t.hero.title_highlight}</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600 sm:text-base">
-            {t.hero.subtitle}
-          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <NotificationBell onOpenSettings={() => setSmartAlertsOpen(true)} />
-          <button
-            type="button"
-            onClick={() => setSmartAlertsOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 shadow-2xs transition cursor-pointer"
-          >
-            <Bell className="h-3.5 w-3.5 text-[#f97602]" />
-            Smart Alerts
-          </button>
-          <div className="flex items-start gap-2 rounded-xl border border-cyan-200 bg-cyan-50/70 p-3 text-xs leading-5 text-cyan-900 sm:max-w-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-2">
+            <NotificationBell onOpenSettings={() => setSmartAlertsOpen(true)} />
+            <button
+              type="button"
+              onClick={() => setSmartAlertsOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 shadow-2xs transition cursor-pointer"
+            >
+              <Bell className="h-3.5 w-3.5 text-[#f97602]" />
+              Smart Alerts
+            </button>
+          </div>
+          <div className="flex items-start gap-2 rounded-xl border border-cyan-200 bg-cyan-50/70 p-2.5 sm:p-3 text-xs leading-5 text-cyan-900 sm:max-w-sm">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" aria-hidden="true" />
             <p>{t.hero.disclaimer}</p>
           </div>
         </div>
       </header>
 
-      <nav aria-label="DCA sections" className="-mx-3 mb-6 overflow-x-auto px-3 sm:mx-0 sm:px-0">
+      <nav aria-label="DCA sections" className="-mx-3 mb-6 overflow-x-auto px-3 sm:mx-0 sm:px-0 scrollbar-none [-webkit-overflow-scrolling:touch]">
         <div className="flex min-w-max gap-1.5 rounded-2xl border border-zinc-200 bg-zinc-100/80 p-1.5 shadow-xs">
           {[
             { id: 'overview' as Section, label: t.nav.overview, icon: Gauge },
@@ -1870,7 +1869,6 @@ export default function DcaExperience() {
             </div>
             <div>
               <p className="font-semibold text-zinc-900">{t.auth.private_key_account}</p>
-              <p className="text-xs text-zinc-600">{t.auth.access_saved_plans}</p>
             </div>
           </div>
           <button
@@ -1935,13 +1933,9 @@ export default function DcaExperience() {
           <div className="grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
             <Panel className="border-zinc-200 bg-white">
               <div className="relative">
-                <p className="text-sm font-semibold text-[#f97602]">{t.overview.tagline}</p>
-                <h2 className="mt-2 max-w-2xl text-2xl font-bold leading-tight text-zinc-900 sm:text-3xl">
+                <h2 className="max-w-2xl text-2xl font-bold leading-tight text-zinc-900 sm:text-3xl">
                   {t.overview.heading}
                 </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-                  {t.overview.body}
-                </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <PrimaryButton onClick={() => setSectionAndScroll('learn')}>
                     {t.overview.btn_learn} <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -1969,35 +1963,22 @@ export default function DcaExperience() {
             <InfoCard
               number="01"
               title={t.overview.card_01_title}
-              text={t.overview.card_01_text}
               action={t.overview.card_01_action}
               onClick={() => setSectionAndScroll('learn')}
             />
             <InfoCard
               number="02"
               title={t.overview.card_02_title}
-              text={t.overview.card_02_text}
               action={t.overview.card_02_action}
               onClick={() => setSectionAndScroll('planner')}
             />
             <InfoCard
               number="03"
               title={t.overview.card_03_title}
-              text={t.overview.card_03_text}
               action={t.overview.card_03_action}
               onClick={() => setSectionAndScroll('dashboard')}
             />
           </div>
-
-          <Panel className="flex flex-col gap-4 border-orange-200 bg-orange-50/60 sm:flex-row sm:items-start">
-            <Lightbulb className="h-5 w-5 shrink-0 text-[#f97602]" aria-hidden="true" />
-            <div>
-              <h2 className="font-semibold text-zinc-900">{t.overview.dca_disclaimer_title}</h2>
-              <p className="mt-1 text-sm leading-6 text-zinc-600">
-                {t.overview.dca_disclaimer_body}
-              </p>
-            </div>
-          </Panel>
         </div>
       )}
 
@@ -2006,9 +1987,6 @@ export default function DcaExperience() {
           <Panel>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.learn.badge}</p>
             <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.learn.heading}</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-              {t.learn.subheading}
-            </p>
             <div className="mt-5 divide-y divide-zinc-200">
               {(t.learn.lessons || lessons).map((lesson, index) => (
                 <details key={index} className="group py-4">
@@ -2074,7 +2052,7 @@ export default function DcaExperience() {
                   <option value="monthly">{t.planner.freq_monthly}</option>
                 </select>
               </Field>
-              <Field label={t.planner.field_fee} hint={t.planner.field_fee_hint}>
+              <Field label={t.planner.field_fee}>
                 <input className={inputClass} type="number" min="0" max="100" step="0.01" value={planFee} onChange={(event) => setPlanFee(event.target.value)} />
               </Field>
               <Field label={t.planner.field_start_date}>
@@ -2105,14 +2083,12 @@ export default function DcaExperience() {
           <div className="space-y-5">
             <Panel>
               <h3 className="font-semibold text-zinc-900">{t.planner.estimate_title}</h3>
-              <p className="mt-1 text-xs leading-5 text-zinc-500">{t.planner.estimate_subtitle}</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <Metric label={t.planner.estimate_scheduled} value={String(planSchedule.length + (planInitialAmount > 0 ? 1 : 0))} />
                 <Metric label={t.planner.estimate_contributions} value={formatCurrency(plannedContributions)} />
                 <Metric label={t.planner.estimate_fees} value={formatCurrency(plannedFees)} />
                 <Metric label={t.planner.estimate_btc} value={estimatedBtc === null ? t.planner.estimate_btc_unavailable : formatBtc(estimatedBtc)} />
               </div>
-              {market && <p className="mt-3 text-xs text-zinc-400">{t.planner.estimate_illustration.replace('{price}', formatCurrency(market.currentPrice)).replace('{date}', new Date(market.lastUpdated).toLocaleString())}</p>}
             </Panel>
 
             <Panel>
@@ -2167,12 +2143,6 @@ export default function DcaExperience() {
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.simulator.badge}</p>
                 <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.simulator.heading}</h2>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-                  {t.simulator.body}
-                </p>
-                <p className="mt-2 text-xs text-zinc-500">
-                  {t.simulator.source_note}{historicalPriceSource ? ` · ${t.market.chart_source.replace('{source}', historicalPriceSource)}` : ''}.
-                </p>
               </div>
               <button
                 type="button"
@@ -2231,11 +2201,6 @@ export default function DcaExperience() {
                         <h3 className="text-base sm:text-lg font-bold text-zinc-900">
                           {t.simulator.chart_title}
                         </h3>
-                        <p className="mt-0.5 text-xs text-zinc-500">
-                          {valuationMode === 'historical'
-                            ? t.simulator.chart_subtitle_historical
-                            : t.simulator.chart_subtitle_end.replace('{price}', formatCurrency(simulation.endPrice))}
-                        </p>
                       </div>
 
                       {/* Valuation Switcher */}
@@ -2397,9 +2362,6 @@ export default function DcaExperience() {
           {!historicalPriceLoading && !historicalPriceError && !simulation && (
             <Panel><p className="text-sm text-zinc-600">{t.simulator.no_simulation}</p></Panel>
           )}
-          <p className="text-xs leading-5 text-zinc-400">
-            {t.simulator.footer_note.replace('{source}', historicalPriceSource || 'Blockchain.com')}
-          </p>
         </div>
       )}
 
@@ -2481,18 +2443,10 @@ export default function DcaExperience() {
                       </button>
                     )}
                   </div>
-                  {editingPurchaseId && (
-                    <div className="mt-3 rounded-xl border border-orange-200/90 bg-orange-50/80 p-2.5 text-xs text-orange-950 animate-in fade-in duration-200">
-                      <span className="font-medium">
-                        {t.dashboard.form_editing_note} <strong>{t.dashboard.form_editing_update_btn}</strong>.
-                      </span>
-                    </div>
-                  )}
                 </div>
                 <form id="log-purchase-form" onSubmit={handleSavePurchase} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <Field
                   label={t.dashboard.form_add_to_portfolio}
-                  hint={t.dashboard.form_add_to_portfolio_hint}
                 >
                   <select
                     className={inputClass}
@@ -2552,9 +2506,7 @@ export default function DcaExperience() {
                           <span className="text-amber-600 font-medium">{t.dashboard.form_btc_hint_manual}</span>
                         )}
                       </div>
-                    ) : (
-                      t.dashboard.form_btc_enter_hint
-                    )
+                    ) : undefined
                   }
                 >
                   <input className={inputClass} type="number" min="0.00000001" step="0.00000001" value={purchaseBtc} onChange={(event) => handleBtcChange(event.target.value)} placeholder="e.g. 0.00083333" required />
@@ -2568,7 +2520,6 @@ export default function DcaExperience() {
                 {wallets.length > 0 && (
                   <Field
                     label={t.dashboard.form_wallet_question}
-                    hint={t.dashboard.form_wallet_hint}
                   >
                     <select
                       className={inputClass}
@@ -2585,7 +2536,6 @@ export default function DcaExperience() {
                 {purchaseWalletId && (
                   <Field
                     label={t.dashboard.form_wallet_date}
-                    hint={t.dashboard.form_wallet_date_hint}
                   >
                     <input
                       className={inputClass}
@@ -3103,7 +3053,6 @@ export default function DcaExperience() {
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f97602]">{t.market.badge}</p>
               <h2 className="mt-2 text-2xl font-bold text-zinc-900">{t.market.heading}</h2>
-              <p className="mt-2 text-sm text-zinc-500">{t.market.subtitle}</p>
             </div>
             <div
               className="flex flex-wrap items-center gap-1 rounded-xl border border-zinc-200 bg-white p-1"
@@ -3153,8 +3102,6 @@ export default function DcaExperience() {
             <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
               <div>
                 <h3 className="font-semibold text-zinc-900">{t.market.chart_title}</h3>
-                <p className="mt-1 text-xs text-zinc-500">{t.market.chart_subtitle}</p>
-                <p className="mt-1 text-xs text-zinc-400">{t.market.chart_resolution}</p>
               </div>
               {market && <p className="text-xs text-zinc-400">{t.market.chart_updated} {new Date(market.lastUpdated).toLocaleString()}</p>}
             </div>
@@ -3167,7 +3114,6 @@ export default function DcaExperience() {
                 />
               </div>
             ) : <p className="py-12 text-center text-sm text-zinc-500">{market?.candleError ?? t.market.chart_no_data}</p>}
-            {market && <p className="mt-3 text-xs text-zinc-400">{t.market.chart_source.replace('{source}', market.source)}</p>}
           </Panel>
         </div>
       )}
@@ -3311,13 +3257,11 @@ function MarketSnapshot({
 function InfoCard({
   number,
   title,
-  text,
   action,
   onClick,
 }: {
   number: string;
   title: string;
-  text: string;
   action: string;
   onClick: () => void;
 }) {
@@ -3325,7 +3269,6 @@ function InfoCard({
     <Panel className="border-zinc-200 bg-white shadow-xs hover:border-orange-300/60 transition-colors">
       <p className="text-xs font-bold tracking-[0.16em] text-[#f97602]">{number}</p>
       <h3 className="mt-2 text-lg font-bold text-zinc-900">{title}</h3>
-      <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-600">{text}</p>
       <button type="button" onClick={onClick} className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-[#f97602] hover:text-[#d46200]">
         {action} <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </button>

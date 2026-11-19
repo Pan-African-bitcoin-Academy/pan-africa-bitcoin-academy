@@ -192,10 +192,6 @@ export function ForgotPasswordModal({ isOpen, onClose, initialEmail = '', onSign
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
-            <p className="text-sm text-zinc-400">
-              Enter your email address and we'll send you instructions to reset your password.
-            </p>
-
             <div>
               <label className="mb-2 block text-sm font-medium text-zinc-300">
                 Email Address

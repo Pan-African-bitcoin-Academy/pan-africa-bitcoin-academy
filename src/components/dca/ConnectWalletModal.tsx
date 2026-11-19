@@ -149,8 +149,8 @@ export default function ConnectWalletModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl transition-all">
+    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs">
+      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl transition-all max-h-[92dvh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-100 p-5">
           <div className="flex items-center gap-3">
@@ -179,9 +179,6 @@ export default function ConnectWalletModal({
               <span className="font-semibold text-amber-950"> Never enter private keys or recovery phrases.</span>
             </p>
           </div>
-          <p className="mt-2 pl-7 text-[11px] leading-relaxed text-amber-900">
-            Addresses use public explorers; extended keys are encrypted and not shared.
-          </p>
         </div>
 
         {/* Content Tabs */}
