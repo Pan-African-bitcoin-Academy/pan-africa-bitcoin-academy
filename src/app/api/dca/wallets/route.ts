@@ -101,7 +101,8 @@ export async function GET(request: NextRequest) {
             displayIdentifier = decryptWalletWatchData(String(wallet.watch_data_encrypted));
           } catch (error) {
             console.error('Unable to decrypt a stored Bitcoin address:', error);
-            throw new Error('Unable to load a connected wallet address.');
+            // Return the wallet with a placeholder rather than crashing the entire list
+            displayIdentifier = '(address unavailable)';
           }
         }
         return publicWallet({ ...wallet, _display_identifier: displayIdentifier } as WalletRow);

@@ -53,6 +53,8 @@ export async function GET(request: NextRequest) {
   let lockAcquired = false;
   let lockRequestFailed = false;
   let lockErrorCode: string | undefined;
+  let lockErrorMessage: string | undefined;
+  let lockErrorHint: string | undefined;
   try {
     const { data, error } = await supabaseAdmin.rpc(
       'try_acquire_dca_wallet_sync_lock',
@@ -61,17 +63,22 @@ export async function GET(request: NextRequest) {
     if (error) {
       lockRequestFailed = true;
       lockErrorCode = error.code ?? 'unknown';
+      lockErrorMessage = error.message;
+      lockErrorHint = error.hint;
     }
     else lockAcquired = data === true;
-  } catch {
+  } catch (err) {
     lockRequestFailed = true;
     lockErrorCode = 'request_failed';
+    lockErrorMessage = err instanceof Error ? err.message : String(err);
   }
   if (lockRequestFailed) {
     const completedAt = new Date();
     console.error('Scheduled wallet sync could not acquire its database lock.', {
       executionId,
       databaseErrorCode: lockErrorCode,
+      databaseErrorMessage: lockErrorMessage,
+      databaseErrorHint: lockErrorHint,
     });
     console.info('Scheduled wallet sync completed.', {
       executionId,
@@ -89,6 +96,9 @@ export async function GET(request: NextRequest) {
       synced,
       failed,
       error: 'Unable to acquire the synchronization lock.',
+      details: lockErrorMessage,
+      code: lockErrorCode,
+      hint: lockErrorHint,
     }, { status: 503 });
   }
 
