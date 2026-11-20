@@ -15,11 +15,14 @@ jobs:
     steps:
       - name: Trigger wallet sync
         run: |
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+          BODY=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
             -X GET "${{ secrets.SITE_URL }}/api/cron/dca-wallet-sync" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json")
+          RESPONSE=$(echo "$BODY" | grep "HTTP_STATUS:" | cut -d: -f2)
+          RESPONSE_BODY=$(echo "$BODY" | grep -v "HTTP_STATUS:")
           echo "Response status: $RESPONSE"
+          echo "Response body: $RESPONSE_BODY"
           if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
             echo "✅ Wallet sync completed successfully"
           else
